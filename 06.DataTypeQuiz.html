@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Type Matching Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        #quiz-container {
+            width: 800px;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #1877f2;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #4267B2;
+            color: white;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        #controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            background-color: #1877f2;
+            color: white;
+        }
+        .feedback {
+            font-weight: bold;
+            padding-left: 10px;
+        }
+        .correct {
+            color: #42b72a;
+        }
+        .incorrect {
+            color: #fa383e;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h2>Activity: Choose the Right Data Type</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Select the Correct Data Type</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+        <div id="controls">
+            <button onclick="checkAnswers()">Check Answers</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { scenario: "1. Storing a student's surname, for example, \"McKenna\".", answer: "Text / String" },
+            { scenario: "2. Storing a product's price, for example, £14.99.", answer: "Currency" },
+            { scenario: "3. A field that will automatically create the next `CustomerID`.", answer: "Autonumber" },
+            { scenario: "4. Storing a member's date of birth, for example, 22/05/2008.", answer: "Date/Time" },
+            { scenario: "5. Storing a single character to represent a grade, for example, 'A'.", answer: "Text / String" },
+            { scenario: "6. A field to store a website address.", answer: "Hyperlink" },
+            { scenario: "7. Storing a phone number, for example, \"07712345678\".", answer: "Text / String" },
+            { scenario: "8. A field to confirm if a membership fee has been paid or not.", answer: "Boolean (Yes/No)" },
+            { scenario: "9. Storing the number of goals scored in a season, for example, 21.", answer: "Number (Integer)" },
+            { scenario: "10. A field to store a photo of an employee.", answer: "Attachment" },
+            { scenario: "11. Storing the cost of an item with a decimal point, for example, 12.50.", answer: "Number (Real)" }
+        ];
+
+        const dataTypes = ["", "Text / String", "Number (Integer)", "Number (Real)", "Date/Time", "Currency", "Boolean (Yes/No)", "Autonumber", "Hyperlink", "Attachment"];
+
+        const tbody = document.querySelector('tbody');
+
+        questions.forEach((q, index) => {
+            const row = document.createElement('tr');
+            
+            // Scenario cell
+            const scenarioCell = document.createElement('td');
+            scenarioCell.textContent = q.scenario;
+            row.appendChild(scenarioCell);
+
+            // Select cell
+            const selectCell = document.createElement('td');
+            const select = document.createElement('select');
+            select.id = `q${index}`;
+            dataTypes.forEach(dt => {
+                const option = document.createElement('option');
+                option.value = dt;
+                option.textContent = dt || "--- Select an option ---";
+                select.appendChild(option);
+            });
+            selectCell.appendChild(select);
+            row.appendChild(selectCell);
+            
+            // Feedback cell
+            const feedbackCell = document.createElement('td');
+            feedbackCell.id = `f${index}`;
+            feedbackCell.classList.add('feedback');
+            row.appendChild(feedbackCell);
+
+            tbody.appendChild(row);
+        });
+
+        function checkAnswers() {
+            questions.forEach((q, index) => {
+                const select = document.getElementById(`q${index}`);
+                const feedback = document.getElementById(`f${index}`);
+                
+                if (select.value === q.answer) {
+                    feedback.textContent = "Correct!";
+                    feedback.className = "feedback correct";
+                } else {
+                    feedback.textContent = "Incorrect";
+                    feedback.className = "feedback incorrect";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
