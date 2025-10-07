@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Software Showdown — GCSE Digital Technology (Compat)</title>
+<style>
+  :root{--bg:#0b3c5d;--panel:#ffffff;--ink:#0f1b2d;--accent:#2b90d9;--accent2:#18a999;--muted:#eef3f8;--warn:#d9534f;--ok:#4caf50}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,var(--bg),#154b6f);min-height:100vh}
+  header{color:white;padding:24px 16px;text-align:center}
+  header h1{margin:.2rem 0;font-weight:800;letter-spacing:.3px}
+  main{max-width:1100px;margin:0 auto 64px auto;padding:0 16px 24px 16px}
+  .card{background:var(--panel);border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.2);padding:20px;margin:16px 0}
+  .centre{text-align:center}
+  .btn{border:0;border-radius:10px;padding:12px 18px;background:var(--accent);color:white;font-weight:700;cursor:pointer;display:inline-block;text-decoration:none}
+  .btn.secondary{background:var(--accent2)}
+  .btn.ghost{background:transparent;border:2px solid var(--accent);color:var(--accent)}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+  .stack{display:flex;gap:12px;flex-wrap:wrap}
+  .q{font-size:1.1rem;font-weight:700;margin-top:8px}
+  .options{display:grid;gap:10px;margin-top:12px}
+  .options button{text-align:left;padding:12px 14px;border-radius:10px;border:2px solid #e3e8ee;background:#fafcff;cursor:pointer;font-size:1rem}
+  .options button.correct{border-color:var(--ok);background:#f1fff1}
+  .options button.wrong{border-color:var(--warn);background:#fff1f1}
+  .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .pill{background:#06263a;color:#cfe9ff;padding:6px 10px;border-radius:999px;font-size:.9rem}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .dropzone{min-height:220px;background:var(--muted);border-radius:12px;padding:10px;border:2px dashed #c3ced9}
+  .cardlet{padding:10px 12px;border-radius:10px;background:#fff;border:2px solid #e3e8ee;margin:8px 0;cursor:grab}
+  .hint{font-size:.95rem;opacity:.85}
+  .scorebox{font-size:1rem;font-weight:800;color:#e8f6ff}
+  .hidden{display:none !important}
+  footer{color:#c2d7eb;text-align:center;padding:16px 0 26px}
+  .table{width:100%;border-collapse:collapse}
+  .table th,.table td{padding:10px;border-bottom:1px solid #e7edf4;text-align:left}
+  .table th{background:#f3f7fb}
+  .badge{font-size:.85rem;padding:6px 10px;border-radius:999px;background:#f0f7ff;color:#0a3978;border:1px solid #d5e7ff}
+  .result{font-weight:800}
+  noscript{display:block;background:#ffefef;border:2px solid #f3c2c2;color:#6b1010;border-radius:10px;padding:10px;margin:12px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>Software Showdown (Compatibility Edition)</h1>
+  <p>If buttons don’t work in a preview, <strong>save this file and open it in Chrome/Edge</strong>.</p>
+  <div class="scorebox" id="scoreBox">Score: 0</div>
+</header>
+
+<main>
+  <noscript>This game needs JavaScript enabled. Please open in a browser with JavaScript (Chrome, Edge, Firefox, Safari).</noscript>
+
+  <section class="card" id="introCard">
+    <h2 class="centre">How it works</h2>
+    <ul>
+      <li><strong>Round 1:</strong> Quick-fire multiple choice.</li>
+      <li><strong>Round 2:</strong> Drag & drop scenarios into Real-time / Batch / Multi-user.</li>
+      <li><strong>Round 3:</strong> Match the definition.</li>
+    </ul>
+    <div class="centre">
+      <button class="btn" id="startBtn" onclick="startGame()">Start game</button>
+      <button class="btn ghost" id="teacherNotesLink" onclick="show('teacherCard')">Teacher notes</button>
+    </div>
+  </section>
+
+  <section class="card hidden" id="teacherCard">
+    <h2>Teacher notes</h2>
+    <p>Content mapping and a tip for whole-class play. No internet needed.</p>
+    <div class="centre"><button class="btn" onclick="show('introCard')">Back</button></div>
+  </section>
+
+  <section class="card hidden" id="round1">
+    <h2>Round 1 — Quick-fire MCQs</h2>
+    <div id="mcqBox"></div>
+    <div class="meta">
+      <span class="pill" id="mcqProgress"></span>
+      <div class="stack">
+        <button class="btn" id="nextMcq" onclick="nextMcq()" disabled>Submit & next ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card hidden" id="round2">
+    <h2>Round 2 — Drag & drop</h2>
+    <p class="hint">Drag each scenario into the correct column.</p>
+    <div class="grid3">
+      <div>
+        <h3>Scenarios</h3>
+        <div id="sourceZone" class="dropzone"></div>
+      </div>
+      <div>
+        <h3>Real-time</h3>
+        <div id="rtZone" class="dropzone"></div>
+      </div>
+      <div>
+        <div class="badge">Batch</div>
+        <div id="batchZone" class="dropzone"></div>
+        <div class="badge" style="margin-top:10px">Multi-user</div>
+        <div id="multiZone" class="dropzone"></div>
+      </div>
+    </div>
+    <div class="meta">
+      <button class="btn secondary" id="reset2" onclick="resetRound2()">Reset round</button>
+      <div class="stack">
+        <button class="btn" id="mark2" onclick="markRound2()">Mark round</button>
+        <button class="btn" id="toRound3" onclick="goRound3()" disabled>Continue ▶</button>
+      </div>
+    </div>
+    <div id="r2Feedback" class="hint"></div>
+  </section>
+
+  <section class="card hidden" id="round3">
+    <h2>Round 3 — Match the definition</h2>
+    <p class="hint">Choose the correct term for each definition.</p>
+    <table class="table" id="matchTable">
+      <thead><tr><th style="width:68%">Definition</th><th>Term</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="meta">
+      <div></div>
+      <div class="stack">
+        <button class="btn" id="mark3" onclick="markRound3()">Mark round</button>
+        <button class="btn" id="finishBtn" onclick="finishGame()" disabled>Finish ▶</button>
+      </div>
+    </div>
+    <div id="r3Feedback" class="hint"></div>
+  </section>
+
+  <section class="card hidden centre" id="finishCard">
+    <h2>Well done!</h2>
+    <p class="result" id="finalScore"></p>
+    <div class="stack centre" style="justify-content:center">
+      <button class="btn" onclick="playAgain()">Reset game</button>
+    </div>
+  </section>
+</main>
+
+<footer>Local file. No tracking.</footer>
+
+<script>
+// Utility
+function $(id){ return document.getElementById(id); }
+function show(id){
+  var sections = document.querySelectorAll('main > section');
+  for (var i=0;i<sections.length;i++){ sections[i].classList.add('hidden'); }
+  $(id).classList.remove('hidden');
+}
+var score = 0;
+function addScore(n){ score += n; $('scoreBox').textContent = 'Score: ' + score; }
+
+// Round 1
+var mcqs = [
+  {q:"Which statement best describes application software?",
+   opts:["Programs designed to help the user do a particular task (e.g. word processing).","Software that shares processor time between many users automatically.","Software that manages only input devices.","The BIOS stored on the motherboard."],
+   correct:0},
+  {q:"System software includes…",
+   opts:["Only the command prompt.","The operating system and utility programs.","Any app downloaded from the web.","Only device drivers."],
+   correct:1},
+  {q:"Allocating memory (by the OS) mainly means…",
+   opts:["Rearranging blocks on the hard disk to speed up access.","Deciding which programs/data occupy main memory right now.","Encrypting files so they are safe.","Sharing CPU time fairly between users."],
+   correct:1},
+  {q:"Managing storage (by the OS) mainly means…",
+   opts:["Deciding where files are kept on the disk so they can be found later.","Turning multiple computers into a cluster.","Scanning for viruses and quarantining them.","Compressing files into zip archives automatically."],
+   correct:0},
+  {q:"Managing processing time is commonly implemented using…",
+   opts:["Time slices and task priorities.","Only one process at a time, no switching.","Optical storage only.","Disk mirroring."],
+   correct:0},
+  {q:"Real-time processing is required when…",
+   opts:["You send out monthly phone bills.","Immediate updates are needed to influence the next input.","You archive old emails.","You restore a backup."],
+   correct:1},
+  {q:"Batch processing suits tasks where…",
+   opts:["Data must update before the next input occurs.","Processing can wait and be done together later (e.g. overnight).","Only one user needs the processor.","The system has no secondary storage."],
+   correct:1},
+  {q:"A multi-user system is best described as…",
+   opts:["Many users sharing a powerful processor via time-slicing.","One user with multiple screens.","A peer-to-peer game lobby.","Only local accounts on a laptop."],
+   correct:0}
+];
+var mcqIndex=0, selectedOpt=-1;
+
+function renderMcq(){
+  if(mcqIndex>=mcqs.length){ show('round2'); return; }
+  var q = mcqs[mcqIndex];
+  $('mcqProgress').textContent = 'Question ' + (mcqIndex+1) + ' of ' + mcqs.length;
+  var html = '<div class="q">'+q.q+'</div><div class="options">';
+  for(var i=0;i<q.opts.length;i++){
+    html += '<button type="button" onclick="chooseOpt('+i+')">'+String.fromCharCode(65+i)+') '+q.opts[i]+'</button>';
+  }
+  html += '</div>';
+  $('mcqBox').innerHTML = html;
+  $('nextMcq').disabled = true;
+  selectedOpt=-1;
+}
+function chooseOpt(i){
+  selectedOpt=i;
+  var btns = $('mcqBox').querySelectorAll('button');
+  for(var k=0;k<btns.length;k++){ btns[k].classList.remove('correct','wrong'); }
+  if(i===mcqs[mcqIndex].correct) btns[i].classList.add('correct'); else btns[i].classList.add('wrong');
+  $('nextMcq').disabled = false;
+}
+function nextMcq(){
+  if(selectedOpt===mcqs[mcqIndex].correct) addScore(1);
+  mcqIndex++; renderMcq();
+}
+
+// Round 2 (Drag & drop)
+var scenarios=[
+ {text:"Air traffic control updating aircraft positions", ans:"Real-time"},
+ {text:"Online stock control reduces quantity when you buy", ans:"Real-time"},
+ {text:"Concert ticket system showing live seat availability", ans:"Real-time"},
+ {text:"Electricity company producing monthly bills overnight", ans:"Batch"},
+ {text:"Bank generating monthly customer statements", ans:"Batch"},
+ {text:"Payroll calculating wages on a Friday evening", ans:"Batch"},
+ {text:"University mainframe serving many students at once", ans:"Multi-user"},
+ {text:"Database server time-slicing CPU across many clients", ans:"Multi-user"},
+ {text:"Thin clients sharing a central processor", ans:"Multi-user"}
+];
+
+function makeCard(text){
+  var el=document.createElement('div'); el.className='cardlet'; el.textContent=text; el.draggable=true;
+  el.ondragstart=function(e){ e.dataTransfer.setData('text/plain', text); setTimeout(function(){ el.classList.add('hidden'); },0); };
+  el.ondragend=function(){ el.classList.remove('hidden'); };
+  return el;
+}
+function allowDrop(zone){
+  zone.ondragover=function(e){ e.preventDefault(); };
+  zone.ondrop=function(e){ e.preventDefault(); var t=e.dataTransfer.getData('text/plain'); var card=[].slice.call(document.querySelectorAll('.cardlet')).find(function(x){return x.textContent===t}); if(card) zone.appendChild(card); };
+}
+function resetRound2(){
+  $('sourceZone').innerHTML=''; $('rtZone').innerHTML=''; $('batchZone').innerHTML=''; $('multiZone').innerHTML='';
+  var shuffled=scenarios.slice().sort(function(){return Math.random()-0.5});
+  for(var i=0;i<shuffled.length;i++){ $('sourceZone').appendChild(makeCard(shuffled[i].text)); }
+  allowDrop($('sourceZone')); allowDrop($('rtZone')); allowDrop($('batchZone')); allowDrop($('multiZone'));
+  $('r2Feedback').textContent=''; $('toRound3').disabled=true;
+}
+function markRound2(){
+  var correct=0,total=scenarios.length;
+  function count(zone, label){
+    var children=zone.children;
+    for(var i=0;i<children.length;i++){
+      var txt=children[i].textContent;
+      var exp=scenarios.find(function(s){return s.text===txt}).ans;
+      var placed=(zone.id==='rtZone')?'Real-time':(zone.id==='batchZone')?'Batch':(zone.id==='multiZone')?'Multi-user':'Source';
+      if(exp===placed) correct++;
+    }
+  }
+  count($('rtZone')); count($('batchZone')); count($('multiZone'));
+  addScore(correct);
+  $('r2Feedback').textContent='You placed '+correct+' of '+total+' correctly. +' + correct + ' points.';
+  $('toRound3').disabled=false;
+}
+function goRound3(){ show('round3'); }
+
+// Round 3
+var matchRows=[
+ {def:"Rearranges data blocks on a hard disk so related files are stored together, improving access time.",term:"Disc defragmentation"},
+ {def:"Divides processor time amongst active tasks using time slices; often implemented in a ‘round robin’ manner.",term:"Task scheduling"},
+ {def:"Makes a second copy of data so it can be restored if the original is lost, corrupted or damaged.",term:"Backup & restore"},
+ {def:"Scans files and incoming data, comparing to a known database to detect, isolate or remove malware.",term:"Anti-virus software"}
+];
+var terms=["Disc defragmentation","Task scheduling","Backup & restore","Anti-virus software"];
+function renderMatch(){
+  var tb=document.querySelector('#matchTable tbody'); tb.innerHTML='';
+  for(var i=0;i<matchRows.length;i++){
+    var tr=document.createElement('tr');
+    var td1=document.createElement('td'); td1.textContent=matchRows[i].def;
+    var td2=document.createElement('td'); var sel=document.createElement('select'); sel.setAttribute('data-correct',matchRows[i].term);
+    sel.innerHTML='<option value="">— choose —</option>'+terms.map(function(t){return '<option>'+t+'</option>'}).join('');
+    td2.appendChild(sel); tr.appendChild(td1); tr.appendChild(td2); tb.appendChild(tr);
+  }
+}
+function markRound3(){
+  var selects=[].slice.call(document.querySelectorAll('#matchTable select')); var correct=0;
+  selects.forEach(function(s){ if(s.value===s.getAttribute('data-correct')){ correct++; s.style.borderColor='#4caf50'; } else { s.style.borderColor='#d9534f'; } });
+  addScore(correct); $('r3Feedback').textContent='You matched '+correct+' of '+selects.length+' correctly. +'+correct+' points.';
+  $('finishBtn').disabled=false;
+}
+function finishGame(){ $('finalScore').textContent='Final score: '+score+' points'; show('finishCard'); }
+function playAgain(){ score=0; $('scoreBox').textContent='Score: 0'; mcqIndex=0; renderMcq(); resetRound2(); renderMatch(); $('r3Feedback').textContent=''; show('round1'); }
+
+// Start
+function startGame(){ show('round1'); }
+renderMcq(); resetRound2(); renderMatch(); show('introCard');
+</script>
+</body>
+</html>
