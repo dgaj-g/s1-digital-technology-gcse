@@ -93,7 +93,7 @@
             { scenario: "2. Storing a product's price, for example, £14.99.", answer: "Currency" },
             { scenario: "3. A field that will automatically create the next `CustomerID`.", answer: "Autonumber" },
             { scenario: "4. Storing a member's date of birth, for example, 22/05/2008.", answer: "Date/Time" },
-            { scenario: "5. Storing a single character to represent a grade, for example, 'A'.", answer: "Text / String" },
+            { scenario: "5. A field for embedding an Excel spreadsheet into a record.", answer: "OLE Object" },
             { scenario: "6. A field to store a website address.", answer: "Hyperlink" },
             { scenario: "7. Storing a phone number, for example, \"07712345678\".", answer: "Text / String" },
             { scenario: "8. A field to confirm if a membership fee has been paid or not.", answer: "Boolean (Yes/No)" },
@@ -102,7 +102,7 @@
             { scenario: "11. Storing the cost of an item with a decimal point, for example, 12.50.", answer: "Number (Real)" }
         ];
 
-        const dataTypes = ["", "Text / String", "Number (Integer)", "Number (Real)", "Date/Time", "Currency", "Boolean (Yes/No)", "Autonumber", "Hyperlink", "Attachment"];
+        const dataTypes = ["", "Text / String", "Number (Integer)", "Number (Real)", "Date/Time", "Currency", "Boolean (Yes/No)", "Autonumber", "Hyperlink", "Attachment", "OLE Object"];
 
         const tbody = document.querySelector('tbody');
 
