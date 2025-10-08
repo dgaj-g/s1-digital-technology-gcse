@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Database Showdown: Keys & Relationships</title>
+<style>
+  :root{
+    --bg:#0f172a; --panel:#111827; --card:#1f2937; --ink:#e5e7eb; --ink-dim:#cbd5e1;
+    --accent:#22d3ee; --accent-2:#a78bfa; --good:#22c55e; --bad:#ef4444; --warn:#f59e0b;
+  }
+  *{box-sizing:border-box} html,body{height:100%}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans",Arial;
+       background:linear-gradient(180deg,#0b1229,#0f172a 25%,#0f172a);color:var(--ink)}
+  .wrap{max-width:1100px;margin:24px auto;padding:16px}
+  header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+  h1{font-size:clamp(20px,2.6vw,30px);margin:0}
+  .meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .pill{background:var(--card);border:1px solid #334155;border-radius:999px;padding:6px 12px;font-size:14px;color:var(--ink-dim)}
+  .btn{background:var(--accent);color:#06202a;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;transition:.2s transform}
+  .btn:hover{transform:translateY(-1px)} .btn.secondary{background:#334155;color:var(--ink)} .btn.ghost{background:transparent;border:1px solid #334155;color:var(--ink)}
+  .grid{display:grid;grid-template-columns:280px 1fr;gap:14px}
+  nav{background:var(--panel);border:1px solid #1f2a44;border-radius:16px;padding:10px;height:100%;position:sticky;top:12px;align-self:start}
+  nav h2{margin:6px 8px 10px;font-size:16px;color:var(--ink-dim)}
+  .navbtn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid #26324f;background:linear-gradient(180deg,#0f1a34,#121c3a);color:var(--ink);padding:10px 12px;border-radius:12px;margin:6px 0;cursor:pointer;font-weight:600}
+  .navbtn.active{outline:2px solid var(--accent)}
+  main{background:var(--panel);border:1px solid #1f2a44;border-radius:16px;padding:14px;min-height:520px}
+  .card{background:var(--card);border:1px solid #2a3657;border-radius:14px;padding:14px;margin:12px 0}
+  .q{font-weight:700;margin-bottom:8px;color:#f1f5f9}
+  .choices{display:grid;gap:8px;margin-top:8px}
+  .choice{border:1px solid #334155;border-radius:10px;padding:10px;background:#0f172a;cursor:pointer;color:var(--ink);-webkit-appearance:none;appearance:none}
+  .choice:hover,.choice:focus-visible{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+  .choice:disabled{color:var(--ink);opacity:1}
+  .choice.correct{border-color:var(--good);background:#0a1a12;color:var(--ink)}
+  .choice.wrong{border-color:var(--bad);background:#190e0f;color:var(--ink)}
+  .feedback{margin-top:8px;font-size:14px;color:var(--ink-dim)}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .box{flex:1 1 260px;min-width:260px;background:#0c142b;border:1px dashed #334155;border-radius:12px;padding:12px}
+  .box h3{margin:0 0 8px;font-size:16px;color:var(--ink-dim)}
+  .dropzone{min-height:84px;background:#0b1223;border:1px dashed #3a4a74;border-radius:10px;padding:8px}
+  .field{display:inline-block;padding:6px 10px;margin:6px;border-radius:999px;background:#0f172a;border:1px solid #334155;cursor:grab;font-size:14px}
+  .field.dragging{opacity:.5}
+  .hint{font-size:13px;color:var(--ink-dim)}
+  .good{color:var(--good)} .warn{color:var(--warn)}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 2px}
+  footer{margin-top:14px;color:#8aa0cb;font-size:13px}
+  .teacher{background:#061227;border:1px solid #20304f;border-radius:12px;padding:10px}
+  details summary{cursor:pointer;color:#c7d2fe}
+  /* === Round 3: Key Matcher – improved contrast === */
+  .tables{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .t{background:#0d1731;border:1px solid #3b4a6b;border-radius:12px;padding:14px}
+  .t h4{margin:0 0 10px;font-size:18px;color:#eaf2ff}
+  .col{display:block;padding:12px 14px;margin:8px 0;border-radius:10px;border:1px solid #4b5c84;background:#0f1b3a;color:#f8fafc;font-size:16px;font-weight:600;cursor:pointer}
+  .col:hover,.col:focus-visible{outline:2px solid var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+  .col.pk{outline:3px solid var(--accent-2)}
+  .col.fk{outline:3px dashed var(--accent)}
+  .col.selected{box-shadow:0 0 0 3px var(--accent) inset}
+  @media(max-width:720px){.tables{grid-template-columns:1fr}.t h4{font-size:17px}.col{font-size:16px;padding:12px}}
+  .toast{position:fixed;left:50%;top:18px;transform:translateX(-50%);background:#0b1223;border:1px solid #334155;border-radius:10px;padding:10px 14px;color:var(--ink);opacity:0;pointer-events:none;transition:.3s opacity}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Database Showdown: Keys & Relationships</h1>
+  <div class="meta">
+    <span class="pill">Score <strong id="score">0</strong></span>
+    <span class="pill">Round <strong id="roundName">Relationship Rescue</strong></span>
+    <button class="btn ghost" id="teacherBtn">Teacher Mode</button>
+    <button class="btn secondary" id="resetBtn">Reset</button>
+  </div>
+</header>
+
+<div class="grid">
+<nav>
+  <h2>Rounds</h2>
+  <button class="navbtn active" data-view="round1">1) Relationship Rescue (MCQ)</button>
+  <button class="navbtn" data-view="round2">2) Build a Link Table (Drag-Drop)</button>
+  <button class="navbtn" data-view="round3">3) Key Matcher (Click-to-Link)</button>
+  <hr style="border-color:#1f2a44;opacity:.4;margin:10px 0">
+  <div class="teacher">
+    <details><summary>Teacher Notes</summary>
+      <ul style="margin:8px 0 0 18px;line-height:1.4">
+        <li>Round 1 – Identify 1:1, 1:M, M:M.</li>
+        <li>Round 2 – Build link table (two FKs + one extra field).</li>
+        <li>Round 3 – Click PK → matching FK across tables.</li>
+      </ul>
+    </details>
+  </div>
+</nav>
+
+<main>
+<!-- ROUND 1 -->
+<section id="round1">
+  <div class="card">
+    <div class="q">Choose the correct relationship type for each scenario (1:1, 1:M, M:M).</div>
+    <div id="mcqArea"></div>
+    <div class="toolbar">
+      <button class="btn" id="nextQuestion">Next</button>
+      <button class="btn secondary" id="restartMCQ">Restart Round</button>
+      <span class="pill" id="progressPill">Question <span id="qIndex">1</span>/<span id="qTotal">10</span></span>
+    </div>
+    <div class="feedback" id="mcqFeedback"></div>
+  </div>
+</section>
+
+<!-- ROUND 2 -->
+<section id="round2" hidden>
+  <div class="card">
+    <div class="q">Create a <strong>many-to-many</strong> between the <strong>Students Table</strong> and the <strong>Teams Table</strong> using a <strong>Link Table</strong>.</div>
+    <p class="hint">Drag fields into the Link Table: it must contain <strong>StudentID (FK)</strong>, <strong>TeamID (FK)</strong>, and <strong>one extra field</strong> (e.g. GoalsScored). Then choose the best <strong>Primary Key</strong>.</p>
+
+    <div class="row">
+      <div class="box">
+        <h3>Students Table</h3>
+        <div class="dropzone" data-zone="students">
+          <span class="field" draggable="true" data-name="StudentID (PK)" data-origin="students">StudentID (PK)</span>
+          <span class="field" draggable="true" data-name="FirstName" data-origin="students">FirstName</span>
+          <span class="field" draggable="true" data-name="Surname" data-origin="students">Surname</span>
+          <span class="field" draggable="true" data-name="DateOfBirth" data-origin="students">DateOfBirth</span>
+          <span class="field" draggable="true" data-name="StudentID (FK)" data-origin="students">StudentID (FK)</span>
+        </div>
+      </div>
+      <div class="box">
+        <h3>Teams Table</h3>
+        <div class="dropzone" data-zone="teams">
+          <span class="field" draggable="true" data-name="TeamID (PK)" data-origin="teams">TeamID (PK)</span>
+          <span class="field" draggable="true" data-name="TeamName" data-origin="teams">TeamName</span>
+          <span class="field" draggable="true" data-name="Coach" data-origin="teams">Coach</span>
+          <span class="field" draggable="true" data-name="CoachMobile" data-origin="teams">CoachMobile</span>
+          <span class="field" draggable="true" data-name="TeamID (FK)" data-origin="teams">TeamID (FK)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="row">
+        <div class="box">
+          <h3>Link Table</h3>
+          <div class="dropzone" data-zone="link"><span class="hint">Drop StudentID (FK), TeamID (FK), and one extra field (e.g. GoalsScored).</span></div>
+          <div style="margin-top:8px">
+            <label for="pkSelect">Primary Key for Link Table:</label><br>
+            <select id="pkSelect" style="margin-top:6px;padding:6px;border-radius:8px;background:#0f172a;border:1px solid #334155;color:var(--ink)">
+              <option value="">— Select —</option>
+              <option value="StatID">New Autonumber (StatID)</option>
+              <option value="Composite">Composite Key (StudentID + TeamID)</option>
+            </select>
+          </div>
+        </div>
+        <div class="box">
+          <h3>Extra Field (pick one)</h3>
+          <div class="dropzone" data-zone="extras">
+            <span class="field" draggable="true" data-name="GoalsScored" data-origin="extras">GoalsScored</span>
+            <span class="field" draggable="true" data-name="JoinedDate" data-origin="extras">JoinedDate</span>
+            <span class="field" draggable="true" data-name="Position" data-origin="extras">Position</span>
+          </div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="validateLink">Validate</button>
+        <button class="btn secondary" id="resetLink">Reset Round</button>
+        <span class="feedback" id="linkFeedback"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROUND 3 -->
+<section id="round3" hidden>
+  <div class="card">
+    <div class="q">Click the <strong>Primary Key</strong> in the parent table, then click the matching <strong>Foreign Key</strong> in the child table to create the link.</div>
+    <div class="tables" id="kmArea"></div>
+    <div class="toolbar">
+      <button class="btn secondary" id="kmRestart">Restart Round</button>
+      <span class="pill">Pair <span id="kmIndexPill">1</span>/<span id="kmTotalPill">3</span></span>
+    </div>
+    <div class="feedback" id="kmMsg"></div>
+  </div>
+</section>
+</main>
+</div>
+
+<footer>Tip: Use Teacher Mode to show answers inline. Works offline.</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- NEXT PASTE PART 2 HERE -->
+<script>
+/* ---------- Tiny helpers ---------- */
+const $ = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+const toast = (msg)=>{ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500); };
+
+/* ---------- Global state ---------- */
+const state = { score: 0, teacher: false };
+function setScore(delta){ state.score = Math.max(0, state.score + delta); $('#score').textContent = state.score; }
+function go(view){
+  $$('.navbtn').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+  $('#round1').hidden = view!=='round1';
+  $('#round2').hidden = view!=='round2';
+  $('#round3').hidden = view!=='round3';
+  $('#roundName').textContent = ({round1:'Relationship Rescue', round2:'Build a Link Table', round3:'Key Matcher'})[view];
+}
+
+/* ---------- Nav buttons / top controls ---------- */
+$$('.navbtn').forEach(btn=>btn.addEventListener('click',()=>go(btn.dataset.view)));
+$('#resetBtn').addEventListener('click',()=>{
+  if(confirm('Reset score and all rounds?')){
+    state.score=0; $('#score').textContent=0;
+    mcqRestart(); linkReset(); kmRestart();
+    go('round1');
+  }
+});
+$('#teacherBtn').addEventListener('click',()=>{
+  state.teacher=!state.teacher;
+  $('#teacherBtn').classList.toggle('secondary',state.teacher);
+  $('#teacherBtn').textContent = state.teacher ? 'Teacher Mode: ON' : 'Teacher Mode';
+  renderMCQ(); // re-render with/without hints
+});
+
+/* ===================== ROUND 1: MCQ ===================== */
+const MCQ_BANK = [
+  { s:"One librarian assigns exactly one locker to each student. Each locker belongs to one student.", a:"1:1", why:"Each student ↔ one locker only." },
+  { s:"One coach manages many players. Each player has only one coach.", a:"1:M", why:"One parent connects to many children." },
+  { s:"Students can join many clubs, and each club has many students.", a:"M:M", why:"Both sides many → needs a link table." },
+  { s:"Each passport number is assigned to exactly one person, and each person has one passport number.", a:"1:1", why:"Unique-to-unique mapping." },
+  { s:"One customer can place many orders; each order belongs to one customer.", a:"1:M", why:"Parent→child with FK in Orders." },
+  { s:"Artists can perform at many venues, and venues host many artists.", a:"M:M", why:"Many-to-many performances." },
+  { s:"One classroom has many desks; each desk belongs to one classroom.", a:"1:M", why:"One parent to many children." },
+  { s:"Each student has at most one school email; each school email belongs to one student.", a:"1:1", why:"One-to-one identifier mapping." },
+  { s:"A student may borrow many library books; each loan refers to exactly one student.", a:"1:M", why:"Loans table stores StudentID as FK." },
+  { s:"Players take part in many matches and each match includes many players.", a:"M:M", why:"Participation link table needed." },
+];
+let mcqIndex = 0;
+$('#qTotal').textContent = MCQ_BANK.length;
+
+function renderMCQ(){
+  const q = MCQ_BANK[mcqIndex];
+  $('#qIndex').textContent = mcqIndex + 1;
+  const area = $('#mcqArea');
+  area.innerHTML = `
+    <div class="card">
+      <div class="q">${q.s}</div>
+      <div class="choices">
+        ${["1:1","1:M","M:M"].map(t=>`<button class="choice" data-v="${t}">${t}</button>`).join('')}
+      </div>
+      ${state.teacher ? `<div class="feedback"><strong>Teacher:</strong> Correct = ${q.a}. ${q.why}</div>`:''}
+    </div>`;
+  $('#mcqFeedback').textContent = '';
+
+  $$('.choice', area).forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(btn.disabled) return;
+      const correct = btn.dataset.v === q.a;
+      if(correct){
+        btn.classList.add('correct');
+        setScore(10);
+        $('#mcqFeedback').innerHTML = `✅ Correct — <span class="good">${q.a}</span>. ${q.why}`;
+      }else{
+        btn.classList.add('wrong');
+        if(state.score>0) setScore(-5);
+        $('#mcqFeedback').innerHTML = `❌ Not quite. The answer is <span class="good">${q.a}</span>. ${q.why}`;
+      }
+      $$('.choice', area).forEach(b=>{ if(b.dataset.v===q.a) b.classList.add('correct'); b.disabled = true; });
+
+      // If last question answered, auto-advance to Round 2
+      if(mcqIndex === MCQ_BANK.length-1){
+        toast('Round complete! Moving to Round 2…');
+        setTimeout(()=>go('round2'), 1200);
+      }
+    });
+  });
+}
+function mcqNext(){ if(mcqIndex < MCQ_BANK.length-1){ mcqIndex++; renderMCQ(); } else { toast('Answer to finish the round.'); } }
+function mcqRestart(){ mcqIndex=0; renderMCQ(); }
+$('#nextQuestion').addEventListener('click', mcqNext);
+$('#restartMCQ').addEventListener('click', mcqRestart);
+renderMCQ();
+
+/* ===================== ROUND 2: DRAG & DROP LINK TABLE ===================== */
+let dragEl = null;
+function onDragStart(e){ dragEl = e.target; e.dataTransfer.setData('text/plain', dragEl.dataset.name); setTimeout(()=>dragEl.classList.add('dragging'),0); }
+function onDragEnd(){ if(dragEl){ dragEl.classList.remove('dragging'); dragEl=null; } }
+function onDragOver(e){ e.preventDefault(); }
+function onDrop(e){ e.preventDefault(); if(!dragEl) return; e.currentTarget.appendChild(dragEl); }
+
+function enableDnD(){
+  $$('.field').forEach(f=>{ f.addEventListener('dragstart', onDragStart); f.addEventListener('dragend', onDragEnd); });
+  $$('.dropzone').forEach(z=>{ z.addEventListener('dragover', onDragOver); z.addEventListener('drop', onDrop); });
+}
+enableDnD();
+
+function inZone(sel){ return $$('.field', $(sel)).map(n=>n.dataset.name); }
+function linkValidate(){
+  const link = inZone('[data-zone="link"]');
+  const pkSel = $('#pkSelect').value;
+
+  const hasStudentFK = link.includes('StudentID (FK)');
+  const hasTeamFK    = link.includes('TeamID (FK)');
+  const hasExtra     = link.includes('GoalsScored') || link.includes('JoinedDate') || link.includes('Position');
+  const pkOk         = (pkSel==='StatID' || pkSel==='Composite');
+
+  const miss = [];
+  if(!hasStudentFK) miss.push('StudentID (FK) in Link Table');
+  if(!hasTeamFK)    miss.push('TeamID (FK) in Link Table');
+  if(!hasExtra)     miss.push('One extra field (e.g., GoalsScored)');
+  if(!pkOk)         miss.push('Choose a Primary Key for Link Table');
+
+  const fb = $('#linkFeedback');
+  if(miss.length===0){
+    fb.innerHTML = `✅ <span class="good">Correct.</span> Many-to-many created via a link table:
+      <ul><li>FKs: StudentID (FK), TeamID (FK)</li><li>Extra field included</li><li>PK = ${pkSel==='StatID' ? 'New Autonumber (StatID)' : 'Composite (StudentID+TeamID)'}</li></ul>`;
+    setScore(20);
+    toast('Great! Moving to Round 3…');
+    setTimeout(()=>go('round3'), 1200);
+  }else{
+    fb.innerHTML = `⚠️ <span class="warn">Not quite.</span> Missing: ${miss.join(', ')}.`;
+    if(state.score>0) setScore(-5);
+    if(state.teacher){
+      fb.innerHTML += `<div class="hint">Teacher: Link table stores two FKs (one to each parent) + optional field(s); PK can be autonumber or composite of both FKs.</div>`;
+    }
+  }
+}
+function linkReset(){
+  // put fields back into their origin zones
+  $$('[data-origin]').forEach(f=>{
+    const origin = f.dataset.origin;
+    const zone = $(`[data-zone="${origin}"]`);
+    if(zone) zone.appendChild(f);
+  });
+  $('#pkSelect').value = '';
+  $('#linkFeedback').textContent = '';
+}
+$('#validateLink').addEventListener('click', linkValidate);
+$('#resetLink').addEventListener('click', linkReset);
+
+/* ===================== ROUND 3: KEY MATCHER (CLICK-TO-LINK) ===================== */
+const KM_PAIRS = [
+  {
+    title:'Link Teams → Students',
+    left : { name:'Teams',    cols:['TeamID (PK)','TeamName','Coach'] },
+    right: { name:'Students', cols:['StudentID (PK)','FirstName','Surname','TeamID (FK)'] },
+    pk:'TeamID (PK)', fk:'TeamID (FK)', why:'TeamID from Teams appears as a foreign key in Students.'
+  },
+  {
+    title:'Link Students → Player_Stats',
+    left : { name:'Students',     cols:['StudentID (PK)','FirstName','Surname'] },
+    right: { name:'Player_Stats', cols:['StatID (PK)','StudentID (FK)','TeamID (FK)','GoalsScored'] },
+    pk:'StudentID (PK)', fk:'StudentID (FK)', why:'StudentID is copied into Player_Stats as a foreign key.'
+  },
+  {
+    title:'Link Teams → Player_Stats',
+    left : { name:'Teams',        cols:['TeamID (PK)','TeamName','Coach'] },
+    right: { name:'Player_Stats', cols:['StatID (PK)','StudentID (FK)','TeamID (FK)','GoalsScored'] },
+    pk:'TeamID (PK)', fk:'TeamID (FK)', why:'TeamID is copied into Player_Stats as a foreign key.'
+  }
+];
+let kmIndex = 0, kmLeftPick = null;
+$('#kmTotalPill').textContent = KM_PAIRS.length;
+
+function renderKM(){
+  $('#kmIndexPill').textContent = kmIndex+1;
+  const p = KM_PAIRS[kmIndex];
+  const area = $('#kmArea');
+  $('#kmMsg').textContent = 'Click the PK on the left, then the matching FK on the right.';
+  area.innerHTML = `
+    <div class="t" id="kmLeft">
+      <h4>${p.title} — Parent Table: <span class="good">${p.left.name}</span></h4>
+      ${p.left.cols.map(c=>`<button class="col ${c.includes('(PK)')?'pk':''}" data-side="L" data-name="${c}">${c}</button>`).join('')}
+    </div>
+    <div class="t" id="kmRight">
+      <h4>Child Table: <span class="good">${p.right.name}</span></h4>
+      ${p.right.cols.map(c=>`<button class="col ${c.includes('(FK)')?'fk':''}" data-side="R" data-name="${c}">${c}</button>`).join('')}
+    </div>
+  `;
+  $$('.col', area).forEach(b=>b.addEventListener('click',()=>kmClick(b)));
+}
+
+function kmClick(btn){
+  const p = KM_PAIRS[kmIndex];
+  const side = btn.dataset.side, name = btn.dataset.name;
+
+  if(!kmLeftPick){
+    if(side!=='L'){ toast('Pick the Primary Key on the left first.'); return; }
+    if(name !== p.pk){ btn.classList.add('selected'); if(state.score>0) setScore(-5); toast('That is not the PK. Look for (PK).'); return; }
+    kmLeftPick = name; btn.classList.add('selected'); $('#kmMsg').textContent='Now click the matching FK on the right.';
+    return;
+  }else{
+    if(side!=='R'){ toast('Now pick the matching Foreign Key on the right.'); return; }
+    if(name !== p.fk){ btn.classList.add('selected'); if(state.score>0) setScore(-5); toast('Not the matching FK. Look for (FK).'); return; }
+    btn.classList.add('selected'); setScore(15);
+    $('#kmMsg').innerHTML = `✅ Correct! Linked <strong>${p.pk}</strong> → <strong>${p.fk}</strong>. ${state.teacher?(' Why: '+p.why):''}`;
+    setTimeout(()=>{
+      kmLeftPick=null;
+      if(kmIndex === KM_PAIRS.length-1){ toast('Round complete!'); }
+      kmIndex = (kmIndex+1) % KM_PAIRS.length;
+      renderKM();
+    }, 1100);
+  }
+}
+function kmRestart(){ kmIndex=0; kmLeftPick=null; renderKM(); }
+$('#kmRestart').addEventListener('click', kmRestart);
+renderKM();
+</script>
+</body>
+</html>
