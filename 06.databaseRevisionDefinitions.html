@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Database Applications — Definitions Match (Masked)</title>
+<style>
+  :root{ --bg:#faf9ff; --card:#fff; --accent:#7c6cff; --accent-2:#ff7ac8; --accent-3:#00c2a8;
+    --ink:#1e1b2e; --muted:#6b6685; --good:#2e9b54; --bad:#c94054; --shadow:0 10px 25px rgba(30,27,46,.12), 0 2px 6px rgba(30,27,46,.06); --radius:18px;}
+  *{box-sizing:border-box} body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:var(--ink);
+    background:radial-gradient(1200px 1200px at -10% -10%,#ffe6f4 0%,transparent 40%),radial-gradient(1200px 1200px at 110% 10%,#e7fdf7 0%,transparent 40%),radial-gradient(1200px 1200px at 50% 120%,#ebe7ff 0%,transparent 40%),var(--bg);}
+  header{padding:24px 20px 8px;text-align:center}
+  .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;font-weight:700;font-size:12px;letter-spacing:.4px;box-shadow:var(--shadow)}
+  h1{margin:10px 0 6px;font-size:clamp(22px,3vw,30px)} p.sub{margin:0;color:var(--muted)}
+  .toolbar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:16px 20px 6px}
+  button{border:none;background:var(--card);color:var(--ink);padding:10px 14px;border-radius:12px;cursor:pointer;box-shadow:var(--shadow);font-weight:700;transition:transform .06s ease}
+  button:hover{transform:translateY(-1px)} .primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff}
+  .scorebar{display:flex;gap:14px;justify-content:center;align-items:center;padding:8px 16px 22px;flex-wrap:wrap}
+  .pill{background:#fff;box-shadow:var(--shadow);border-radius:999px;padding:10px 16px;font-weight:800}
+  .pill .s{color:var(--accent)} .pill .g{color:var(--good)} .pill .b{color:var(--bad)}
+  .board{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:18px;max-width:1200px;margin:0 auto 18px}
+  @media (max-width:900px){.board{grid-template-columns:1fr}}
+  .column{background:rgba(255,255,255,.6);backdrop-filter:saturate(140%) blur(6px);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+  .column h2{margin:0 0 8px;font-size:18px} .column p.hint{margin:0 0 12px;color:var(--muted);font-size:13px}
+  .list{display:grid;gap:10px}
+  .chip{user-select:none;padding:12px 14px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);cursor:grab;font-weight:700;display:flex;align-items:center;gap:10px}
+  .chip:active{cursor:grabbing}
+  .chip .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(124,108,255,.15)}
+  .drop{background:var(--card);border-radius:14px;padding:14px;min-height:74px;box-shadow:var(--shadow);border:2px dashed transparent;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start}
+  .drop .qmark{width:20px;height:20px;border-radius:50%;background:linear-gradient(90deg,var(--accent-2),var(--accent-3));color:#fff;font-weight:900;display:grid;place-items:center}
+  .drop.correct{border-color:rgba(46,155,84,.6)} .drop.wrongflash{animation:shake .35s linear;border-color:rgba(201,64,84,.7)}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+  .footer-note{text-align:center;color:var(--muted);font-size:12px;padding-bottom:20px}
+  .chip:focus,button:focus,.drop:focus{outline:3px solid rgba(124,108,255,.45);outline-offset:2px}
+  .mask{background:linear-gradient(90deg,#f9d9ff,#d9fff7); border-radius:6px; padding:0 6px; letter-spacing:.06em}
+</style>
+</head>
+<body>
+  <header>
+    <span class="badge">GCSE Digital Technology — Unit 1</span>
+    <h1>Definitions Match — Database Applications</h1>
+    <p class="sub">Drag each <strong>term</strong> to its <strong>definition</strong>. Key words in the definition are <span class="mask">hidden</span> to avoid giveaways. +1 / −1 scoring.</p>
+  </header>
+
+  <div class="toolbar" role="toolbar" aria-label="Game controls">
+    <button id="shuffleBtn">Shuffle terms</button>
+    <button id="resetBtn">Reset</button>
+    <button id="printBtn" class="primary">Print / Save Score</button>
+  </div>
+
+  <div class="scorebar" aria-live="polite">
+    <div class="pill">Score: <span id="score" class="s">0</span></div>
+    <div class="pill">Correct: <span id="correct" class="g">0</span></div>
+    <div class="pill">Wrong: <span id="wrong" class="b">0</span></div>
+  </div>
+
+  <main class="board" id="board">
+    <section class="column" aria-labelledby="termsTitle">
+      <h2 id="termsTitle">Terms</h2>
+      <p class="hint">Drag these onto the matching definition.</p>
+      <div class="list" id="terms"></div>
+    </section>
+
+    <section class="column" aria-labelledby="defsTitle">
+      <h2 id="defsTitle">Definitions</h2>
+      <p class="hint">Target words are masked (e.g. “table”, “record”, “field”).</p>
+      <div class="list" id="defs"></div>
+    </section>
+  </main>
+
+  <p class="footer-note">Keyboard: <kbd>Tab</kbd> to a term → <kbd>Enter</kbd> to pick up → Tab to a definition → <kbd>Enter</kbd> to drop.</p>
+  <canvas id="confetti" style="position:fixed; inset:0; pointer-events:none;"></canvas>
+
+<script>
+/* Canonical pairs (from your MS) */
+const PAIRS = [
+  { term: "Table", definition: "A table consists of a number of records." },
+  { term: "Record", definition: "A record is represented as a row in a table." },
+  { term: "Field", definition: "A field is part of a record that stores a single data item and is represented by a column." },
+  { term: "Key field / Primary key", definition: "A key field uniquely identifies one record." },
+  { term: "Query", definition: "A query searches and filters data in a database that satisfies the query criteria." },
+  { term: "Form", definition: "Forms are used to collect data to create a new record, modify an existing record or view records already stored in a table." },
+  { term: "Report", definition: "Reports are used to present results from queries in an effective manner. They can be customised, for example grouped or sorted." },
+  { term: "Macro", definition: "A macro is a small programme written to perform a repetitive task automatically." }
+];
+
+/* Mask any obvious occurrences of the term within the definition (incl. simple plurals) */
+function maskDefinition(def, term){
+  const words = term.toLowerCase().split(/[^a-z]+/).filter(w => w.length >= 3);
+  let masked = def;
+  words.forEach(w=>{
+    const re = new RegExp(`\\b${w}(s|es)?\\b`, 'gi'); // mask singular/plural
+    masked = masked.replace(re, '<span class="mask">______</span>');
+  });
+  return masked;
+}
+
+let score=0, correct=0, wrong=0, picked=null;
+const $ = s => document.querySelector(s);
+function shuffle(a){ const x=a.slice(); for(let i=x.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [x[i],x[j]]=[x[j],x[i]];} return x; }
+function updateScore(){ $('#score').textContent=score; $('#correct').textContent=correct; $('#wrong').textContent=wrong; if(correct===PAIRS.length) celebrate(); }
+
+function render(){
+  const termsHost=$('#terms'), defsHost=$('#defs'); termsHost.innerHTML=''; defsHost.innerHTML='';
+  shuffle(PAIRS).forEach(p=>{
+    const chip=document.createElement('div');
+    chip.className='chip'; chip.setAttribute('draggable','true'); chip.setAttribute('role','button'); chip.setAttribute('tabindex','0');
+    chip.dataset.id=p.term;
+    chip.innerHTML=`<span class="dot"></span><span>${p.term}</span>`;
+    addDragEvents(chip); addKeyboardDrag(chip);
+    termsHost.appendChild(chip);
+  });
+  shuffle(PAIRS).forEach(p=>{
+    const drop=document.createElement('div');
+    drop.className='drop'; drop.dataset.id=p.term; drop.setAttribute('tabindex','0');
+    drop.innerHTML=`<div class="qmark">?</div><div class="def">${maskDefinition(p.definition, p.term)}</div>`;
+    addDropEvents(drop); addKeyboardDrop(drop);
+    defsHost.appendChild(drop);
+  });
+  score=0; correct=0; wrong=0; updateScore();
+}
+
+/* Drag + Drop */
+function addDragEvents(el){
+  el.addEventListener('dragstart', e=>{
+    e.dataTransfer.setData('text/plain', el.dataset.id);
+    const crt=el.cloneNode(true); crt.style.position='absolute'; crt.style.top='-9999px'; document.body.appendChild(crt);
+    e.dataTransfer.setDragImage(crt,10,10); setTimeout(()=>document.body.removeChild(crt),0);
+  });
+}
+function addDropEvents(drop){
+  drop.addEventListener('dragover', e=>{ e.preventDefault(); drop.style.borderColor='rgba(124,108,255,.55)'; });
+  drop.addEventListener('dragleave', ()=> drop.style.borderColor='transparent');
+  drop.addEventListener('drop', e=>{ e.preventDefault(); drop.style.borderColor='transparent'; attemptPlace(e.dataTransfer.getData('text/plain'), drop); });
+}
+
+/* Keyboard pick & place */
+function addKeyboardDrag(el){
+  el.addEventListener('keydown', e=>{
+    if(e.key==='Enter' || e.key===' '){
+      e.preventDefault();
+      if(picked===el){ picked=null; el.style.outline=''; }
+      else{ if(picked) picked.style.outline=''; picked=el; el.style.outline='3px solid rgba(0,194,168,.6)'; }
+    }
+  });
+}
+function addKeyboardDrop(drop){
+  drop.addEventListener('keydown', e=>{
+    if((e.key==='Enter'||e.key===' ') && picked){
+      e.preventDefault(); attemptPlace(picked.dataset.id, drop); picked.style.outline=''; picked=null;
+    }
+  });
+}
+
+/* Placement logic */
+function attemptPlace(termId, drop){
+  const targetId=drop.dataset.id;
+  const chip=document.querySelector(`.chip[data-id="${CSS.escape(termId)}"]`);
+  if(!chip) return;
+  if(termId===targetId){
+    correct++; score++;
+    drop.classList.add('correct');
+    chip.setAttribute('draggable','false'); chip.style.cursor='default'; chip.style.opacity='.6'; chip.style.filter='grayscale(.2)'; chip.style.background='linear-gradient(90deg,#e9fff7,#f3fffb)';
+    drop.appendChild(chip);
+    updateScore();
+  }else{
+    wrong++; score--; drop.classList.add('wrongflash'); setTimeout(()=>drop.classList.remove('wrongflash'),400); updateScore();
+  }
+}
+
+/* Controls */
+document.getElementById('shuffleBtn').addEventListener('click', render);
+document.getElementById('resetBtn').addEventListener('click', render);
+document.getElementById('printBtn').addEventListener('click', ()=>window.print());
+
+/* Confetti */
+function celebrate(){
+  const canvas=document.getElementById('confetti'); const ctx=canvas.getContext('2d'); let W,H;
+  function resize(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; } resize(); addEventListener('resize',resize);
+  const pieces=Array.from({length:160}).map(()=>({x:Math.random()*W,y:-20-Math.random()*H,r:6+Math.random()*10,vx:-2+Math.random()*4,vy:2+Math.random()*3,col:Math.random()<.5?'#7c6cff':(Math.random()<.5?'#ff7ac8':'#00c2a8'),rot:Math.random()*360,vr:-6+Math.random()*12}));
+  let t=0,id;(function tick(){ t++; ctx.clearRect(0,0,W,H); pieces.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;if(p.y>H+30)p.y=-20,p.x=Math.random()*W;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.col;ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);ctx.restore();}); id=requestAnimationFrame(tick); if(t>240){cancelAnimationFrame(id); ctx.clearRect(0,0,W,H);} })();
+}
+
+/* Init */
+render();
+</script>
+</body>
+</html>
