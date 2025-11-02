@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Database Apps — Relationships & Criteria (Tabbed)</title>
+<style>
+:root{
+  --bg:#f5fffd; --card:#ffffff; --ink:#0f1c1b; --muted:#4a6b66;
+  --accent:#0fb9b1; --accent-2:#ff6f61; --accent-3:#ffd166;
+  --good:#248a6b; --bad:#c44536;
+  --shadow:0 10px 25px rgba(15,28,27,.12), 0 2px 6px rgba(15,28,27,.06);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:ui-sans-serif,-apple-system,Segoe UI,Roboto,Arial; color:var(--ink);
+  background:
+    radial-gradient(1200px 1200px at -10% -10%, #e7fff9 0%, transparent 40%),
+    radial-gradient(1200px 1200px at 110% 10%, #fff0ea 0%, transparent 40%),
+    radial-gradient(1200px 1200px at 50% 120%, #f0fff4 0%, transparent 40%),
+    var(--bg);
+}
+header{text-align:center;padding:24px 18px 8px}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;font-weight:700;box-shadow:var(--shadow);font-size:12px}
+h1{margin:10px 0 6px;font-size:clamp(22px,3vw,30px)}
+p.sub{margin:0;color:var(--muted)}
+.pillbar{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:8px 16px 20px}
+.pill{background:#fff;border-radius:999px;padding:8px 14px;font-weight:800;box-shadow:var(--shadow)}
+.pill .g{color:var(--good)} .pill .b{color:var(--bad)} .pill .s{color:var(--accent-2)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 18px 26px}
+
+/* Tabs */
+.tabs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.tab{padding:10px 14px;border-radius:999px;background:#fff;border:2px solid transparent;box-shadow:var(--shadow);font-weight:800;cursor:pointer}
+.tab.active{border-color:var(--accent);background:linear-gradient(90deg,#e9fffb,#fff)}
+.tab.locked{opacity:.4;pointer-events:none}
+.panel{display:none}
+.panel.active{display:block}
+
+/* Cards / grids */
+.card{background:rgba(255,255,255,.8);backdrop-filter:saturate(140%) blur(6px);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
+.columns{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:900px){.columns{grid-template-columns:1fr}}
+.rows{display:grid;gap:10px}
+
+/* Level 1 drag-sort */
+.dropzone{border:2px dashed rgba(15,185,177,.35);border-radius:14px;padding:12px;min-height:120px;display:grid;gap:10px}
+.dz-title{font-weight:800;color:var(--muted);margin-bottom:6px}
+.chip{user-select:none;padding:12px 14px;background:#fff;border-radius:14px;box-shadow:var(--shadow);cursor:grab;font-weight:700;display:flex;gap:10px;align-items:center}
+.chip .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(15,185,177,.15)}
+.dropzone.correct{border-color:rgba(36,138,107,.6)}
+.wrongflash{animation:shake .35s linear;border-color:rgba(196,69,54,.8)!important}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}
+
+/* Level 2 tables — clear separation */
+.pair{display:grid; gap:16px; padding:12px; border-radius:16px; background:#f3fbf9; border:1px solid #d9f1ee; box-shadow:var(--shadow);}
+.pair .tables{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+@media (max-width:900px){ .pair .tables{grid-template-columns:1fr;} }
+
+.tablecard{
+  border-radius:14px; overflow:hidden; border:1px solid #e7eef0; box-shadow:var(--shadow);
+  background:#fff;
+}
+.tablecard.pkcard .head{ background:linear-gradient(90deg,#e3fff6,#ffffff); }
+.tablecard.fkcard .head{ background:linear-gradient(90deg,#e7f2ff,#ffffff); }
+.tablecard .head{
+  padding:12px 14px; font-weight:900; letter-spacing:.2px; color:#0b3b37; border-bottom:1px solid #e7eef0;
+}
+.tablecard .sub{ display:block; color:#4a6b66; font-weight:700; opacity:.9; margin-top:2px; }
+.tablecard .stripe{ height:4px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); }
+
+table{width:100%; border-collapse:separate; border-spacing:0}
+th,td{background:#fff; padding:10px 12px; border-bottom:1px solid #edf2f4; font-size:15px}
+th{text-align:left; background:#f9fcfd;}
+tr:last-child td{border-bottom:none}
+
+/* Level 2 feedback callouts */
+.pair-status{ margin-top:6px; font-weight:800; border-radius:12px; padding:10px 12px; border:2px solid transparent; }
+.pair-status.ok{ background:#e8fbf2; border-color:#b7ead5; color:#0f6a51; }
+.pair-status.no{ background:#fff0f0; border-color:#efb6b6; color:#7a1f1c; }
+
+/* Level 3 inputs */
+.inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+input[type="text"], select{padding:10px 12px;border-radius:10px;border:2px solid #e1f5f3;outline:none;font-weight:700}
+input[type="text"]:focus, select:focus{border-color:#9eddd8}
+.ok{color:var(--good);font-weight:800} .no{color:var(--bad);font-weight:800}
+
+/* Confetti canvas */
+#confetti{position:fixed;inset:0;pointer-events:none}
+</style>
+</head>
+<body>
+<header>
+  <span class="badge">GCSE Digital Technology — Unit 1</span>
+  <h1>Relationships & Criteria — Levels</h1>
+  <p class="sub">Complete Level 1 → Level 2 → Level 3. Tabs unlock automatically. +1 for correct, −1 for incorrect.</p>
+</header>
+
+<div class="pillbar" aria-live="polite">
+  <div class="pill">Score: <span id="score" class="s">0</span></div>
+  <div class="pill">Correct: <span id="correct" class="g">0</span></div>
+  <div class="pill">Wrong: <span id="wrong" class="b">0</span></div>
+</div>
+
+<div class="wrap">
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-tab="l1">Level 1: Relationships</button>
+    <button class="tab locked" data-tab="l2">Level 2: Keys</button>
+    <button class="tab locked" data-tab="l3">Level 3: Criteria</button>
+  </div>
+
+  <!-- LEVEL 1 -->
+  <section id="l1" class="panel active">
+    <div class="card">
+      <p class="sub">Drag each scenario card into the correct relationship type. Finish all to unlock Level 2.</p>
+      <div class="columns">
+        <div class="card">
+          <div class="rows" id="l1-pile"></div>
+        </div>
+        <div class="rows">
+          <div class="dropzone" data-type="one-to-one"><div class="dz-title">One-to-one</div></div>
+          <div class="dropzone" data-type="one-to-many"><div class="dz-title">One-to-many</div></div>
+          <div class="dropzone" data-type="many-to-many"><div class="dz-title">Many-to-many (needs a link table)</div></div>
+        </div>
+      </div>
+      <div class="toolbar"><button id="l1-shuffle">Shuffle</button></div>
+    </div>
+  </section>
+
+  <!-- LEVEL 2 -->
+  <section id="l2" class="panel">
+    <div class="card">
+      <p class="sub">Tick the <strong>Primary Key</strong> in the left table, and the matching <strong>Foreign Key</strong> in the right table. When both pairs are correct, Level 3 unlocks.</p>
+
+      <div class="columns">
+        <!-- Pair 1 -->
+        <div class="pair" aria-label="Customers to Bookings">
+          <div class="tables">
+            <div class="tablecard pkcard" aria-label="Customers table">
+              <div class="head">Customers <span class="sub">Select the <strong>Primary Key</strong></span></div>
+              <div class="stripe"></div>
+              <table>
+                <tr><th>Field</th><th>Tick PK</th></tr>
+                <tr><td>CustomerID</td><td><input type="radio" name="c1pk" value="CustomerID"></td></tr>
+                <tr><td>Surname</td><td><input type="radio" name="c1pk" value="Surname"></td></tr>
+                <tr><td>FirstName</td><td><input type="radio" name="c1pk" value="FirstName"></td></tr>
+              </table>
+            </div>
+
+            <div class="tablecard fkcard" aria-label="Bookings table">
+              <div class="head">Bookings <span class="sub">Select the <strong>Foreign Key</strong></span></div>
+              <div class="stripe"></div>
+              <table>
+                <tr><th>Field</th><th>Tick FK</th></tr>
+                <tr><td>BookingID</td><td><input type="radio" name="c1fk" value="BookingID"></td></tr>
+                <tr><td>CustomerID</td><td><input type="radio" name="c1fk" value="CustomerID"></td></tr>
+                <tr><td>ActivityDate</td><td><input type="radio" name="c1fk" value="ActivityDate"></td></tr>
+              </table>
+            </div>
+          </div>
+          <div id="c1call" class="pair-status" hidden></div>
+        </div>
+
+        <!-- Pair 2 -->
+        <div class="pair" aria-label="Orders to OrderDetails">
+          <div class="tables">
+            <div class="tablecard pkcard" aria-label="Orders table">
+              <div class="head">Orders <span class="sub">Select the <strong>Primary Key</strong></span></div>
+              <div class="stripe"></div>
+              <table>
+                <tr><th>Field</th><th>Tick PK</th></tr>
+                <tr><td>OrderID</td><td><input type="radio" name="c2pk" value="OrderID"></td></tr>
+                <tr><td>OrderDate</td><td><input type="radio" name="c2pk" value="OrderDate"></td></tr>
+                <tr><td>CustomerID</td><td><input type="radio" name="c2pk" value="CustomerID"></td></tr>
+              </table>
+            </div>
+
+            <div class="tablecard fkcard" aria-label="OrderDetails table">
+              <div class="head">OrderDetails <span class="sub">Select the <strong>Foreign Key</strong></span></div>
+              <div class="stripe"></div>
+              <table>
+                <tr><th>Field</th><th>Tick FK</th></tr>
+                <tr><td>OrderDetailID</td><td><input type="radio" name="c2fk" value="OrderDetailID"></td></tr>
+                <tr><td>OrderID</td><td><input type="radio" name="c2fk" value="OrderID"></td></tr>
+                <tr><td>ProductID</td><td><input type="radio" name="c2fk" value="ProductID"></td></tr>
+              </table>
+            </div>
+          </div>
+          <div id="c2call" class="pair-status" hidden></div>
+        </div>
+      </div>
+
+      <div class="toolbar"><button id="l2-check" class="primary">Check Level 2</button></div>
+    </div>
+  </section>
+
+  <!-- LEVEL 3 -->
+  <section id="l3" class="panel">
+    <div class="card">
+      <p class="sub">Translate each scenario into a single <strong>criterion</strong> exactly like you’d type in a query. We’ll accept <em>spaces/no spaces</em>, <em>!= or &lt;&gt;</em>, dates with or without <code>#</code>, and any quote style. (Note: Microsoft Access uses <strong>&lt;&gt;</strong> for “not equal”.)</p>
+      <div id="l3-rows" class="rows"></div>
+      <div class="toolbar"><button id="l3-check" class="primary">Check Level 3</button></div>
+    </div>
+  </section>
+</div>
+
+<canvas id="confetti"></canvas>
+
+<script>
+/* ===== Global score & tabs ===== */
+let score=0, correct=0, wrong=0;
+const $=s=>document.querySelector(s);
+const $$=s=>document.querySelectorAll(s);
+function updateScore(){ $('#score').textContent=score; $('#correct').textContent=correct; $('#wrong').textContent=wrong; }
+function switchTab(id){
+  $$('.panel').forEach(p=>p.classList.remove('active'));
+  $$('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelector(`.tab[data-tab="${id}"]`).classList.add('active');
+}
+function unlockTab(id){ document.querySelector(`.tab[data-tab="${id}"]`).classList.remove('locked'); }
+$$('.tab').forEach(t=> t.addEventListener('click', ()=>{ if(!t.classList.contains('locked')) switchTab(t.dataset.tab); }));
+
+/* ===== Level 1 ===== */
+const l1Scenarios = [
+ {text:"Person — Passport", type:"one-to-one"},
+ {text:"Book — ISBN", type:"one-to-one"},
+ {text:"Country — CapitalCity", type:"one-to-one"},
+ {text:"Customer — Bookings", type:"one-to-many"},
+ {text:"Teacher — Classes", type:"one-to-many"},
+ {text:"Doctor — Patients", type:"one-to-many"},
+ {text:"Order — OrderDetails", type:"one-to-many"},
+ {text:"Student — Clubs", type:"many-to-many"},
+ {text:"Student — Subjects", type:"many-to-many"},
+ {text:"Product — Supplier (many suppliers supply many products)", type:"many-to-many"}
+];
+let l1Placed=0;
+function shuffle(a){ const x=a.slice(); for(let i=x.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [x[i],x[j]]=[x[j],x[i]];} return x; }
+function renderL1(){
+  l1Placed=0;
+  const pile = $('#l1-pile'); pile.innerHTML='';
+  shuffle(l1Scenarios).forEach(s=>{
+    const chip=document.createElement('div');
+    chip.className='chip'; chip.draggable=true; chip.dataset.type=s.type;
+    chip.innerHTML=`<span class="dot"></span><span>${s.text}</span>`;
+    chip.addEventListener('dragstart',e=>{
+      e.dataTransfer.setData('text/plain', JSON.stringify(s));
+      const crt=chip.cloneNode(true); crt.style.position='absolute'; crt.style.top='-9999px';
+      document.body.appendChild(crt); e.dataTransfer.setDragImage(crt,10,10); setTimeout(()=>document.body.removeChild(crt),0);
+    });
+    pile.appendChild(chip);
+  });
+  $$('.dropzone').forEach(zone=>{
+    zone.classList.remove('correct','wrongflash');
+    zone.addEventListener('dragover',e=>{ e.preventDefault(); zone.style.borderColor='rgba(15,185,177,.55)';});
+    zone.addEventListener('dragleave',()=> zone.style.borderColor='rgba(15,185,177,.35)');
+    zone.addEventListener('drop',e=>{
+      e.preventDefault(); zone.style.borderColor='rgba(15,185,177,.35)';
+      const data=JSON.parse(e.dataTransfer.getData('text/plain'));
+      const isCorrect = (data.type===zone.dataset.type);
+      if(isCorrect){
+        const chip=[...$('#l1-pile').children].find(c => c.textContent.includes(data.text));
+        if(chip){ chip.draggable=false; chip.style.opacity='.75'; zone.appendChild(chip); l1Placed++; correct++; score++; updateScore(); }
+        zone.classList.add('correct'); setTimeout(()=>zone.classList.remove('correct'),400);
+        if(l1Placed===l1Scenarios.length){ unlockTab('l2'); switchTab('l2'); }
+      }else{
+        wrong++; score--; updateScore();
+        zone.classList.add('wrongflash'); setTimeout(()=>zone.classList.remove('wrongflash'),400);
+      }
+    });
+  });
+}
+document.getElementById('l1-shuffle').addEventListener('click', renderL1);
+
+/* ===== Level 2 ===== */
+let l2Done=false;
+function showCallout(id, ok, msg){
+  const el = document.getElementById(id);
+  el.hidden = false;
+  el.className = 'pair-status ' + (ok ? 'ok' : 'no');
+  el.textContent = msg;
+}
+function checkL2(){
+  let allOk = true;
+  const c1pk = document.querySelector('input[name="c1pk"]:checked')?.value;
+  const c1fk = document.querySelector('input[name="c1fk"]:checked')?.value;
+  const c2pk = document.querySelector('input[name="c2pk"]:checked')?.value;
+  const c2fk = document.querySelector('input[name="c2fk"]:checked')?.value;
+
+  const ok1 = (c1pk==='CustomerID' && c1fk==='CustomerID');
+  if(ok1){ correct+=2; score+=2; showCallout('c1call', true, '✔ Customers → Bookings correct: PK = CustomerID; FK = CustomerID.'); }
+  else   { wrong+=2; score-=2; showCallout('c1call', false,'Fix: Customers PK should be CustomerID; in Bookings the FK should be CustomerID (referencing Customers.CustomerID).'); allOk=false; }
+
+  const ok2 = (c2pk==='OrderID' && c2fk==='OrderID');
+  if(ok2){ correct+=2; score+=2; showCallout('c2call', true, '✔ Orders → OrderDetails correct: PK = OrderID; FK = OrderID.'); }
+  else   { wrong+=2; score-=2; showCallout('c2call', false,'Fix: Orders PK should be OrderID; in OrderDetails the FK should be OrderID (referencing Orders.OrderID).'); allOk=false; }
+
+  updateScore();
+  if(allOk){ l2Done=true; unlockTab('l3'); switchTab('l3'); }
+}
+document.getElementById('l2-check').addEventListener('click', checkL2);
+
+/* ===== Level 3 (forgiving validator) ===== */
+const l3Data = [
+  { scenario:"Field Fee is less than 20", answer:"FEE<20" },
+  { scenario:"Field ActivityDate is between 06/04/2015 and 05/04/2016", answer:"ACTIVITYDATE BETWEEN 06/04/2015 AND 05/04/2016" },
+  { scenario:"Field Surname equals \"Turner\"", answer:"SURNAME=\"TURNER\"" },
+  { scenario:"Field HasPaid is not equal to True (Access uses <> for not equal)", answer:"HASPAID<>TRUE" },
+  { scenario:"Field BookingDate is on or after 01/01/2016", answer:"BOOKINGDATE>=01/01/2016" },
+  { scenario:"Field Age is greater than 15 and less than or equal to 18", answer:"AGE>15 AND AGE<=18" },
+  { scenario:"Field Activity is \"Archery\" or \"Karting\"", answer:"ACTIVITY=\"ARCHERY\" OR ACTIVITY=\"KARTING\"" }
+];
+function renderL3(){
+  const host = $('#l3-rows'); host.innerHTML='';
+  l3Data.forEach((q,i)=>{
+    const row = document.createElement('div');
+    row.className='card';
+    row.innerHTML = `
+      <div class="q">Scenario ${i+1}: ${q.scenario}</div>
+      <div class="inline" style="margin-top:8px">
+        <label for="crit${i}">Criterion:</label>
+        <input id="crit${i}" type="text" placeholder='e.g. Fee < 20' style="min-width:300px">
+        <button data-i="${i}" class="checkOne">Check</button>
+        <span id="res${i}" class="explain"></span>
+      </div>
+    `;
+    host.appendChild(row);
+  });
+
+  host.addEventListener('click', e=>{
+    if(e.target.classList.contains('checkOne')){
+      const i = +e.target.dataset.i;
+      const result = checkOneCriteria(i);
+      if(result){ correct++; score++; } else { wrong++; score--; }
+      updateScore();
+      const allOk = l3Data.every((_,idx)=> $('#res'+idx).dataset.ok === '1');
+      if(allOk){ celebrate(); }
+    }
+  });
+}
+function norm(s){
+  if(!s) return '';
+  return s
+    .replace(/“|”|’/g, c => ({'“':'"','”':'"','’':"'" }[c]))
+    .replace(/#/g,'')            // ignore # around dates
+    .replace(/\s+/g,'')          // ignore spaces entirely
+    .replace(/!=/g,'<>')         // allow != for not-equal
+    .toUpperCase();
+}
+function normDateParts(s){ return s.replace(/(\d{1,2})-(\d{1,2})-(\d{2,4})/g, '$1/$2/$3'); }
+function parseExpected(ans){ return norm(normDateParts(ans)); }
+function checkOneCriteria(i){
+  const input = $('#crit'+i).value;
+  const out = $('#res'+i);
+  const want = parseExpected(l3Data[i].answer);
+  const got  = norm(normDateParts(input));
+  const ok = (got === want);
+  if(ok){ out.dataset.ok='1'; out.innerHTML = `<span class="ok">Correct</span>`; }
+  else { out.dataset.ok='0'; out.innerHTML = `<span class="no">Not quite.</span> <span class="explain">Suggested answer: <code>${l3Data[i].answer.replace(/"/g,'&quot;')}</code></span>`; }
+  return ok;
+}
+
+/* ===== Confetti ===== */
+function celebrate(){
+  const canvas=document.getElementById('confetti'); const ctx=canvas.getContext('2d'); let W,H;
+  function resize(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; } resize(); addEventListener('resize',resize);
+  const pieces=Array.from({length:200}).map(()=>({x:Math.random()*W,y:-20-Math.random()*H,r:6+Math.random()*10,vx:-2+Math.random()*4,vy:2+Math.random()*3,col:Math.random()<.5?'#0fb9b1':(Math.random()<.5?'#ff6f61':'#ffd166'),rot:Math.random()*360,vr:-6+Math.random()*12}));
+  let t=0,id;(function tick(){ t++; ctx.clearRect(0,0,W,H);
+    pieces.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;if(p.y>H+30)p.y=-20,p.x=Math.random()*W;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.col;ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);ctx.restore();});
+    id=requestAnimationFrame(tick); if(t>260){cancelAnimationFrame(id); ctx.clearRect(0,0,W,H);} })();
+}
+
+/* ===== Init ===== */
+function init(){ renderL1(); renderL3(); updateScore(); }
+init();
+</script>
+</body>
+</html>

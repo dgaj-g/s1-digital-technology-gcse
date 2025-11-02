@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game 3: Past Paper Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        #quiz-container {
+            width: 90%;
+            max-width: 800px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        #quiz-header {
+            padding: 20px;
+            background: #004a99; /* CCEA-like blue */
+            color: white;
+        }
+        #quiz-header h1 {
+            margin: 0;
+            text-align: center;
+        }
+        #quiz-header h2 {
+            margin: 0;
+            text-align: center;
+            font-weight: normal;
+        }
+        #question-body {
+            padding: 30px;
+            min-height: 300px;
+        }
+        #question-text {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        /* NEW: Context Box Style */
+        #question-context-area {
+            margin-bottom: 20px;
+        }
+        .context-box {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .context-box p { margin: 0 0 10px 0; }
+        .context-box b { color: #004a99; }
+        .context-box u { text-decoration: underline; font-weight: bold; }
+        .context-box i { font-style: italic; }
+        .context-box code {
+            font-family: monospace;
+            background: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        #answer-area {
+            margin-bottom: 20px;
+        }
+        /* MCQ Styles */
+        .option-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            font-size: 1em;
+            background-color: #f1f1f1;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+        }
+        .option-button:hover { background-color: #e0e0e0; }
+        .option-button.selected { background-color: #cce7ff; border-color: #007bff; }
+        
+        /* Fill-in-blank Styles */
+        .fill-blank-input {
+            width: 95%;
+            padding: 10px;
+            font-size: 1em;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        /* Drag-Drop Styles */
+        #drag-drop-container { display: flex; justify-content: space-between; gap: 20px; }
+        .drag-bank { width: 35%; padding: 10px; background: #e6f2ff; border-radius: 8px; border: 2px dashed #007bff; }
+        .drag-item { background-color: #007bff; color: white; padding: 10px 15px; margin-bottom: 10px; border-radius: 5px; cursor: grab; font-weight: bold; text-align: center; }
+        .drop-targets { width: 60%; }
+        .drop-box { display: flex; align-items: center; margin-bottom: 10px; border: 2px solid #ccc; border-radius: 5px; background: #f9f9f9; }
+        .drop-zone { width: 150px; min-height: 40px; border-right: 2px dashed #ccc; padding: 5px; }
+        .drop-zone.hover { background-color: #e0ffe0; }
+        .drop-label { padding: 10px; flex: 1; }
+        
+        /* Feedback */
+        #feedback-panel { padding: 20px; border-top: 1px solid #eee; }
+        #feedback-text { font-size: 1.2em; font-weight: bold; display: none; }
+        #explanation-text { font-size: 1em; background-color: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-top: 10px; border-radius: 5px; display: none; }
+        
+        /* Navigation */
+        #nav-buttons { display: flex; justify-content: space-between; padding: 0 30px 30px 30px; }
+        #check-button, #next-button { padding: 12px 25px; font-size: 1em; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; }
+        #check-button { background-color: #28a745; color: white; }
+        #next-button { background-color: #007bff; color: white; display: none; }
+        
+        /* Final Screen */
+        #final-score { text-align: center; padding: 50px; }
+    </style>
+</head>
+<body>
+
+    <div id="quiz-container">
+        <div id="quiz-header">
+            <h1 id="main-title">Unit 1 Past Paper Quiz</h1>
+            <h2 id="question-number">Question 1</h2>
+        </div>
+
+        <div id="question-body">
+            <div id="question-text"></div>
+            <div id="question-context-area"></div>
+            <div id="answer-area"></div>
+        </div>
+
+        <div id="feedback-panel">
+            <div id="feedback-text"></div>
+            <div id="explanation-text"></div>
+        </div>
+
+        <div id="nav-buttons">
+            <div id="score-text">Score: 0</div>
+            <button id="check-button">Check Answer</button>
+            <button id="next-button">Next Question</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const allQuestions = [
+                {
+                    year: '2022', qNumber: '10(a)',
+                    type: 'drag-drop-match',
+                    questionText: 'Match each database tool with the correct task it is used for.',
+                    items: [
+                        { id: 'a1', text: 'Forms' },
+                        { id: 'a2', text: 'Reports' },
+                        { id: 'a3', text: 'Macros' }
+                    ],
+                    targets: [
+                        { id: 't1', label: 'Collect data about customers.', answer: 'a1' },
+                        { id: 't2', label: 'Print the results of processing.', answer: 'a2' },
+                        { id: 't3', label: 'Provide shortcuts for repetitive tasks.', answer: 'a3' }
+                    ],
+                    explanation: 'Forms are used to collect data. Reports are used to print and present results. Macros automate repetitive tasks.'
+                },
+                {
+                    year: '2019', qNumber: '3(a)',
+                    type: 'drag-drop-match',
+                    questionText: 'Match each database term to its definition.',
+                    items: [
+                        { id: 'a1', text: 'Table' },
+                        { id: 'a2', text: 'Record' },
+                        { id: 'a3', text: 'Field' },
+                        { id: 'a4', text: 'Key Field' }
+                    ],
+                    targets: [
+                        { id: 't1', label: 'A structure where data is organised in rows and columns.', answer: 'a1' },
+                        { id: 't2', label: 'A collection of data items related to an object or person (a row).', answer: 'a2' },
+                        { id: 't3', label: 'A single item of data about an object or person (a column).', answer: 'a3' },
+                        { id: 't4', label: 'Uniquely identifies a record.', answer: 'a4' }
+                    ],
+                    explanation: 'A Table holds all the data. A Record is one row. A Field is one column. A Key Field uniquely identifies a record.'
+                },
+                {
+                    year: '2020', qNumber: '2(a)',
+                    type: 'mcq',
+                    questionText: '(True or False): A relational database is made up of only one table.',
+                    options: ['True', 'False'],
+                    answer: 'False',
+                    explanation: 'A relational database is usually made up of two or more tables linked together.'
+                },
+                {
+                    year: '2020', qNumber: '2(a)',
+                    type: 'mcq',
+                    questionText: '(True or False): A table consists of one or more records.',
+                    options: ['True', 'False'],
+                    answer: 'True',
+                    explanation: 'A table is made up of rows, and each row is a record.'
+                },
+                {
+                    year: '2020', qNumber: '2(a)',
+                    type: 'mcq',
+                    questionText: '(True or False): A field contains multiple items of data about a person or thing.',
+                    options: ['True', 'False'],
+                    answer: 'False',
+                    explanation: 'A field contains a *single* item of data. A *record* contains multiple items.'
+                },
+                {
+                    year: '2020', qNumber: '2(a)',
+                    type: 'mcq',
+                    questionText: '(True or False): A key field uniquely identifies records in a table.',
+                    options: ['True', 'False'],
+                    answer: 'True',
+                    explanation: 'This is the definition of a primary key (or key field).'
+                },
+                {
+                    year: '2018', qNumber: '2(c)',
+                    type: 'mcq',
+                    // ADDED contextHTML
+                    contextHTML: '<div class="context-box"><p>Context: A database has a <b>Member</b> table and a <b>MemberNewsletter</b> table. The relationship diagram shows a "1" by the <b>Member</b> table and an "∞" (infinity symbol) by the <b>MemberNewsletter</b> table.</p></div>',
+                    questionText: 'What type of relationship exists between the `Member` table and the `MemberNewsletter` table?',
+                    options: ['One-to-One', 'One-to-Many', 'Many-to-Many'],
+                    answer: 'One-to-Many',
+                    explanation: 'The 1-to-∞ (infinity) symbol shows a One-to-Many relationship.'
+                },
+                {
+                    year: '2022', qNumber: '10(b)',
+                    type: 'dropdown-match',
+                    // ADDED contextHTML
+                    contextHTML: '<div class="context-box"><p>Context: Two tables are shown:</p><p><b>cust_TBL</b>: (<u>cust_ID</u>, <code>surname</code>, <code>first_name</code>, ...)</p><p><b>repair_TBL</b>: (<u>repair_ID</u>, <i>cust_ID</i>, <code>description</code>, <code>fee_payable</code>, <code>paid(Y/N)</code>)</p><p>(<u>Underline</u> = Primary Key, <i>Italics</i> = Foreign Key)</p></div>',
+                    questionText: 'Match each field from the tables to its description.',
+                    fields: [
+                        { label: 'An example of a key field in `cust_TBL`.', answer: 'cust_ID' },
+                        { label: 'An example of a field which stores data in currency format.', answer: 'fee_payable' },
+                        { label: 'An example of a field which stores data as a boolean value.', answer: 'paid(Y/N)' }
+                    ],
+                    options: ['cust_ID', 'surname', 'fee_payable', 'paid(Y/N)'],
+                    explanation: '`cust_ID` is the primary key. `fee_payable` stores money. `paid(Y/N)` is a Yes/No (boolean) field.'
+                },
+                {
+                    year: '2019', qNumber: '3(b)',
+                    type: 'dropdown-match',
+                    // ADDED contextHTML
+                    contextHTML: '<div class="context-box"><p>Context: A <b>MEMBERS</b> table contains these fields with example data:</p><ul><li><b>TITLE</b> (e.g., "Mr", "Miss", "Mrs")</li><li><b>DATEOFBIRTH</b> (e.g., 20/01/2003)</li><li><b>OVEREIGHTEEN</b> (a Yes/No checkbox)</li></ul></div>',
+                    questionText: 'Suggest the most appropriate data type for each field.',
+                    fields: [
+                        { label: 'TITLE (e.g., "Mr", "Miss")', answer: 'String' },
+                        { label: 'DATEOFBIRTH', answer: 'Date/Time' },
+                        { label: 'OVEREIGHTEEN (a checkbox)', answer: 'Boolean' }
+                    ],
+                    options: ['String', 'Boolean', 'Currency', 'Date/Time'],
+                    explanation: 'TITLE is text (String). DATEOFBIRTH is a date. OVEREIGHTEEN is a Yes/No (Boolean) checkbox.'
+                },
+                {
+                    year: '2020', qNumber: '2(d)',
+                    type: 'fill-blank',
+                    // ADDED contextHTML
+                    contextHTML: '<div class="context-box"><p>Context: A <b>tbICARS</b> table has a field named <b>Country</b>. A query on this table returned only records where the value in this field was "JAPAN".</p></div>',
+                    questionText: 'What criteria would be written in the `Country` field to produce this result?',
+                    answer: ['JAPAN', '"JAPAN"', "'JAPAN'", '=JAPAN', '="JAPAN"'],
+                    explanation: 'The criteria would be "JAPAN" (or =\"JAPAN\").'
+                },
+                {
+                    year: '2019', qNumber: '3(d)(i)',
+                    type: 'fill-blank',
+                    // ADDED contextHTML
+                    contextHTML: '<div class="context-box"><p>Context: A <b>LOAN</b> table has a Yes/No (boolean) checkbox field named <b>RETURNED</b>. A tick (✔) means it is returned (True), and a blank box (☐) means it is not returned (False).</p></div>',
+                    questionText: 'Write the criteria for a query to produce a list of all DVDs **not** returned.',
+                    answer: ['FALSE', '="FALSE"', 'NO', '="NO"', '0', '=0', 'N', '="N"'],
+                    explanation: 'The criteria would be False (or N, or 0) for the `RETURNED` checkbox field.'
+                },
+                {
+                    year: '2022', qNumber: '10(d)',
+                    type: 'dropdown-match',
+                    questionText: 'Name the type of validation check being used in each case.',
+                    fields: [
+                        { label: '`fee_payable` should be between 20 and 100.', answer: 'Range Check' },
+                        { label: '`description` should be no longer than 35 characters.', answer: 'Length Check' }
+                    ],
+                    options: ['Presence Check', 'Range Check', 'Length Check', 'Type Check'],
+                    explanation: '`Between 20 and 100` is a Range Check. `No longer than 35 characters` is a Length Check.'
+                },
+                {
+                    year: '2022', qNumber: '10(c)',
+                    type: 'fill-blank-group',
+                    questionText: 'Complete the sentences: Jack has stored his data in a special kind of text file called a (1)__________ file. He wants to bring data from the text file into his database table using the (2)__________ process. He can use a (3)__________ check to make sure no field is left blank.',
+                    answers: ['CSV', 'IMPORT', 'PRESENCE'],
+                    explanation: 'The file type is CSV (Comma Separated Value). The process is IMPORT. The validation is a PRESENCE check.'
+                }
+            ];
+
+            let currentQIndex = 0;
+            let score = 0;
+            let answerChecked = false;
+
+            const questionNumber = document.getElementById('question-number');
+            const questionText = document.getElementById('question-text');
+            const questionContextArea = document.getElementById('question-context-area');
+            const answerArea = document.getElementById('answer-area');
+            const scoreText = document.getElementById('score-text');
+            const checkButton = document.getElementById('check-button');
+            const nextButton = document.getElementById('next-button');
+            const feedbackText = document.getElementById('feedback-text');
+            const explanationText = document.getElementById('explanation-text');
+
+            function loadQuestion(index) {
+                answerChecked = false;
+                const q = allQuestions[index];
+                questionNumber.textContent = `Question ${index + 1} of ${allQuestions.length} (From ${q.year} paper, Q${q.qNumber})`;
+                questionText.textContent = q.questionText;
+                
+                // Clear old content
+                questionContextArea.innerHTML = '';
+                answerArea.innerHTML = '';
+                
+                feedbackText.style.display = 'none';
+                explanationText.style.display = 'none';
+                checkButton.style.display = 'block';
+                nextButton.style.display = 'none';
+
+                // Add new context if it exists
+                if (q.contextHTML) {
+                    questionContextArea.innerHTML = q.contextHTML;
+                }
+
+                if (q.type === 'mcq') {
+                    q.options.forEach(option => {
+                        const button = document.createElement('button');
+                        button.classList.add('option-button');
+                        button.textContent = option;
+                        button.addEventListener('click', () => {
+                            if (answerChecked) return;
+                            document.querySelectorAll('.option-button').forEach(btn => btn.classList.remove('selected'));
+                            button.classList.add('selected');
+                        });
+                        answerArea.appendChild(button);
+                    });
+                } 
+                else if (q.type === 'fill-blank') {
+                    answerArea.innerHTML = `<input type="text" class="fill-blank-input" placeholder="Type your answer here">`;
+                }
+                else if (q.type === 'fill-blank-group') {
+                    answerArea.innerHTML = `
+                        (1) <input type="text" class="fill-blank-input" style="width: 100px;">
+                        (2) <input type="text" class="fill-blank-input" style="width: 100px;">
+                        (3) <input type="text" class="fill-blank-input" style="width: 100px;">
+                    `;
+                }
+                else if (q.type === 'drag-drop-match') {
+                    const itemsHtml = q.items.map(item => `<div class="drag-item" draggable="true" data-id="${item.id}">${item.text}</div>`).join('');
+                    const targetsHtml = q.targets.map(target => `
+                        <div class="drop-box" data-answer="${target.answer}">
+                            <div class="drop-zone" data-target-id="${target.id}"></div>
+                            <div class="drop-label">${target.label}</div>
+                        </div>
+                    `).join('');
+                    
+                    answerArea.innerHTML = `
+                        <div id="drag-drop-container">
+                            <div class="drag-bank">${itemsHtml}</div>
+                            <div class="drop-targets">${targetsHtml}</div>
+                        </div>
+                    `;
+                    setupDragDrop();
+                }
+                else if (q.type === 'dropdown-match') {
+                    const fieldsHtml = q.fields.map((field, i) => `
+                        <div style="margin-bottom: 10px;">
+                            <label for="dd-${i}" style="display: block; font-weight: bold; margin-bottom: 5px;">${field.label}</label>
+                            <select id="dd-${i}" class="fill-blank-input" data-answer="${field.answer}">
+                                <option value="">Select...</option>
+                                ${q.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                            </select>
+                        </div>
+                    `).join('');
+                    answerArea.innerHTML = fieldsHtml;
+                }
+            }
+            
+            function checkAnswer() {
+                if (answerChecked) return;
+                answerChecked = true;
+
+                const q = allQuestions[currentQIndex];
+                let isCorrect = false;
+
+                if (q.type === 'mcq') {
+                    const selected = answerArea.querySelector('.option-button.selected');
+                    isCorrect = selected && selected.textContent === q.answer;
+                } 
+                else if (q.type === 'fill-blank') {
+                    const input = answerArea.querySelector('.fill-blank-input').value.trim().toUpperCase();
+                    const answers = q.answer.map(a => a.toUpperCase());
+                    isCorrect = answers.includes(input);
+                }
+                else if (q.type === 'fill-blank-group') {
+                    const inputs = answerArea.querySelectorAll('.fill-blank-input');
+                    isCorrect = inputs[0].value.trim().toUpperCase() === q.answers[0] &&
+                                inputs[1].value.trim().toUpperCase() === q.answers[1] &&
+                                inputs[2].value.trim().toUpperCase() === q.answers[2];
+                }
+                else if (q.type === 'drag-drop-match') {
+                    let correctCount = 0;
+                    const targets = answerArea.querySelectorAll('.drop-box');
+                    targets.forEach(target => {
+                        const zone = target.querySelector('.drop-zone');
+                        const item = zone.querySelector('.drag-item');
+                        if (item && item.dataset.id === target.dataset.answer) {
+                            correctCount++;
+                        }
+                    });
+                    isCorrect = correctCount === targets.length;
+                }
+                else if (q.type === 'dropdown-match') {
+                    let correctCount = 0;
+                    const selects = answerArea.querySelectorAll('select');
+                    selects.forEach(select => {
+                        if (select.value === select.dataset.answer) {
+                            correctCount++;
+                        }
+                    });
+                    isCorrect = correctCount === selects.length;
+                }
+
+                if (isCorrect) {
+                    score++;
+                    feedbackText.textContent = "Correct!";
+                    feedbackText.style.color = 'green';
+                } else {
+                    feedbackText.textContent = "Incorrect";
+                    feedbackText.style.color = 'red';
+                }
+
+                scoreText.textContent = `Score: ${score}`;
+                feedbackText.style.display = 'block';
+                explanationText.textContent = `Mark Scheme: ${q.explanation}`;
+                explanationText.style.display = 'block';
+                
+                checkButton.style.display = 'none';
+                nextButton.style.display = 'block';
+
+                if (currentQIndex === allQuestions.length - 1) {
+                    nextButton.textContent = "Finish Quiz";
+                }
+            }
+            
+            function nextQuestion() {
+                currentQIndex++;
+                if (currentQIndex < allQuestions.length) {
+                    loadQuestion(currentQIndex);
+                } else {
+                    showFinalScore();
+                }
+            }
+
+            function showFinalScore() {
+                document.getElementById('question-body').innerHTML = `
+                    <div id="final-score">
+                        <h1>Quiz Complete!</h1>
+                        <h2>Your final score is:</h2>
+                        <h1 style="font-size: 3em; color: #004a99;">${score} / ${allQuestions.length}</h1>
+                    </div>
+                `;
+                document.getElementById('feedback-panel').style.display = 'none';
+                document.getElementById('nav-buttons').style.display = 'none';
+                questionNumber.textContent = "Final Score";
+            }
+            
+            // --- Drag and Drop Logic ---
+            let draggedItem = null;
+            function setupDragDrop() {
+                const draggables = document.querySelectorAll('.drag-item');
+                const dropZones = document.querySelectorAll('.drop-zone');
+                const bank = document.querySelector('.drag-bank');
+
+                draggables.forEach(item => {
+                    item.addEventListener('dragstart', (e) => {
+                        if (answerChecked) return;
+                        draggedItem = e.target;
+                        setTimeout(() => e.target.style.opacity = '0.5', 0);
+                    });
+                    item.addEventListener('dragend', () => {
+                        if (draggedItem) draggedItem.style.opacity = '1';
+                        draggedItem = null;
+                    });
+                });
+
+                const allDropTargets = [bank, ...dropZones];
+                
+                allDropTargets.forEach(zone => {
+                    zone.addEventListener('dragover', (e) => {
+                        if (answerChecked) return;
+                        e.preventDefault();
+                        if (!zone.hasChildNodes() || zone.classList.contains('drag-bank')) {
+                            zone.classList.add('hover');
+                        }
+                    });
+                    zone.addEventListener('dragleave', () => {
+                        zone.classList.remove('hover');
+                    });
+                    zone.addEventListener('drop', (e) => {
+                        if (answerChecked) return;
+                        e.preventDefault();
+                        zone.classList.remove('hover');
+                        if ((!zone.hasChildNodes() || zone.classList.contains('drag-bank')) && draggedItem) {
+                            zone.appendChild(draggedItem);
+                        }
+                    });
+                });
+            }
+            // --- End Drag and Drop ---
+
+            checkButton.addEventListener('click', checkAnswer);
+            nextButton.addEventListener('click', nextQuestion);
+
+            loadQuestion(0);
+
+        });
+    </script>
+</body>
+</html>
