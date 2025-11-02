@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game 2: Database Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        #game-container {
+            width: 90%;
+            max-width: 800px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            min-height: 500px;
+        }
+        h1 {
+            text-align: center;
+            color: #4a148c;
+            border-bottom: 2px solid #4a148c;
+            padding-bottom: 10px;
+        }
+        #score-board {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4a148c;
+            margin-bottom: 20px;
+        }
+        #level-select-screen {
+            text-align: center;
+        }
+        .level-button {
+            display: block;
+            width: 60%;
+            margin: 15px auto;
+            padding: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background-color: #7b1fa2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .level-button:hover {
+            background-color: #4a148c;
+        }
+        .level-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #game-play-screen {
+            display: none; /* Hidden by default */
+        }
+        .question-text {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-button {
+            padding: 15px;
+            font-size: 1em;
+            background-color: #f1f1f1;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+        }
+        .option-button:hover {
+            background-color: #e0e0e0;
+        }
+        /* Drag and Drop Styles */
+        #drag-drop-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        #draggable-items {
+            width: 30%;
+            padding: 10px;
+            background: #e1f5fe;
+            border-radius: 5px;
+        }
+        .draggable {
+            background-color: #0288d1;
+            color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: grab;
+            text-align: center;
+        }
+        #drop-targets {
+            width: 65%;
+        }
+        .target-box {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .drop-zone {
+            width: 150px;
+            min-height: 40px;
+            border-right: 2px dashed #ccc;
+            padding: 5px;
+        }
+        .drop-zone.hover {
+            background-color: #e0ffe0;
+        }
+        .target-label {
+            padding: 10px;
+            font-weight: bold;
+        }
+        .draggable.dragging {
+            opacity: 0.5;
+        }
+        /* Fill Blank Styles */
+        .qbe-grid {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .qbe-grid th, .qbe-grid td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .qbe-grid th {
+            background-color: #f2f2f2;
+        }
+        .qbe-grid input {
+            width: 95%;
+            padding: 5px;
+            font-size: 1em;
+        }
+        /* Feedback */
+        #feedback-area {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+            height: 30px;
+        }
+        #next-level-button, #submit-button {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #next-level-button:hover, #submit-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>Database Application Challenge</h1>
+        <div id="score-board">Score: 0</div>
+
+        <div id="level-select-screen">
+            <button class="level-button" id="btn-level-1" data-level="1">Level 1: Data Types</button>
+            <button class="level-button" id="btn-level-2" data-level="2" disabled>Level 2: Relationships</button>
+            <button class="level-button" id="btn-level-3" data-level="3" disabled>Level 3: Simple Queries</button>
+            <button class="level-button" id="btn-level-4" data-level="4" disabled>Level 4: Complex Queries</button>
+            <button class="level-button" id="btn-level-5" data-level="5" disabled>Level 5: Validation</button>
+        </div>
+
+        <div id="game-play-screen">
+            <h2 id="level-title"></h2>
+            <div class="question-text" id="question-text"></div>
+            <div id="answer-area">
+                </div>
+            <div id="feedback-area"></div>
+            <button id="submit-button">Submit Answer</button>
+            <button id="next-level-button" style="display: none;">Next Level</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const levelSelectScreen = document.getElementById('level-select-screen');
+            const gamePlayScreen = document.getElementById('game-play-screen');
+            const scoreBoard = document.getElementById('score-board');
+            const levelTitle = document.getElementById('level-title');
+            const questionText = document.getElementById('question-text');
+            const answerArea = document.getElementById('answer-area');
+            const feedbackArea = document.getElementById('feedback-area');
+            const submitButton = document.getElementById('submit-button');
+            const nextLevelButton = document.getElementById('next-level-button');
+
+            let score = 0;
+            let currentLevel = 1;
+            let maxLevelUnlocked = 1;
+
+            const levels = {
+                1: {
+                    title: 'Level 1: Data Types',
+                    question: 'Drag the correct Data Type to its matching Field.',
+                    type: 'drag-drop',
+                    setup: () => {
+                        answerArea.innerHTML = `
+                            <div id="drag-drop-area">
+                                <div id="draggable-items">
+                                    <div class="draggable" draggable="true" data-value="Yes/No">Yes/No (Boolean)</div>
+                                    <div class="draggable" draggable="true" data-value="Text">Text</div>
+                                    <div class="draggable" draggable="true" data-value="Date/Time">Date/Time</div>
+                                    <div class="draggable" draggable="true" data-value="Currency">Currency</div>
+                                </div>
+                                <div id="drop-targets">
+                                    <div class="target-box" data-answer="Date/Time">
+                                        <div class="drop-zone"></div>
+                                        <div class="target-label">DateOfBirth</div>
+                                    </div>
+                                    <div class="target-box" data-answer="Yes/No">
+                                        <div class="drop-zone"></div>
+                                        <div class="target-label">LockerAllocated</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        setupDragDrop();
+                    },
+                    check: () => {
+                        const targets = document.querySelectorAll('.target-box');
+                        let correctCount = 0;
+                        targets.forEach(target => {
+                            const dropZone = target.querySelector('.drop-zone');
+                            const droppedItem = dropZone.querySelector('.draggable');
+                            if (droppedItem && droppedItem.dataset.value === target.dataset.answer) {
+                                correctCount++;
+                                target.style.backgroundColor = '#d4edda';
+                            } else {
+                                target.style.backgroundColor = '#f8d7da';
+                            }
+                        });
+                        return correctCount === targets.length;
+                    }
+                },
+                2: {
+                    title: 'Level 2: Relationships',
+                    question: 'What type of relationship exists between `tblStudent` and `tblStudentClub`?',
+                    type: 'mcq',
+                    options: ['One-to-One', 'One-to-Many', 'Many-to-Many'],
+                    answer: 'One-to-Many'
+                },
+                3: {
+                    title: 'Level 3: Simple Queries',
+                    question: 'A QBE grid is shown. What criteria would you type to find all "Off-Peak" members?',
+                    type: 'fill-blank',
+                    setup: () => {
+                        answerArea.innerHTML = `
+                            <table class="qbe-grid">
+                                <tr><th>Field:</th><td>MemberID</td><td>Surname</td><td>MembershipType</td></tr>
+                                <tr><th>Table:</th><td>tblMember</td><td>tblMember</td><td>tblMember</td></tr>
+                                <tr><th>Show:</th><td>&#9745;</td><td>&#9745;</td><td>&#9745;</td></tr>
+                                <tr><th>Criteria:</th><td></td><td></td><td><input type="text" id="criteria-input"></td></tr>
+                            </table>
+                        `;
+                    },
+                    check: () => {
+                        // **UPDATED CODE**
+                        const input = document.getElementById('criteria-input').value.trim().toUpperCase();
+                        const answers = ['"OFF-PEAK"', "='OFF-PEAK'", 'OFF-PEAK'];
+                        return answers.includes(input);
+                    }
+                },
+                4: {
+                    title: 'Level 4: Complex Queries',
+                    question: 'What criteria find all "Off-Peak" members AND have a locker allocated?',
+                    type: 'fill-blank',
+                    setup: () => {
+                        answerArea.innerHTML = `
+                            <table class="qbe-grid">
+                                <tr><th>Field:</th><td>MembershipType</td><td>LockerAllocated</td></tr>
+                                <tr><th>Table:</th><td>tblMember</td><td>tblMember</td></tr>
+                                <tr><th>Show:</th><td>&#9745;</td><td>&#9745;</td></tr>
+                                <tr><th>Criteria:</th>
+                                    <td><input type="text" id="criteria-1"></td>
+                                    <td><input type="text" id="criteria-2"></td>
+                                </tr>
+                            </table>
+                        `;
+                    },
+                    check: () => {
+                        // **UPDATED CODE**
+                        const input1 = document.getElementById('criteria-1').value.trim().toUpperCase();
+                        const input2 = document.getElementById('criteria-2').value.trim().toUpperCase();
+                        
+                        const answers1 = ['"OFF-PEAK"', "='OFF-PEAK'", 'OFF-PEAK'];
+                        const answers2 = ['YES', 'TRUE', '=-1']; // -1 is the numeric value for True/Yes in MS Access
+                        
+                        return answers1.includes(input1) && answers2.includes(input2);
+                    }
+                },
+                5: {
+                    title: 'Level 5: Validation',
+                    question: 'Drag the correct Validation Check to its description.',
+                    type: 'drag-drop',
+                    setup: () => {
+                        answerArea.innerHTML = `
+                            <div id="drag-drop-area">
+                                <div id="draggable-items">
+                                    <div class="draggable" draggable="true" data-value="Presence Check">Presence Check</div>
+                                    <div class="draggable" draggable="true" data-value="Range Check">Range Check</div>
+                                    <div class="draggable" draggable="true" data-value="Type Check">Type Check</div>
+                                </div>
+                                <div id="drop-targets">
+                                    <div class="target-box" data-answer="Presence Check">
+                                        <div class="drop-zone"></div>
+                                        <div class="target-label">Ensures a field is not left blank.</div>
+                                    </div>
+                                    <div class="target-box" data-answer="Range Check">
+                                        <div class="drop-zone"></div>
+                                        <div class="target-label">Ensures data is between an upper and lower limit.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        setupDragDrop();
+                    },
+                    check: () => {
+                        const targets = document.querySelectorAll('.target-box');
+                        let correctCount = 0;
+                        targets.forEach(target => {
+                            const dropZone = target.querySelector('.drop-zone');
+                            const droppedItem = dropZone.querySelector('.draggable');
+                            if (droppedItem && droppedItem.dataset.value === target.dataset.answer) {
+                                correctCount++;
+                                target.style.backgroundColor = '#d4edda';
+                            } else {
+                                target.style.backgroundColor = '#f8d7da';
+                            }
+                        });
+                        return correctCount === targets.length;
+                    }
+                }
+            };
+
+            function loadLevel(levelNum) {
+                currentLevel = levelNum;
+                const level = levels[currentLevel];
+
+                levelSelectScreen.style.display = 'none';
+                gamePlayScreen.style.display = 'block';
+                feedbackArea.textContent = '';
+                submitButton.style.display = 'block';
+                nextLevelButton.style.display = 'none';
+
+                levelTitle.textContent = level.title;
+                questionText.textContent = level.question;
+
+                if (level.type === 'mcq') {
+                    answerArea.innerHTML = '<div class="options-container"></div>';
+                    const optionsContainer = answerArea.querySelector('.options-container');
+                    level.options.forEach(option => {
+                        const button = document.createElement('button');
+                        button.classList.add('option-button');
+                        button.textContent = option;
+                        button.addEventListener('click', () => {
+                            // Clear previous selection
+                            document.querySelectorAll('.option-button').forEach(btn => btn.style.backgroundColor = '#f1f1f1');
+                            // Set new selection
+                            button.style.backgroundColor = '#b3e5fc'; // Selected color
+                            button.dataset.selected = 'true';
+                        });
+                        optionsContainer.appendChild(button);
+                    });
+                } else if (level.type === 'drag-drop' || level.type === 'fill-blank') {
+                    level.setup();
+                }
+            }
+
+            function checkAnswer() {
+                const level = levels[currentLevel];
+                let isCorrect = false;
+
+                if (level.type === 'mcq') {
+                    const selectedButton = document.querySelector('.option-button[data-selected="true"]');
+                    if (selectedButton && selectedButton.textContent === level.answer) {
+                        isCorrect = true;
+                    }
+                } else if (level.type === 'drag-drop' || level.type === 'fill-blank') {
+                    isCorrect = level.check();
+                }
+
+                if (isCorrect) {
+                    score += 10;
+                    feedbackArea.textContent = 'Correct! Well done!';
+                    feedbackArea.style.color = 'green';
+                    submitButton.style.display = 'none';
+                    
+                    if (currentLevel < 5) {
+                        nextLevelButton.style.display = 'block';
+                        if (currentLevel === maxLevelUnlocked) {
+                            maxLevelUnlocked++;
+                            document.getElementById(`btn-level-${maxLevelUnlocked}`).disabled = false;
+                        }
+                    } else {
+                        feedbackArea.textContent = 'Challenge Complete! Final Score: ' + score;
+                        nextLevelButton.textContent = 'Back to Menu';
+                        nextLevelButton.style.display = 'block';
+                    }
+                } else {
+                    score -= 5;
+                    feedbackArea.textContent = 'Incorrect. Try again.';
+                    feedbackArea.style.color = 'red';
+                }
+                updateScore();
+            }
+
+            function updateScore() {
+                scoreBoard.textContent = `Score: ${score}`;
+            }
+
+            // --- Drag and Drop Logic ---
+            let draggedItem = null;
+            function setupDragDrop() {
+                const draggables = document.querySelectorAll('.draggable');
+                const dropZones = document.querySelectorAll('.drop-zone');
+
+                draggables.forEach(draggable => {
+                    draggable.addEventListener('dragstart', (e) => {
+                        draggedItem = e.target;
+                        setTimeout(() => e.target.classList.add('dragging'), 0);
+                    });
+                    draggable.addEventListener('dragend', () => {
+                        if (draggedItem) draggedItem.classList.remove('dragging');
+                        draggedItem = null;
+    
+                    });
+                });
+
+                dropZones.forEach(zone => {
+                    zone.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        if (!zone.hasChildNodes()) {
+                            zone.classList.add('hover');
+                        }
+                    });
+                    zone.addEventListener('dragleave', () => {
+                        zone.classList.remove('hover');
+                    });
+                    zone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        zone.classList.remove('hover');
+                        if (!zone.hasChildNodes() && draggedItem) {
+                            // If the item is from another drop zone, move it back
+                            if (draggedItem.parentElement.classList.contains('drop-zone')) {
+                                document.getElementById('draggable-items').appendChild(draggedItem);
+                            }
+                            zone.appendChild(draggedItem);
+                        }
+                    });
+                });
+                
+                // Add a drop zone to the bank to allow returning items
+                const bank = document.getElementById('draggable-items');
+                bank.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    bank.classList.add('hover');
+                });
+                bank.addEventListener('dragleave', () => {
+                    bank.classList.remove('hover');
+                });
+                bank.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    bank.classList.remove('hover');
+                    if (draggedItem) {
+                        bank.appendChild(draggedItem);
+                    }
+                });
+            }
+            // --- End Drag and Drop ---
+
+            // --- Event Listeners ---
+            document.querySelectorAll('.level-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    loadLevel(parseInt(button.dataset.level));
+                });
+            });
+
+            submitButton.addEventListener('click', checkAnswer);
+
+            nextLevelButton.addEventListener('click', () => {
+                if (currentLevel < 5) {
+                    loadLevel(currentLevel + 1);
+                } else {
+                    // Back to menu
+                    gamePlayScreen.style.display = 'none';
+                    levelSelectScreen.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
