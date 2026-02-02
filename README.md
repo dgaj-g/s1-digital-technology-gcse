@@ -41,4 +41,4 @@ Update the activity slides in the presentation with your GitHub Pages URL:
 - Activity 2: `https://yourusername.github.io/network-activities/activity2.html`
 - etc.
 
-Or link to the main menu: `https://yourusername.github.io/network-activities/`
+Or link to the main menu: `https://yourusername.github.io/network-activities/` 
