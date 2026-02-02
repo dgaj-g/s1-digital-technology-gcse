@@ -13,7 +13,7 @@ Fun, engaging activities for CCEA GCSE Digital Technology - Network Technologies
 ## How to Use
 
 ### Option 1: Open Locally
-Simply open `index.html` in any web browser - all activities work offline!
+Simply open `index.html` in any web browser - all activities work offline! 
 
 ### Option 2: Host on GitHub Pages (Recommended for sharing with students)
 
