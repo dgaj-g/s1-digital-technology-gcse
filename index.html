@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Technologies - Interactive Activities</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2F3C7E 0%, #F96167 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.3em;
+            color: #F9E795;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #F9E795;
+            color: #2F3C7E;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .activities-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .activity-card {
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .activity-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+        }
+
+        .activity-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            flex-shrink: 0;
+        }
+
+        .activity-1 .activity-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .activity-2 .activity-icon { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        .activity-3 .activity-icon { background: linear-gradient(135deg, #0f0c29, #302b63); }
+        .activity-4 .activity-icon { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .activity-5 .activity-icon { background: linear-gradient(135deg, #00d9ff, #0099cc); }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-number {
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .activity-title {
+            font-size: 1.4em;
+            color: #2F3C7E;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .activity-description {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .activity-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .play-btn {
+            background: linear-gradient(135deg, #F96167, #F9E795);
+            color: #2F3C7E;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 0.95em;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .activity-card:hover .play-btn {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(249, 97, 103, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        .footer a {
+            color: #F9E795;
+        }
+
+        @media (max-width: 600px) {
+            .activity-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .activity-tags {
+                justify-content: center;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 Network Technologies</h1>
+            <p>Interactive Learning Activities</p>
+            <span class="badge">CCEA GCSE Digital Technology</span>
+        </div>
+
+        <div class="activities-grid">
+            <a href="activity1.html" class="activity-card activity-1">
+                <div class="activity-icon">🎮</div>
+                <div class="activity-content">
+                    <div class="activity-number">Activity 1</div>
+                    <div class="activity-title">LAN vs WAN Sorting Game</div>
+                    <div class="activity-description">
+                        Drag and drop examples into the correct network type. Race against the clock and build your streak!
+                    </div>
+                    <div class="activity-tags">
+                        <span class="tag">🖱️ Drag & Drop</span>
+                        <span class="tag">⏱️ Timed</span>
+                        <span class="tag">🔥 Streaks</span>
+                    </div>
+                </div>
+                <div class="play-btn">PLAY →</div>
+            </a>
+
+            <a href="activity2.html" class="activity-card activity-2">
+                <div class="activity-icon">🌐</div>
+                <div class="activity-content">
+                    <div class="activity-number">Activity 2</div>
+                    <div class="activity-title">Internet vs WWW vs IoT Challenge</div>
+                    <div class="activity-description">
+                        Test your knowledge of the Internet, World Wide Web, and Internet of Things. Choose the correct category for each statement!
+                    </div>
+                    <div class="activity-tags">
+                        <span class="tag">🎯 Quick Fire</span>
+                        <span class="tag">💡 Learn Facts</span>
+                        <span class="tag">⭐ Points</span>
+                    </div>
+                </div>
+                <div class="play-btn">PLAY →</div>
+            </a>
+
+            <a href="activity3.html" class="activity-card activity-3">
+                <div class="activity-icon">🚀</div>
+                <div class="activity-content">
+                    <div class="activity-number">Activity 3</div>
+                    <div class="activity-title">Communication Tech Rocket Race</div>
+                    <div class="activity-description">
+                        Launch your rocket to the finish line by answering questions about Wi-Fi, Bluetooth, Optical Fibre, and 4G/5G!
+                    </div>
+                    <div class="activity-tags">
+                        <span class="tag">🚀 Rocket Game</span>
+                        <span class="tag">📶 Tech Match</span>
+                        <span class="tag">🏆 Race</span>
+                    </div>
+                </div>
+                <div class="play-btn">PLAY →</div>
+            </a>
+
+            <a href="activity4.html" class="activity-card activity-4">
+                <div class="activity-icon">🔧</div>
+                <div class="activity-content">
+                    <div class="activity-number">Activity 4</div>
+                    <div class="activity-title">Network Hardware Builder</div>
+                    <div class="activity-description">
+                        Drag components to build networks and answer questions about NICs, switches, routers, and cables!
+                    </div>
+                    <div class="activity-tags">
+                        <span class="tag">🧩 Build</span>
+                        <span class="tag">⌨️ Type Answers</span>
+                        <span class="tag">📊 Levels</span>
+                    </div>
+                </div>
+                <div class="play-btn">PLAY →</div>
+            </a>
+
+            <a href="activity5.html" class="activity-card activity-5">
+                <div class="activity-icon">🏃‍♀️</div>
+                <div class="activity-content">
+                    <div class="activity-number">Activity 5</div>
+                    <div class="activity-title">Topology Maze Runner</div>
+                    <div class="activity-description">
+                        Navigate through Bus, Star, and Ring topologies by answering questions. Don't lose all your lives!
+                    </div>
+                    <div class="activity-tags">
+                        <span class="tag">🗺️ Maze</span>
+                        <span class="tag">❤️ Lives</span>
+                        <span class="tag">🏁 Checkpoints</span>
+                    </div>
+                </div>
+                <div class="play-btn">PLAY →</div>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>Created for GCSE Digital Technology • All activities work offline!</p>
+        </div>
+    </div>
+</body>
+</html>

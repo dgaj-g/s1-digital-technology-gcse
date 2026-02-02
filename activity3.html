@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 3: Communication Tech Rocket Race</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-wrapper {
+            display: flex;
+            height: 100vh;
+        }
+
+        .race-track {
+            width: 250px;
+            background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%);
+            border-right: 3px solid #0f3460;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .finish-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: repeating-linear-gradient(
+                90deg,
+                #fff 0px,
+                #fff 15px,
+                #000 15px,
+                #000 30px
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .rocket {
+            position: absolute;
+            font-size: 3em;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: bottom 0.5s ease;
+            filter: drop-shadow(0 0 20px rgba(255, 165, 0, 0.8));
+            z-index: 10;
+        }
+
+        .rocket.boosting {
+            animation: boost 0.3s ease;
+        }
+
+        @keyframes boost {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.3); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+
+        .rocket-trail {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 40px;
+            background: linear-gradient(transparent, #ff6b00, #ffff00);
+            border-radius: 0 0 50% 50%;
+            opacity: 0.8;
+            animation: flicker 0.1s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 0.8; height: 40px; }
+            50% { opacity: 0.6; height: 35px; }
+        }
+
+        .progress-markers {
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            height: 100%;
+        }
+
+        .marker {
+            position: absolute;
+            left: 0;
+            right: 0;
+            border-top: 2px dashed rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8em;
+            padding-left: 5px;
+        }
+
+        .question-panel {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #FFD700;
+            font-size: 1.8em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 15px;
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .question-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 25px;
+            padding: 30px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .q-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .tech-hint {
+            background: #f0f0f0;
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            flex: 1;
+        }
+
+        .option-btn {
+            padding: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: 3px solid #e0e0e0;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .option-icon {
+            font-size: 1.5em;
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-color: #27ae60;
+            color: white;
+            animation: correctPulse 0.5s ease;
+        }
+
+        .option-btn.incorrect {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-color: #c0392b;
+            color: white;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .feedback-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 15px;
+            border-left: 5px solid #667eea;
+            display: none;
+        }
+
+        .feedback-box.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .next-btn {
+            display: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .next-btn.show {
+            display: inline-block;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .result-card {
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0) rotate(-10deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        .result-card h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .trophy { font-size: 5em; margin: 20px 0; }
+        .final-score { font-size: 2em; color: #667eea; margin: 20px 0; }
+
+        .restart-btn {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .explosion {
+            position: fixed;
+            font-size: 4em;
+            pointer-events: none;
+            animation: explode 1s ease forwards;
+            z-index: 100;
+        }
+
+        @keyframes explode {
+            0% { opacity: 1; transform: scale(0.5); }
+            100% { opacity: 0; transform: scale(2); }
+        }
+
+        @media (max-width: 900px) {
+            .game-wrapper { flex-direction: column; }
+            .race-track { width: 100%; height: 150px; }
+            .rocket { transform: translateX(-50%) rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-wrapper">
+        <div class="race-track">
+            <div class="stars" id="stars"></div>
+            <div class="finish-line">🏁 FINISH</div>
+            <div class="progress-markers" id="markers"></div>
+            <div class="rocket" id="rocket">🚀</div>
+            <div class="rocket-trail" id="trail"></div>
+        </div>
+
+        <div class="question-panel">
+            <div class="header">
+                <h1>🚀 Communication Tech Rocket Race</h1>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="score">0</div>
+                        <div>Points</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="streak">0</div>
+                        <div>🔥 Streak</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-card" id="questionCard">
+                <div class="question-header">
+                    <span class="q-number" id="qNumber">Q1/10</span>
+                    <span class="tech-hint" id="techHint">Wi-Fi • Bluetooth • Fibre • 4G/5G</span>
+                </div>
+
+                <p class="question-text" id="questionText">Loading...</p>
+
+                <div class="options-grid" id="optionsGrid">
+                    <!-- Options will be inserted here -->
+                </div>
+
+                <div class="feedback-box" id="feedback"></div>
+                <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Launch Forward! 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="result-overlay" id="resultOverlay">
+        <div class="result-card">
+            <h2 id="resultTitle">Mission Complete!</h2>
+            <div class="trophy" id="trophy">🚀</div>
+            <div class="final-score" id="finalScore">0/10 Correct</div>
+            <p id="resultMessage">Great flying, astronaut!</p>
+            <button class="restart-btn" onclick="restartGame()">New Mission 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "You want to connect your wireless headphones to your phone. Which technology should you use?",
+                options: [
+                    { text: "Wi-Fi", icon: "📶", correct: false },
+                    { text: "Bluetooth", icon: "🔵", correct: true },
+                    { text: "Optical Fibre", icon: "💎", correct: false },
+                    { text: "5G", icon: "📱", correct: false }
+                ],
+                explanation: "Bluetooth is perfect for connecting two devices directly over short range (up to 10m) - ideal for headphones!"
+            },
+            {
+                question: "Your school has super-fast internet that uses thin glass strands to transmit data. What technology is this?",
+                options: [
+                    { text: "Wi-Fi", icon: "📶", correct: false },
+                    { text: "Copper cables", icon: "🔌", correct: false },
+                    { text: "Optical Fibre", icon: "💎", correct: true },
+                    { text: "Bluetooth", icon: "🔵", correct: false }
+                ],
+                explanation: "Optical fibre uses thin glass strands to transmit data as pulses of light - very fast and secure!"
+            },
+            {
+                question: "You're on the bus watching TikTok using your phone's data. What technology is this?",
+                options: [
+                    { text: "Wi-Fi", icon: "📶", correct: false },
+                    { text: "Bluetooth", icon: "🔵", correct: false },
+                    { text: "Optical Fibre", icon: "💎", correct: false },
+                    { text: "4G/5G Mobile", icon: "📱", correct: true }
+                ],
+                explanation: "4G/5G mobile technology allows you to access the internet anywhere using mobile data from cell towers!"
+            },
+            {
+                question: "At home, you connect your laptop to the internet without any cables. What are you using?",
+                options: [
+                    { text: "Wi-Fi", icon: "📶", correct: true },
+                    { text: "Bluetooth", icon: "🔵", correct: false },
+                    { text: "Optical Fibre", icon: "💎", correct: false },
+                    { text: "4G", icon: "📱", correct: false }
+                ],
+                explanation: "Wi-Fi uses radio waves from your router to connect devices wirelessly to the internet at home!"
+            },
+            {
+                question: "Which technology transmits data as pulses of light and cannot be interfered with?",
+                options: [
+                    { text: "Wi-Fi", icon: "📶", correct: false },
+                    { text: "Bluetooth", icon: "🔵", correct: false },
+                    { text: "Optical Fibre", icon: "💎", correct: true },
+                    { text: "Copper cables", icon: "🔌", correct: false }
+                ],
+                explanation: "Optical fibre is very secure because light signals cannot be interfered with like electrical signals can!"
+            },
+            {
+                question: "Your smartwatch syncs with your phone when they're close together. This uses...",
+                options: [
+                    { text: "Wi-Fi", icon: "📶", correct: false },
+                    { text: "Bluetooth", icon: "🔵", correct: true },
+                    { text: "5G", icon: "📱", correct: false },
+                    { text: "Ethernet", icon: "🔌", correct: false }
+                ],
+                explanation: "Bluetooth connects two devices that are 'paired' together - no router needed, just close proximity!"
+            },
+            {
+                question: "Which mobile technology is faster and more reliable than 4G?",
+                options: [
+                    { text: "3G", icon: "📱", correct: false },
+                    { text: "Wi-Fi", icon: "📶", correct: false },
+                    { text: "5G", icon: "🚀", correct: true },
+                    { text: "Bluetooth", icon: "🔵", correct: false }
+                ],
+                explanation: "5G is the newest mobile technology - faster and more reliable than 4G. You can even watch HD TV on your phone!"
+            },
+            {
+                question: "What is a DISADVANTAGE of Wi-Fi?",
+                options: [
+                    { text: "No cables needed", icon: "✅", correct: false },
+                    { text: "Signal weakens with distance/walls", icon: "📉", correct: true },
+                    { text: "Easy to connect", icon: "✅", correct: false },
+                    { text: "Works with many devices", icon: "✅", correct: false }
+                ],
+                explanation: "Wi-Fi signal strength depends on distance from the router and can be blocked by walls and interference."
+            },
+            {
+                question: "Optical fibre needs these to send data over very long distances:",
+                options: [
+                    { text: "Batteries", icon: "🔋", correct: false },
+                    { text: "Repeaters", icon: "🔄", correct: true },
+                    { text: "Bluetooth", icon: "🔵", correct: false },
+                    { text: "Nothing extra", icon: "✖️", correct: false }
+                ],
+                explanation: "Over very long distances, optical fibre needs repeaters to boost the light signal."
+            },
+            {
+                question: "Which technology requires devices to be 'paired' before they can communicate?",
+                options: [
+                    { text: "Wi-Fi", icon: "📶", correct: false },
+                    { text: "Bluetooth", icon: "🔵", correct: true },
+                    { text: "4G", icon: "📱", correct: false },
+                    { text: "Fibre", icon: "💎", correct: false }
+                ],
+                explanation: "Bluetooth devices must be 'paired' or 'synchronised' before they can transfer data between each other."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let streak = 0;
+        let answered = false;
+        let shuffledQuestions = [];
+
+        // Create stars background
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = (Math.random() * 3 + 1) + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Create progress markers
+        function createMarkers() {
+            const markersContainer = document.getElementById('markers');
+            for (let i = 1; i <= 10; i++) {
+                const marker = document.createElement('div');
+                marker.className = 'marker';
+                marker.style.bottom = (8 + (i * 8)) + '%';
+                marker.textContent = `Q${i}`;
+                markersContainer.appendChild(marker);
+            }
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function startGame() {
+            shuffledQuestions = shuffleArray(questions);
+            currentQuestion = 0;
+            score = 0;
+            streak = 0;
+            updateRocketPosition();
+            showQuestion();
+            updateDisplay();
+        }
+
+        function showQuestion() {
+            answered = false;
+            const q = shuffledQuestions[currentQuestion];
+
+            document.getElementById('qNumber').textContent = `Q${currentQuestion + 1}/10`;
+            document.getElementById('questionText').textContent = q.question;
+
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.innerHTML = '';
+
+            const shuffledOptions = shuffleArray(q.options);
+            shuffledOptions.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<span class="option-icon">${opt.icon}</span>${opt.text}`;
+                btn.onclick = () => checkAnswer(opt.correct, btn, q);
+                optionsGrid.appendChild(btn);
+            });
+
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('nextBtn').classList.remove('show');
+
+            // Animate card
+            const card = document.getElementById('questionCard');
+            card.style.animation = 'none';
+            card.offsetHeight;
+            card.style.animation = 'slideIn 0.5s ease';
+        }
+
+        function checkAnswer(isCorrect, btn, question) {
+            if (answered) return;
+            answered = true;
+
+            document.querySelectorAll('.option-btn').forEach(b => {
+                b.style.pointerEvents = 'none';
+            });
+
+            // Find and highlight correct answer
+            document.querySelectorAll('.option-btn').forEach(b => {
+                const optText = b.textContent;
+                const correctOpt = question.options.find(o => o.correct);
+                if (optText.includes(correctOpt.text)) {
+                    b.classList.add('correct');
+                }
+            });
+
+            if (isCorrect) {
+                streak++;
+                const points = 100 + (streak * 25);
+                score += points;
+
+                createExplosion('💥');
+                boostRocket();
+            } else {
+                btn.classList.add('incorrect');
+                streak = 0;
+                createExplosion('💨');
+            }
+
+            document.getElementById('feedback').innerHTML = `
+                <strong>${isCorrect ? '✅ Correct! +' + (100 + (streak-1) * 25) + ' points!' : '❌ Not quite!'}</strong><br>
+                ${question.explanation}
+            `;
+            document.getElementById('feedback').classList.add('show');
+            document.getElementById('nextBtn').classList.add('show');
+
+            updateDisplay();
+            updateRocketPosition();
+        }
+
+        function boostRocket() {
+            const rocket = document.getElementById('rocket');
+            rocket.classList.add('boosting');
+            setTimeout(() => rocket.classList.remove('boosting'), 300);
+        }
+
+        function updateRocketPosition() {
+            const rocket = document.getElementById('rocket');
+            const trail = document.getElementById('trail');
+
+            // Calculate position (start at bottom, move up)
+            const progress = (currentQuestion + (answered ? 1 : 0)) / 10;
+            const bottomPos = 5 + (progress * 75); // 5% to 80%
+
+            rocket.style.bottom = bottomPos + '%';
+            trail.style.bottom = (bottomPos - 5) + '%';
+        }
+
+        function createExplosion(emoji) {
+            const rocket = document.getElementById('rocket');
+            const rect = rocket.getBoundingClientRect();
+
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            explosion.textContent = emoji;
+            explosion.style.left = rect.left + 'px';
+            explosion.style.top = rect.top + 'px';
+            document.body.appendChild(explosion);
+
+            setTimeout(() => explosion.remove(), 1000);
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+
+            if (currentQuestion >= 10) {
+                showResults();
+            } else {
+                showQuestion();
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+        }
+
+        function showResults() {
+            let title, trophy, message;
+
+            const correct = Math.round(score / 100); // Rough estimate
+
+            if (score >= 1000) {
+                title = '🏆 MISSION COMPLETE!';
+                trophy = '🚀🌟🏆';
+                message = "You're a Communication Tech EXPERT!";
+            } else if (score >= 700) {
+                title = '🎉 Great Mission!';
+                trophy = '🚀⭐';
+                message = "Excellent work, astronaut!";
+            } else if (score >= 400) {
+                title = '👍 Good Flight!';
+                trophy = '🚀';
+                message = "Keep practicing to reach the stars!";
+            } else {
+                title = '💪 Keep Trying!';
+                trophy = '🛸';
+                message = "Review the technologies and try again!";
+            }
+
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('trophy').textContent = trophy;
+            document.getElementById('finalScore').textContent = `${score} Points`;
+            document.getElementById('resultMessage').textContent = message;
+            document.getElementById('resultOverlay').style.display = 'flex';
+        }
+
+        function restartGame() {
+            document.getElementById('resultOverlay').style.display = 'none';
+            startGame();
+        }
+
+        // Initialize
+        createStars();
+        createMarkers();
+        startGame();
+    </script>
+</body>
+</html>

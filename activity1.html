@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 1: LAN vs WAN Sorting Game</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #f0e6ff;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .score-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+        }
+
+        .score, .timer, .streak {
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .streak {
+            color: #FFD700;
+        }
+
+        .game-area {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone {
+            flex: 1;
+            min-height: 300px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            border: 4px dashed transparent;
+        }
+
+        .drop-zone.lan { border-color: #3498db; }
+        .drop-zone.wan { border-color: #e74c3c; }
+
+        .drop-zone.drag-over {
+            transform: scale(1.02);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .drop-zone h2 {
+            text-align: center;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            color: white;
+            font-size: 1.5em;
+        }
+
+        .drop-zone.lan h2 { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .drop-zone.wan h2 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+
+        .drop-zone p {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .dropped-items {
+            min-height: 150px;
+        }
+
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            min-height: 120px;
+        }
+
+        .card {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            cursor: grab;
+            font-weight: bold;
+            font-size: 1em;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            user-select: none;
+            border: 3px solid #ddd;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) rotate(2deg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .card.dragging {
+            opacity: 0.5;
+            transform: scale(1.1);
+        }
+
+        .card.correct {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border-color: #27ae60;
+            animation: correctPulse 0.5s ease;
+        }
+
+        .card.incorrect {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border-color: #c0392b;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            animation: fall 3s linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .result-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .result-card {
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .result-card h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .final-score {
+            font-size: 4em;
+            font-weight: bold;
+            color: #2ecc71;
+            margin: 20px 0;
+        }
+
+        .stars {
+            font-size: 3em;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .instructions {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .power-up {
+            position: fixed;
+            padding: 10px 20px;
+            background: #FFD700;
+            color: #333;
+            font-weight: bold;
+            border-radius: 10px;
+            animation: floatUp 1s ease forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-50px); }
+        }
+
+        @media (max-width: 768px) {
+            .game-area { flex-direction: column; }
+            h1 { font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎮 LAN vs WAN Sorting Game</h1>
+        <p class="subtitle">Drag each example to the correct network type!</p>
+
+        <div class="score-bar">
+            <span class="score">Score: <span id="score">0</span></span>
+            <span class="streak">🔥 Streak: <span id="streak">0</span></span>
+            <span class="timer">⏱️ <span id="timer">60</span>s</span>
+        </div>
+
+        <div class="instructions">
+            <strong>🎯 Goal:</strong> Sort all the examples before time runs out! Get bonus points for streaks!
+        </div>
+
+        <div class="game-area">
+            <div class="drop-zone lan" id="lanZone" data-type="lan">
+                <h2>🏠 LAN</h2>
+                <p>Local Area Network - Small area (one building)</p>
+                <div class="dropped-items" id="lanItems"></div>
+            </div>
+            <div class="drop-zone wan" id="wanZone" data-type="wan">
+                <h2>🌍 WAN</h2>
+                <p>Wide Area Network - Large area (global)</p>
+                <div class="dropped-items" id="wanItems"></div>
+            </div>
+        </div>
+
+        <div class="cards-container" id="cardsContainer"></div>
+    </div>
+
+    <div class="result-screen" id="resultScreen">
+        <div class="result-card">
+            <h2 id="resultTitle">Amazing!</h2>
+            <div class="final-score" id="finalScore">0/10</div>
+            <div class="stars" id="stars">⭐⭐⭐</div>
+            <p id="resultMessage">You're a network expert!</p>
+            <button class="btn btn-primary" onclick="restartGame()">Play Again 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        const items = [
+            { text: "Your school's computer lab", answer: "lan", emoji: "🏫" },
+            { text: "Computers in a library", answer: "lan", emoji: "📚" },
+            { text: "Home Wi-Fi network", answer: "lan", emoji: "🏠" },
+            { text: "Office network in one building", answer: "lan", emoji: "🏢" },
+            { text: "Gaming café computers", answer: "lan", emoji: "🎮" },
+            { text: "The Internet", answer: "wan", emoji: "🌐" },
+            { text: "Netflix streaming worldwide", answer: "wan", emoji: "📺" },
+            { text: "WhatsApp messages to another country", answer: "wan", emoji: "💬" },
+            { text: "Bank with branches across UK", answer: "wan", emoji: "🏦" },
+            { text: "Instagram connecting users globally", answer: "wan", emoji: "📸" },
+            { text: "Spotify streaming music globally", answer: "wan", emoji: "🎵" },
+            { text: "Your bedroom connected to family router", answer: "lan", emoji: "🛏️" }
+        ];
+
+        let score = 0;
+        let streak = 0;
+        let timeLeft = 60;
+        let gameActive = true;
+        let timerInterval;
+        let currentItems = [];
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function createCards() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+            currentItems = shuffleArray(items);
+
+            currentItems.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.draggable = true;
+                card.textContent = `${item.emoji} ${item.text}`;
+                card.dataset.answer = item.answer;
+                card.dataset.index = index;
+
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+
+                // Touch support
+                card.addEventListener('touchstart', handleTouchStart);
+                card.addEventListener('touchmove', handleTouchMove);
+                card.addEventListener('touchend', handleTouchEnd);
+
+                container.appendChild(card);
+            });
+        }
+
+        function handleDragStart(e) {
+            if (!gameActive) return;
+            e.target.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', e.target.dataset.index);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        let touchCard = null;
+        let touchClone = null;
+
+        function handleTouchStart(e) {
+            if (!gameActive) return;
+            touchCard = e.target;
+            touchCard.classList.add('dragging');
+        }
+
+        function handleTouchMove(e) {
+            if (!touchCard) return;
+            e.preventDefault();
+        }
+
+        function handleTouchEnd(e) {
+            if (!touchCard) return;
+            const touch = e.changedTouches[0];
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            dropZones.forEach(zone => {
+                const rect = zone.getBoundingClientRect();
+                if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                    touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+                    handleDrop({ target: zone, preventDefault: () => {} }, touchCard);
+                }
+            });
+
+            touchCard.classList.remove('dragging');
+            touchCard = null;
+        }
+
+        document.querySelectorAll('.drop-zone').forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('drag-over');
+            });
+
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+            });
+
+            zone.addEventListener('drop', handleDrop);
+        });
+
+        function handleDrop(e, touchedCard = null) {
+            e.preventDefault();
+            if (!gameActive) return;
+
+            const zone = e.target.closest('.drop-zone');
+            if (!zone) return;
+
+            zone.classList.remove('drag-over');
+
+            let card;
+            if (touchedCard) {
+                card = touchedCard;
+            } else {
+                const index = e.dataTransfer.getData('text/plain');
+                card = document.querySelector(`.card[data-index="${index}"]`);
+            }
+
+            if (!card) return;
+
+            const userAnswer = zone.dataset.type;
+            const correctAnswer = card.dataset.answer;
+
+            if (userAnswer === correctAnswer) {
+                // Correct!
+                card.classList.add('correct');
+                score += 10 + (streak * 5);
+                streak++;
+
+                showPowerUp(e.clientX || 400, e.clientY || 300, `+${10 + ((streak-1) * 5)} points!`);
+
+                if (streak >= 3) {
+                    createConfetti();
+                }
+
+                setTimeout(() => {
+                    zone.querySelector('.dropped-items').appendChild(card);
+                    card.draggable = false;
+                    card.style.cursor = 'default';
+                    checkWin();
+                }, 300);
+            } else {
+                // Incorrect
+                card.classList.add('incorrect');
+                streak = 0;
+                score = Math.max(0, score - 5);
+
+                setTimeout(() => {
+                    card.classList.remove('incorrect');
+                }, 500);
+            }
+
+            updateDisplay();
+        }
+
+        function showPowerUp(x, y, text) {
+            const powerUp = document.createElement('div');
+            powerUp.className = 'power-up';
+            powerUp.textContent = text;
+            powerUp.style.left = x + 'px';
+            powerUp.style.top = y + 'px';
+            document.body.appendChild(powerUp);
+
+            setTimeout(() => powerUp.remove(), 1000);
+        }
+
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#FFD700'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(confetti);
+
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+            document.getElementById('timer').textContent = timeLeft;
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function checkWin() {
+            const remainingCards = document.querySelectorAll('.cards-container .card');
+            if (remainingCards.length === 0) {
+                endGame(true);
+            }
+        }
+
+        function endGame(won = false) {
+            gameActive = false;
+            clearInterval(timerInterval);
+
+            const total = items.length;
+            const correct = document.querySelectorAll('.dropped-items .card.correct').length;
+
+            let stars = '';
+            let title = '';
+            let message = '';
+
+            if (correct === total && won) {
+                stars = '⭐⭐⭐';
+                title = '🎉 PERFECT!';
+                message = `You sorted all ${total} correctly! You're a network genius!`;
+                createConfetti();
+            } else if (correct >= total * 0.7) {
+                stars = '⭐⭐';
+                title = '👏 Great Job!';
+                message = `${correct}/${total} correct! Almost there!`;
+            } else {
+                stars = '⭐';
+                title = '💪 Keep Trying!';
+                message = `${correct}/${total} correct. Practice makes perfect!`;
+            }
+
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('finalScore').textContent = score + ' points';
+            document.getElementById('stars').textContent = stars;
+            document.getElementById('resultMessage').textContent = message;
+            document.getElementById('resultScreen').style.display = 'flex';
+        }
+
+        function restartGame() {
+            score = 0;
+            streak = 0;
+            timeLeft = 60;
+            gameActive = true;
+
+            document.getElementById('lanItems').innerHTML = '';
+            document.getElementById('wanItems').innerHTML = '';
+            document.getElementById('resultScreen').style.display = 'none';
+
+            createCards();
+            updateDisplay();
+            startTimer();
+        }
+
+        // Initialize game
+        createCards();
+        updateDisplay();
+        startTimer();
+    </script>
+</body>
+</html>

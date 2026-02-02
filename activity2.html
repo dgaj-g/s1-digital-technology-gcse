@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 2: Internet vs WWW vs IoT Challenge</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle { text-align: center; color: #e0ffe0; margin-bottom: 20px; }
+
+        .progress-container {
+            background: rgba(255,255,255,0.2);
+            border-radius: 50px;
+            height: 30px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            border-radius: 50px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255,255,255,0.95);
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-item .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #11998e;
+        }
+
+        .score-item .label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .answer-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .answer-btn {
+            padding: 25px 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: 3px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-color: #11998e;
+        }
+
+        .answer-btn.internet { background: linear-gradient(135deg, #667eea20, #764ba220); }
+        .answer-btn.www { background: linear-gradient(135deg, #f9316520, #f8400020); }
+        .answer-btn.iot { background: linear-gradient(135deg, #11998e20, #38ef7d20); }
+
+        .answer-btn.selected {
+            transform: scale(1.05);
+        }
+
+        .answer-btn.correct {
+            background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+            border-color: #27ae60 !important;
+            color: white;
+            animation: pulse 0.5s ease;
+        }
+
+        .answer-btn.incorrect {
+            background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+            border-color: #c0392b !important;
+            color: white;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .emoji-icon {
+            font-size: 2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .explanation {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border-left: 5px solid #11998e;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .next-btn {
+            display: none;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .next-btn.show {
+            display: block;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(17, 153, 142, 0.4);
+        }
+
+        .mascot {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 4em;
+            animation: bounce 1s ease infinite;
+            z-index: 100;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .mascot.happy { animation: spin 0.5s ease; }
+        .mascot.sad { animation: shake 0.5s ease; }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .result-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .result-card {
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 500px;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        .result-card h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .final-score { font-size: 4em; color: #11998e; margin: 20px 0; }
+        .stars { font-size: 3em; margin: 20px 0; }
+
+        .btn-restart {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .key-card {
+            background: rgba(255,255,255,0.9);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .key-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 10px;
+        }
+
+        .key-item.internet-key { background: #667eea30; }
+        .key-item.www-key { background: #f9316530; }
+        .key-item.iot-key { background: #11998e30; }
+
+        .floating-emoji {
+            position: fixed;
+            font-size: 2em;
+            pointer-events: none;
+            animation: floatAway 2s ease forwards;
+            z-index: 50;
+        }
+
+        @keyframes floatAway {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-100px) scale(1.5); }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🌐 Internet vs WWW vs IoT</h1>
+        <p class="subtitle">Test your knowledge - click the correct category!</p>
+
+        <div class="key-card">
+            <div class="key-item internet-key">🔌 <strong>Internet</strong> = The Network</div>
+            <div class="key-item www-key">🕸️ <strong>WWW</strong> = Web Application</div>
+            <div class="key-item iot-key">📱 <strong>IoT</strong> = Smart Devices</div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar" style="width: 0%">0/10</div>
+        </div>
+
+        <div class="score-display">
+            <div class="score-item">
+                <div class="number" id="correct">0</div>
+                <div class="label">✅ Correct</div>
+            </div>
+            <div class="score-item">
+                <div class="number" id="streak">0</div>
+                <div class="label">🔥 Streak</div>
+            </div>
+            <div class="score-item">
+                <div class="number" id="points">0</div>
+                <div class="label">⭐ Points</div>
+            </div>
+        </div>
+
+        <div class="question-card" id="questionCard">
+            <div class="question-number" id="questionNumber">Question 1/10</div>
+            <p class="question-text" id="questionText">Loading question...</p>
+
+            <div class="answer-buttons">
+                <button class="answer-btn internet" onclick="checkAnswer('internet')">
+                    <span class="emoji-icon">🔌</span>
+                    Internet
+                </button>
+                <button class="answer-btn www" onclick="checkAnswer('www')">
+                    <span class="emoji-icon">🕸️</span>
+                    WWW
+                </button>
+                <button class="answer-btn iot" onclick="checkAnswer('iot')">
+                    <span class="emoji-icon">📱</span>
+                    IoT
+                </button>
+            </div>
+
+            <div class="explanation" id="explanation"></div>
+            <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+        </div>
+
+        <div class="mascot" id="mascot">🤖</div>
+    </div>
+
+    <div class="result-screen" id="resultScreen">
+        <div class="result-card">
+            <h2 id="resultTitle">Amazing!</h2>
+            <div class="final-score" id="finalScore">0/10</div>
+            <div class="stars" id="stars">⭐⭐⭐</div>
+            <p id="resultMessage">You really know your stuff!</p>
+            <button class="btn-restart" onclick="restartGame()">Play Again 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "This is the global infrastructure that connects millions of computers worldwide using cables and wireless connections.",
+                answer: "internet",
+                explanation: "The Internet is the physical network infrastructure - the cables, routers, and connections that link computers globally."
+            },
+            {
+                question: "You use HTTP/HTTPS protocols to access web pages through this system.",
+                answer: "www",
+                explanation: "The World Wide Web (WWW) is an application that runs ON the Internet. It uses HTTP/HTTPS to transfer web pages."
+            },
+            {
+                question: "Your smart watch that tracks your steps and syncs data to your phone is an example of this.",
+                answer: "iot",
+                explanation: "IoT (Internet of Things) refers to smart devices connected to the internet that can send and receive data - like fitness trackers!"
+            },
+            {
+                question: "A URL like www.bbc.co.uk is used to navigate this system.",
+                answer: "www",
+                explanation: "URLs (Uniform Resource Locators) are web addresses used to find pages on the World Wide Web."
+            },
+            {
+                question: "This is a WAN (Wide Area Network) that spans the entire globe.",
+                answer: "internet",
+                explanation: "The Internet IS a WAN - the largest Wide Area Network in the world, connecting computers across all countries."
+            },
+            {
+                question: "Amazon Alexa and Google Home are examples of this technology.",
+                answer: "iot",
+                explanation: "Smart speakers like Alexa are IoT devices - they connect to the internet to receive commands and provide information."
+            },
+            {
+                question: "Web pages are written in HTML and connected by hyperlinks in this system.",
+                answer: "www",
+                explanation: "The WWW consists of web pages created with HTML, linked together using hyperlinks to form websites."
+            },
+            {
+                question: "A smart fridge that orders milk when you're running low uses this technology.",
+                answer: "iot",
+                explanation: "A smart fridge is an IoT device - it's a physical device connected to the internet that can perform actions automatically."
+            },
+            {
+                question: "Without this, you couldn't send emails, stream videos, or browse websites.",
+                answer: "internet",
+                explanation: "The Internet is the foundation - without it, there would be no way for data to travel between computers worldwide."
+            },
+            {
+                question: "Tim Berners-Lee invented this in 1989 at CERN.",
+                answer: "www",
+                explanation: "Tim Berners-Lee invented the World Wide Web in 1989. Remember: the Internet existed BEFORE the WWW was invented!"
+            },
+            {
+                question: "A smart doorbell that shows video on your phone when someone rings is an example of this.",
+                answer: "iot",
+                explanation: "Smart doorbells are IoT devices - they're connected to the internet and can send video to your smartphone."
+            },
+            {
+                question: "Your school's intranet is a private version of this system.",
+                answer: "www",
+                explanation: "An intranet uses the same technology as the WWW but is private - only accessible within an organisation."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let correctAnswers = 0;
+        let streak = 0;
+        let points = 0;
+        let shuffledQuestions = [];
+        let answered = false;
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function startGame() {
+            shuffledQuestions = shuffleArray(questions).slice(0, 10);
+            currentQuestion = 0;
+            correctAnswers = 0;
+            streak = 0;
+            points = 0;
+            updateDisplay();
+            showQuestion();
+        }
+
+        function showQuestion() {
+            answered = false;
+            const q = shuffledQuestions[currentQuestion];
+
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1}/10`;
+            document.getElementById('questionText').textContent = q.question;
+
+            // Reset buttons
+            document.querySelectorAll('.answer-btn').forEach(btn => {
+                btn.classList.remove('correct', 'incorrect', 'selected');
+                btn.disabled = false;
+            });
+
+            document.getElementById('explanation').classList.remove('show');
+            document.getElementById('nextBtn').classList.remove('show');
+
+            // Animate question card
+            const card = document.getElementById('questionCard');
+            card.style.animation = 'none';
+            card.offsetHeight; // Trigger reflow
+            card.style.animation = 'slideIn 0.5s ease';
+        }
+
+        function checkAnswer(answer) {
+            if (answered) return;
+            answered = true;
+
+            const q = shuffledQuestions[currentQuestion];
+            const isCorrect = answer === q.answer;
+
+            // Disable all buttons
+            document.querySelectorAll('.answer-btn').forEach(btn => {
+                btn.disabled = true;
+                if (btn.classList.contains(q.answer)) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            const selectedBtn = document.querySelector(`.answer-btn.${answer}`);
+            selectedBtn.classList.add('selected');
+
+            if (isCorrect) {
+                correctAnswers++;
+                streak++;
+                const pointsEarned = 100 + (streak * 25);
+                points += pointsEarned;
+
+                createFloatingEmoji('✅', selectedBtn);
+                changeMascot('happy', '🎉');
+
+                if (streak >= 3) {
+                    createMultipleFloatingEmoji(['🔥', '💯', '⭐']);
+                }
+            } else {
+                selectedBtn.classList.add('incorrect');
+                streak = 0;
+
+                createFloatingEmoji('❌', selectedBtn);
+                changeMascot('sad', '😅');
+            }
+
+            // Show explanation
+            document.getElementById('explanation').innerHTML = `
+                <strong>${isCorrect ? '✅ Correct!' : '❌ Not quite!'}</strong><br><br>
+                ${q.explanation}
+            `;
+            document.getElementById('explanation').classList.add('show');
+            document.getElementById('nextBtn').classList.add('show');
+
+            updateDisplay();
+        }
+
+        function changeMascot(mood, emoji) {
+            const mascot = document.getElementById('mascot');
+            mascot.textContent = emoji;
+            mascot.className = 'mascot ' + mood;
+
+            setTimeout(() => {
+                mascot.textContent = '🤖';
+                mascot.className = 'mascot';
+            }, 1000);
+        }
+
+        function createFloatingEmoji(emoji, element) {
+            const rect = element.getBoundingClientRect();
+            const float = document.createElement('div');
+            float.className = 'floating-emoji';
+            float.textContent = emoji;
+            float.style.left = (rect.left + rect.width / 2) + 'px';
+            float.style.top = rect.top + 'px';
+            document.body.appendChild(float);
+
+            setTimeout(() => float.remove(), 2000);
+        }
+
+        function createMultipleFloatingEmoji(emojis) {
+            emojis.forEach((emoji, i) => {
+                setTimeout(() => {
+                    const float = document.createElement('div');
+                    float.className = 'floating-emoji';
+                    float.textContent = emoji;
+                    float.style.left = (Math.random() * 80 + 10) + 'vw';
+                    float.style.top = (Math.random() * 50 + 20) + 'vh';
+                    document.body.appendChild(float);
+
+                    setTimeout(() => float.remove(), 2000);
+                }, i * 200);
+            });
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+
+            if (currentQuestion >= 10) {
+                showResults();
+            } else {
+                showQuestion();
+            }
+
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            document.getElementById('correct').textContent = correctAnswers;
+            document.getElementById('streak').textContent = streak;
+            document.getElementById('points').textContent = points;
+
+            const progress = ((currentQuestion + (answered ? 1 : 0)) / 10) * 100;
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = `${currentQuestion + (answered ? 1 : 0)}/10`;
+        }
+
+        function showResults() {
+            let title, message, stars;
+
+            if (correctAnswers === 10) {
+                title = '🏆 PERFECT SCORE!';
+                stars = '⭐⭐⭐';
+                message = "Incredible! You're a network technology expert!";
+                createMultipleFloatingEmoji(['🎉', '🎊', '🏆', '💯', '🌟']);
+            } else if (correctAnswers >= 8) {
+                title = '🎉 Excellent!';
+                stars = '⭐⭐⭐';
+                message = "Amazing work! You really understand the difference!";
+            } else if (correctAnswers >= 6) {
+                title = '👍 Good Job!';
+                stars = '⭐⭐';
+                message = "Well done! Keep practising to improve!";
+            } else if (correctAnswers >= 4) {
+                title = '📚 Keep Learning!';
+                stars = '⭐';
+                message = "Review the notes and try again!";
+            } else {
+                title = '💪 Don\'t Give Up!';
+                stars = '';
+                message = "Re-read the topic and try again. You've got this!";
+            }
+
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('finalScore').textContent = `${correctAnswers}/10`;
+            document.getElementById('stars').textContent = stars;
+            document.getElementById('resultMessage').textContent = message + ` (${points} points)`;
+            document.getElementById('resultScreen').style.display = 'flex';
+        }
+
+        function restartGame() {
+            document.getElementById('resultScreen').style.display = 'none';
+            startGame();
+        }
+
+        // Start the game
+        startGame();
+    </script>
+</body>
+</html>

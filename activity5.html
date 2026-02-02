@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 5: Topology Maze Runner</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .menu-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            z-index: 100;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-top: 60px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #00d9ff;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #00d9ff;
+        }
+
+        .main-area {
+            display: flex;
+            gap: 20px;
+        }
+
+        /* TOPOLOGY VISUALIZER */
+        .topology-panel {
+            width: 400px;
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .topology-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #0f3460;
+            margin-bottom: 10px;
+        }
+
+        .visualizer {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            background: #f0f4f8;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        /* Topology Elements */
+        .node {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            border: 2px solid #0f3460;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            font-size: 1.2em;
+        }
+
+        .node.center {
+            background: #00d9ff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+        }
+
+        .cable {
+            position: absolute;
+            background: #0f3460;
+            height: 3px;
+            transform-origin: 0 50%;
+            z-index: 1;
+        }
+
+        .packet {
+            position: absolute;
+            font-size: 1.5em;
+            z-index: 10;
+            transition: all 0.5s ease-in-out;
+        }
+
+        /* QUESTION PANEL */
+        .question-panel {
+            flex: 1;
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            color: #0f3460;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .option-btn {
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1em;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .option-btn:hover {
+            border-color: #00d9ff;
+            background: #f0f9ff;
+        }
+
+        .option-btn.correct { background: #d5f5e3; border-color: #2ecc71; }
+        .option-btn.incorrect { background: #fadbd8; border-color: #e74c3c; }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+            border-left: 5px solid #00d9ff;
+        }
+        .feedback.show { display: block; }
+
+        .next-btn {
+            margin-top: 15px;
+            padding: 12px;
+            background: #00d9ff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+        }
+
+        /* RESULTS */
+        .result-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .result-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        .restart-btn {
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: #00d9ff;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 800px) {
+            .main-area { flex-direction: column; }
+            .topology-panel { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="menu-btn">⬅ Menu</a>
+
+    <div class="game-container">
+        <h1>🏃‍♀️ Topology Maze Runner</h1>
+
+        <div class="game-header">
+            <div>Score: <span id="score" class="stat-value">0</span></div>
+            <div>Level: <span id="levelDisplay" class="stat-value">Bus Topology</span></div>
+            <div>Lives: <span id="lives" class="stat-value">❤️❤️❤️</span></div>
+        </div>
+
+        <div class="main-area">
+            <div class="topology-panel">
+                <div class="topology-name" id="topologyTitle">Bus Topology</div>
+                <div class="visualizer" id="visualizer">
+                    <div class="packet" id="player">🏃‍♀️</div>
+                </div>
+            </div>
+
+            <div class="question-panel">
+                <div id="quizContent">
+                    <p class="question-text" id="qText">Loading...</p>
+                    <div id="optionsContainer"></div>
+                    <div class="feedback" id="feedback"></div>
+                    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Checkpoint ➡️</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="result-overlay" id="resultOverlay">
+        <div class="result-card">
+            <h2>Maze Completed!</h2>
+            <div style="font-size: 4em; margin: 20px;">🏆</div>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <button class="restart-btn" onclick="restartGame()">Run Again 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        const topologies = [
+            {
+                id: 'bus',
+                name: 'Bus Topology',
+                draw: drawBus,
+                questions: [
+                    { q: "In a Bus topology, what are the devices at the ends of the cable called?", options: ["Stoppers", "Terminators", "Blockers", "Endpoints"], correct: 1, expl: "Terminators are placed at each end of the backbone cable to absorb signals and prevent data bounce." },
+                    { q: "What is a major disadvantage of the Bus topology?", options: ["Expensive to set up", "Data collisions occur frequently", "Requires a central switch", "Hard to install"], correct: 1, expl: "Because all data travels on one shared cable, data collisions occur frequently as traffic increases." },
+                    { q: "If the main backbone cable breaks, what happens?", options: ["Only one PC fails", "The network runs slower", "The whole network fails", "Reroutes via wireless"], correct: 2, expl: "A break in the main backbone cable stops all communication effectively bringing the whole network down." }
+                ]
+            },
+            {
+                id: 'star',
+                name: 'Star Topology',
+                draw: drawStar,
+                questions: [
+                    { q: "In a Star topology, all workstations connect to a central...", options: ["Server", "Terminator", "Switch or Hub", "Bus cable"], correct: 2, expl: "All devices connect individually to a central node, usually a Switch or a Hub." },
+                    { q: "What is the main advantage of a Star network if a cable breaks?", options: ["Whole network fails", "Only that one workstation is affected", "It fixes itself", "Data moves faster"], correct: 1, expl: "If one cable fails, only the device attached to that cable is affected. The rest of the network continues to work." },
+                    { q: "Which topology is the most common in modern schools and offices?", options: ["Ring", "Bus", "Star", "Mesh"], correct: 2, expl: "Star is the most common because it is reliable and easy to add new computers." }
+                ]
+            },
+            {
+                id: 'ring',
+                name: 'Ring Topology',
+                draw: drawRing,
+                questions: [
+                    { q: "In a Ring topology, data travels in...", options: ["One direction", "Two directions", "Random directions", "Directly to destination"], correct: 0, expl: "Data travels in ONE direction around the ring, passing through each computer until it reaches the destination." },
+                    { q: "What is a disadvantage of the Ring topology?", options: ["Data collisions", "If main cable breaks, network fails", "Requires a switch", "Too expensive"], correct: 1, expl: "Like the Bus, if the cable breaks anywhere in the ring, the loop is broken and the whole network fails." },
+                    { q: "How many neighbours does each computer connect to?", options: ["One", "Two", "All of them", "None"], correct: 1, expl: "Each computer is connected to exactly two other computers: the one before it and the one after it." }
+                ]
+            }
+        ];
+
+        let currentTopoIndex = 0;
+        let currentQIndex = 0;
+        let score = 0;
+        let lives = 3;
+
+        function drawLine(container, x1, y1, x2, y2) {
+            const length = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+            const angle = Math.atan2(y2-y1, x2-x1) * 180 / Math.PI;
+            const line = document.createElement('div');
+            line.className = 'cable';
+            line.style.width = length + 'px';
+            line.style.left = x1 + 'px';
+            line.style.top = y1 + 'px';
+            line.style.transform = `rotate(${angle}deg)`;
+            container.appendChild(line);
+        }
+
+        function createNode(container, x, y, icon, isCenter=false) {
+            const node = document.createElement('div');
+            node.className = isCenter ? 'node center' : 'node';
+            node.style.left = (x - (isCenter?25:20)) + 'px';
+            node.style.top = (y - (isCenter?25:20)) + 'px';
+            node.innerHTML = icon;
+            container.appendChild(node);
+        }
+
+        function drawBus() {
+            const v = document.getElementById('visualizer');
+            // Backbone - Shortened to fit (40 to 320 instead of 360)
+            drawLine(v, 40, 150, 320, 150);
+            
+            // Nodes - Adjusted positions to fit new length
+            const positions = [90, 150, 210, 270];
+            positions.forEach(x => {
+                drawLine(v, x, 150, x, 100);
+                createNode(v, x, 100, '💻');
+            });
+            
+            // Terminators - Moved inside visible area
+            createNode(v, 40, 150, 'T');
+            createNode(v, 320, 150, 'T');
+        }
+
+        function drawStar() {
+            const v = document.getElementById('visualizer');
+            const cx = 200, cy = 150;
+            // Center
+            createNode(v, cx, cy, '🔀', true);
+            // Spokes
+            const points = [
+                {x: 200, y: 50}, {x: 300, y: 150}, {x: 200, y: 250}, {x: 100, y: 150}
+            ];
+            points.forEach(p => {
+                drawLine(v, cx, cy, p.x, p.y);
+                createNode(v, p.x, p.y, '💻');
+            });
+        }
+
+        function drawRing() {
+            const v = document.getElementById('visualizer');
+            const points = [
+                {x: 200, y: 50}, {x: 300, y: 150}, {x: 200, y: 250}, {x: 100, y: 150}
+            ];
+            // Draw ring
+            for(let i=0; i<points.length; i++) {
+                const p1 = points[i];
+                const p2 = points[(i+1)%points.length];
+                drawLine(v, p1.x, p1.y, p2.x, p2.y);
+                createNode(v, p1.x, p1.y, '💻');
+            }
+        }
+
+        function updatePlayerPos() {
+            const player = document.getElementById('player');
+            const topo = topologies[currentTopoIndex];
+            
+            if(topo.id === 'bus') {
+                // Move along the backbone (Adjusted for new node positions)
+                const x = 90 + (currentQIndex * 60);
+                player.style.left = x + 'px';
+                player.style.top = '140px';
+            } else if(topo.id === 'star') {
+                // Move Center -> Node logic
+                if(currentQIndex === 0) { player.style.left = '190px'; player.style.top = '120px'; } // Center
+                if(currentQIndex === 1) { player.style.left = '190px'; player.style.top = '40px'; } // Top Node
+                if(currentQIndex === 2) { player.style.left = '290px'; player.style.top = '140px'; } // Right Node
+            } else if(topo.id === 'ring') {
+                // Move around circle
+                const points = [{x: 190, y: 40}, {x: 290, y: 140}, {x: 190, y: 240}];
+                player.style.left = points[currentQIndex].x + 'px';
+                player.style.top = points[currentQIndex].y + 'px';
+            }
+        }
+
+        function loadQuestion() {
+            const topo = topologies[currentTopoIndex];
+            const q = topo.questions[currentQIndex];
+            
+            document.getElementById('topologyTitle').textContent = topo.name;
+            document.getElementById('levelDisplay').textContent = topo.name;
+            
+            // Clear visualizer but keep player
+            const player = document.getElementById('player');
+            document.getElementById('visualizer').innerHTML = '';
+            document.getElementById('visualizer').appendChild(player);
+            topo.draw();
+            updatePlayerPos();
+
+            document.getElementById('qText').textContent = q.q;
+            const optCont = document.getElementById('optionsContainer');
+            optCont.innerHTML = '';
+            
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(i, btn);
+                optCont.appendChild(btn);
+            });
+
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('nextBtn').style.display = 'none';
+        }
+
+        function checkAnswer(selectedIndex, btn) {
+            const q = topologies[currentTopoIndex].questions[currentQIndex];
+            const isCorrect = selectedIndex === q.correct;
+            
+            // Disable all buttons
+            document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+
+            if(isCorrect) {
+                btn.classList.add('correct');
+                score += 100;
+                document.getElementById('score').textContent = score;
+            } else {
+                btn.classList.add('incorrect');
+                lives--;
+                document.getElementById('lives').textContent = "❤️".repeat(lives);
+                if(lives === 0) {
+                    alert("Game Over! Try again.");
+                    location.reload(); 
+                    return;
+                }
+            }
+
+            const fb = document.getElementById('feedback');
+            fb.innerHTML = `<strong>${isCorrect?'Correct!':'Incorrect'}</strong><br>${q.expl}`;
+            fb.classList.add('show');
+            document.getElementById('nextBtn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQIndex++;
+            if(currentQIndex >= 3) {
+                currentQIndex = 0;
+                currentTopoIndex++;
+                if(currentTopoIndex >= topologies.length) {
+                    document.getElementById('finalScore').textContent = score;
+                    document.getElementById('resultOverlay').style.display = 'flex';
+                    return;
+                }
+            }
+            loadQuestion();
+        }
+
+        function restartGame() {
+            location.reload();
+        }
+
+        // Start
+        loadQuestion();
+    </script>
+</body>
+</html>

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 4: Network Technician</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .menu-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.25);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .menu-btn:hover { background: rgba(255,255,255,0.4); transform: translateY(-2px); }
+
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+            margin-top: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #f5576c;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .game-layout {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start; /* Aligns top of toolbox and workspace */
+        }
+
+        /* TOOLBOX SIDEBAR */
+        .toolbox {
+            width: 250px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid #eee;
+            flex-shrink: 0; /* Prevents toolbox from squishing */
+        }
+
+        .toolbox h3 {
+            color: #f5576c;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .tool-btn {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+            color: #555;
+            font-size: 1em;
+        }
+
+        .tool-btn:hover {
+            border-color: #f5576c;
+            transform: translateX(5px);
+            background: #fff0f3;
+        }
+
+        .tool-btn.selected {
+            background: #f5576c;
+            color: white;
+            border-color: #f5576c;
+        }
+
+        .tool-icon { font-size: 1.5em; }
+
+        /* WORKSPACE (Text + Diagram) */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .header-area {
+            background: #fff;
+            padding: 15px;
+            border-radius: 15px;
+            border-left: 5px solid #f5576c;
+        }
+
+        .diagram-area {
+            position: relative;
+            min-height: 400px;
+            background: #fff;
+            border-radius: 20px;
+            border: 3px dashed #ddd;
+            overflow: hidden;
+        }
+
+        .level-badge {
+            background: #f5576c;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .scenario-text {
+            font-size: 1.1em;
+            line-height: 1.5;
+            color: #444;
+        }
+
+        /* Network Nodes & Lines */
+        .network-node {
+            position: absolute;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 10px;
+            width: 80px;
+            text-align: center;
+            z-index: 2;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .node-icon { display: block; font-size: 2em; margin-bottom: 5px; }
+
+        .connection-line {
+            position: absolute;
+            background: #333;
+            height: 4px;
+            z-index: 1;
+            transform-origin: 0 50%;
+        }
+
+        .missing-slot {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            border: 3px dashed #f5576c;
+            background: #fff0f3;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 3;
+            animation: pulse 1.5s infinite;
+            transition: all 0.3s;
+        }
+
+        .missing-slot.filled {
+            border-style: solid;
+            background: #d5f5e3;
+            border-color: #2ecc71;
+            animation: none;
+        }
+
+        .slot-content {
+            text-align: center;
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #f5576c;
+        }
+
+        .slot-icon { font-size: 2em; display: block; margin-bottom: 5px; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 87, 108, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(245, 87, 108, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 87, 108, 0); }
+        }
+
+        /* FEEDBACK & NEXT */
+        .feedback-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .feedback-overlay.show { transform: translateY(0); }
+
+        .feedback-title { font-size: 1.2em; margin-bottom: 5px; font-weight: bold; }
+        .feedback-text { font-size: 0.95em; color: #555; margin-bottom: 15px; }
+        .correct { color: #2ecc71; }
+        .incorrect { color: #e74c3c; }
+
+        .next-btn {
+            padding: 10px 25px;
+            background: #f5576c;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .next-btn:hover { background: #d63d54; }
+
+        /* RESULT SCREEN */
+        .result-screen {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        .final-score { font-size: 3em; color: #f5576c; margin: 20px 0; }
+        .restart-btn {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 800px) {
+            .game-layout { flex-direction: column-reverse; }
+            .toolbox { width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .tool-btn { margin: 0; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="menu-btn">⬅ Menu</a>
+
+    <div class="game-container">
+        <div id="gameContent">
+            <h1>🔧 Network Technician</h1>
+            <p class="subtitle">Diagnose the missing hardware to fix the network!</p>
+
+            <div class="game-layout">
+                <div class="toolbox">
+                    <h3>🧰 Toolbox</h3>
+                    <button class="tool-btn" onclick="selectTool('nic')">
+                        <span class="tool-icon">🔌</span> NIC
+                    </button>
+                    <button class="tool-btn" onclick="selectTool('switch')">
+                        <span class="tool-icon">🔀</span> Switch
+                    </button>
+                    <button class="tool-btn" onclick="selectTool('router')">
+                        <span class="tool-icon">📡</span> Router
+                    </button>
+                    <button class="tool-btn" onclick="selectTool('server')">
+                        <span class="tool-icon">🖥️</span> Server
+                    </button>
+                    <button class="tool-btn" onclick="selectTool('cable')">
+                        <span class="tool-icon">〰️</span> Copper Cable
+                    </button>
+                    <button class="tool-btn" onclick="selectTool('fibre')">
+                        <span class="tool-icon">💎</span> Fibre Cable
+                    </button>
+                </div>
+
+                <div class="workspace">
+                    <div class="header-area" id="headerArea">
+                        </div>
+                    <div class="diagram-area" id="diagramArea">
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-screen" id="resultScreen">
+            <h2>Job Complete!</h2>
+            <div class="final-score" id="finalScore">0/5 Correct</div>
+            <p id="resultMessage">You are a master technician!</p>
+            <button class="restart-btn" onclick="restartGame()">Diagnose Again 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        const levels = [
+            {
+                title: "Job 1: Basic Connection",
+                scenario: "This new PC cannot connect to any network at all. It is missing a crucial internal component.",
+                correctTool: "nic",
+                explanation: "A Network Interface Card (NIC) is required for ANY device to connect to a network.",
+                nodes: [
+                    { x: 50, y: 150, icon: "💻", label: "PC" }
+                ],
+                lines: [],
+                slot: { x: 180, y: 130, label: "Missing Component" }
+            },
+            {
+                title: "Job 2: Local Network",
+                scenario: "These three computers in the same office need to send data to each other efficiently.",
+                correctTool: "switch",
+                explanation: "A Switch connects devices on the SAME network (LAN) and sends data intelligently.",
+                nodes: [
+                    { x: 30, y: 50, icon: "💻", label: "PC A" },
+                    { x: 30, y: 250, icon: "💻", label: "PC B" },
+                    { x: 350, y: 150, icon: "🖨️", label: "Printer" }
+                ],
+                lines: [
+                    { x1: 90, y1: 80, x2: 190, y2: 140 }, // PC A to Slot
+                    { x1: 90, y1: 280, x2: 190, y2: 180 }, // PC B to Slot
+                    { x1: 280, y1: 160, x2: 350, y2: 180 } // Slot to Printer
+                ],
+                slot: { x: 190, y: 110, label: "Central Device" }
+            },
+            {
+                title: "Job 3: Internet Access",
+                scenario: "The school LAN needs to connect to the Internet (WAN). We need a device to join these two DIFFERENT networks.",
+                correctTool: "router",
+                explanation: "A Router is used to connect DIFFERENT networks together (e.g., LAN to WAN).",
+                nodes: [
+                    { x: 50, y: 150, icon: "🏫", label: "School LAN" },
+                    { x: 350, y: 150, icon: "☁️", label: "Internet" }
+                ],
+                lines: [
+                    { x1: 130, y1: 180, x2: 190, y2: 180 },
+                    { x1: 280, y1: 180, x2: 350, y2: 180 }
+                ],
+                slot: { x: 190, y: 135, label: "Gateway" }
+            },
+            {
+                title: "Job 4: Wired Transmission",
+                scenario: "We need to connect this PC to the wall socket. What is the standard cabling used in most LANs?",
+                correctTool: "cable",
+                explanation: "Copper cable (Cat5e/Cat6) is the standard cabling used to connect devices in a LAN.",
+                nodes: [
+                    { x: 50, y: 150, icon: "💻", label: "PC" },
+                    { x: 350, y: 150, icon: "🔌", label: "Wall Socket" }
+                ],
+                lines: [], // No line because the cable IS the answer
+                slot: { x: 160, y: 135, label: "Connection Medium" }
+            },
+            {
+                title: "Job 5: The File Host",
+                scenario: "The network needs a powerful computer to store all student files and handle logins.",
+                correctTool: "server",
+                explanation: "A Server is a powerful computer designed to provide services (like file storage) to other clients.",
+                nodes: [
+                    { x: 50, y: 150, icon: "🔀", label: "Switch" },
+                    { x: 50, y: 50, icon: "💻", label: "Client" },
+                    { x: 50, y: 250, icon: "💻", label: "Client" }
+                ],
+                lines: [
+                    { x1: 130, y1: 180, x2: 220, y2: 180 },
+                    { x1: 90, y1: 80, x2: 90, y2: 150 }, // Client to switch
+                    { x1: 90, y1: 250, x2: 90, y2: 210 } // Client to switch
+                ],
+                slot: { x: 220, y: 135, label: "High Power Device" }
+            }
+        ];
+
+        let currentLevel = 0;
+        let score = 0;
+        let selectedTool = null;
+
+        function initGame() {
+            currentLevel = 0;
+            score = 0;
+            document.getElementById('gameContent').style.display = 'block';
+            document.getElementById('resultScreen').style.display = 'none';
+            loadLevel();
+        }
+
+        function loadLevel() {
+            const level = levels[currentLevel];
+            
+            // Header (Text)
+            const header = document.getElementById('headerArea');
+            header.innerHTML = `
+                <div class="level-badge">${level.title}</div>
+                <div class="scenario-text">${level.scenario}</div>
+            `;
+
+            // Diagram (Visuals)
+            const area = document.getElementById('diagramArea');
+            area.innerHTML = ''; // Clear previous
+
+            // Draw Lines
+            level.lines.forEach(line => {
+                const l = document.createElement('div');
+                l.className = 'connection-line';
+                // Basic geometry to draw line between points
+                const length = Math.sqrt(Math.pow(line.x2 - line.x1, 2) + Math.pow(line.y2 - line.y1, 2));
+                const angle = Math.atan2(line.y2 - line.y1, line.x2 - line.x1) * 180 / Math.PI;
+                l.style.width = length + 'px';
+                l.style.left = line.x1 + 'px';
+                l.style.top = line.y1 + 'px';
+                l.style.transform = `rotate(${angle}deg)`;
+                area.appendChild(l);
+            });
+
+            // Draw Nodes
+            level.nodes.forEach(node => {
+                const n = document.createElement('div');
+                n.className = 'network-node';
+                n.style.left = node.x + 'px';
+                n.style.top = node.y + 'px';
+                n.innerHTML = `<span class="node-icon">${node.icon}</span>${node.label}`;
+                area.appendChild(n);
+            });
+
+            // Draw Missing Slot
+            const slot = document.createElement('div');
+            slot.className = 'missing-slot';
+            slot.id = 'targetSlot';
+            slot.style.left = level.slot.x + 'px';
+            slot.style.top = level.slot.y + 'px';
+            slot.innerHTML = `<div class="slot-content"><span class="slot-icon">❓</span>${level.slot.label}</div>`;
+            slot.onclick = () => attemptFix();
+            area.appendChild(slot);
+
+            // Feedback Overlay
+            const feedback = document.createElement('div');
+            feedback.className = 'feedback-overlay';
+            feedback.id = 'feedbackOverlay';
+            area.appendChild(feedback);
+        }
+
+        function selectTool(toolId) {
+            selectedTool = toolId;
+            // Update UI
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+        }
+
+        function attemptFix() {
+            if (!selectedTool) {
+                alert("Please select a tool from the toolbox first!");
+                return;
+            }
+
+            const level = levels[currentLevel];
+            const isCorrect = selectedTool === level.correctTool;
+            const slot = document.getElementById('targetSlot');
+            const feedback = document.getElementById('feedbackOverlay');
+
+            // Find tool info for display
+            const iconMap = {
+                'nic': '🔌', 'switch': '🔀', 'router': '📡',
+                'server': '🖥️', 'cable': '〰️', 'fibre': '💎'
+            };
+
+            if (isCorrect) {
+                score++;
+                slot.className = 'missing-slot filled';
+                slot.innerHTML = `<div class="slot-content"><span class="slot-icon">${iconMap[selectedTool]}</span>Fixed!</div>`;
+
+                feedback.innerHTML = `
+                    <div class="feedback-title correct">✅ Correct!</div>
+                    <div class="feedback-text">${level.explanation}</div>
+                    <button class="next-btn" onclick="nextLevel()">Next Job →</button>
+                `;
+            } else {
+                feedback.innerHTML = `
+                    <div class="feedback-title incorrect">❌ Incorrect</div>
+                    <div class="feedback-text">That's not the right device for this job. Try again!</div>
+                    <button class="next-btn" onclick="retryLevel()">Try Again</button>
+                `;
+            }
+
+            feedback.classList.add('show');
+        }
+
+        function retryLevel() {
+            document.getElementById('feedbackOverlay').classList.remove('show');
+        }
+
+        function nextLevel() {
+            currentLevel++;
+            if (currentLevel >= levels.length) {
+                showResults();
+            } else {
+                loadLevel();
+                // Reset Selection
+                selectedTool = null;
+                document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('selected'));
+            }
+        }
+
+        function showResults() {
+            document.getElementById('gameContent').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'block';
+            document.getElementById('finalScore').textContent = `${score}/${levels.length} Correct`;
+        }
+
+        function restartGame() {
+            initGame();
+        }
+
+        // Start
+        initGame();
+    </script>
+</body>
+</html>
