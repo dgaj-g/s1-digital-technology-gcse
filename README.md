@@ -4,7 +4,7 @@ Fun, engaging activities for CCEA GCSE Digital Technology - Network Technologies
 
 ## Activities Included
 
-1. **LAN vs WAN Sorting Game** - Drag and drop timed game
+1. **LAN vs WAN Sorting Game** - Drag and drop timed game 
 2. **Internet vs WWW vs IoT Challenge** - Quick-fire category matching
 3. **Communication Tech Rocket Race** - Answer questions to launch your rocket
 4. **Network Hardware Builder** - Build networks and answer questions
