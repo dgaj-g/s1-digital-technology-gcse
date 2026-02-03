@@ -8,7 +8,7 @@ Fun, engaging activities for CCEA GCSE Digital Technology - Network Technologies
 2. **Internet vs WWW vs IoT Challenge** - Quick-fire category matching
 3. **Communication Tech Rocket Race** - Answer questions to launch your rocket
 4. **Network Hardware Builder** - Build networks and answer questions
-5. **Topology Maze Runner** - Navigate through network topologies
+5. **Topology Maze Runner** - Navigate through network topologies 
 
 ## How to Use
 
