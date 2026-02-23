@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔬 Malware Morgue</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1a0a0a 0%, #2d0e0e 40%, #1a0a0a 100%);
+    min-height: 100vh;
+    color: #e8ddd0;
+    overflow-x: hidden;
+  }
+
+  /* ── TICKER ── */
+  .ticker-bar {
+    background: #c0392b;
+    color: white;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 8px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .ticker-inner {
+    display: inline-block;
+    animation: ticker 22s linear infinite;
+  }
+  @keyframes ticker {
+    0% { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: rgba(0,0,0,0.5);
+    border-bottom: 1px solid rgba(255,107,53,0.3);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .back-btn {
+    color: #888;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .back-btn:hover { color: #ff6b35; }
+  .header-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 1px;
+  }
+  .header-sub { font-size: 0.75rem; color: #888; }
+  .header-stats {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .hstat { text-align: center; }
+  .hstat-val {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: white;
+    display: block;
+  }
+  .hstat-label { font-size: 0.7rem; color: #888; }
+  .lives-display { font-size: 1.2rem; letter-spacing: 3px; }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 30px 20px;
+  }
+
+  /* ── INTRO SCREEN ── */
+  .intro-screen {
+    text-align: center;
+    padding: 60px 20px;
+    animation: fadeIn 0.6s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+  .breaking-flash {
+    display: inline-block;
+    background: #c0392b;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 6px 16px;
+    border-radius: 4px;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    animation: flashPulse 1s ease infinite;
+  }
+  @keyframes flashPulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
+
+  .intro-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: white;
+    margin-bottom: 12px;
+  }
+  .intro-sub {
+    font-size: 1rem;
+    color: #aaa;
+    max-width: 500px;
+    margin: 0 auto 36px;
+    line-height: 1.7;
+  }
+  .intro-rules {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,107,53,0.3);
+    border-radius: 14px;
+    padding: 22px 28px;
+    margin-bottom: 36px;
+    font-size: 0.9rem;
+    color: #c9c3bb;
+    max-width: 400px;
+  }
+  .intro-rules li { list-style: none; padding-left: 20px; position: relative; }
+  .intro-rules li::before { content: '▶'; position: absolute; left: 0; color: #ff6b35; font-size: 0.65rem; top: 3px; }
+  .start-btn {
+    background: linear-gradient(135deg, #c0392b, #ff6b35);
+    border: none;
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 15px 44px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: block;
+    margin: 0 auto;
+  }
+  .start-btn:hover { transform: scale(1.05); }
+
+  /* ── CASE SCREEN ── */
+  .case-screen { display: none; animation: fadeIn 0.5s ease; }
+
+  .case-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .case-badge {
+    background: rgba(192,57,43,0.3);
+    border: 1px solid rgba(192,57,43,0.6);
+    color: #ff9a6c;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 20px;
+    letter-spacing: 1.5px;
+  }
+  .case-progress {
+    font-size: 0.8rem;
+    color: #888;
+  }
+
+  /* incident dossier */
+  .dossier {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,107,53,0.25);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .dossier-header {
+    background: rgba(192,57,43,0.2);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255,107,53,0.2);
+  }
+  .dossier-icon { font-size: 1.6rem; }
+  .dossier-title { font-size: 1.05rem; font-weight: 700; color: white; }
+  .dossier-sub { font-size: 0.78rem; color: #ff9a6c; letter-spacing: 1px; }
+
+  .dossier-body { padding: 22px 24px; }
+  .victim-statement {
+    font-size: 0.95rem;
+    color: #c9c3bb;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: rgba(0,0,0,0.3);
+    border-left: 3px solid #ff6b35;
+    border-radius: 4px;
+    font-style: italic;
+  }
+  .clues-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #888;
+    margin-bottom: 14px;
+  }
+  .clue-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .clue-tag {
+    background: rgba(255,107,53,0.12);
+    border: 1px solid rgba(255,107,53,0.35);
+    color: #ff9a6c;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 8px;
+    opacity: 0;
+    animation: tagReveal 0.4s ease forwards;
+  }
+  @keyframes tagReveal {
+    from { opacity:0; transform: scale(0.8); }
+    to { opacity:1; transform: scale(1); }
+  }
+
+  /* suspect lineup */
+  .lineup-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #888;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .lineup {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .suspect-card {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 20px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    min-width: 110px;
+    flex: 1;
+    max-width: 150px;
+  }
+  .suspect-card:hover {
+    border-color: #ff6b35;
+    background: rgba(255,107,53,0.1);
+    transform: translateY(-4px);
+  }
+  .suspect-card:disabled, .suspect-card.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    pointer-events: none;
+  }
+  .suspect-card.correct { border-color: #3fb950 !important; background: rgba(63,185,80,0.15) !important; }
+  .suspect-card.wrong { border-color: #f85149 !important; background: rgba(248,81,73,0.15) !important; }
+  .suspect-emoji { font-size: 2.5rem; display: block; margin-bottom: 8px; }
+  .suspect-name { font-size: 0.8rem; font-weight: 700; color: white; }
+
+  /* ── VERDICT PANEL ── */
+  .verdict-panel { margin-top: 24px; }
+
+  .feedback-reveal {
+    background: rgba(0,0,0,0.4);
+    border-radius: 14px;
+    padding: 22px 24px;
+    display: none;
+    animation: slideUp 0.4s ease;
+    margin-bottom: 20px;
+  }
+  .feedback-reveal.visible { display: block; }
+  @keyframes slideUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  .feedback-reveal.correct { border: 1px solid #3fb950; }
+  .feedback-reveal.wrong { border: 1px solid #f85149; }
+  .feedback-reveal-title {
+    font-size: 1rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .feedback-reveal.correct .feedback-reveal-title { color: #3fb950; }
+  .feedback-reveal.wrong .feedback-reveal-title { color: #f85149; }
+  .feedback-reveal-text { font-size: 0.88rem; color: #aaa; line-height: 1.7; }
+  .feedback-reveal-text strong { color: #e8ddd0; }
+  .exam-note {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(227,179,65,0.1);
+    border: 1px solid rgba(227,179,65,0.3);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: #e3b341;
+  }
+
+  .case-closed-stamp {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg) scale(0);
+    font-size: 3rem;
+    font-weight: 900;
+    color: #c0392b;
+    border: 6px solid #c0392b;
+    padding: 12px 28px;
+    border-radius: 8px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    opacity: 0;
+    z-index: 500;
+    pointer-events: none;
+    transition: none;
+    font-family: Impact, sans-serif;
+  }
+  .case-closed-stamp.animate {
+    animation: stampIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  @keyframes stampIn {
+    0% { transform: translate(-50%,-50%) rotate(-15deg) scale(3); opacity:0; }
+    60% { opacity:1; transform: translate(-50%,-50%) rotate(-8deg) scale(1.05); }
+    80% { transform: translate(-50%,-50%) rotate(-12deg) scale(0.98); }
+    100% { opacity:1; transform: translate(-50%,-50%) rotate(-10deg) scale(1); }
+  }
+
+  .next-case-btn {
+    background: linear-gradient(135deg, #c0392b, #ff6b35);
+    border: none;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 14px 36px;
+    border-radius: 50px;
+    cursor: pointer;
+    display: none;
+    transition: all 0.2s;
+    margin: 0 auto;
+  }
+  .next-case-btn.visible { display: block; animation: fadeIn 0.3s ease; }
+  .next-case-btn:hover { transform: scale(1.05); }
+
+  /* ── EVIDENCE BOARD (Results) ── */
+  .results-screen {
+    display: none;
+    animation: fadeIn 0.5s ease;
+    text-align: center;
+  }
+  .results-screen.visible { display: block; }
+  .results-title { font-size: 2rem; font-weight: 800; color: white; margin-bottom: 4px; }
+  .results-rank-display {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    padding: 8px 20px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 10px;
+  }
+  .rank-chief { background: rgba(227,179,65,0.2); color: #e3b341; border: 1px solid #e3b341; }
+  .rank-senior { background: rgba(0,217,255,0.15); color: #00d9ff; border: 1px solid #00d9ff; }
+  .rank-detective { background: rgba(63,185,80,0.15); color: #3fb950; border: 1px solid #3fb950; }
+  .rank-rookie { background: rgba(255,255,255,0.08); color: #aaa; border: 1px solid #555; }
+
+  .score-big { font-size: 3.5rem; font-weight: 800; color: white; margin: 16px 0 8px; }
+  .score-big span { font-size: 1.2rem; color: #888; }
+  .results-sub { color: #888; margin-bottom: 30px; }
+
+  .evidence-board {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,107,53,0.3);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 28px;
+    text-align: left;
+  }
+  .board-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #888;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .suspect-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .suspect-entry:last-child { border-bottom: none; }
+  .entry-emoji { font-size: 2rem; flex-shrink: 0; }
+  .entry-name { font-size: 0.9rem; font-weight: 700; color: white; margin-bottom: 4px; }
+  .entry-def { font-size: 0.8rem; color: #aaa; line-height: 1.5; }
+
+  .results-btns { display: flex; gap: 12px; justify-content: center; }
+  .res-btn {
+    padding: 13px 32px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  .res-btn.primary { background: linear-gradient(135deg, #c0392b, #ff6b35); color: white; }
+  .res-btn.secondary { background: rgba(255,255,255,0.08); color: #c9c3bb; border: 1px solid rgba(255,255,255,0.15); }
+  .res-btn:hover { transform: scale(1.05); }
+
+  /* float score */
+  .float-score {
+    position: fixed;
+    font-size: 1.4rem;
+    font-weight: 800;
+    pointer-events: none;
+    z-index: 999;
+    animation: floatUp 1.1s ease forwards;
+  }
+  @keyframes floatUp {
+    0% { opacity:1; transform: translateY(0) scale(1); }
+    100% { opacity:0; transform: translateY(-70px) scale(1.4); }
+  }
+
+  @media (max-width: 600px) {
+    .lineup { gap: 8px; }
+    .suspect-card { min-width: 80px; padding: 14px 8px; }
+    .suspect-emoji { font-size: 2rem; }
+    .suspect-name { font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ticker-bar">
+  <span class="ticker-inner">🚨 BREAKING: Cyber attack hits Northern Ireland school network &nbsp;|&nbsp; 5 incidents under investigation &nbsp;|&nbsp; Digital forensics team required immediately &nbsp;|&nbsp; All suspects identified — awaiting analyst confirmation &nbsp;|&nbsp; 🚨 BREAKING: Cyber attack hits Northern Ireland school network</span>
+</div>
+
+<div class="header">
+  <div class="header-left">
+    <a href="index.html" class="back-btn">← Menu</a>
+    <div>
+      <div class="header-title">🔬 Malware Morgue</div>
+      <div class="header-sub">Digital Forensics Division</div>
+    </div>
+  </div>
+  <div class="header-stats">
+    <div class="hstat"><span class="hstat-val" id="scoreDisplay">0</span><span class="hstat-label">Points</span></div>
+    <div class="hstat"><span class="hstat-val lives-display" id="livesDisplay">🔍🔍🔍</span><span class="hstat-label">Evidence</span></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- INTRO SCREEN -->
+  <div class="intro-screen" id="introScreen">
+    <div class="breaking-flash">🚨 BREAKING NEWS</div>
+    <div class="intro-title">Malware Morgue</div>
+    <p class="intro-sub">Five cyber incidents have been reported across Northern Ireland. As the lead digital forensics analyst, you must examine the evidence and identify the malware responsible.</p>
+    <ul class="intro-rules">
+      <li>Read each incident report carefully</li>
+      <li>Analyse the evidence clues</li>
+      <li>Click the correct suspect from the lineup</li>
+      <li>You have 3 lives — wrong answers cost you one</li>
+    </ul>
+    <button class="start-btn" onclick="startGame()">🔬 Begin Analysis</button>
+  </div>
+
+  <!-- CASE SCREEN -->
+  <div class="case-screen" id="caseScreen">
+
+    <div class="case-header">
+      <span class="case-badge">CASE <span id="caseNum">01</span> OF 05</span>
+      <span class="case-progress" id="caseProgress">0 / 5 solved</span>
+    </div>
+
+    <div class="dossier">
+      <div class="dossier-header">
+        <div class="dossier-icon" id="dossierIcon">🚨</div>
+        <div>
+          <div class="dossier-title" id="dossierTitle">Incident Report</div>
+          <div class="dossier-sub" id="dossierSub">CLASSIFIED — ANALYST EYES ONLY</div>
+        </div>
+      </div>
+      <div class="dossier-body">
+        <div class="victim-statement" id="victimStatement"></div>
+        <div class="clues-title">Evidence Clues</div>
+        <div class="clue-tags" id="clueTags"></div>
+      </div>
+    </div>
+
+    <div class="lineup-title">🔍 Identify the suspect from the lineup</div>
+    <div class="lineup" id="lineup"></div>
+
+    <div class="verdict-panel">
+      <div class="feedback-reveal" id="feedbackReveal">
+        <div class="feedback-reveal-title" id="feedbackTitle">✅ Correct!</div>
+        <div class="feedback-reveal-text" id="feedbackText"></div>
+        <div class="exam-note" id="examNote"></div>
+      </div>
+      <div style="text-align:center">
+        <button class="next-case-btn" id="nextCaseBtn" onclick="nextCase()">Next Case →</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div class="results-screen" id="resultsScreen">
+    <div class="breaking-flash">CASE FILES CLOSED</div>
+    <div class="results-title">All Cases Investigated</div>
+    <div class="results-rank-display" id="rankDisplay">CHIEF FORENSIC OFFICER</div>
+    <div class="score-big" id="bigScore">0 <span>pts</span></div>
+    <div class="results-sub" id="resultsSub">Results summary</div>
+
+    <div class="evidence-board">
+      <div class="board-title">📋 Evidence Board — Suspect Definitions</div>
+      <div id="evidenceEntries"></div>
+    </div>
+
+    <div class="results-btns">
+      <button class="res-btn primary" onclick="restartGame()">🔄 Try Again</button>
+      <button class="res-btn secondary" onclick="window.location.href='index.html'">← Menu</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- STAMP -->
+<div class="case-closed-stamp" id="closedStamp">CASE CLOSED</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CASE DATA
+// ══════════════════════════════════════════════
+const cases = [
+  {
+    id: '01',
+    icon: '🏫',
+    title: 'Incident at Lakeview Academy',
+    sub: 'DIGITAL FORENSICS — REPORT REF: LVA-2026-004',
+    statement: '"We downloaded what appeared to be a free anti-virus program from a website. Within an hour, important school files had been deleted and our system administrator found an unknown back-door entry point had been created — someone had remote access to our computers."',
+    clues: ['Appeared to be a legitimate, useful program', 'User was tricked into installing it', 'Created a hidden entry point for hackers', 'Capable of deleting files once inside'],
+    answer: 'Trojan',
+    feedback: 'This is a <strong>Trojan Horse</strong>. It disguised itself as useful software (the fake anti-virus) to trick the user into installing it. Once inside, it opened a "backdoor" giving hackers secret remote access.',
+    exam: '📚 Exam definition: "Gains entry to a user\'s computer \'in disguise\' [1] / Tricks the user into opening or downloading a software programme [1] / Example of damage such as deleting data files [1]"'
+  },
+  {
+    id: '02',
+    icon: '🏦',
+    title: 'Incident at Riverbank Credit Union',
+    sub: 'DIGITAL FORENSICS — REPORT REF: RCU-2026-012',
+    statement: '"Three staff members had their online banking credentials stolen. IT security later discovered a programme had been secretly running in the background for six weeks, silently collecting usernames, passwords and credit card numbers every time staff accessed websites."',
+    clues: ['Secretly installed without user knowledge', 'Ran hidden in the background', 'Collected personal information via the internet', 'Sent gathered data to a remote location'],
+    answer: 'Spyware',
+    feedback: 'This is <strong>Spyware</strong>. It was secretly installed and silently tracked user activity — gathering sensitive details like passwords and card numbers and sending them elsewhere without the victim knowing.',
+    exam: '📚 Exam definition: "Software secretly installed on a user\'s computer [1] / Collects user information without permission and sends it to a remote computer [1]"'
+  },
+  {
+    id: '03',
+    icon: '🏢',
+    title: 'Incident at Newtown Law Firm',
+    sub: 'DIGITAL FORENSICS — REPORT REF: NLF-2026-007',
+    statement: '"A partner at the firm noticed money leaving his account. Forensics found malicious software that had been recording everything typed on his keyboard — including the exact username, password and account number he typed when he logged into his bank."',
+    clues: ['Recorded every key pressed on the keyboard', 'User had no idea it was running', 'Captured login credentials as they were typed', 'Logs sent to the attacker'],
+    answer: 'KeyLogger',
+    feedback: 'This is a <strong>Key Logger</strong>. It secretly recorded every keystroke typed — including passwords and account details — and sent the log to the attacker, who then used them to access the victim\'s bank.',
+    exam: '📚 Exam definition: "Software designed to record each keystroke on a computer [1] / User is unaware [1] / Keystrokes are saved and used to steal personal information [1]"'
+  },
+  {
+    id: '04',
+    icon: '🏥',
+    title: 'Incident at City General Hospital',
+    sub: 'DIGITAL FORENSICS — REPORT REF: CGH-2026-019',
+    statement: '"Our entire hospital network slowed to a crawl within 30 minutes. The cause: a programme had begun making millions of copies of itself across every connected machine, consuming all available bandwidth and processing power. It did not attach itself to any particular file."',
+    clues: ['Spread by making copies of itself', 'No need to attach to any file or document', 'Used up large amounts of bandwidth', 'Caused severe slowdown across the whole network'],
+    answer: 'Worm',
+    feedback: 'This is a <strong>Worm</strong>. It spread autonomously by self-replicating across the network without needing to be attached to any file. The millions of copies consumed bandwidth, slowing everything down dramatically.',
+    exam: '📚 Exam definition: "Spread by replicating itself [1] / Does not need to be attached to a document or programme [1] / Requires bandwidth, causing slower data transmission [1]"'
+  },
+  {
+    id: '05',
+    icon: '🎮',
+    title: 'Incident at GameZone Studios',
+    sub: 'DIGITAL FORENSICS — REPORT REF: GZS-2026-031',
+    statement: '"On 1st April 2026, a development computer started corrupting project files. The malicious programme had been stored as a hidden file for two months, activating only on this specific date. It entered the system via a USB drive brought in by a contractor."',
+    clues: ['Stored as a hidden file on the hard drive', 'Activated on a specific date (1st April)', 'Entered via a USB storage device', 'Deliberately designed to damage an information system'],
+    answer: 'Virus',
+    feedback: 'This is a <strong>Virus</strong>. It entered via USB, hid itself on the hard drive, and waited for a predetermined condition (a date) before activating and causing damage — exactly how a computer virus is designed to work.',
+    exam: '📚 Exam definition: "A computer program designed to deliberately damage an information system [1] / Can store itself as a hidden file [1] / Activated when a certain programme is opened or a predetermined condition is met [1]"'
+  }
+];
+
+const suspects = [
+  { id: 'Virus',     emoji: '🦠', name: 'Virus' },
+  { id: 'Trojan',    emoji: '🐴', name: 'Trojan Horse' },
+  { id: 'Worm',      emoji: '🪱', name: 'Worm' },
+  { id: 'KeyLogger', emoji: '⌨️', name: 'Key Logger' },
+  { id: 'Spyware',   emoji: '👁️', name: 'Spyware' }
+];
+
+const evidenceBoard = [
+  { emoji: '🦠', name: 'Virus', def: 'A computer program designed to deliberately damage an information system. Stores itself as a hidden file and is activated when a certain program is opened or a specific condition (e.g. a date) is met.' },
+  { emoji: '🐴', name: 'Trojan Horse', def: 'Gains entry to a user\'s computer "in disguise" — tricks the user into downloading a program that appears useful. Once installed, can delete files and create backdoor access for hackers.' },
+  { emoji: '🪱', name: 'Worm', def: 'Spreads by replicating itself across a network without needing to attach to any document or program. Consumes bandwidth, causing slower data transmission speeds.' },
+  { emoji: '⌨️', name: 'Key Logger', def: 'Software designed to record every keystroke typed on a computer. The user is unaware. The log is sent to the attacker and used to steal personal information such as passwords and bank details.' },
+  { emoji: '👁️', name: 'Spyware', def: 'Secretly installed software that uses the internet to collect user activity data. Tracks and gathers useful information such as credit card details and passwords without the user\'s knowledge.' }
+];
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let shuffledCases = [];
+let currentCaseIndex = 0;
+let lives = 3;
+let score = 0;
+let solved = 0;
+let answered = false;
+
+// ══════════════════════════════════════════════
+//  GAME FLOW
+// ══════════════════════════════════════════════
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function startGame() {
+  shuffledCases = shuffle(cases);
+  currentCaseIndex = 0;
+  lives = 3; score = 0; solved = 0;
+  document.getElementById('introScreen').style.display = 'none';
+  document.getElementById('caseScreen').style.display = 'block';
+  loadCase(currentCaseIndex);
+}
+
+function loadCase(idx) {
+  answered = false;
+  const c = shuffledCases[idx];
+  document.getElementById('caseNum').textContent = String(idx + 1).padStart(2, '0');
+  document.getElementById('caseProgress').textContent = solved + ' / ' + shuffledCases.length + ' solved';
+  document.getElementById('dossierIcon').textContent = c.icon;
+  document.getElementById('dossierTitle').textContent = c.title;
+  document.getElementById('dossierSub').textContent = c.sub;
+  document.getElementById('victimStatement').textContent = c.statement;
+
+  // Clues with staggered reveal
+  const clueContainer = document.getElementById('clueTags');
+  clueContainer.innerHTML = '';
+  c.clues.forEach((clue, i) => {
+    const tag = document.createElement('div');
+    tag.className = 'clue-tag';
+    tag.textContent = '🔎 ' + clue;
+    tag.style.animationDelay = (i * 0.25) + 's';
+    clueContainer.appendChild(tag);
+  });
+
+  // Build lineup (shuffled suspects)
+  const lineup = document.getElementById('lineup');
+  lineup.innerHTML = '';
+  shuffle(suspects).forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'suspect-card';
+    card.id = 'suspect-' + s.id;
+    card.innerHTML = `<span class="suspect-emoji">${s.emoji}</span><div class="suspect-name">${s.name}</div>`;
+    card.onclick = () => selectSuspect(s.id, c);
+    lineup.appendChild(card);
+  });
+
+  // Reset feedback
+  document.getElementById('feedbackReveal').className = 'feedback-reveal';
+  document.getElementById('nextCaseBtn').className = 'next-case-btn';
+  updateUI();
+}
+
+function selectSuspect(suspectId, caseData) {
+  if (answered) return;
+
+  const card = document.getElementById('suspect-' + suspectId);
+  const correctCard = document.getElementById('suspect-' + caseData.answer);
+
+  // Disable all
+  document.querySelectorAll('.suspect-card').forEach(c => c.classList.add('disabled'));
+
+  if (suspectId === caseData.answer) {
+    answered = true;
+    solved++;
+    score += 200;
+    card.classList.add('correct');
+
+    showFeedback(true, caseData.feedback, caseData.exam);
+    showStamp();
+    showFloatScore('+200 pts', true);
+    updateUI();
+
+  } else {
+    // Wrong guess
+    lives = Math.max(0, lives - 1);
+    card.classList.add('wrong');
+    correctCard.classList.add('correct');
+
+    if (lives <= 0) {
+      answered = true;
+      // Still mark as solved but no points
+      solved++;
+      showFeedback(false, 'The correct answer was <strong>' + suspectId2Name(caseData.answer) + '</strong>. ' + caseData.feedback, caseData.exam);
+      showFloatScore('No points', false);
+    } else {
+      // Re-enable remaining (not the wrong one)
+      document.querySelectorAll('.suspect-card').forEach(c => {
+        if (!c.classList.contains('wrong') && !c.classList.contains('correct')) {
+          c.classList.remove('disabled');
+        }
+      });
+      // Small lives penalty
+      showFloatScore('-1 life 🔍', false);
+      updateUI();
+      return;
+    }
+    updateUI();
+  }
+}
+
+function suspectId2Name(id) {
+  return suspects.find(s => s.id === id)?.name || id;
+}
+
+function showFeedback(isCorrect, text, exam) {
+  const box = document.getElementById('feedbackReveal');
+  const title = document.getElementById('feedbackTitle');
+  const textEl = document.getElementById('feedbackText');
+  const examEl = document.getElementById('examNote');
+
+  box.className = 'feedback-reveal visible ' + (isCorrect ? 'correct' : 'wrong');
+  title.innerHTML = isCorrect ? '✅ Case Solved!' : '❌ Incorrect — Case Reviewed';
+  textEl.innerHTML = text;
+  examEl.textContent = exam;
+
+  const isLast = (currentCaseIndex >= shuffledCases.length - 1);
+  const nextBtn = document.getElementById('nextCaseBtn');
+  nextBtn.textContent = isLast ? 'See Results →' : 'Next Case →';
+  nextBtn.className = 'next-case-btn visible';
+}
+
+function showStamp() {
+  const stamp = document.getElementById('closedStamp');
+  stamp.className = 'case-closed-stamp animate';
+  setTimeout(() => {
+    stamp.className = 'case-closed-stamp';
+  }, 1800);
+}
+
+function nextCase() {
+  currentCaseIndex++;
+  if (currentCaseIndex >= shuffledCases.length) {
+    showResults();
+  } else {
+    loadCase(currentCaseIndex);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  RESULTS
+// ══════════════════════════════════════════════
+function showResults() {
+  document.getElementById('caseScreen').style.display = 'none';
+  const rs = document.getElementById('resultsScreen');
+  rs.className = 'results-screen visible';
+
+  const pct = solved / shuffledCases.length;
+  let rank, rankClass, sub;
+
+  if (score >= 900) { rank = '🏅 CHIEF FORENSIC OFFICER'; rankClass = 'rank-chief'; sub = 'Flawless detection. Every case solved on the first attempt.'; }
+  else if (score >= 600) { rank = '🔬 SENIOR ANALYST'; rankClass = 'rank-senior'; sub = 'Excellent work — most cases solved first try. A few suspects slipped you up.'; }
+  else if (score >= 300) { rank = '🔍 DETECTIVE'; rankClass = 'rank-detective'; sub = 'Good effort! Revisit the evidence board below to reinforce the definitions.'; }
+  else { rank = '📋 ROOKIE ANALYST'; rankClass = 'rank-rookie'; sub = 'Keep studying the suspect definitions — you\'ll crack it next time!'; }
+
+  document.getElementById('rankDisplay').textContent = rank;
+  document.getElementById('rankDisplay').className = 'results-rank-display ' + rankClass;
+  document.getElementById('bigScore').innerHTML = score + ' <span>pts</span>';
+  document.getElementById('resultsSub').textContent = sub;
+
+  // Build evidence board
+  const entries = document.getElementById('evidenceEntries');
+  entries.innerHTML = '';
+  evidenceBoard.forEach(e => {
+    const div = document.createElement('div');
+    div.className = 'suspect-entry';
+    div.innerHTML = `
+      <div class="entry-emoji">${e.emoji}</div>
+      <div>
+        <div class="entry-name">${e.name}</div>
+        <div class="entry-def">${e.def}</div>
+      </div>
+    `;
+    entries.appendChild(div);
+  });
+
+  spawnConfetti(pct >= 0.8 ? 50 : 20);
+}
+
+function restartGame() {
+  lives = 3; score = 0; solved = 0; currentCaseIndex = 0; answered = false;
+  document.getElementById('resultsScreen').className = 'results-screen';
+  document.getElementById('introScreen').style.display = 'block';
+  document.getElementById('caseScreen').style.display = 'none';
+  updateUI();
+}
+
+// ══════════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════════
+function updateUI() {
+  document.getElementById('scoreDisplay').textContent = score;
+  const icons = ['🔍','🔍','🔍'];
+  const livesEl = document.getElementById('livesDisplay');
+  livesEl.textContent = icons.slice(0, lives).join('') + (lives < 3 ? '🩶'.repeat(3 - lives) : '');
+}
+
+function showFloatScore(text, positive) {
+  const el = document.createElement('div');
+  el.className = 'float-score';
+  el.style.color = positive ? '#3fb950' : '#f85149';
+  el.style.left = (window.innerWidth / 2 - 50) + 'px';
+  el.style.top = (window.innerHeight * 0.35) + 'px';
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+
+function spawnConfetti(count) {
+  const colours = ['#ff6b35','#c0392b','#e3b341','#3fb950','#00d9ff','#ffffff'];
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div');
+    c.style.cssText = `
+      position:fixed; width:10px; height:10px;
+      background:${colours[Math.floor(Math.random()*colours.length)]};
+      top:-10px; left:${Math.random()*100}vw;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      pointer-events:none; z-index:9999;
+      animation: confFall ${1.5+Math.random()*2}s linear ${Math.random()*0.5}s forwards;
+    `;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3500);
+  }
+}
+
+// Inject confetti keyframes
+const style = document.createElement('style');
+style.textContent = `@keyframes confFall { 0%{transform:translateY(0) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }`;
+document.head.appendChild(style);
+</script>
+</body>
+</html>

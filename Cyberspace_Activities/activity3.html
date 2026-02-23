@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏰 Cyber Fortress</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f0520 0%, #1a0a35 50%, #0d0f2e 100%);
+    min-height: 100vh;
+    color: #e8e0ff;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: rgba(0,0,0,0.5);
+    border-bottom: 1px solid rgba(155,89,182,0.4);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-left { display:flex; align-items:center; gap:12px; }
+  .back-btn { color:#888; text-decoration:none; font-size:0.85rem; transition:color 0.2s; }
+  .back-btn:hover { color:#c39bd3; }
+  .header-title { font-size:1.05rem; font-weight:800; color:white; }
+  .header-stats { display:flex; gap:20px; align-items:center; }
+  .hstat { text-align:center; }
+  .hstat-val { font-size:1.1rem; font-weight:800; color:white; display:block; }
+  .hstat-label { font-size:0.7rem; color:#888; }
+
+  /* ── WELCOME ── */
+  .welcome-overlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.93);
+    display:flex; align-items:center; justify-content:center;
+    z-index:1000;
+  }
+  .welcome-card {
+    background:#1a0a35;
+    border:1px solid rgba(155,89,182,0.5);
+    border-radius:24px;
+    padding:48px 44px;
+    max-width:540px; width:90%;
+    text-align:center;
+    animation: popIn 0.4s ease;
+  }
+  @keyframes popIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+  .welcome-icon { font-size:4rem; margin-bottom:16px; }
+  .welcome-card h2 { font-size:2rem; color:white; margin-bottom:10px; }
+  .welcome-card .sub { color:#aaa; line-height:1.7; margin-bottom:28px; font-size:0.95rem; }
+  .welcome-list {
+    text-align:left; background:rgba(155,89,182,0.1);
+    border:1px solid rgba(155,89,182,0.3); border-radius:12px;
+    padding:18px 22px; margin-bottom:28px;
+    font-size:0.88rem; color:#c9c3e8; list-style:none;
+    display:flex; flex-direction:column; gap:9px;
+  }
+  .welcome-list li::before { content:'⚔️ '; }
+  .start-btn {
+    background:linear-gradient(135deg, #6c3483, #9b59b6);
+    border:none; color:white; font-size:1rem; font-weight:700;
+    padding:14px 44px; border-radius:50px; cursor:pointer; transition:all 0.2s;
+  }
+  .start-btn:hover { transform:scale(1.05); }
+
+  /* ── MAIN ── */
+  .main { max-width:1000px; margin:0 auto; padding:24px 20px; }
+
+  /* ── WAVE INFO ── */
+  .wave-info {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:20px;
+  }
+  .wave-badge {
+    background:rgba(155,89,182,0.25);
+    border:1px solid rgba(155,89,182,0.5);
+    color:#c39bd3; font-size:0.8rem; font-weight:700;
+    padding:7px 16px; border-radius:20px; letter-spacing:1px;
+  }
+  .wave-title { font-size:1rem; font-weight:700; color:white; text-align:center; flex:1; }
+
+  /* ── CASTLE / HEALTH ── */
+  .fortress-section {
+    background:rgba(0,0,0,0.3);
+    border:1px solid rgba(155,89,182,0.25);
+    border-radius:16px;
+    padding:20px 24px;
+    margin-bottom:20px;
+  }
+  .health-row {
+    display:flex; align-items:center; gap:14px; margin-bottom:16px;
+  }
+  .health-label { font-size:0.75rem; color:#888; width:80px; flex-shrink:0; }
+  .health-track {
+    flex:1; height:18px;
+    background:rgba(0,0,0,0.5);
+    border-radius:9px; overflow:hidden;
+    border:1px solid rgba(155,89,182,0.3);
+  }
+  .health-fill {
+    height:100%; border-radius:9px;
+    background:linear-gradient(90deg, #3fb950, #e3b341);
+    transition:width 0.6s ease, background 0.6s ease;
+    width:100%;
+  }
+  .health-fill.danger { background:linear-gradient(90deg, #c0392b, #f85149); }
+  .health-fill.warning { background:linear-gradient(90deg, #e3b341, #f39c12); }
+  .health-pct { font-size:0.88rem; font-weight:700; color:white; width:40px; text-align:right; }
+
+  /* CASTLE VISUAL */
+  .castle-area {
+    display:flex; align-items:flex-end; justify-content:center;
+    gap:0; position:relative; height:120px;
+  }
+  .tower {
+    width:40px; background:linear-gradient(180deg, #4a2f6b, #2d1a45);
+    border:2px solid rgba(155,89,182,0.6);
+    position:relative; border-radius:4px 4px 0 0;
+  }
+  .tower-left { height:90px; }
+  .tower-right { height:90px; }
+  .tower-center { width:80px; height:100px; }
+  .battlement {
+    position:absolute; top:-8px; left:0; right:0;
+    display:flex; justify-content:space-around;
+  }
+  .merlon {
+    width:10px; height:10px;
+    background:linear-gradient(180deg, #6c3483, #4a2f6b);
+    border:1px solid rgba(155,89,182,0.6);
+    border-radius:2px;
+  }
+  .castle-window {
+    width:18px; height:24px;
+    background:rgba(255,220,100,0.3);
+    border-radius:2px 2px 50% 50%;
+    margin:auto; margin-top:20px;
+    box-shadow:0 0 8px rgba(255,220,100,0.4);
+    animation:windowGlow 2s ease infinite;
+  }
+  @keyframes windowGlow { 0%,100%{box-shadow:0 0 8px rgba(255,220,100,0.4)} 50%{box-shadow:0 0 16px rgba(255,220,100,0.7)} }
+  .gate {
+    width:28px; height:36px;
+    background:rgba(0,0,0,0.7);
+    border-radius:2px 2px 50% 50%;
+    margin:auto; margin-top:auto; position:absolute;
+    bottom:0; left:50%; transform:translateX(-50%);
+    border:2px solid rgba(155,89,182,0.4);
+  }
+  .castle-wall {
+    height:60px; width:30px;
+    background:linear-gradient(180deg, #3d2060, #2d1a45);
+    border-top:2px solid rgba(155,89,182,0.5);
+    border-bottom:none;
+  }
+  .castle-label {
+    text-align:center; font-size:0.75rem; color:#888; margin-top:8px;
+  }
+
+  /* SHIELD BARRIER */
+  .shield-barrier {
+    position:absolute; right:-8px; top:0; bottom:0;
+    width:6px;
+    background:linear-gradient(180deg, rgba(0,217,255,0), rgba(0,217,255,0.7), rgba(0,217,255,0));
+    opacity:0; transition:opacity 0.3s;
+    border-radius:3px;
+  }
+  .shield-barrier.active { opacity:1; animation:shieldPulse 0.6s ease; }
+  @keyframes shieldPulse { 0%{opacity:0;transform:scaleX(0)} 50%{opacity:1;transform:scaleX(3)} 100%{opacity:0.6;transform:scaleX(1)} }
+
+  /* CRACK OVERLAY */
+  .crack { display:none; }
+  .crack.show { display:block; }
+
+  /* ── THREAT STAGE ── */
+  .threat-stage {
+    background:rgba(0,0,0,0.4);
+    border:1px solid rgba(248,81,73,0.25);
+    border-radius:16px;
+    padding:20px 24px;
+    margin-bottom:20px;
+    min-height:80px;
+    position:relative;
+    overflow:hidden;
+  }
+  .threat-label { font-size:0.72rem; text-transform:uppercase; letter-spacing:1.5px; color:#888; margin-bottom:12px; }
+
+  .threat-card {
+    background:rgba(248,81,73,0.1);
+    border:2px solid rgba(248,81,73,0.4);
+    border-radius:12px;
+    padding:16px 20px;
+    display:flex; align-items:center; gap:16px;
+    animation:threatSlide 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes threatSlide {
+    from { transform:translateX(120px); opacity:0; }
+    to { transform:translateX(0); opacity:1; }
+  }
+  .threat-card.repelled {
+    animation:repel 0.5s ease forwards;
+  }
+  @keyframes repel {
+    0% { transform:translateX(0); opacity:1; }
+    50% { transform:translateX(30px) scale(1.1); }
+    100% { transform:translateX(200px) scale(0.5); opacity:0; }
+  }
+  .threat-card.hits {
+    animation:hits 0.4s ease;
+  }
+  @keyframes hits {
+    0%,100% { transform:translateX(0); }
+    25% { transform:translateX(-12px); }
+    75% { transform:translateX(6px); }
+  }
+
+  .threat-emoji { font-size:2.4rem; flex-shrink:0; }
+  .threat-info { flex:1; }
+  .threat-name { font-size:1rem; font-weight:700; color:#f85149; margin-bottom:4px; }
+  .threat-desc { font-size:0.83rem; color:#aaa; }
+
+  /* combo indicator */
+  .combo-badge {
+    position:absolute; top:12px; right:16px;
+    background:rgba(227,179,65,0.2);
+    border:1px solid #e3b341;
+    color:#e3b341;
+    font-size:0.72rem; font-weight:700;
+    padding:4px 10px; border-radius:12px;
+  }
+
+  /* ── SHIELD TOOLBAR ── */
+  .toolbar-label { font-size:0.72rem; text-transform:uppercase; letter-spacing:1.5px; color:#888; margin-bottom:12px; }
+  .shield-grid {
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:10px;
+    margin-bottom:20px;
+  }
+  .shield-btn {
+    background:rgba(255,255,255,0.05);
+    border:2px solid rgba(155,89,182,0.3);
+    border-radius:12px;
+    padding:14px 10px;
+    text-align:center;
+    cursor:pointer;
+    transition:all 0.2s;
+    color:#c9c3e8;
+  }
+  .shield-btn:hover {
+    border-color:#9b59b6;
+    background:rgba(155,89,182,0.15);
+    transform:translateY(-3px);
+  }
+  .shield-btn:disabled { opacity:0.3; cursor:not-allowed; transform:none; }
+  .shield-btn.selected-correct { border-color:#3fb950; background:rgba(63,185,80,0.15); animation:correctPulse 0.5s ease; }
+  .shield-btn.selected-wrong { border-color:#f85149; background:rgba(248,81,73,0.15); animation:wrongShake 0.4s ease; }
+  @keyframes correctPulse { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
+  @keyframes wrongShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .shield-icon { font-size:1.8rem; display:block; margin-bottom:6px; }
+  .shield-name { font-size:0.78rem; font-weight:700; }
+
+  /* ── FEEDBACK ── */
+  .feedback-panel {
+    background:rgba(255,255,255,0.04);
+    border-radius:12px;
+    padding:16px 20px;
+    display:none;
+    margin-bottom:16px;
+    animation:fadeIn 0.3s ease;
+  }
+  .feedback-panel.visible { display:block; }
+  .feedback-panel.correct { border:1px solid #3fb950; }
+  .feedback-panel.wrong { border:1px solid #f85149; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  .fp-title { font-size:0.92rem; font-weight:700; margin-bottom:8px; }
+  .feedback-panel.correct .fp-title { color:#3fb950; }
+  .feedback-panel.wrong .fp-title { color:#f85149; }
+  .fp-text { font-size:0.82rem; color:#aaa; line-height:1.6; }
+  .fp-text strong { color:#e8e0ff; }
+
+  .next-wave-btn {
+    width:100%;
+    padding:14px;
+    background:linear-gradient(135deg, #6c3483, #9b59b6);
+    border:none; border-radius:12px;
+    color:white; font-size:0.95rem; font-weight:700;
+    cursor:pointer; display:none; transition:all 0.2s;
+  }
+  .next-wave-btn.visible { display:block; animation:fadeIn 0.3s ease; }
+  .next-wave-btn:hover { filter:brightness(1.15); transform:translateY(-2px); }
+
+  /* ── RESULTS ── */
+  .results-overlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.92);
+    display:none; align-items:center; justify-content:center;
+    z-index:1000;
+  }
+  .results-overlay.visible { display:flex; }
+  .results-card {
+    background:#1a0a35;
+    border:1px solid rgba(155,89,182,0.5);
+    border-radius:24px;
+    padding:48px 44px; max-width:540px; width:90%;
+    text-align:center;
+    animation:popIn 0.5s ease;
+  }
+  .stars { font-size:2.5rem; letter-spacing:4px; margin-bottom:12px; }
+  .results-rank { font-size:1rem; font-weight:700; letter-spacing:2px; color:#c39bd3; margin-bottom:8px; }
+  .results-score { font-size:3.5rem; font-weight:800; color:white; }
+  .results-score span { font-size:1.2rem; color:#888; }
+  .results-health { margin:16px 0 8px; font-size:0.95rem; color:#aaa; }
+  .results-sub { color:#888; margin-bottom:28px; font-size:0.9rem; line-height:1.6; }
+  .res-btns { display:flex; gap:12px; justify-content:center; }
+  .res-btn {
+    padding:13px 32px; border-radius:50px;
+    font-size:0.9rem; font-weight:700; cursor:pointer; border:none; transition:all 0.2s;
+  }
+  .res-btn.primary { background:linear-gradient(135deg, #6c3483, #9b59b6); color:white; }
+  .res-btn.secondary { background:rgba(255,255,255,0.08); color:#c9c3e8; border:1px solid rgba(255,255,255,0.15); }
+  .res-btn:hover { transform:scale(1.05); }
+
+  /* float score */
+  .float-score {
+    position:fixed; font-size:1.3rem; font-weight:800;
+    pointer-events:none; z-index:999;
+    animation:floatUp 1s ease forwards;
+  }
+  @keyframes floatUp { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-60px)} }
+
+  /* impact flash */
+  .impact-flash {
+    position:fixed; inset:0;
+    background:rgba(248,81,73,0.15);
+    pointer-events:none; z-index:400;
+    animation:flash 0.3s ease forwards;
+  }
+  @keyframes flash { 0%{opacity:1} 100%{opacity:0} }
+
+  /* fireworks */
+  .fw {
+    position:fixed; width:8px; height:8px; border-radius:50%;
+    pointer-events:none; z-index:999;
+    animation:fwLaunch linear forwards;
+  }
+  @keyframes fwLaunch {
+    0% { transform:translate(0,0) scale(1); opacity:1; }
+    100% { transform:var(--end); opacity:0; }
+  }
+
+  @media(max-width:600px) {
+    .shield-grid { grid-template-columns: repeat(2,1fr); }
+    .main { padding:16px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div class="welcome-overlay" id="welcomeOverlay">
+  <div class="welcome-card">
+    <div class="welcome-icon">🏰</div>
+    <h2>Cyber Fortress</h2>
+    <p class="sub">The school network is under attack! As Network Administrator, you must deploy the right defence before each wave of threats breaches the fortress wall.</p>
+    <ul class="welcome-list">
+      <li>Read the incoming threat carefully</li>
+      <li>Click the correct defence shield from the toolbar</li>
+      <li>Wrong choice damages the fortress walls!</li>
+      <li>8 waves total — can you keep the fortress intact?</li>
+    </ul>
+    <button class="start-btn" onclick="startGame()">⚔️ Defend the Fortress!</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="results-overlay" id="resultsOverlay">
+  <div class="results-card">
+    <div class="stars" id="stars">⭐⭐⭐</div>
+    <div class="results-rank" id="resultsRank">FORTRESS COMMANDER</div>
+    <div class="results-score" id="resultsScore">0 <span>pts</span></div>
+    <div class="results-health" id="resultsHealth">Fortress integrity: 100%</div>
+    <div class="results-sub" id="resultsSub"></div>
+    <div class="res-btns">
+      <button class="res-btn primary" onclick="restartGame()">🔄 Try Again</button>
+      <button class="res-btn secondary" onclick="window.location.href='index.html'">← Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <a href="index.html" class="back-btn">← Menu</a>
+    <div class="header-title">🏰 Cyber Fortress</div>
+  </div>
+  <div class="header-stats">
+    <div class="hstat"><span class="hstat-val" id="scoreDisplay">0</span><span class="hstat-label">Points</span></div>
+    <div class="hstat"><span class="hstat-val" id="waveDisplay">1/8</span><span class="hstat-label">Wave</span></div>
+    <div class="hstat"><span class="hstat-val" id="healthDisplay">100%</span><span class="hstat-label">Fortress HP</span></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="wave-info">
+    <div class="wave-badge">WAVE <span id="waveBadge">1</span> OF 8</div>
+    <div class="wave-title" id="waveTitle">Incoming threat detected...</div>
+  </div>
+
+  <!-- FORTRESS -->
+  <div class="fortress-section">
+    <div class="health-row">
+      <div class="health-label">⚔️ FORTRESS HP</div>
+      <div class="health-track"><div class="health-fill" id="healthFill"></div></div>
+      <div class="health-pct" id="hpText">100%</div>
+    </div>
+    <div class="castle-area">
+      <div class="castle-wall"></div>
+      <div class="tower tower-left">
+        <div class="battlement"><div class="merlon"></div><div class="merlon"></div><div class="merlon"></div></div>
+        <div class="castle-window"></div>
+      </div>
+      <div class="tower tower-center">
+        <div class="battlement"><div class="merlon"></div><div class="merlon"></div><div class="merlon"></div><div class="merlon"></div></div>
+        <div class="castle-window"></div>
+        <div class="gate"></div>
+      </div>
+      <div class="tower tower-right">
+        <div class="battlement"><div class="merlon"></div><div class="merlon"></div><div class="merlon"></div></div>
+        <div class="castle-window"></div>
+      </div>
+      <div class="castle-wall"></div>
+      <div class="shield-barrier" id="shieldBarrier"></div>
+    </div>
+    <div class="castle-label">🏫 Hillcrest Academy — Network Fortress</div>
+  </div>
+
+  <!-- THREAT STAGE -->
+  <div class="threat-stage" id="threatStage">
+    <div class="threat-label">⚠️ Incoming Threat</div>
+    <div id="threatCardContainer"></div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar-label">🛡️ Choose your defence</div>
+  <div class="shield-grid" id="shieldGrid"></div>
+
+  <!-- FEEDBACK -->
+  <div class="feedback-panel" id="feedbackPanel">
+    <div class="fp-title" id="fpTitle">✅ Shield deployed!</div>
+    <div class="fp-text" id="fpText"></div>
+  </div>
+
+  <button class="next-wave-btn" id="nextWaveBtn" onclick="nextWave()">Next Wave →</button>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  GAME DATA
+// ══════════════════════════════════════════════
+const shields = [
+  { id:'firewall',    icon:'🧱', name:'Firewall' },
+  { id:'encryption',  icon:'🔐', name:'Encryption' },
+  { id:'passwords',   icon:'🔑', name:'Passwords' },
+  { id:'backup',      icon:'💾', name:'Backup' },
+  { id:'access',      icon:'🛡️', name:'Access Levels' },
+  { id:'antivirus',   icon:'🦠', name:'Antivirus' }
+];
+
+const waves = [
+  {
+    emoji:'🦹', name:'Hacker Attack', desc:'An unauthorised user is attempting to break into the school network from the internet.',
+    answer:'firewall',
+    feedback:'<strong>Firewall</strong> deployed! A firewall monitors and filters data entering or leaving the network — it prevents hackers from gaining unauthorised access.',
+    exam:'📚 Mark scheme: "Prevents hackers from gaining access [1]"'
+  },
+  {
+    emoji:'📡', name:'Data Interceptor', desc:'Someone is intercepting files being transmitted across the network and reading confidential student data.',
+    answer:'encryption',
+    feedback:'<strong>Encryption</strong> deployed! Data is scrambled using an encryption key before transmission — making it unreadable/meaningless if intercepted. Only someone with the key can decrypt it.',
+    exam:'📚 Mark scheme: "Data is unreadable/meaningless if intercepted [1] / Encoding/scrambling data using a key [1]"'
+  },
+  {
+    emoji:'🔓', name:'Brute Force Login', desc:'An attacker is running a program that tries thousands of password combinations to guess a staff member\'s login.',
+    answer:'passwords',
+    feedback:'<strong>Strong Passwords</strong> deployed! Secure passwords should be at least 8 characters, mix numbers, uppercase/lowercase letters and symbols, not be a real word, and be changed regularly — making them extremely hard to guess.',
+    exam:'📚 Mark scheme: "At least 8 characters [1] / mixture of numbers, uppercase and lowercase letters and symbols [1] / not a real word [1]"'
+  },
+  {
+    emoji:'🧛', name:'Unauthorised File Access', desc:'A student has logged on and is attempting to access teacher salary records and exam papers they shouldn\'t be able to see.',
+    answer:'access',
+    feedback:'<strong>Access Levels</strong> deployed! Users are allocated different levels of access: Read Only, Read and Copy, or Read and Write — stored in a table linked to their username. Students can only access what they\'re permitted to.',
+    exam:'📚 Mark scheme: "Access rights: read only / read and copy / read and write [1] / stored in a table linked to user ID [1]"'
+  },
+  {
+    emoji:'💣', name:'Ransomware Virus', desc:'A malicious program has entered the network via an email attachment and is attempting to corrupt data files.',
+    answer:'antivirus',
+    feedback:'<strong>Antivirus</strong> deployed! Antivirus software detects and removes malicious programs (viruses, trojans, worms etc.) before they can damage files. It should be kept up-to-date to recognise new threats.',
+    exam:'📚 Mark scheme: "Virus can enter through: portable storage devices / the internet / email attachments [1]"'
+  },
+  {
+    emoji:'💾', name:'Catastrophic Data Loss', desc:'The main server hard drive has physically failed and all student records have been permanently deleted.',
+    answer:'backup',
+    feedback:'<strong>Backup</strong> deployed! A backup is a second copy of data stored on a different device (e.g. external hard drive or online cloud storage). If original data is lost or corrupted, the backup can be restored.',
+    exam:'📚 Mark scheme: "A copy of data [1] stored on a different storage device [1] / auto-scheduled, e.g. end of each day [1]"'
+  },
+  {
+    emoji:'🌊', name:'Spam Flood Attack', desc:'The school email server is being flooded with thousands of junk messages, crashing the system and blocking legitimate emails.',
+    answer:'firewall',
+    feedback:'<strong>Firewall</strong> deployed again! Firewalls don\'t only block hackers — they also prevent spam and viruses from entering or leaving the network, and can stop unauthorised data uploads/downloads.',
+    exam:'📚 Mark scheme: "Prevents spam and viruses from entering/leaving the network [1] / stops upload/download of unauthorised data [1]"'
+  },
+  {
+    emoji:'👾',  name:'COMBO: Hacker + Data Thief', desc:'⚡ COMBO WAVE! A hacker is attacking the network boundary while a data interceptor steals files in transit simultaneously! Deploy TWO defences!',
+    answer:'firewall',
+    answer2:'encryption',
+    isCombo:true,
+    feedback:'<strong>Firewall + Encryption</strong> — perfect combination! The Firewall stops the hacker at the network boundary, while Encryption ensures any data in transit cannot be read even if intercepted.',
+    exam:'📚 Final boss requires knowledge of both: Firewall (prevents hackers) + Encryption (data unreadable if intercepted)'
+  }
+];
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let currentWaveIndex = 0;
+let health = 100;
+let score = 0;
+let answered = false;
+let comboFirst = null;
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+function startGame() {
+  document.getElementById('welcomeOverlay').style.display = 'none';
+  buildShieldGrid();
+  loadWave(0);
+}
+
+function buildShieldGrid() {
+  const grid = document.getElementById('shieldGrid');
+  grid.innerHTML = '';
+  shields.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'shield-btn';
+    btn.id = 'shield-' + s.id;
+    btn.innerHTML = `<span class="shield-icon">${s.icon}</span><div class="shield-name">${s.name}</div>`;
+    btn.onclick = () => deployShield(s.id);
+    grid.appendChild(btn);
+  });
+}
+
+function loadWave(idx) {
+  answered = false;
+  comboFirst = null;
+  currentWaveIndex = idx;
+  const wave = waves[idx];
+
+  document.getElementById('waveBadge').textContent = idx + 1;
+  document.getElementById('waveDisplay').textContent = (idx+1) + '/8';
+  document.getElementById('waveTitle').textContent = wave.isCombo ? '⚡ COMBO WAVE!' : 'Incoming threat detected!';
+
+  // Build threat card
+  const container = document.getElementById('threatCardContainer');
+  container.innerHTML = '';
+  const card = document.createElement('div');
+  card.className = 'threat-card';
+  card.id = 'threatCard';
+  card.innerHTML = `
+    <div class="threat-emoji">${wave.emoji}</div>
+    <div class="threat-info">
+      <div class="threat-name">${wave.name}</div>
+      <div class="threat-desc">${wave.desc}</div>
+    </div>
+  `;
+  if (wave.isCombo) {
+    const badge = document.createElement('div');
+    badge.className = 'combo-badge';
+    badge.textContent = '⚡ COMBO';
+    document.getElementById('threatStage').appendChild(badge);
+  }
+  container.appendChild(card);
+
+  // Reset shields
+  document.querySelectorAll('.shield-btn').forEach(b => {
+    b.disabled = false;
+    b.className = 'shield-btn';
+  });
+
+  // Reset feedback
+  document.getElementById('feedbackPanel').className = 'feedback-panel';
+  document.getElementById('nextWaveBtn').className = 'next-wave-btn';
+}
+
+// ══════════════════════════════════════════════
+//  DEPLOY
+// ══════════════════════════════════════════════
+function deployShield(shieldId) {
+  if (answered) return;
+  const wave = waves[currentWaveIndex];
+
+  if (wave.isCombo) {
+    handleCombo(shieldId, wave);
+    return;
+  }
+
+  document.querySelectorAll('.shield-btn').forEach(b => b.disabled = true);
+
+  if (shieldId === wave.answer) {
+    // Correct
+    score += 100;
+    document.getElementById('shield-' + shieldId).classList.add('selected-correct');
+    triggerShieldEffect(true);
+    showFeedback(true, wave.feedback, wave.exam);
+    showFloatScore('+100 pts', true);
+    answered = true;
+  } else {
+    // Wrong
+    health = Math.max(0, health - 15);
+    document.getElementById('shield-' + shieldId).classList.add('selected-wrong');
+    document.getElementById('shield-' + wave.answer).classList.add('selected-correct');
+    triggerShieldEffect(false);
+    showFeedback(false, 'The correct answer was <strong>' + shields.find(s=>s.id===wave.answer)?.name + '</strong>. ' + wave.feedback, wave.exam);
+    showFloatScore('-15 HP', false);
+    answered = true;
+    updateHealthBar();
+  }
+
+  updateUI();
+  document.getElementById('nextWaveBtn').className = currentWaveIndex < waves.length-1 ? 'next-wave-btn visible' : 'next-wave-btn visible';
+}
+
+function handleCombo(shieldId, wave) {
+  if (!comboFirst) {
+    // First selection
+    if (shieldId === wave.answer || shieldId === wave.answer2) {
+      comboFirst = shieldId;
+      document.getElementById('shield-' + shieldId).classList.add('selected-correct');
+      document.getElementById('shield-' + shieldId).disabled = true;
+      showFloatScore('1/2 ✅', true);
+    } else {
+      // Wrong first pick
+      document.getElementById('shield-' + shieldId).classList.add('selected-wrong');
+      document.getElementById('shield-' + shieldId).disabled = true;
+      health = Math.max(0, health - 10);
+      updateHealthBar();
+      showFloatScore('-10 HP', false);
+    }
+    return;
+  }
+
+  // Second selection
+  document.querySelectorAll('.shield-btn').forEach(b => b.disabled = true);
+  const need = comboFirst === wave.answer ? wave.answer2 : wave.answer;
+
+  if (shieldId === need) {
+    score += 150;
+    document.getElementById('shield-' + shieldId).classList.add('selected-correct');
+    triggerShieldEffect(true);
+    showFeedback(true, wave.feedback, wave.exam);
+    showFloatScore('+150 pts COMBO!', true);
+    answered = true;
+  } else {
+    health = Math.max(0, health - 10);
+    document.getElementById('shield-' + shieldId).classList.add('selected-wrong');
+    document.getElementById('shield-' + need).classList.add('selected-correct');
+    triggerShieldEffect(false);
+    showFeedback(false, 'The combo was <strong>Firewall + Encryption</strong>! ' + wave.feedback, wave.exam);
+    showFloatScore('-10 HP', false);
+    answered = true;
+    updateHealthBar();
+  }
+
+  updateUI();
+  document.getElementById('nextWaveBtn').className = 'next-wave-btn visible';
+  document.getElementById('nextWaveBtn').textContent = 'See Results →';
+}
+
+function triggerShieldEffect(success) {
+  const card = document.getElementById('threatCard');
+  if (success) {
+    const barrier = document.getElementById('shieldBarrier');
+    barrier.className = 'shield-barrier active';
+    setTimeout(() => { barrier.className = 'shield-barrier'; }, 800);
+    card.classList.add('repelled');
+  } else {
+    card.classList.add('hits');
+    const flash = document.createElement('div');
+    flash.className = 'impact-flash';
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 400);
+    setTimeout(() => card.classList.remove('hits'), 500);
+  }
+}
+
+function showFeedback(correct, text, exam) {
+  const panel = document.getElementById('feedbackPanel');
+  const title = document.getElementById('fpTitle');
+  const textEl = document.getElementById('fpText');
+
+  panel.className = 'feedback-panel visible ' + (correct ? 'correct' : 'wrong');
+  title.innerHTML = correct ? '✅ Shield deployed successfully!' : '❌ Wrong shield — fortress takes damage!';
+  textEl.innerHTML = text + '<br><br><span style="color:#e3b341;font-size:0.78rem">' + exam + '</span>';
+}
+
+function nextWave() {
+  currentWaveIndex++;
+  if (currentWaveIndex >= waves.length) {
+    showResults();
+  } else {
+    // Clear combo badge
+    const cb = document.querySelector('.combo-badge');
+    if (cb) cb.remove();
+    loadWave(currentWaveIndex);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  RESULTS
+// ══════════════════════════════════════════════
+function showResults() {
+  let stars, rank, sub;
+  if (health >= 90) { stars='⭐⭐⭐'; rank='FORTRESS COMMANDER'; sub='Incredible! The fortress walls are practically untouched. You knew every defence perfectly.'; }
+  else if (health >= 60) { stars='⭐⭐'; rank='NETWORK DEFENDER'; sub='Well defended! A few threats got through but the fortress survived. Review the feedback above.'; }
+  else { stars='⭐'; rank='CYBER RECRUIT'; sub='The fortress took heavy damage! Revise each protection method and try again.'; }
+
+  document.getElementById('stars').textContent = stars;
+  document.getElementById('resultsRank').textContent = rank;
+  document.getElementById('resultsScore').innerHTML = score + ' <span>pts</span>';
+  document.getElementById('resultsHealth').textContent = 'Fortress integrity: ' + health + '%';
+  document.getElementById('resultsSub').textContent = sub;
+  document.getElementById('resultsOverlay').className = 'results-overlay visible';
+
+  if (health >= 70) launchFireworks();
+}
+
+function restartGame() {
+  health = 100; score = 0; currentWaveIndex = 0; answered = false; comboFirst = null;
+  document.getElementById('resultsOverlay').className = 'results-overlay';
+  document.getElementById('welcomeOverlay').style.display = 'flex';
+  updateHealthBar();
+  updateUI();
+}
+
+// ══════════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════════
+function updateHealthBar() {
+  const fill = document.getElementById('healthFill');
+  const txt = document.getElementById('hpText');
+  const hd = document.getElementById('healthDisplay');
+  fill.style.width = health + '%';
+  txt.textContent = health + '%';
+  hd.textContent = health + '%';
+  fill.className = 'health-fill' + (health <= 30 ? ' danger' : health <= 60 ? ' warning' : '');
+}
+
+function updateUI() {
+  document.getElementById('scoreDisplay').textContent = score;
+  updateHealthBar();
+}
+
+function showFloatScore(text, positive) {
+  const el = document.createElement('div');
+  el.className = 'float-score';
+  el.style.color = positive ? '#3fb950' : '#f85149';
+  el.style.left = (window.innerWidth/2 - 40) + 'px';
+  el.style.top = (window.innerHeight*0.4) + 'px';
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1100);
+}
+
+function launchFireworks() {
+  const cx = window.innerWidth/2;
+  const cy = window.innerHeight/2;
+  const colours = ['#9b59b6','#e3b341','#00d9ff','#3fb950','#ffffff','#c39bd3'];
+  for (let i=0; i<40; i++) {
+    const fw = document.createElement('div');
+    fw.className = 'fw';
+    const angle = (i/40)*Math.PI*2;
+    const dist = 80+Math.random()*160;
+    const ex = Math.cos(angle)*dist;
+    const ey = Math.sin(angle)*dist - 80;
+    fw.style.cssText = `
+      left:${cx}px; top:${cy}px;
+      background:${colours[Math.floor(Math.random()*colours.length)]};
+      --end: translate(${ex}px, ${ey}px) scale(0);
+      animation-duration:${0.8+Math.random()*0.6}s;
+      animation-delay:${Math.random()*0.4}s;
+    `;
+    document.body.appendChild(fw);
+    setTimeout(() => fw.remove(), 2000);
+  }
+}
+</script>
+</body>
+</html>

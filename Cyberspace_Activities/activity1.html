@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🕵️ Inbox Inspector</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+    min-height: 100vh;
+    color: #c9d1d9;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER BAR ── */
+  .topbar {
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .back-btn {
+    color: #8b949e;
+    text-decoration: none;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.2s;
+  }
+  .back-btn:hover { color: #58a6ff; }
+
+  .title-bar {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .rank-badge {
+    background: linear-gradient(135deg, #0066cc, #00d9ff);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+    letter-spacing: 1px;
+  }
+  .stats-bar {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .stat {
+    text-align: center;
+    font-size: 0.78rem;
+    color: #8b949e;
+  }
+  .stat-value {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: white;
+    display: block;
+  }
+  .stat-value.green { color: #3fb950; }
+  .stat-value.gold { color: #e3b341; }
+
+  /* ── MAIN LAYOUT ── */
+  .layout {
+    display: flex;
+    height: calc(100vh - 57px);
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR (email list) ── */
+  .sidebar {
+    width: 300px;
+    background: #0d1117;
+    border-right: 1px solid #21262d;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .sidebar-header {
+    padding: 16px 20px 12px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #8b949e;
+    border-bottom: 1px solid #21262d;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .inbox-count {
+    background: #1f6feb;
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+  .email-item {
+    padding: 14px 20px;
+    border-bottom: 1px solid #21262d;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+  }
+  .email-item:hover { background: #161b22; }
+  .email-item.active { background: #161b22; border-left: 3px solid #58a6ff; }
+  .email-item.scanned-safe { border-left: 3px solid #3fb950; opacity: 0.6; }
+  .email-item.scanned-threat { border-left: 3px solid #f85149; opacity: 0.6; }
+  .email-item.unread .email-sender { font-weight: 700; color: white; }
+  .email-sender {
+    font-size: 0.85rem;
+    color: #c9d1d9;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .email-preview {
+    font-size: 0.75rem;
+    color: #8b949e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .email-time {
+    position: absolute;
+    top: 14px; right: 14px;
+    font-size: 0.68rem;
+    color: #6e7681;
+  }
+  .email-dot {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #1f6feb;
+  }
+
+  /* ── EMAIL VIEWER ── */
+  .viewer {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .email-header-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .email-subject {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 14px;
+  }
+  .email-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.83rem;
+    color: #8b949e;
+    border-top: 1px solid #30363d;
+    padding-top: 14px;
+  }
+  .email-meta span { display: flex; gap: 8px; }
+  .meta-label { color: #6e7681; width: 40px; flex-shrink: 0; }
+  .meta-value { color: #c9d1d9; }
+  .suspicious-addr {
+    color: #f85149 !important;
+    text-decoration: underline dotted;
+    cursor: help;
+  }
+
+  .email-body-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 28px;
+    line-height: 1.8;
+    font-size: 0.95rem;
+    color: #c9d1d9;
+    flex: 1;
+  }
+  .email-body-card p { margin-bottom: 12px; }
+  .fake-link {
+    color: #58a6ff;
+    text-decoration: underline;
+    cursor: help;
+    position: relative;
+  }
+  .email-body-card .official-logo {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #30363d;
+  }
+  .warning-ribbon {
+    background: rgba(248,81,73,0.12);
+    border: 1px solid rgba(248,81,73,0.3);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    color: #f85149;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  /* ── STATUS BAR ── */
+  .statusbar {
+    background: #010409;
+    border-top: 1px solid #21262d;
+    padding: 6px 20px;
+    font-size: 0.75rem;
+    color: #3fb950;
+    font-family: monospace;
+    position: sticky;
+    bottom: 0;
+    transition: all 0.3s;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .statusbar.danger { color: #f85149; }
+  .statusbar-icon { font-size: 0.9rem; }
+
+  /* ── ACTION PANEL ── */
+  .action-panel {
+    width: 280px;
+    background: #0d1117;
+    border-left: 1px solid #21262d;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .action-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #8b949e;
+    margin-bottom: 4px;
+  }
+  .verdict-btns {
+    display: flex;
+    gap: 10px;
+  }
+  .verdict-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .verdict-btn.safe {
+    background: rgba(63, 185, 80, 0.15);
+    border: 2px solid #3fb950;
+    color: #3fb950;
+  }
+  .verdict-btn.threat {
+    background: rgba(248, 81, 73, 0.15);
+    border: 2px solid #f85149;
+    color: #f85149;
+  }
+  .verdict-btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
+  .verdict-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .verdict-btn .btn-icon { font-size: 1.5rem; }
+  .verdict-btn .btn-label { font-size: 0.75rem; }
+
+  .threat-selector { display: none; }
+  .threat-selector.visible { display: block; animation: popIn 0.3s ease; }
+  @keyframes popIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+
+  .threat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .threat-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #c9d1d9;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 10px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .threat-btn:hover {
+    background: rgba(248,81,73,0.15);
+    border-color: #f85149;
+    color: #f85149;
+  }
+  .threat-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* ── FEEDBACK ── */
+  .feedback-box {
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+    padding: 16px;
+    display: none;
+    animation: slideUp 0.3s ease;
+  }
+  .feedback-box.visible { display: block; }
+  @keyframes slideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .feedback-correct { border: 1px solid #3fb950; }
+  .feedback-wrong { border: 1px solid #f85149; }
+  .feedback-icon { font-size: 1.5rem; margin-bottom: 6px; }
+  .feedback-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
+  .feedback-correct .feedback-title { color: #3fb950; }
+  .feedback-wrong .feedback-title { color: #f85149; }
+  .feedback-text { font-size: 0.8rem; color: #8b949e; line-height: 1.5; }
+  .feedback-text strong { color: #c9d1d9; }
+
+  .next-btn {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #0066cc, #00d9ff);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+    transition: all 0.2s;
+  }
+  .next-btn.visible { display: block; animation: fadeIn 0.3s ease; }
+  .next-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+  .progress-section { }
+  .progress-label {
+    font-size: 0.75rem;
+    color: #8b949e;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .progress-track {
+    height: 6px;
+    background: #21262d;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0066cc, #00d9ff);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  /* ── WELCOME SCREEN ── */
+  .welcome-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.4s ease;
+  }
+  .welcome-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 20px;
+    padding: 44px;
+    max-width: 520px;
+    width: 90%;
+    text-align: center;
+  }
+  .welcome-icon { font-size: 4rem; margin-bottom: 16px; }
+  .welcome-card h2 { font-size: 1.8rem; color: white; margin-bottom: 8px; }
+  .welcome-card .sub { color: #8b949e; margin-bottom: 24px; line-height: 1.6; }
+  .brief-list {
+    text-align: left;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    font-size: 0.88rem;
+    color: #c9d1d9;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .brief-list li::before { content: '→ '; color: #00d9ff; }
+  .start-btn {
+    background: linear-gradient(135deg, #0066cc, #00d9ff);
+    border: none;
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 14px 40px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .start-btn:hover { transform: scale(1.05); }
+
+  /* ── RESULTS SCREEN ── */
+  .results-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  .results-overlay.visible { display: flex; }
+  .results-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 24px;
+    padding: 48px 44px;
+    max-width: 560px;
+    width: 90%;
+    text-align: center;
+    animation: popIn 0.5s ease;
+  }
+  .results-rank-icon { font-size: 5rem; margin-bottom: 8px; }
+  .results-rank { font-size: 1.1rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  .results-rank.director { color: #e3b341; }
+  .results-rank.agent { color: #00d9ff; }
+  .results-rank.officer { color: #3fb950; }
+  .results-rank.trainee { color: #8b949e; }
+  .results-score { font-size: 3.5rem; font-weight: 800; color: white; }
+  .results-score span { font-size: 1.2rem; color: #8b949e; }
+  .results-sub { color: #8b949e; margin: 12px 0 28px; font-size: 0.95rem; }
+  .results-breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 14px 10px;
+  }
+  .breakdown-value { font-size: 1.6rem; font-weight: 800; color: white; }
+  .breakdown-label { font-size: 0.7rem; color: #8b949e; margin-top: 2px; }
+  .results-btns { display: flex; gap: 12px; justify-content: center; }
+  .result-btn {
+    padding: 12px 28px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  .result-btn.primary {
+    background: linear-gradient(135deg, #0066cc, #00d9ff);
+    color: white;
+  }
+  .result-btn.secondary {
+    background: rgba(255,255,255,0.08);
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+  }
+  .result-btn:hover { transform: scale(1.05); }
+
+  /* ── ANIMATIONS ── */
+  .shake { animation: shake 0.4s ease; }
+  @keyframes shake {
+    0%,100% { transform:translateX(0); }
+    20% { transform:translateX(-8px); }
+    40% { transform:translateX(8px); }
+    60% { transform:translateX(-5px); }
+    80% { transform:translateX(5px); }
+  }
+  .pulse-green { animation: pulseGreen 0.5s ease; }
+  @keyframes pulseGreen {
+    0% { box-shadow: 0 0 0 0 rgba(63,185,80,0.5); }
+    70% { box-shadow: 0 0 0 15px rgba(63,185,80,0); }
+    100% { box-shadow: 0 0 0 0 rgba(63,185,80,0); }
+  }
+
+  /* confetti */
+  .confetti-piece {
+    position: fixed;
+    width: 10px; height: 10px;
+    top: -10px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+    z-index: 9999;
+    pointer-events: none;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* float-up score */
+  .float-score {
+    position: fixed;
+    font-size: 1.2rem;
+    font-weight: 800;
+    pointer-events: none;
+    z-index: 999;
+    animation: floatUp 1s ease forwards;
+  }
+  @keyframes floatUp {
+    0% { opacity:1; transform:translateY(0) scale(1); }
+    100% { opacity:0; transform:translateY(-60px) scale(1.3); }
+  }
+
+  @media (max-width: 900px) {
+    .sidebar { width: 220px; }
+    .action-panel { width: 230px; }
+    .viewer { padding: 20px; }
+  }
+  @media (max-width: 650px) {
+    .layout { flex-direction: column; height: auto; overflow: visible; }
+    .sidebar { width: 100%; height: 150px; display: flex; overflow-x: auto; overflow-y: hidden; flex-direction: row; }
+    .email-item { min-width: 180px; border-bottom: none; border-right: 1px solid #21262d; }
+    .action-panel { width: 100%; }
+    .viewer { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- WELCOME OVERLAY -->
+<div class="welcome-overlay" id="welcomeOverlay">
+  <div class="welcome-card">
+    <div class="welcome-icon">🕵️</div>
+    <h2>Inbox Inspector</h2>
+    <p class="sub">You've just been hired as a Cyber Security Officer. Your first mission: scan the inbox and identify the threats lurking inside.</p>
+    <ul class="brief-list">
+      <li>Read each email carefully</li>
+      <li>Decide: <strong>Safe</strong> or <strong>Threat</strong>?</li>
+      <li>If it's a threat — identify exactly what type</li>
+      <li>Hover over any links to see where they <em>really</em> go</li>
+    </ul>
+    <button class="start-btn" onclick="startGame()">🚀 Begin Mission</button>
+  </div>
+</div>
+
+<!-- RESULTS OVERLAY -->
+<div class="results-overlay" id="resultsOverlay">
+  <div class="results-card" id="resultsCard">
+    <div class="results-rank-icon" id="resultsIcon">🕵️</div>
+    <div class="results-rank" id="resultsRank">SECURITY OFFICER</div>
+    <div class="results-score" id="resultsScore">0 <span>pts</span></div>
+    <div class="results-sub" id="resultsSub">Loading...</div>
+    <div class="results-breakdown">
+      <div class="breakdown-item">
+        <div class="breakdown-value" id="bdCorrect">0</div>
+        <div class="breakdown-label">Correct</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="breakdown-value" id="bdWrong">0</div>
+        <div class="breakdown-label">Missed</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="breakdown-value" id="bdStreak">0</div>
+        <div class="breakdown-label">Best Streak</div>
+      </div>
+    </div>
+    <div class="results-btns">
+      <button class="result-btn primary" onclick="restartGame()">🔄 Try Again</button>
+      <button class="result-btn secondary" onclick="window.location.href='index.html'">← Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="back-btn">← Menu</a>
+    <div class="title-bar">🕵️ Inbox Inspector <div class="rank-badge" id="rankBadge">TRAINEE</div></div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat"><span class="stat-value" id="scoreDisplay">0</span>Score</div>
+    <div class="stat"><span class="stat-value gold" id="streakDisplay">0 🔥</span>Streak</div>
+    <div class="stat"><span class="stat-value" id="progressDisplay">0/8</span>Emails</div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      Inbox <span class="inbox-count" id="inboxCount">8</span>
+    </div>
+    <div id="emailList"></div>
+  </div>
+
+  <!-- VIEWER -->
+  <div class="viewer" id="emailViewer">
+    <div style="text-align:center; padding:60px 20px; color:#6e7681;">
+      <div style="font-size:3rem; margin-bottom:16px;">📬</div>
+      <p>Select an email from the inbox to begin scanning.</p>
+    </div>
+  </div>
+
+  <!-- ACTION PANEL -->
+  <div class="action-panel">
+
+    <div class="progress-section">
+      <div class="progress-label">
+        <span>Inbox Cleared</span>
+        <span id="progressLabel">0 / 8</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="action-title">Your Verdict</div>
+      <div class="verdict-btns">
+        <button class="verdict-btn safe" id="safeBtn" onclick="submitVerdict('safe')" disabled>
+          <span class="btn-icon">✅</span>
+          <span class="btn-label">SAFE</span>
+        </button>
+        <button class="verdict-btn threat" id="threatBtn" onclick="submitVerdict('threat')" disabled>
+          <span class="btn-icon">⚠️</span>
+          <span class="btn-label">THREAT</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="threat-selector" id="threatSelector">
+      <div class="action-title" style="margin-bottom:10px;">What type of threat?</div>
+      <div class="threat-grid" id="threatGrid"></div>
+    </div>
+
+    <div class="feedback-box" id="feedbackBox">
+      <div class="feedback-icon" id="feedbackIcon">✅</div>
+      <div class="feedback-title" id="feedbackTitle">Correct!</div>
+      <div class="feedback-text" id="feedbackText"></div>
+    </div>
+
+    <button class="next-btn" id="nextBtn" onclick="nextEmail()">Next Email →</button>
+
+  </div>
+
+</div>
+
+<!-- STATUS BAR (bottom of viewer) -->
+<div class="statusbar" id="statusBar">
+  <span class="statusbar-icon">🔒</span>
+  <span id="statusText">Hover over any links in an email to inspect them</span>
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  EMAIL DATA
+// ══════════════════════════════════════
+const emails = [
+  {
+    id: 1,
+    sender: 'PayPaI Security Team',
+    address: 'security@paypa1.account-verify.com',
+    addressSuspicious: true,
+    subject: '⚠️ Urgent: Your account has been limited',
+    time: '09:14',
+    preview: 'We have noticed unusual activity on your account...',
+    safe: false,
+    threatType: 'Phishing',
+    logo: '💳 PayPaI™',
+    body: `
+      <p>We have noticed <strong>unusual activity</strong> on your PayPaI account and have temporarily limited your access.</p>
+      <p>To restore full access, please verify your information immediately by clicking the secure link below:</p>
+      <p><a class="fake-link" data-real="http://paypa1-verify.ru/steal-details?user=target" href="#">🔗 Verify My Account Now →</a></p>
+      <p>If you do not verify within <strong>24 hours</strong>, your account will be permanently suspended.</p>
+      <p>Thank you for being a valued customer.<br>PayPaI Security Team</p>
+    `,
+    feedback: '<strong>This is Phishing!</strong> The sender\'s email address is <code>paypa1.account-verify.com</code> — not a real PayPal domain. The link actually leads to a fake site designed to steal your personal details. <br><br>📚 <em>Exam definition: An attempt to get personal or sensitive information by pretending to be someone/something else.</em>'
+  },
+  {
+    id: 2,
+    sender: 'WinnerAlerts.co',
+    address: 'prizes@winneralerts.co',
+    addressSuspicious: false,
+    subject: '🎉 CONGRATULATIONS — You\'ve been selected!',
+    time: '08:52',
+    preview: 'You have been randomly selected to receive a special prize...',
+    safe: false,
+    threatType: 'Spamming',
+    logo: '🏆 Prize Centre',
+    body: `
+      <p>🎊 <strong>CONGRATULATIONS!</strong> You have been <em>randomly selected</em> from millions of users to receive a <strong>£500 Amazon voucher</strong>!</p>
+      <p>This is NOT a scam. This is NOT spam. This is a GENUINE offer from our registered prize distribution centre.</p>
+      <p>To claim your prize, simply click below and enter your details:</p>
+      <p><a class="fake-link" data-real="http://winneralerts.co/claim?track=bulk-spam-01" href="#">👉 CLAIM MY PRIZE NOW</a></p>
+      <p>Offer expires in 48 hours. Share with friends for bonus entries!</p>
+    `,
+    feedback: '<strong>This is Spamming!</strong> This is a bulk "junk" email sent to thousands of users at once with fake prize offers. These waste inbox space and time, and often lead to phishing sites.<br><br>📚 <em>Exam definition: Sending junk emails to users, for example adverts or fake prize notifications — causing inbox overload.</em>'
+  },
+  {
+    id: 3,
+    sender: 'St. Joseph\'s Admin Office',
+    address: 'admin@stjosephs-college.edu',
+    addressSuspicious: false,
+    subject: 'Year 11 Spring Newsletter — March Edition',
+    time: '08:31',
+    preview: 'Please find attached the Spring newsletter for Year 11 students...',
+    safe: true,
+    threatType: null,
+    logo: '🏫 St. Joseph\'s College',
+    body: `
+      <p>Dear Students and Parents,</p>
+      <p>Please find below the <strong>Year 11 Spring Newsletter</strong> for March 2026.</p>
+      <p>Key dates this term:</p>
+      <ul style="margin-left:20px; margin-bottom:12px;">
+        <li>March 10 — Mock Exam Week begins</li>
+        <li>March 24 — Parent-Teacher Evening</li>
+        <li>April 4 — Easter Holidays begin</li>
+      </ul>
+      <p>If you have any questions, please contact the school office directly on the number listed on our official website.</p>
+      <p>Kind regards,<br><strong>St. Joseph's College Admin Team</strong></p>
+    `,
+    feedback: '<strong>This email is Safe ✅</strong> The sender\'s domain is <code>stjosephs-college.edu</code> — a legitimate educational address. The content is routine school information with no requests for personal data, no suspicious links, and no urgency tactics.'
+  },
+  {
+    id: 4,
+    sender: 'unknown_user_2847',
+    address: 'hate2847@protonmail.com',
+    addressSuspicious: true,
+    subject: 'I know where you live. Stop ignoring me.',
+    time: '10:05',
+    preview: 'This is the third message I\'ve sent. You\'d better reply...',
+    safe: false,
+    threatType: 'Cyber Stalking',
+    logo: '⚠️ Unknown Sender',
+    body: `
+      <p>This is the third message I have sent you. You'd better reply this time.</p>
+      <p>I've been watching your social media. I know you go to school on Lisburn Road. I know what bus you take.</p>
+      <p>Keep ignoring me and you'll regret it. I've got your home address from your Instagram profile.</p>
+      <p>Don't make me post things about you online. You know I will.</p>
+      <p>— You know who this is.</p>
+    `,
+    feedback: '<strong>This is Cyber Stalking!</strong> This sender is using digital communication to persistently harass and intimidate someone online — referencing personal information to create fear. This is a serious criminal offence.<br><br>📚 <em>Exam definition: Individuals using technology to harass others — e.g. sending inappropriate or intimidating messages online.</em>'
+  },
+  {
+    id: 5,
+    sender: 'HMRC — Refund Services',
+    address: 'refunds@hmrc-gov-uk.co.uk',
+    addressSuspicious: true,
+    subject: '£312.47 Tax Refund — Action Required',
+    time: '11:22',
+    preview: 'You are entitled to a tax refund of £312.47...',
+    safe: false,
+    threatType: 'Phishing',
+    logo: '🏛️ HMRC',
+    body: `
+      <p>Dear Taxpayer,</p>
+      <p>Following our annual tax calculations, you are entitled to a <strong>refund of £312.47</strong>.</p>
+      <p>To process your refund, please submit your bank account details securely through our online portal:</p>
+      <p><a class="fake-link" data-real="http://hmrc-gov-uk.co.uk/refund?steal=bankdetails" href="#">🏛️ Submit Refund Request</a></p>
+      <p>You will need: sort code, account number, date of birth and National Insurance number.</p>
+      <p>This refund will expire if not claimed within 5 working days.</p>
+      <p>HM Revenue &amp; Customs</p>
+    `,
+    feedback: '<strong>This is Phishing!</strong> The real HMRC domain is <code>hmrc.gov.uk</code> — this sender uses <code>hmrc-gov-uk.co.uk</code> which is a fake. HMRC never asks for bank details by email. This is a classic phishing attempt to steal financial information.<br><br>📚 <em>Exam definition: An attempt to get personal or sensitive information by pretending to be someone/something else.</em>'
+  },
+  {
+    id: 6,
+    sender: 'NoReply@ClassPass',
+    address: 'classpass-abuse@botmail.net',
+    addressSuspicious: true,
+    subject: 'Message Message Message Message Message Message',
+    time: '11:45',
+    preview: 'Message Message Message Message Message Message...',
+    safe: false,
+    threatType: 'Denial of Service',
+    logo: '🌊 Automated System',
+    body: `
+      <p>Message Message Message Message Message Message Message Message</p>
+      <p>Message Message Message Message Message Message Message Message</p>
+      <p>Message Message Message Message Message Message Message Message</p>
+      <p>Message Message Message Message Message Message Message Message</p>
+      <p><em>(This is one of 847 identical messages received in the last 10 minutes from automated bots. Your email server is being flooded.)</em></p>
+    `,
+    feedback: '<strong>This is a Denial of Service (DoS) attack!</strong> The inbox is being flooded with thousands of identical automated messages, overwhelming the system and preventing normal use — exactly the same principle as a network DoS attack.<br><br>📚 <em>Exam definition: A malicious attack that floods a system with too many requests, causing it to stop working properly.</em>'
+  },
+  {
+    id: 7,
+    sender: 'Year 11 — Cyber Defamation',
+    address: 'troll.acct2847@fakegmail.xyz',
+    addressSuspicious: true,
+    subject: 'Have you seen what people are saying about Jordan M?',
+    time: '12:10',
+    preview: 'I created a page spreading rumours about Jordan. Share it around...',
+    safe: false,
+    threatType: 'Cyber Defamation',
+    logo: '👤 Anonymous',
+    body: `
+      <p>Heyy,</p>
+      <p>You know Jordan from 11B? I made a page full of lies about them — saying they cheated in their GCSEs and got arrested last year. None of it is true but it's pretty funny lol.</p>
+      <p>Share this around school: <a class="fake-link" data-real="http://fakegmail.xyz/expose-jordan-lies" href="#">🔗 See the page here</a></p>
+      <p>The more people who see it the better 😂</p>
+    `,
+    feedback: '<strong>This is Cyber Defamation!</strong> The sender is deliberately spreading false information online to damage someone\'s reputation. This is a criminal offence.<br><br>📚 <em>Exam definition: Using the internet to intentionally damage the reputation of a person or organisation by spreading harmful or false information.</em>'
+  },
+  {
+    id: 8,
+    sender: 'CCEA Examinations',
+    address: 'noreply@ccea.org.uk',
+    addressSuspicious: false,
+    subject: 'Your GCSE Results — Available Online from 20 August',
+    time: '14:03',
+    preview: 'Your GCSE Digital Technology results will be available from...',
+    safe: true,
+    threatType: null,
+    logo: '📋 CCEA',
+    body: `
+      <p>Dear Candidate,</p>
+      <p>Your <strong>GCSE Digital Technology</strong> results will be available online from <strong>20 August 2026 at 8:00am</strong>.</p>
+      <p>You can access your results through the secure CCEA Results Hub at <strong>ccea.org.uk/results</strong>.</p>
+      <p>You will need your candidate number and date of birth to log in. Do not share these with anyone.</p>
+      <p>Good luck — we hope you achieved the grade you worked hard for!</p>
+      <p>CCEA Examinations Team</p>
+    `,
+    feedback: '<strong>This email is Safe ✅</strong> The sender domain is <code>ccea.org.uk</code> — the legitimate CCEA examinations board. The email contains no suspicious links, no requests for bank details, and no pressure tactics. It directs users to the official website rather than an embedded link.'
+  }
+];
+
+// Shuffle utility
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const threatTypes = ['Phishing','Spamming','Cyber Stalking','Cyber Defamation','Denial of Service','Hacking'];
+
+// ══════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════
+let shuffledEmails = [];
+let currentEmailIndex = -1;
+let currentEmail = null;
+let score = 0;
+let streak = 0;
+let bestStreak = 0;
+let correct = 0;
+let wrong = 0;
+let scanned = 0;
+let awaitingThreatType = false;
+let answered = false;
+
+// ══════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════
+function startGame() {
+  document.getElementById('welcomeOverlay').style.display = 'none';
+  shuffledEmails = shuffle(emails);
+  buildSidebar();
+  openEmail(0);
+}
+
+function buildSidebar() {
+  const list = document.getElementById('emailList');
+  list.innerHTML = '';
+  shuffledEmails.forEach((em, i) => {
+    const item = document.createElement('div');
+    item.className = 'email-item unread';
+    item.id = 'sidebar-' + i;
+    item.innerHTML = `
+      <div class="email-dot" id="dot-${i}"></div>
+      <div class="email-sender" style="padding-left:10px">${em.sender}</div>
+      <div class="email-preview" style="padding-left:10px">${em.preview}</div>
+      <div class="email-time">${em.time}</div>
+    `;
+    item.onclick = () => openEmail(i);
+    list.appendChild(item);
+  });
+  document.getElementById('inboxCount').textContent = shuffledEmails.length;
+}
+
+function openEmail(index) {
+  currentEmailIndex = index;
+  currentEmail = shuffledEmails[index];
+  answered = false;
+  awaitingThreatType = false;
+
+  // Sidebar highlight
+  document.querySelectorAll('.email-item').forEach((el, i) => {
+    el.classList.toggle('active', i === index);
+  });
+
+  // Render email
+  const viewer = document.getElementById('emailViewer');
+  const addrClass = currentEmail.addressSuspicious ? 'suspicious-addr' : 'meta-value';
+  viewer.innerHTML = `
+    <div class="email-header-card">
+      <div class="official-logo">${currentEmail.logo}</div>
+      <div class="email-subject">${currentEmail.subject}</div>
+      <div class="email-meta">
+        <span><span class="meta-label">From</span><span class="${addrClass}" title="Inspect sender address carefully!">${currentEmail.address}</span></span>
+        <span><span class="meta-label">To</span><span class="meta-value">you@school.ac.uk</span></span>
+        <span><span class="meta-label">Time</span><span class="meta-value">Today, ${currentEmail.time}</span></span>
+      </div>
+    </div>
+    <div class="email-body-card">
+      <div class="warning-ribbon" id="warningRibbon">⚠️ Warning: Suspicious sender address detected</div>
+      ${currentEmail.body}
+    </div>
+  `;
+
+  // Add hover listeners to fake links
+  viewer.querySelectorAll('.fake-link').forEach(link => {
+    link.addEventListener('mouseenter', () => {
+      const realUrl = link.dataset.real;
+      const sb = document.getElementById('statusBar');
+      const st = document.getElementById('statusText');
+      sb.className = 'statusbar danger';
+      st.textContent = '⚠️  Real destination: ' + realUrl;
+    });
+    link.addEventListener('mouseleave', () => {
+      const sb = document.getElementById('statusBar');
+      const st = document.getElementById('statusText');
+      sb.className = 'statusbar';
+      st.textContent = 'Hover over any links in an email to inspect them';
+    });
+    link.addEventListener('click', e => e.preventDefault());
+  });
+
+  if (currentEmail.addressSuspicious) {
+    document.getElementById('warningRibbon').style.display = 'block';
+  }
+
+  // Reset action panel
+  document.getElementById('safeBtn').disabled = false;
+  document.getElementById('threatBtn').disabled = false;
+  document.getElementById('threatSelector').className = 'threat-selector';
+  document.getElementById('feedbackBox').className = 'feedback-box';
+  document.getElementById('nextBtn').className = 'next-btn';
+  buildThreatGrid();
+}
+
+function buildThreatGrid() {
+  const grid = document.getElementById('threatGrid');
+  grid.innerHTML = '';
+  threatTypes.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'threat-btn';
+    btn.textContent = t;
+    btn.onclick = () => submitThreatType(t);
+    grid.appendChild(btn);
+  });
+}
+
+// ══════════════════════════════════════
+//  VERDICTS
+// ══════════════════════════════════════
+function submitVerdict(verdict) {
+  if (answered) return;
+
+  document.getElementById('safeBtn').disabled = true;
+  document.getElementById('threatBtn').disabled = true;
+
+  const isSafe = currentEmail.safe;
+
+  if (verdict === 'safe' && isSafe) {
+    // Correct — safe email
+    handleCorrect(true, null);
+  } else if (verdict === 'safe' && !isSafe) {
+    // Wrong — it was actually a threat
+    handleWrong('This is actually a threat! ' + currentEmail.feedback);
+  } else if (verdict === 'threat' && isSafe) {
+    // Wrong — it was safe
+    handleWrong('This email is actually safe! ' + currentEmail.feedback);
+  } else {
+    // Correct that it's a threat — now ask what type
+    awaitingThreatType = true;
+    document.getElementById('threatSelector').className = 'threat-selector visible';
+  }
+}
+
+function submitThreatType(type) {
+  if (!awaitingThreatType) return;
+  awaitingThreatType = false;
+
+  document.getElementById('threatSelector').querySelectorAll('.threat-btn').forEach(b => b.disabled = true);
+
+  if (type === currentEmail.threatType) {
+    handleCorrect(false, type);
+  } else {
+    handleWrong(`That's not quite right — this is <strong>${currentEmail.threatType}</strong>. ${currentEmail.feedback}`);
+  }
+}
+
+function handleCorrect(isSafeEmail, threatType) {
+  answered = true;
+  streak++;
+  correct++;
+  if (streak > bestStreak) bestStreak = streak;
+
+  let pts = isSafeEmail ? 75 : 150 + (streak > 1 ? (streak - 1) * 25 : 0);
+  score += pts;
+
+  updateStats();
+  showFeedback(true, currentEmail.feedback);
+  markSidebarScanned(currentEmailIndex, true);
+  showFloatScore('+' + pts + ' pts', true);
+
+  if (streak >= 3) spawnConfetti(15);
+  scanned++;
+  updateProgress();
+  checkEnd();
+}
+
+function handleWrong(reason) {
+  answered = true;
+  streak = 0;
+  wrong++;
+  score = Math.max(0, score - 50);
+
+  updateStats();
+  showFeedback(false, reason);
+  markSidebarScanned(currentEmailIndex, false);
+  showFloatScore('-50 pts', false);
+
+  // Shake viewer
+  document.querySelector('.email-header-card')?.classList.add('shake');
+  setTimeout(() => document.querySelector('.email-header-card')?.classList.remove('shake'), 500);
+
+  scanned++;
+  updateProgress();
+  checkEnd();
+}
+
+function showFeedback(isCorrect, text) {
+  const box = document.getElementById('feedbackBox');
+  const icon = document.getElementById('feedbackIcon');
+  const title = document.getElementById('feedbackTitle');
+  const textEl = document.getElementById('feedbackText');
+
+  box.className = 'feedback-box visible ' + (isCorrect ? 'feedback-correct' : 'feedback-wrong');
+  icon.textContent = isCorrect ? '✅' : '❌';
+  title.textContent = isCorrect ? 'Well spotted!' : 'Not quite!';
+  textEl.innerHTML = text;
+
+  if (isCorrect) box.classList.add('pulse-green');
+
+  document.getElementById('nextBtn').className = scanned < shuffledEmails.length ? 'next-btn visible' : 'next-btn';
+}
+
+function markSidebarScanned(i, correct) {
+  const item = document.getElementById('sidebar-' + i);
+  item.classList.remove('unread');
+  item.classList.add(correct ? 'scanned-safe' : 'scanned-threat');
+  const dot = document.getElementById('dot-' + i);
+  if (dot) dot.style.background = correct ? '#3fb950' : '#f85149';
+}
+
+function nextEmail() {
+  const next = shuffledEmails.findIndex((_, i) => i > currentEmailIndex && !isScanned(i));
+  if (next !== -1) openEmail(next);
+  else showResults();
+}
+
+function isScanned(i) {
+  const item = document.getElementById('sidebar-' + i);
+  return item?.classList.contains('scanned-safe') || item?.classList.contains('scanned-threat');
+}
+
+function checkEnd() {
+  if (scanned >= shuffledEmails.length) {
+    setTimeout(showResults, 1800);
+  }
+}
+
+// ══════════════════════════════════════
+//  RESULTS
+// ══════════════════════════════════════
+function showResults() {
+  const pct = correct / shuffledEmails.length;
+  let rank, icon, sub;
+
+  if (pct === 1) { rank = 'SECURITY DIRECTOR'; icon = '🏅'; sub = 'Perfect score! You missed nothing. Outstanding work, Officer.'; }
+  else if (pct >= 0.75) { rank = 'SECURITY AGENT'; icon = '🕵️'; sub = 'Excellent threat detection. Just a couple slipped through — review those below.'; }
+  else if (pct >= 0.5) { rank = 'SECURITY OFFICER'; icon = '🔍'; sub = 'Good start! With more practice you\'ll spot every threat first time.'; }
+  else { rank = 'TRAINEE ANALYST'; icon = '📋'; sub = 'Keep practising — cyber threats can be tricky to spot at first!'; }
+
+  document.getElementById('resultsIcon').textContent = icon;
+  document.getElementById('resultsRank').textContent = rank;
+  document.getElementById('resultsRank').className = 'results-rank ' + rank.split(' ')[1].toLowerCase();
+  document.getElementById('resultsScore').innerHTML = score + ' <span>pts</span>';
+  document.getElementById('resultsSub').textContent = sub;
+  document.getElementById('bdCorrect').textContent = correct;
+  document.getElementById('bdWrong').textContent = wrong;
+  document.getElementById('bdStreak').textContent = bestStreak;
+
+  document.getElementById('resultsOverlay').className = 'results-overlay visible';
+  spawnConfetti(pct >= 0.75 ? 60 : 20);
+}
+
+function restartGame() {
+  score = 0; streak = 0; bestStreak = 0; correct = 0; wrong = 0; scanned = 0;
+  document.getElementById('resultsOverlay').className = 'results-overlay';
+  document.getElementById('welcomeOverlay').style.display = 'flex';
+}
+
+// ══════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════
+function updateStats() {
+  document.getElementById('scoreDisplay').textContent = score;
+  document.getElementById('streakDisplay').textContent = streak + ' 🔥';
+
+  const ranks = ['TRAINEE','OFFICER','AGENT','DIRECTOR'];
+  const thresholds = [0, 300, 700, 1200];
+  let r = 0;
+  for (let i = 0; i < thresholds.length; i++) { if (score >= thresholds[i]) r = i; }
+  document.getElementById('rankBadge').textContent = ranks[r];
+}
+
+function updateProgress() {
+  const pct = (scanned / shuffledEmails.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = scanned + ' / ' + shuffledEmails.length;
+  document.getElementById('progressDisplay').textContent = scanned + '/' + shuffledEmails.length;
+  document.getElementById('inboxCount').textContent = Math.max(0, shuffledEmails.length - scanned);
+}
+
+function showFloatScore(text, positive) {
+  const el = document.createElement('div');
+  el.className = 'float-score';
+  el.style.color = positive ? '#3fb950' : '#f85149';
+  el.style.left = (window.innerWidth / 2 + 100) + 'px';
+  el.style.top = (window.innerHeight / 2) + 'px';
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1100);
+}
+
+function spawnConfetti(count) {
+  const colours = ['#00d9ff','#3fb950','#e3b341','#f85149','#58a6ff','#ffffff'];
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colours[Math.floor(Math.random() * colours.length)];
+    c.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+    c.style.animationDelay = Math.random() * 0.5 + 's';
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3500);
+  }
+}
+</script>
+</body>
+</html>
