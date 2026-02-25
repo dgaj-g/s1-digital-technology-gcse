@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testing & Evaluation — Interactive Activities</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0d1b2a 0%, #1a0533 50%, #0d1b2a 100%);
+    min-height: 100vh;
+    color: #e8e8e8;
+    overflow-x: hidden;
+}
+
+canvas#particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.ccea-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #00d4aa, #9b59b6);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+}
+
+.year-badge {
+    display: inline-block;
+    background: rgba(155, 89, 182, 0.25);
+    color: #c39bd3;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-left: 8px;
+    border: 1px solid rgba(155, 89, 182, 0.4);
+}
+
+header h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #00d4aa, #9b59b6, #00d4aa);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+    margin-bottom: 12px;
+    line-height: 1.2;
+}
+
+@keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+header p.subtitle {
+    color: #8ab4c9;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+.activities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-bottom: 50px;
+}
+
+.activity-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 30px 24px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.activity-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+}
+
+.card-1::before { background: linear-gradient(90deg, #39d353, #00b341); }
+.card-2::before { background: linear-gradient(90deg, #ff6b35, #e55a2b); }
+.card-3::before { background: linear-gradient(90deg, #ffd700, #e6a800); }
+.card-4::before { background: linear-gradient(90deg, #9b59b6, #7d3c98); }
+
+.activity-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.card-1:hover { border-color: rgba(57, 211, 83, 0.4); box-shadow: 0 20px 40px rgba(57,211,83,0.15); }
+.card-2:hover { border-color: rgba(255, 107, 53, 0.4); box-shadow: 0 20px 40px rgba(255,107,53,0.15); }
+.card-3:hover { border-color: rgba(255, 215, 0, 0.4); box-shadow: 0 20px 40px rgba(255,215,0,0.15); }
+.card-4:hover { border-color: rgba(155, 89, 182, 0.4); box-shadow: 0 20px 40px rgba(155,89,182,0.15); }
+
+.card-icon {
+    font-size: 2.8rem;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.activity-number {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #6b8ca0;
+    margin-bottom: 6px;
+}
+
+.activity-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #f0f0f0;
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
+
+.activity-card p {
+    font-size: 0.88rem;
+    color: #8ab4c9;
+    line-height: 1.6;
+    flex: 1;
+    margin-bottom: 18px;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.tag {
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.tag-topic { background: rgba(0, 212, 170, 0.15); color: #00d4aa; border: 1px solid rgba(0,212,170,0.3); }
+.tag-type  { background: rgba(155, 89, 182, 0.15); color: #c39bd3; border: 1px solid rgba(155,89,182,0.3); }
+.tag-time  { background: rgba(248, 196, 54, 0.15); color: #f8c436; border: 1px solid rgba(248,196,54,0.3); }
+
+.play-btn {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-1 { background: linear-gradient(135deg, #39d353, #00b341); color: #000; }
+.btn-2 { background: linear-gradient(135deg, #ff6b35, #e55a2b); color: #fff; }
+.btn-3 { background: linear-gradient(135deg, #ffd700, #e6a800); color: #000; }
+.btn-4 { background: linear-gradient(135deg, #9b59b6, #7d3c98); color: #fff; }
+
+.play-btn:hover { transform: scale(1.04); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+
+footer {
+    text-align: center;
+    color: #4a6070;
+    font-size: 0.8rem;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+@media (max-width: 600px) {
+    .activities-grid { grid-template-columns: 1fr; }
+    header h1 { font-size: 1.8rem; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="container">
+    <header>
+        <div>
+            <span class="ccea-badge">CCEA Digital Technology</span>
+            <span class="year-badge">Year 12 · AS Level</span>
+        </div>
+        <h1>🧪 Testing &amp; Evaluation</h1>
+        <p class="subtitle">Four interactive activities · Topic: Testing, Test Data &amp; Evaluation</p>
+    </header>
+
+    <div class="activities-grid">
+
+        <div class="activity-card card-1">
+            <span class="card-icon">🔐</span>
+            <div class="activity-number">Activity 1</div>
+            <h3>Code Classified</h3>
+            <p>Top-secret testing facility. Stamp each incoming report with the correct testing type — White Box or Black Box, then Unit, Integration or System.</p>
+            <div class="tags">
+                <span class="tag tag-topic">White / Black Box</span>
+                <span class="tag tag-type">🏷️ Classification</span>
+                <span class="tag tag-time">⏱️ 6 mins</span>
+            </div>
+            <a href="activity1.html" class="play-btn btn-1">PLAY →</a>
+        </div>
+
+        <div class="activity-card card-2">
+            <span class="card-icon">⚡</span>
+            <div class="activity-number">Activity 2</div>
+            <h3>Data Dash</h3>
+            <p>Industrial data validation factory. Sort incoming test data values into the correct bin — Valid, Invalid, Extreme or Null — before the conveyor backs up.</p>
+            <div class="tags">
+                <span class="tag tag-topic">Test Data Types</span>
+                <span class="tag tag-type">🏭 Factory</span>
+                <span class="tag tag-time">⏱️ 5 mins</span>
+            </div>
+            <a href="activity2.html" class="play-btn btn-2">PLAY →</a>
+        </div>
+
+        <div class="activity-card card-3">
+            <span class="card-icon">📋</span>
+            <div class="activity-number">Activity 3</div>
+            <h3>Test Plan HQ</h3>
+            <p>The junior dev left gaps in every test plan table. Complete them before the client presentation starts — choosing the correct reason, data and expected outcome.</p>
+            <div class="tags">
+                <span class="tag tag-topic">Test Plans</span>
+                <span class="tag tag-type">📝 Scenario</span>
+                <span class="tag tag-time">⏱️ 7 mins</span>
+            </div>
+            <a href="activity3.html" class="play-btn btn-3">PLAY →</a>
+        </div>
+
+        <div class="activity-card card-4">
+            <span class="card-icon">📊</span>
+            <div class="activity-number">Activity 4</div>
+            <h3>Eval Board</h3>
+            <p>The end-of-project review. Answer the board's questions on evaluation purpose, robustness, functional requirements and more to get final approval.</p>
+            <div class="tags">
+                <span class="tag tag-topic">Evaluation</span>
+                <span class="tag tag-type">🏆 Boardroom</span>
+                <span class="tag tag-time">⏱️ 8 mins</span>
+            </div>
+            <a href="activity4.html" class="play-btn btn-4">PLAY →</a>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>CCEA GCSE Digital Technology — Year 12 AS Level &nbsp;·&nbsp; Testing and Evaluation &nbsp;·&nbsp; All activities work offline</p>
+    </footer>
+</div>
+
+<script>
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+    constructor() { this.reset(); }
+    reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.4;
+        this.speedY = (Math.random() - 0.5) * 0.4;
+        this.opacity = Math.random() * 0.4 + 0.1;
+        this.color = Math.random() > 0.5 ? '#00d4aa' : '#9b59b6';
+    }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+    }
+    draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+</html>

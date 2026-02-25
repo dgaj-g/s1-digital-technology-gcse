@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Dash ⚡ | Testing &amp; Evaluation</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a0800 0%, #2d1000 50%, #1a0000 100%);
+    min-height: 100vh;
+    color: #e8e8e8;
+    overflow-x: hidden;
+}
+
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px; }
+
+/* ===== WELCOME ===== */
+.factory-badge {
+    display: inline-block;
+    background: rgba(255,107,53,0.15);
+    border: 1px solid rgba(255,107,53,0.5);
+    color: #ff6b35;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+.welcome-icon { font-size: 5rem; margin-bottom: 16px; animation: spin-slow 3s linear infinite; }
+@keyframes spin-slow { 0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} }
+
+#welcome-screen h1 {
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    font-weight: 900;
+    color: #ff6b35;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 0 30px rgba(255,107,53,0.6);
+    margin-bottom: 8px;
+}
+.tagline { color: #8ab4c9; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 28px; }
+.mission-brief {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,107,53,0.3);
+    border-left: 4px solid #ff6b35;
+    border-radius: 8px;
+    padding: 22px 28px;
+    max-width: 560px;
+    text-align: left;
+    margin-bottom: 28px;
+}
+.mission-brief h3 { color: #ff6b35; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+.mission-brief p { color: #b0c8d8; font-size: 0.88rem; line-height: 1.7; margin-bottom: 6px; }
+.type-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.type-pill {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+.pill-valid   { background: rgba(46,204,113,0.2); border: 1px solid #2ecc71; color: #2ecc71; }
+.pill-invalid { background: rgba(231,76,60,0.2); border: 1px solid #e74c3c; color: #e74c3c; }
+.pill-extreme { background: rgba(255,193,7,0.2); border: 1px solid #ffc107; color: #ffc107; }
+.pill-null    { background: rgba(149,165,166,0.2); border: 1px solid #95a5a6; color: #bdc3c7; }
+
+.start-btn {
+    background: linear-gradient(135deg, #ff6b35, #e55a2b);
+    color: #fff;
+    border: none;
+    padding: 16px 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.start-btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(255,107,53,0.5); }
+
+/* ===== HUD ===== */
+.hud {
+    width: 100%;
+    max-width: 740px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.hud-scenario {
+    background: rgba(255,107,53,0.15);
+    border: 1px solid rgba(255,107,53,0.4);
+    color: #ff6b35;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+.hud-score {
+    background: rgba(255,215,0,0.12);
+    border: 1px solid rgba(255,215,0,0.3);
+    color: #ffd700;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+.hud-combo { color: #ff6b35; font-weight: 700; font-size: 0.8rem; min-width: 80px; text-align: right; }
+
+/* Rule banner */
+.rule-banner {
+    width: 100%;
+    max-width: 740px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,107,53,0.4);
+    border-radius: 10px;
+    padding: 14px 22px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.rule-icon { font-size: 1.4rem; }
+.rule-text { flex: 1; }
+.rule-label { color: #6b8ca0; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+.rule-value { color: #ffd700; font-size: 1rem; font-weight: 700; font-family: 'Courier New', monospace; }
+
+/* Progress bar */
+.progress-bar-outer {
+    width: 100%;
+    max-width: 740px;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+.progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b35, #ffd700);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+/* ===== CONVEYOR AREA ===== */
+.conveyor-area {
+    width: 100%;
+    max-width: 740px;
+    position: relative;
+    height: 120px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,107,53,0.25);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+/* Belt lines */
+.conveyor-area::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 20px;
+    background: repeating-linear-gradient(90deg, rgba(255,107,53,0.15) 0px, rgba(255,107,53,0.15) 30px, transparent 30px, transparent 60px);
+    border-top: 2px solid rgba(255,107,53,0.3);
+}
+
+.data-card {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(20, 10, 0, 0.95);
+    border: 2px solid rgba(255,107,53,0.6);
+    border-radius: 10px;
+    padding: 14px 22px;
+    min-width: 140px;
+    text-align: center;
+    animation: slideFromLeft 0.6s ease forwards;
+    box-shadow: 0 0 20px rgba(255,107,53,0.3);
+}
+@keyframes slideFromLeft {
+    from { left: -200px; opacity: 0; }
+    to { left: 50%; transform: translate(-50%, -50%); opacity: 1; }
+}
+.data-card .data-label { color: #6b8ca0; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+.data-card .data-value { color: #ff6b35; font-size: 1.6rem; font-weight: 900; font-family: 'Courier New', monospace; }
+.data-card .data-null-text { color: #95a5a6; font-size: 0.85rem; font-style: italic; margin-top: 2px; }
+
+/* ===== BINS ===== */
+.bins-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 740px;
+    margin-bottom: 16px;
+}
+.bin-btn {
+    padding: 16px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 2px solid;
+    transition: all 0.2s ease;
+    text-align: center;
+    font-family: 'Segoe UI', sans-serif;
+}
+.bin-valid   { background: rgba(46,204,113,0.1); border-color: #2ecc71; color: #2ecc71; }
+.bin-invalid { background: rgba(231,76,60,0.1); border-color: #e74c3c; color: #e74c3c; }
+.bin-extreme { background: rgba(255,193,7,0.1); border-color: #ffc107; color: #ffc107; }
+.bin-null    { background: rgba(149,165,166,0.1); border-color: #95a5a6; color: #bdc3c7; }
+.bin-btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
+.bin-btn:disabled { opacity: 0.5; transform: none; cursor: default; }
+.bin-btn .bin-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+
+/* ===== FEEDBACK ===== */
+.feedback-panel {
+    width: 100%;
+    max-width: 740px;
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    animation: feedbackIn 0.3s ease;
+    display: none;
+}
+@keyframes feedbackIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+.feedback-correct { background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.4); border-left: 4px solid #2ecc71; }
+.feedback-wrong   { background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.4); border-left: 4px solid #e74c3c; }
+.feedback-title { font-weight: 700; margin-bottom: 5px; }
+.feedback-correct .feedback-title { color: #2ecc71; }
+.feedback-wrong .feedback-title { color: #e74c3c; }
+.feedback-text { color: #c0d8e8; }
+.next-btn {
+    float: right;
+    margin-top: 10px;
+    background: rgba(255,107,53,0.15);
+    border: 1px solid #ff6b35;
+    color: #ff6b35;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+}
+.next-btn:hover { background: rgba(255,107,53,0.3); }
+
+/* ===== SCENARIO TRANSITION ===== */
+.scenario-transition {
+    width: 100%;
+    max-width: 740px;
+    text-align: center;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,107,53,0.3);
+    border-radius: 12px;
+    padding: 30px;
+    display: none;
+}
+.scenario-transition h3 { color: #ff6b35; font-size: 1.3rem; margin-bottom: 10px; }
+.scenario-transition p { color: #b0c8d8; font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; }
+.cont-btn {
+    background: rgba(255,107,53,0.2);
+    border: 1px solid #ff6b35;
+    color: #ff6b35;
+    padding: 10px 26px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.88rem;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+}
+.cont-btn:hover { background: rgba(255,107,53,0.35); }
+
+/* ===== FLOAT SCORE ===== */
+.float-score {
+    position: fixed;
+    font-size: 1.4rem;
+    font-weight: 900;
+    pointer-events: none;
+    animation: floatUp 1.2s ease forwards;
+    z-index: 100;
+}
+@keyframes floatUp { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-70px) scale(1.3)} }
+
+/* ===== COMBO FLASH ===== */
+.combo-flash {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #ff6b35, #ffd700);
+    color: #000;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-weight: 900;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    animation: comboFlash 2s ease forwards;
+    z-index: 300;
+    display: none;
+}
+@keyframes comboFlash { 0%,100%{opacity:0;transform:translateX(-50%) scale(0.8)} 20%,80%{opacity:1;transform:translateX(-50%) scale(1)} }
+
+/* ===== BIN FLASH ===== */
+.bin-correct-flash { animation: binFlash 0.4s ease; }
+@keyframes binFlash { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px) scale(1.05)} }
+
+/* ===== RESULTS ===== */
+#results-screen { text-align: center; }
+.result-icon { font-size: 5rem; margin-bottom: 16px; }
+#results-screen h2 { font-size: 2rem; color: #ff6b35; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 3px; }
+.rank-badge {
+    display: inline-block;
+    padding: 10px 28px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 16px 0;
+    letter-spacing: 1px;
+}
+.score-display { font-size: 3rem; font-weight: 900; color: #ff6b35; margin: 12px 0; text-shadow: 0 0 20px rgba(255,107,53,0.5); }
+.score-breakdown { color: #8ab4c9; font-size: 0.85rem; margin-bottom: 24px; }
+.revision-summary {
+    width: 100%;
+    max-width: 640px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,107,53,0.25);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: left;
+    margin-bottom: 24px;
+}
+.revision-summary h3 { color: #ff6b35; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+.def-item { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.def-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.def-term { font-weight: 700; font-size: 0.85rem; margin-bottom: 4px; }
+.def-text { color: #9fb8c8; font-size: 0.82rem; line-height: 1.5; }
+.result-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.result-btn {
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border: 2px solid;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    font-family: 'Segoe UI', sans-serif;
+}
+.btn-primary { background: linear-gradient(135deg, #ff6b35, #e55a2b); color: #fff; border-color: #ff6b35; }
+.btn-secondary { background: transparent; color: #8ab4c9; border-color: rgba(138,180,201,0.4); }
+.btn-primary:hover,.btn-secondary:hover { transform: scale(1.04); }
+
+.confetti-piece {
+    position: fixed;
+    width: 10px; height: 10px;
+    pointer-events: none;
+    z-index: 500;
+    animation: confettiFall linear forwards;
+}
+@keyframes confettiFall { 0%{transform:translateY(-100px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+
+@media (max-width: 500px) {
+    .bins-row { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div id="combo-flash" class="combo-flash"></div>
+
+<!-- ===== WELCOME ===== -->
+<div id="welcome-screen" class="screen active">
+    <div class="factory-badge">⚙️ DATA VALIDATION FACTORY — LINE 7</div>
+    <div class="welcome-icon">⚡</div>
+    <h1>Data Dash</h1>
+    <div class="tagline">Sort the data before the conveyor backs up</div>
+    <div class="mission-brief">
+        <h3>🏭 Factory Briefing</h3>
+        <p>Incoming test data values are arriving on the conveyor belt. Your job is to correctly sort each value into the right bin based on the validation rule displayed.</p>
+        <p>Each scenario has its own rule. Study it carefully — then classify each incoming value.</p>
+        <div class="type-pills">
+            <span class="type-pill pill-valid">✅ Valid</span>
+            <span class="type-pill pill-invalid">❌ Invalid</span>
+            <span class="type-pill pill-extreme">⚡ Extreme</span>
+            <span class="type-pill pill-null">🕳️ Null</span>
+        </div>
+    </div>
+    <button class="start-btn" onclick="startActivity()">▶ START FACTORY</button>
+</div>
+
+<!-- ===== GAME ===== -->
+<div id="game-screen" class="screen">
+    <div class="hud">
+        <div class="hud-scenario" id="scenario-badge">SCENARIO 1/3</div>
+        <div style="color:#8ab4c9;font-size:0.75rem;" id="card-counter">VALUE 1/4</div>
+        <div class="hud-score">SCORE: <span id="score-display">0</span></div>
+        <div class="hud-combo" id="combo-display"></div>
+    </div>
+
+    <div class="rule-banner" id="rule-banner">
+        <div class="rule-icon" id="rule-icon">📋</div>
+        <div class="rule-text">
+            <div class="rule-label">Validation Rule</div>
+            <div class="rule-value" id="rule-value">Loading...</div>
+        </div>
+    </div>
+
+    <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="progress-bar" style="width:0%"></div>
+    </div>
+
+    <div class="conveyor-area" id="conveyor-area">
+        <div class="data-card" id="data-card">
+            <div class="data-label">Test Data</div>
+            <div class="data-value" id="data-value">—</div>
+        </div>
+    </div>
+
+    <div class="bins-row" id="bins-row">
+        <button class="bin-btn bin-valid"   onclick="classify('valid')"   id="bin-valid">  <span class="bin-icon">✅</span>VALID</button>
+        <button class="bin-btn bin-invalid" onclick="classify('invalid')" id="bin-invalid"><span class="bin-icon">❌</span>INVALID</button>
+        <button class="bin-btn bin-extreme" onclick="classify('extreme')" id="bin-extreme"><span class="bin-icon">⚡</span>EXTREME</button>
+        <button class="bin-btn bin-null"    onclick="classify('null')"    id="bin-null">   <span class="bin-icon">🕳️</span>NULL</button>
+    </div>
+
+    <div class="feedback-panel" id="feedback-panel">
+        <div class="feedback-title" id="feedback-title"></div>
+        <div class="feedback-text" id="feedback-text"></div>
+        <button class="next-btn" id="next-btn" onclick="nextValue()">NEXT VALUE →</button>
+    </div>
+
+    <div class="scenario-transition" id="scenario-transition">
+        <h3 id="trans-title"></h3>
+        <p id="trans-body"></p>
+        <button class="cont-btn" onclick="advanceScenario()">NEXT SCENARIO →</button>
+    </div>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div id="results-screen" class="screen">
+    <div class="result-icon" id="result-icon">🏆</div>
+    <h2>FACTORY COMPLETE</h2>
+    <div class="rank-badge" id="rank-badge"></div>
+    <div class="score-display" id="final-score">0</div>
+    <div class="score-breakdown" id="score-breakdown"></div>
+    <div class="revision-summary">
+        <h3>📚 Test Data Types — Exam Definitions</h3>
+        <div class="def-item">
+            <div class="def-term" style="color:#2ecc71">✅ Valid Data</div>
+            <div class="def-text">Data that is within the <strong>acceptable range</strong> — the system should accept and process it correctly. Tests that the system works as expected under normal conditions.</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term" style="color:#e74c3c">❌ Invalid Data</div>
+            <div class="def-text">Data <strong>outside the acceptable range</strong> or of the wrong type — the system should <strong>reject it and not crash</strong>. Tests robustness to erroneous input.</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term" style="color:#ffc107">⚡ Extreme Data</div>
+            <div class="def-text">Data at the <strong>very limits</strong> of what is acceptable — the boundary/edge case values (e.g. exactly the minimum or maximum). Tests whether boundary conditions are handled correctly.</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term" style="color:#bdc3c7">🕳️ Null Data</div>
+            <div class="def-text"><strong>No data entered</strong> at all — the system must handle this gracefully <strong>without crashing</strong>. Tests that the system has appropriate validation for empty inputs.</div>
+        </div>
+    </div>
+    <div class="result-btns">
+        <button class="result-btn btn-primary" onclick="restartActivity()">↺ PLAY AGAIN</button>
+        <a href="index.html" class="result-btn btn-secondary">← MENU</a>
+    </div>
+</div>
+
+<script>
+// ===== DATA =====
+const scenarios = [
+    {
+        id: 1,
+        emoji: '🏎️',
+        context: 'Race Timing App',
+        rule: 'Race time must be between 30.0 and 40.0 seconds (inclusive)',
+        variable: 'raceTime',
+        values: [
+            { display: '35.0', answer: 'valid',   feedback: '<strong>35.0 seconds</strong> is within the range 30–40 — this is <strong>Valid data</strong>. The system should accept it.' },
+            { display: '41.0', answer: 'invalid', feedback: '<strong>41.0 seconds</strong> is above the maximum of 40 — this is <strong>Invalid data</strong>. The system should reject it.' },
+            { display: '30.0', answer: 'extreme', feedback: '<strong>30.0 seconds</strong> is exactly at the <strong>lower boundary</strong> — this is <strong>Extreme data</strong> (edge case). It should be accepted but this tests the boundary condition.' },
+            { display: '[blank]', isNull: true, answer: 'null', feedback: '<strong>No entry</strong> — this is <strong>Null data</strong>. The system must handle this gracefully without crashing.' }
+        ]
+    },
+    {
+        id: 2,
+        emoji: '🖼️',
+        context: 'FrameMagic — Frame Order',
+        rule: 'Number of frames must be between 10 and 40 (inclusive)',
+        variable: 'numberOfFrames',
+        values: [
+            { display: '25',     answer: 'valid',   feedback: '<strong>25</strong> is within the range 10–40 — this is <strong>Valid data</strong>. The system should accept and process it.' },
+            { display: '7',      answer: 'invalid', feedback: '<strong>7</strong> is below the minimum of 10 — this is <strong>Invalid data</strong>. The system should reject it with an error message.' },
+            { display: '40',     answer: 'extreme', feedback: '<strong>40</strong> is exactly at the <strong>upper boundary</strong> — this is <strong>Extreme data</strong>. It tests whether the system correctly accepts the maximum value.' },
+            { display: '[blank]', isNull: true, answer: 'null', feedback: '<strong>No entry</strong> — this is <strong>Null data</strong>. The system must not crash when nothing is entered.' }
+        ]
+    },
+    {
+        id: 3,
+        emoji: '🎓',
+        context: 'School Homework App',
+        rule: 'Student age must be between 11 and 18 (inclusive)',
+        variable: 'studentAge',
+        values: [
+            { display: '15',     answer: 'valid',   feedback: '<strong>15</strong> is within the range 11–18 — this is <strong>Valid data</strong>. The system should accept and process it normally.' },
+            { display: '-1',     answer: 'invalid', feedback: '<strong>-1</strong> is an impossible age, well below the minimum of 11 — this is <strong>Invalid data</strong>. The system should reject it.' },
+            { display: '11',     answer: 'extreme', feedback: '<strong>11</strong> is exactly at the <strong>lower boundary</strong> — this is <strong>Extreme data</strong>. It tests the system handles the minimum value correctly.' },
+            { display: '[blank]', isNull: true, answer: 'null', feedback: '<strong>No entry</strong> — this is <strong>Null data</strong>. A robust system will display an appropriate error without crashing.' }
+        ]
+    }
+];
+
+// ===== STATE =====
+let scenarioIndex = 0;
+let valueIndex = 0;
+let score = 0;
+let combo = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let awaitingNext = false;
+let shuffledValues = [];
+
+// ===== INIT =====
+function startActivity() {
+    scenarioIndex = 0;
+    valueIndex = 0;
+    score = 0; combo = 0; correctCount = 0; wrongCount = 0;
+    loadScenario();
+    showScreen('game-screen');
+}
+
+function loadScenario() {
+    const sc = scenarios[scenarioIndex];
+    shuffledValues = shuffle([...sc.values]);
+    valueIndex = 0;
+
+    document.getElementById('scenario-badge').textContent = `SCENARIO ${sc.id}/3`;
+    document.getElementById('rule-icon').textContent = sc.emoji;
+    document.getElementById('rule-value').textContent = sc.rule;
+    document.getElementById('scenario-transition').style.display = 'none';
+    document.getElementById('feedback-panel').style.display = 'none';
+    document.getElementById('conveyor-area').style.display = 'block';
+    document.getElementById('bins-row').style.display = 'grid';
+
+    showValue();
+}
+
+function showValue() {
+    if (valueIndex >= shuffledValues.length) {
+        // End of this scenario
+        if (scenarioIndex < scenarios.length - 1) {
+            showScenarioTransition();
+        } else {
+            showResults();
+        }
+        return;
+    }
+
+    awaitingNext = false;
+    const v = shuffledValues[valueIndex];
+    const cardEl = document.getElementById('data-card');
+    cardEl.style.animation = 'none';
+    void cardEl.offsetWidth;
+    cardEl.style.animation = 'slideFromLeft 0.6s ease forwards';
+
+    const valueEl = document.getElementById('data-value');
+    if (v.isNull) {
+        valueEl.innerHTML = '<span class="data-null-text">[no entry]</span>';
+        valueEl.style.fontSize = '1rem';
+    } else {
+        valueEl.textContent = v.display;
+        valueEl.style.fontSize = '1.6rem';
+    }
+
+    document.getElementById('card-counter').textContent = `VALUE ${valueIndex + 1}/4`;
+    document.getElementById('feedback-panel').style.display = 'none';
+    enableBins();
+
+    const total = scenarios.length * 4;
+    const done = scenarioIndex * 4 + valueIndex;
+    document.getElementById('progress-bar').style.width = (done / total * 100) + '%';
+    updateHUD();
+}
+
+function classify(type) {
+    if (awaitingNext) return;
+    awaitingNext = true;
+    disableBins();
+
+    const v = shuffledValues[valueIndex];
+    const isCorrect = type === v.answer;
+
+    if (isCorrect) {
+        score += (combo >= 3 ? 200 : 100);
+        correctCount++;
+        combo++;
+        document.getElementById(`bin-${type}`).classList.add('bin-correct-flash');
+        setTimeout(() => document.getElementById(`bin-${type}`).classList.remove('bin-correct-flash'), 400);
+        showFloatScore(combo >= 3 ? '+200 ×COMBO!' : '+100');
+        if (combo >= 3) showComboFlash(`⚡ COMBO ×${combo}!`);
+        showFeedback(true, v.feedback);
+    } else {
+        score = Math.max(0, score - 50);
+        wrongCount++;
+        combo = 0;
+        showFloatScore('-50');
+        showFeedback(false, `<strong>Correct answer: ${formatType(v.answer)}</strong><br>${v.feedback}`);
+    }
+    updateHUD();
+}
+
+function formatType(t) {
+    const m = { valid:'✅ Valid', invalid:'❌ Invalid', extreme:'⚡ Extreme', null:'🕳️ Null' };
+    return m[t] || t;
+}
+
+function nextValue() {
+    valueIndex++;
+    showValue();
+}
+
+// ===== SCENARIO TRANSITION =====
+function showScenarioTransition() {
+    const sc = scenarios[scenarioIndex];
+    document.getElementById('conveyor-area').style.display = 'none';
+    document.getElementById('bins-row').style.display = 'none';
+    document.getElementById('feedback-panel').style.display = 'none';
+
+    const trans = document.getElementById('scenario-transition');
+    document.getElementById('trans-title').textContent = `✅ Scenario ${sc.id} Complete!`;
+    document.getElementById('trans-body').innerHTML = `You've sorted all values for the <strong>${sc.context}</strong> scenario.<br><br>Ready for the next validation rule?`;
+    trans.style.display = 'block';
+}
+
+function advanceScenario() {
+    scenarioIndex++;
+    loadScenario();
+    document.getElementById('conveyor-area').style.display = 'block';
+    document.getElementById('bins-row').style.display = 'grid';
+}
+
+// ===== FEEDBACK =====
+function showFeedback(correct, text) {
+    const panel = document.getElementById('feedback-panel');
+    panel.className = 'feedback-panel ' + (correct ? 'feedback-correct' : 'feedback-wrong');
+    panel.style.display = 'block';
+    document.getElementById('feedback-title').textContent = correct ? '✅ SORTED CORRECTLY' : '❌ WRONG BIN';
+    document.getElementById('feedback-text').innerHTML = text;
+
+    const total = scenarios.length * 4;
+    const done = scenarioIndex * 4 + valueIndex + 1;
+    const isLast = done === total;
+    document.getElementById('next-btn').textContent = isLast ? 'SEE RESULTS →' : 'NEXT VALUE →';
+}
+
+// ===== BIN CONTROLS =====
+function enableBins()  { document.querySelectorAll('.bin-btn').forEach(b => b.disabled = false); }
+function disableBins() { document.querySelectorAll('.bin-btn').forEach(b => b.disabled = true); }
+
+// ===== HUD =====
+function updateHUD() {
+    document.getElementById('score-display').textContent = score;
+    document.getElementById('combo-display').textContent = combo >= 2 ? `⚡ COMBO ×${combo}` : '';
+}
+
+// ===== COMBO FLASH =====
+function showComboFlash(text) {
+    const el = document.getElementById('combo-flash');
+    el.textContent = text;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 2000);
+}
+
+// ===== FLOAT SCORE =====
+function showFloatScore(text) {
+    const el = document.createElement('div');
+    el.className = 'float-score';
+    el.style.color = text.startsWith('+') ? '#2ecc71' : '#e74c3c';
+    el.textContent = text;
+    el.style.left = (window.innerWidth / 2 - 25) + 'px';
+    el.style.top = (window.innerHeight / 2 - 20) + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1300);
+}
+
+// ===== RESULTS =====
+function showResults() {
+    showScreen('results-screen');
+    const total = 12;
+    const pct = Math.round((correctCount / total) * 100);
+
+    let rank, rankColor, icon;
+    if (pct >= 92)      { rank = '⭐ HEAD OF QA';              rankColor = '#ffd700'; icon = '🏆'; }
+    else if (pct >= 75) { rank = '🔧 VALIDATION ENGINEER';     rankColor = '#ff6b35'; icon = '🥇'; }
+    else if (pct >= 58) { rank = '📊 DATA ANALYST';            rankColor = '#ffc107'; icon = '🎖️'; }
+    else                { rank = '🔰 TRAINEE';                 rankColor = '#8ab4c9'; icon = '📋'; }
+
+    document.getElementById('result-icon').textContent = icon;
+    document.getElementById('final-score').textContent = score;
+    document.getElementById('rank-badge').textContent = rank;
+    document.getElementById('rank-badge').style.background = rankColor + '22';
+    document.getElementById('rank-badge').style.color = rankColor;
+    document.getElementById('rank-badge').style.border = `2px solid ${rankColor}`;
+    document.getElementById('score-breakdown').textContent = `${correctCount} correct · ${wrongCount} wrong · ${pct}% accuracy`;
+
+    if (pct >= 75) launchConfetti();
+}
+
+// ===== CONFETTI =====
+function launchConfetti() {
+    const colours = ['#ff6b35','#ffd700','#2ecc71','#e74c3c','#ffc107'];
+    for (let i = 0; i < 60; i++) {
+        setTimeout(() => {
+            const el = document.createElement('div');
+            el.className = 'confetti-piece';
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.background = colours[Math.floor(Math.random() * colours.length)];
+            el.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+            el.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }, i * 40);
+    }
+}
+
+// ===== UTILS =====
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function restartActivity() {
+    score = 0; combo = 0; correctCount = 0; wrongCount = 0;
+    startActivity();
+}
+</script>
+</body>
+</html>

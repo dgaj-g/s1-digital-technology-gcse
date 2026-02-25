@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Plan HQ 📋 | Testing &amp; Evaluation</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f1f3d 0%, #1a1a2e 50%, #0f1f3d 100%);
+    min-height: 100vh;
+    color: #e8e8e8;
+    overflow-x: hidden;
+}
+
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px; }
+
+/* ===== WELCOME ===== */
+.hq-badge {
+    display: inline-block;
+    background: rgba(255,215,0,0.15);
+    border: 1px solid rgba(255,215,0,0.5);
+    color: #ffd700;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+.welcome-icon { font-size: 5rem; margin-bottom: 16px; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+#welcome-screen h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 900;
+    color: #ffd700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 0 30px rgba(255,215,0,0.4);
+    margin-bottom: 8px;
+}
+.tagline { color: #8ab4c9; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 28px; }
+.mission-brief {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-left: 4px solid #ffd700;
+    border-radius: 8px;
+    padding: 22px 28px;
+    max-width: 580px;
+    text-align: left;
+    margin-bottom: 28px;
+}
+.mission-brief h3 { color: #ffd700; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+.mission-brief p { color: #b0c8d8; font-size: 0.88rem; line-height: 1.7; margin-bottom: 6px; }
+.col-labels { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.col-label {
+    padding: 4px 12px;
+    background: rgba(255,215,0,0.12);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 20px;
+    font-size: 0.7rem;
+    color: #ffd700;
+    font-weight: 600;
+}
+.start-btn {
+    background: linear-gradient(135deg, #ffd700, #e6a800);
+    color: #000;
+    border: none;
+    padding: 16px 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.start-btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(255,215,0,0.4); }
+
+/* ===== HUD ===== */
+.hud {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.hud-lives { font-size: 1.1rem; letter-spacing: 3px; }
+.hud-score {
+    background: rgba(255,215,0,0.12);
+    border: 1px solid rgba(255,215,0,0.3);
+    color: #ffd700;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+.hud-scenario { color: #8ab4c9; font-size: 0.75rem; letter-spacing: 1px; }
+
+/* Satisfaction bar */
+.satisfaction-bar-outer {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 16px;
+}
+.satisfaction-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #6b8ca0;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+.satisfaction-bar-track {
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.satisfaction-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffd700, #2ecc71);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* ===== SCENARIO BRIEF ===== */
+.scenario-brief {
+    width: 100%;
+    max-width: 800px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,215,0,0.25);
+    border-radius: 10px;
+    padding: 16px 22px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.scenario-emoji { font-size: 1.8rem; }
+.scenario-info { flex: 1; }
+.scenario-name { color: #ffd700; font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; }
+.scenario-desc { color: #8ab4c9; font-size: 0.8rem; }
+
+/* ===== TEST PLAN TABLE ===== */
+.plan-table-wrap {
+    width: 100%;
+    max-width: 800px;
+    overflow-x: auto;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,215,0,0.2);
+}
+.plan-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    min-width: 600px;
+}
+.plan-table th {
+    background: rgba(255,215,0,0.15);
+    color: #ffd700;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 2px solid rgba(255,215,0,0.3);
+    white-space: nowrap;
+}
+.plan-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: #c8d8e0;
+    vertical-align: middle;
+    line-height: 1.4;
+}
+.plan-table tr:last-child td { border-bottom: none; }
+.plan-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+/* Blank cell button */
+.blank-cell {
+    background: rgba(255,215,0,0.1);
+    border: 2px dashed rgba(255,215,0,0.5);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #ffd700;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    text-align: center;
+    min-width: 90px;
+    animation: cellPulse 2s ease-in-out infinite;
+}
+.blank-cell:hover { background: rgba(255,215,0,0.2); transform: scale(1.05); animation: none; }
+@keyframes cellPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,0)} 50%{box-shadow:0 0 8px 2px rgba(255,215,0,0.25)} }
+.blank-cell:disabled { opacity: 0.5; cursor: default; animation: none; }
+
+/* Filled cell */
+.filled-cell-correct {
+    background: rgba(46,204,113,0.12);
+    border: 1px solid rgba(46,204,113,0.4);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #2ecc71;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: inline-block;
+    animation: fillIn 0.4s ease;
+}
+.filled-cell-wrong {
+    background: rgba(231,76,60,0.12);
+    border: 1px solid rgba(231,76,60,0.4);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #e74c3c;
+    font-size: 0.78rem;
+    display: inline-block;
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+@keyframes fillIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ===== OPTION MODAL ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 400;
+    padding: 20px;
+    display: none;
+}
+.modal-box {
+    background: #0d1a2a;
+    border: 1px solid rgba(255,215,0,0.4);
+    border-radius: 14px;
+    padding: 28px 30px;
+    max-width: 480px;
+    width: 100%;
+    animation: modalIn 0.3s ease;
+}
+@keyframes modalIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-question { color: #ffd700; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+.modal-context { color: #b0c8d8; font-size: 0.88rem; line-height: 1.5; margin-bottom: 20px; }
+.modal-options { display: flex; flex-direction: column; gap: 10px; }
+.modal-option {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #d8e8f0;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    line-height: 1.4;
+}
+.modal-option:hover { background: rgba(255,215,0,0.12); border-color: rgba(255,215,0,0.4); color: #ffd700; }
+
+/* ===== FEEDBACK PANEL ===== */
+.feedback-panel {
+    width: 100%;
+    max-width: 800px;
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    animation: feedbackIn 0.3s ease;
+    display: none;
+    margin-bottom: 10px;
+}
+@keyframes feedbackIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.feedback-correct { background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.4); border-left: 4px solid #2ecc71; }
+.feedback-wrong   { background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.4); border-left: 4px solid #e74c3c; }
+.feedback-title { font-weight: 700; margin-bottom: 5px; }
+.feedback-correct .feedback-title { color: #2ecc71; }
+.feedback-wrong .feedback-title { color: #e74c3c; }
+.feedback-text { color: #c0d8e8; }
+
+/* ===== CEO TENSION ===== */
+.ceo-banner {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    animation: ceoFlash 3s ease forwards;
+    z-index: 300;
+    display: none;
+}
+@keyframes ceoFlash { 0%,100%{opacity:0;transform:translateX(-50%) translateY(-10px)} 15%,85%{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+/* ===== SCENARIO TRANSITION ===== */
+.scenario-transition {
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 12px;
+    padding: 30px;
+    display: none;
+    margin-top: 16px;
+}
+.scenario-transition h3 { color: #ffd700; font-size: 1.3rem; margin-bottom: 10px; }
+.scenario-transition p { color: #b0c8d8; font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; }
+.cont-btn {
+    background: rgba(255,215,0,0.2);
+    border: 1px solid #ffd700;
+    color: #ffd700;
+    padding: 10px 26px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.88rem;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+}
+.cont-btn:hover { background: rgba(255,215,0,0.35); }
+
+/* ===== FLOAT SCORE ===== */
+.float-score { position:fixed; font-size:1.4rem; font-weight:900; pointer-events:none; animation:floatUp 1.2s ease forwards; z-index:100; }
+@keyframes floatUp { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-70px) scale(1.3)} }
+
+/* ===== RESULTS ===== */
+#results-screen { text-align: center; }
+.result-icon { font-size: 5rem; margin-bottom: 16px; }
+#results-screen h2 { font-size: 2rem; color: #ffd700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 3px; }
+.rank-badge { display:inline-block; padding:10px 28px; border-radius:30px; font-size:1rem; font-weight:700; margin:16px 0; letter-spacing:1px; }
+.score-display { font-size:3rem; font-weight:900; color:#ffd700; margin:12px 0; text-shadow:0 0 20px rgba(255,215,0,0.4); }
+.score-breakdown { color:#8ab4c9; font-size:0.85rem; margin-bottom:24px; }
+.revision-summary { width:100%; max-width:640px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,215,0,0.25); border-radius:12px; padding:24px; text-align:left; margin-bottom:24px; }
+.revision-summary h3 { color:#ffd700; font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; }
+.def-item { margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.06); }
+.def-item:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+.def-term { color:#ffd700; font-weight:700; font-size:0.85rem; margin-bottom:4px; }
+.def-text { color:#9fb8c8; font-size:0.82rem; line-height:1.5; }
+.result-btns { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+.result-btn { padding:12px 28px; border-radius:8px; font-weight:700; font-size:0.85rem; letter-spacing:1px; cursor:pointer; border:2px solid; transition:all 0.2s; text-decoration:none; display:inline-block; }
+.btn-primary { background:linear-gradient(135deg,#ffd700,#e6a800); color:#000; border-color:#ffd700; }
+.btn-secondary { background:transparent; color:#8ab4c9; border-color:rgba(138,180,201,0.4); }
+.btn-primary:hover,.btn-secondary:hover { transform:scale(1.04); }
+.confetti-piece { position:fixed; width:10px; height:10px; pointer-events:none; z-index:500; animation:confettiFall linear forwards; }
+@keyframes confettiFall { 0%{transform:translateY(-100px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+</style>
+</head>
+<body>
+
+<div id="ceo-banner" class="ceo-banner">👔 THE CEO IS WATCHING — DON'T MESS THIS UP!</div>
+
+<!-- Modal for cell options -->
+<div id="modal-overlay" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-question" id="modal-question"></div>
+        <div class="modal-context" id="modal-context"></div>
+        <div class="modal-options" id="modal-options"></div>
+    </div>
+</div>
+
+<!-- ===== WELCOME ===== -->
+<div id="welcome-screen" class="screen active">
+    <div class="hq-badge">📋 TEST PLAN HQ — DEVELOPMENT FLOOR</div>
+    <div class="welcome-icon">📋</div>
+    <h1>Test Plan HQ</h1>
+    <div class="tagline">Fill the gaps before the client arrives</div>
+    <div class="mission-brief">
+        <h3>📁 Situation Report</h3>
+        <p>The junior developer has walked out — and left the test plans half-finished. Three different clients are coming in 20 minutes and each plan has critical gaps.</p>
+        <p>Complete each test plan table by filling in the missing cells. Choose carefully — the exact mark-scheme wording matters.</p>
+        <div class="col-labels">
+            <span class="col-label"># Test No.</span>
+            <span class="col-label">📌 Item</span>
+            <span class="col-label">🎯 Reason</span>
+            <span class="col-label">📊 Test Data</span>
+            <span class="col-label">✅ Expected Outcome</span>
+        </div>
+    </div>
+    <button class="start-btn" onclick="startActivity()">▶ START PLANS</button>
+</div>
+
+<!-- ===== GAME ===== -->
+<div id="game-screen" class="screen">
+    <div class="hud">
+        <div class="hud-lives" id="lives-display">📄📄📄📄</div>
+        <div class="hud-scenario" id="scenario-display">SCENARIO 1/3</div>
+        <div class="hud-score">SCORE: <span id="score-display">0</span></div>
+    </div>
+    <div class="satisfaction-bar-outer">
+        <div class="satisfaction-label">
+            <span>Client Satisfaction</span>
+            <span id="satisfaction-pct">0%</span>
+        </div>
+        <div class="satisfaction-bar-track">
+            <div class="satisfaction-bar-fill" id="satisfaction-bar" style="width:0%"></div>
+        </div>
+    </div>
+
+    <div class="scenario-brief" id="scenario-brief">
+        <div class="scenario-emoji" id="sc-emoji">🖼️</div>
+        <div class="scenario-info">
+            <div class="scenario-name" id="sc-name"></div>
+            <div class="scenario-desc" id="sc-desc"></div>
+        </div>
+    </div>
+
+    <div class="plan-table-wrap">
+        <table class="plan-table" id="plan-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Item to Test</th>
+                    <th>Reason for Test</th>
+                    <th>Test Data</th>
+                    <th>Expected Outcome</th>
+                </tr>
+            </thead>
+            <tbody id="plan-tbody"></tbody>
+        </table>
+    </div>
+
+    <div class="feedback-panel" id="feedback-panel">
+        <div class="feedback-title" id="feedback-title"></div>
+        <div class="feedback-text" id="feedback-text"></div>
+    </div>
+
+    <div class="scenario-transition" id="scenario-transition">
+        <h3 id="trans-title"></h3>
+        <p id="trans-body"></p>
+        <button class="cont-btn" onclick="advanceScenario()">NEXT SCENARIO →</button>
+    </div>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div id="results-screen" class="screen">
+    <div class="result-icon" id="result-icon">🏆</div>
+    <h2>PLANS COMPLETE!</h2>
+    <div class="rank-badge" id="rank-badge"></div>
+    <div class="score-display" id="final-score">0</div>
+    <div class="score-breakdown" id="score-breakdown"></div>
+    <div class="revision-summary">
+        <h3>📚 Test Plan Contents — What to Include</h3>
+        <div class="def-item">
+            <div class="def-term">Test Number</div>
+            <div class="def-text">A unique reference number for each individual test case.</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">Item to be Tested</div>
+            <div class="def-text">The specific variable, function, or feature being tested (e.g. <em>numberOfFrames</em>).</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">Reason for Test</div>
+            <div class="def-text">The type of test data used: <strong>Valid data</strong> | <strong>Invalid data</strong> | <strong>Extreme value</strong> | <strong>Null data</strong>.</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">Test Data</div>
+            <div class="def-text">The actual value used in the test. For null, this means leaving the input blank (pressing enter / submitting nothing).</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">Expected Outcome</div>
+            <div class="def-text">What the system should do: <strong>Value accepted</strong> (for valid/extreme) or <strong>Error message / value rejected</strong> (for invalid/null).</div>
+        </div>
+    </div>
+    <div class="result-btns">
+        <button class="result-btn btn-primary" onclick="restartActivity()">↺ PLAY AGAIN</button>
+        <a href="index.html" class="result-btn btn-secondary">← MENU</a>
+    </div>
+</div>
+
+<script>
+// ===== SCENARIOS =====
+const scenarios = [
+    {
+        id: 1,
+        emoji: '🖼️',
+        name: 'FrameMagic — Frame Order Validation',
+        desc: 'Number of frames ordered must be between 10 and 40 (inclusive)',
+        variable: 'numberOfFrames',
+        rows: [
+            { num:1, reason:'Extreme value', data:'10',      outcome: 'Value accepted',
+              blanks: ['outcome'],
+              options_outcome: ['Value accepted','Error message displayed','System crashes','Value ignored'],
+              correct_outcome: 'Value accepted',
+              feedback_outcome: 'Test data of 10 is an extreme value — exactly at the <strong>lower boundary</strong>. Since 10 is within the valid range (10–40), the expected outcome is <strong>Value accepted</strong>.' },
+            { num:2, reason:'', data:'25',       outcome: 'Value accepted',
+              blanks: ['reason'],
+              options_reason: ['Null data','Valid data','Invalid data','Extreme value'],
+              correct_reason: 'Valid data',
+              feedback_reason: '25 is a normal value well within the range 10–40 — this tests the system with <strong>Valid data</strong>.' },
+            { num:3, reason:'', data:'45',       outcome: '',
+              blanks: ['reason','outcome'],
+              options_reason: ['Valid data','Null data','Invalid data','Extreme value'],
+              correct_reason: 'Invalid data',
+              feedback_reason: '45 is above the maximum of 40 — this is <strong>Invalid data</strong> (erroneous).',
+              options_outcome: ['Value accepted','Error message / value rejected','No response','System restarts'],
+              correct_outcome: 'Error message / value rejected',
+              feedback_outcome: 'Invalid data should be <strong>rejected</strong> with an error message displayed to the user.' },
+            { num:4, reason:'Null data', data:'',            outcome: '',
+              blanks: ['data','outcome'],
+              options_data: ['Press enter / blank entry','Type "NULL"','Enter 0','Enter a letter'],
+              correct_data: 'Press enter / blank entry',
+              feedback_data: 'For Null data testing, the test data is <strong>no data at all</strong> — leaving the field blank and pressing enter.',
+              options_outcome: ['Value accepted','Error message / value rejected','System crashes','Test passes'],
+              correct_outcome: 'Error message / value rejected',
+              feedback_outcome: 'When no data is entered, a robust system should display an <strong>error message</strong> rather than crashing.' }
+        ]
+    },
+    {
+        id: 2,
+        emoji: '⚽',
+        name: 'Soccer Club Booking — Age Validation',
+        desc: 'Player age must be between 5 and 16 (inclusive)',
+        variable: 'playerAge',
+        rows: [
+            { num:1, reason:'Valid data', data:'10', outcome:'',
+              blanks: ['outcome'],
+              options_outcome: ['Error message displayed','Value accepted','System ignores input','Test fails'],
+              correct_outcome: 'Value accepted',
+              feedback_outcome: '10 is within the valid range (5–16). <strong>Valid data</strong> should always be accepted by the system.' },
+            { num:2, reason:'', data:'5',  outcome:'Value accepted',
+              blanks: ['reason'],
+              options_reason: ['Valid data','Invalid data','Null data','Extreme value'],
+              correct_reason: 'Extreme value',
+              feedback_reason: '5 is <strong>exactly at the lower boundary</strong> of the valid range — this is an extreme (boundary) value test.' },
+            { num:3, reason:'Invalid data', data:'', outcome:'Error message / value rejected',
+              blanks: ['data'],
+              options_data: ['10','5','20','0'],
+              correct_data: '20',
+              feedback_data: 'Test data for "Invalid data" must be <strong>outside the valid range</strong>. 20 is above the maximum of 16, so it is invalid.' },
+            { num:4, reason:'', data:'', outcome:'Error message / value rejected',
+              blanks: ['reason','data'],
+              options_reason: ['Valid data','Extreme value','Null data','Invalid data'],
+              correct_reason: 'Null data',
+              feedback_reason: 'The outcome "Error message" for no data indicates this is a <strong>Null data</strong> test.',
+              options_data: ['Press enter / blank entry','Enter 0','Enter a space','Enter "none"'],
+              correct_data: 'Press enter / blank entry',
+              feedback_data: 'Null data means <strong>no input at all</strong> — leaving the field empty and pressing enter/submit.' }
+        ]
+    },
+    {
+        id: 3,
+        emoji: '🏎️',
+        name: 'Race Timing App — Time Validation',
+        desc: 'Race time must be between 30.0 and 40.0 seconds (inclusive)',
+        variable: 'raceTime',
+        rows: [
+            { num:1, reason:'', data:'35.0', outcome:'Value accepted',
+              blanks: ['reason'],
+              options_reason: ['Null data','Extreme value','Invalid data','Valid data'],
+              correct_reason: 'Valid data',
+              feedback_reason: '35.0 is comfortably within the range 30–40. This tests the system with <strong>Valid (normal) data</strong>.' },
+            { num:2, reason:'Extreme value', data:'', outcome:'Value accepted',
+              blanks: ['data'],
+              options_data: ['35.0','29.0','40.0','50.0'],
+              correct_data: '40.0',
+              feedback_data: 'For an extreme value test at the <strong>upper boundary</strong>, the test data must be exactly 40.0 — the maximum acceptable value.' },
+            { num:3, reason:'Invalid data', data:'29.0', outcome:'',
+              blanks: ['outcome'],
+              options_outcome: ['Value accepted','Error message / value rejected','Test skipped','Warning only'],
+              correct_outcome: 'Error message / value rejected',
+              feedback_outcome: '29.0 is below the minimum of 30.0 (invalid). The system should <strong>reject it</strong> and display an error message.' },
+            { num:4, reason:'', data:'', outcome:'Error message / value rejected',
+              blanks: ['reason','data'],
+              options_reason: ['Valid data','Extreme value','Invalid data','Null data'],
+              correct_reason: 'Null data',
+              feedback_reason: 'An "Error message" outcome with no data entered indicates this is a <strong>Null data</strong> test.',
+              options_data: ['30.0','Press enter / blank entry','Enter 0','Enter "null"'],
+              correct_data: 'Press enter / blank entry',
+              feedback_data: 'Null testing involves submitting <strong>no value at all</strong> — press enter without typing anything.' }
+        ]
+    }
+];
+
+// ===== STATE =====
+let scenarioIndex = 0;
+let score = 0;
+let lives = 4;
+let correctCount = 0;
+let wrongCount = 0;
+let totalBlanks = 0;
+let filledBlanks = 0;
+let currentModal = null;
+
+// Count total blanks
+scenarios.forEach(sc => sc.rows.forEach(r => totalBlanks += r.blanks.length));
+
+// ===== UTILS =====
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// ===== START =====
+function startActivity() {
+    scenarioIndex = 0;
+    score = 0; lives = 4; correctCount = 0; wrongCount = 0; filledBlanks = 0;
+    loadScenario();
+    showScreen('game-screen');
+}
+
+function loadScenario() {
+    const sc = scenarios[scenarioIndex];
+    document.getElementById('scenario-display').textContent = `SCENARIO ${sc.id}/3`;
+    document.getElementById('sc-emoji').textContent = sc.emoji;
+    document.getElementById('sc-name').textContent = sc.name;
+    document.getElementById('sc-desc').textContent = sc.desc;
+    document.getElementById('scenario-transition').style.display = 'none';
+    document.getElementById('feedback-panel').style.display = 'none';
+    buildTable(sc);
+    updateHUD();
+}
+
+// ===== BUILD TABLE =====
+function buildTable(sc) {
+    const tbody = document.getElementById('plan-tbody');
+    tbody.innerHTML = '';
+
+    sc.rows.forEach((row, ri) => {
+        const tr = document.createElement('tr');
+
+        // # column
+        const tdNum = document.createElement('td');
+        tdNum.textContent = row.num;
+        tdNum.style.fontWeight = '700';
+        tdNum.style.color = '#ffd700';
+        tr.appendChild(tdNum);
+
+        // Item column
+        const tdItem = document.createElement('td');
+        tdItem.style.fontFamily = 'Courier New, monospace';
+        tdItem.style.color = '#a0c0d0';
+        tdItem.textContent = sc.variable;
+        tr.appendChild(tdItem);
+
+        // Reason column
+        const tdReason = document.createElement('td');
+        if (row.blanks.includes('reason')) {
+            tdReason.id = `cell-${scenarioIndex}-${ri}-reason`;
+            const btn = document.createElement('button');
+            btn.className = 'blank-cell';
+            btn.textContent = '? Click to answer';
+            btn.onclick = () => openModal(scenarioIndex, ri, 'reason');
+            tdReason.appendChild(btn);
+        } else {
+            tdReason.textContent = row.reason || '—';
+        }
+        tr.appendChild(tdReason);
+
+        // Data column
+        const tdData = document.createElement('td');
+        if (row.blanks.includes('data')) {
+            tdData.id = `cell-${scenarioIndex}-${ri}-data`;
+            const btn = document.createElement('button');
+            btn.className = 'blank-cell';
+            btn.textContent = '? Click to answer';
+            btn.onclick = () => openModal(scenarioIndex, ri, 'data');
+            tdData.appendChild(btn);
+        } else {
+            tdData.style.fontFamily = 'Courier New, monospace';
+            tdData.style.color = '#e8c840';
+            tdData.textContent = row.data || '[blank entry]';
+        }
+        tr.appendChild(tdData);
+
+        // Outcome column
+        const tdOutcome = document.createElement('td');
+        if (row.blanks.includes('outcome')) {
+            tdOutcome.id = `cell-${scenarioIndex}-${ri}-outcome`;
+            const btn = document.createElement('button');
+            btn.className = 'blank-cell';
+            btn.textContent = '? Click to answer';
+            btn.onclick = () => openModal(scenarioIndex, ri, 'outcome');
+            tdOutcome.appendChild(btn);
+        } else {
+            tdOutcome.textContent = row.outcome || '—';
+            tdOutcome.style.color = row.outcome && row.outcome.includes('accepted') ? '#2ecc71' : '#e74c3c';
+        }
+        tr.appendChild(tdOutcome);
+
+        tbody.appendChild(tr);
+    });
+}
+
+// ===== MODAL =====
+function openModal(scIdx, rowIdx, field) {
+    const sc = scenarios[scIdx];
+    const row = sc.rows[rowIdx];
+    const fieldLabel = { reason: 'Reason for Test', data: 'Test Data', outcome: 'Expected Outcome' }[field];
+    const options = row[`options_${field}`];
+    if (!options) return;
+
+    currentModal = { scIdx, rowIdx, field };
+    document.getElementById('modal-question').textContent = `Complete the "${fieldLabel}" cell for Test ${row.num}:`;
+    document.getElementById('modal-context').innerHTML = `<strong style="color:#ffd700">${sc.variable}</strong> — Test data value: <strong style="color:#e8c840;font-family:Courier New">${row.data || '[blank entry]'}</strong>`;
+
+    const optsDiv = document.getElementById('modal-options');
+    optsDiv.innerHTML = '';
+    const shuffled = shuffle(options);
+    shuffled.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'modal-option';
+        btn.textContent = opt;
+        btn.onclick = () => selectOption(opt);
+        optsDiv.appendChild(btn);
+    });
+
+    document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function selectOption(chosen) {
+    if (!currentModal) return;
+    const { scIdx, rowIdx, field } = currentModal;
+    const sc = scenarios[scIdx];
+    const row = sc.rows[rowIdx];
+    const correct = row[`correct_${field}`];
+    const feedbackText = row[`feedback_${field}`];
+    const isCorrect = chosen === correct;
+    const cellId = `cell-${scIdx}-${rowIdx}-${field}`;
+    const cell = document.getElementById(cellId);
+
+    document.getElementById('modal-overlay').style.display = 'none';
+    currentModal = null;
+
+    if (isCorrect) {
+        score += 100;
+        correctCount++;
+        filledBlanks++;
+        if (cell) {
+            cell.innerHTML = `<span class="filled-cell-correct">✅ ${chosen}</span>`;
+        }
+        showFloatScore('+100');
+        showFeedback(true, feedbackText);
+    } else {
+        score = Math.max(0, score - 50);
+        wrongCount++;
+        lives = Math.max(0, lives - 1);
+        filledBlanks++;
+        if (cell) {
+            cell.innerHTML = `<span class="filled-cell-wrong">${chosen}</span> <span class="filled-cell-correct" style="margin-left:6px">✅ ${correct}</span>`;
+        }
+        showFloatScore('-50');
+        showFeedback(false, `<strong>Correct answer: ${correct}</strong><br>${feedbackText}`);
+        if (lives === 0) { setTimeout(() => showResults(), 1200); return; }
+    }
+
+    // CEO tension at 80%
+    const totalInScenario = sc.rows.reduce((sum, r) => sum + r.blanks.length, 0);
+    const filledInScenario = getFilledCount(scIdx);
+    if (filledInScenario === Math.floor(totalInScenario * 0.75)) {
+        showCEOBanner();
+    }
+
+    // Check if scenario done
+    if (allScenarioFilled(scIdx)) {
+        setTimeout(() => {
+            if (scIdx < scenarios.length - 1) {
+                showScenarioTransition();
+            } else {
+                showResults();
+            }
+        }, 1200);
+    }
+
+    updateHUD();
+}
+
+function getFilledCount(scIdx) {
+    const sc = scenarios[scIdx];
+    let filled = 0;
+    sc.rows.forEach((row, ri) => {
+        row.blanks.forEach(field => {
+            const cell = document.getElementById(`cell-${scIdx}-${ri}-${field}`);
+            if (cell && !cell.querySelector('.blank-cell')) filled++;
+        });
+    });
+    return filled;
+}
+
+function allScenarioFilled(scIdx) {
+    const sc = scenarios[scIdx];
+    let allFilled = true;
+    sc.rows.forEach((row, ri) => {
+        row.blanks.forEach(field => {
+            const cell = document.getElementById(`cell-${scIdx}-${ri}-${field}`);
+            if (cell && cell.querySelector('.blank-cell')) allFilled = false;
+        });
+    });
+    return allFilled;
+}
+
+function showCEOBanner() {
+    const el = document.getElementById('ceo-banner');
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+
+// ===== FEEDBACK =====
+function showFeedback(correct, text) {
+    const panel = document.getElementById('feedback-panel');
+    panel.className = 'feedback-panel ' + (correct ? 'feedback-correct' : 'feedback-wrong');
+    panel.style.display = 'block';
+    document.getElementById('feedback-title').textContent = correct ? '✅ CORRECT ENTRY' : '❌ WRONG ENTRY — CORRECTED';
+    document.getElementById('feedback-text').innerHTML = text;
+    setTimeout(() => { panel.style.display = 'none'; }, 3500);
+}
+
+// ===== SCENARIO TRANSITION =====
+function showScenarioTransition() {
+    const sc = scenarios[scenarioIndex];
+    document.getElementById('trans-title').textContent = `✅ Plan ${sc.id} Submitted!`;
+    document.getElementById('trans-body').innerHTML = `The <strong>${sc.name}</strong> test plan has been filed. Client is satisfied.<br><br>Ready for the next plan?`;
+    document.getElementById('scenario-transition').style.display = 'block';
+}
+
+function advanceScenario() {
+    scenarioIndex++;
+    loadScenario();
+}
+
+// ===== HUD =====
+function updateHUD() {
+    const livesMap = ['', '📄', '📄📄', '📄📄📄', '📄📄📄📄'];
+    document.getElementById('lives-display').textContent = livesMap[lives] || '💀';
+    document.getElementById('score-display').textContent = score;
+    const pct = Math.round((filledBlanks / totalBlanks) * 100);
+    document.getElementById('satisfaction-pct').textContent = pct + '%';
+    document.getElementById('satisfaction-bar').style.width = pct + '%';
+}
+
+// ===== FLOAT SCORE =====
+function showFloatScore(text) {
+    const el = document.createElement('div');
+    el.className = 'float-score';
+    el.style.color = text.startsWith('+') ? '#2ecc71' : '#e74c3c';
+    el.textContent = text;
+    el.style.left = (window.innerWidth / 2 - 20) + 'px';
+    el.style.top = (window.innerHeight / 2 - 20) + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1300);
+}
+
+// ===== RESULTS =====
+function showResults() {
+    showScreen('results-screen');
+    const pct = Math.round((correctCount / totalBlanks) * 100);
+
+    let rank, rankColor, icon;
+    if (pct >= 92)      { rank = '🏆 TEST MANAGER';       rankColor = '#ffd700'; icon = '🤝'; }
+    else if (pct >= 75) { rank = '📊 TEST LEAD';           rankColor = '#2ecc71'; icon = '🥇'; }
+    else if (pct >= 58) { rank = '📋 TEST ANALYST';        rankColor = '#00bfff'; icon = '🎖️'; }
+    else                { rank = '📝 JUNIOR TESTER';       rankColor = '#8ab4c9'; icon = '📋'; }
+
+    document.getElementById('result-icon').textContent = icon;
+    document.getElementById('final-score').textContent = score;
+    document.getElementById('rank-badge').textContent = rank;
+    document.getElementById('rank-badge').style.background = rankColor + '22';
+    document.getElementById('rank-badge').style.color = rankColor;
+    document.getElementById('rank-badge').style.border = `2px solid ${rankColor}`;
+    document.getElementById('score-breakdown').textContent = `${correctCount} correct · ${wrongCount} wrong · ${pct}% accuracy`;
+
+    if (pct >= 75) launchConfetti();
+}
+
+// ===== CONFETTI =====
+function launchConfetti() {
+    const colours = ['#ffd700','#2ecc71','#00bfff','#e74c3c','#fff'];
+    for (let i = 0; i < 60; i++) {
+        setTimeout(() => {
+            const el = document.createElement('div');
+            el.className = 'confetti-piece';
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.background = colours[Math.floor(Math.random() * colours.length)];
+            el.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+            el.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }, i * 40);
+    }
+}
+
+// ===== RESTART =====
+function restartActivity() {
+    score = 0; lives = 4; correctCount = 0; wrongCount = 0; filledBlanks = 0;
+    startActivity();
+}
+</script>
+</body>
+</html>

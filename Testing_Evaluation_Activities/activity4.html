@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eval Board 📊 | Testing &amp; Evaluation</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #111111 0%, #1a0a1a 50%, #0d0d0d 100%);
+    min-height: 100vh;
+    color: #e8e8e8;
+    overflow-x: hidden;
+}
+
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px; }
+
+/* ===== WELCOME ===== */
+.boardroom-badge {
+    display: inline-block;
+    background: rgba(155,89,182,0.15);
+    border: 1px solid rgba(155,89,182,0.5);
+    color: #9b59b6;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+.welcome-icon { font-size: 5rem; margin-bottom: 16px; animation: pulse-icon 2.5s ease-in-out infinite; }
+@keyframes pulse-icon { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+#welcome-screen h1 {
+    font-size: clamp(2rem, 5.5vw, 3.4rem);
+    font-weight: 900;
+    color: #9b59b6;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 0 30px rgba(155,89,182,0.5);
+    margin-bottom: 8px;
+}
+.tagline { color: #8ab4c9; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 28px; }
+.mission-brief {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(155,89,182,0.3);
+    border-left: 4px solid #9b59b6;
+    border-radius: 8px;
+    padding: 22px 28px;
+    max-width: 560px;
+    text-align: left;
+    margin-bottom: 28px;
+}
+.mission-brief h3 { color: #9b59b6; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+.mission-brief p { color: #b0c8d8; font-size: 0.88rem; line-height: 1.7; margin-bottom: 6px; }
+.member-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.member-pill { padding: 5px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; background: rgba(155,89,182,0.15); border: 1px solid rgba(155,89,182,0.3); color: #c39bd3; }
+.start-btn {
+    background: linear-gradient(135deg, #9b59b6, #7d3c98);
+    color: #fff;
+    border: none;
+    padding: 16px 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.start-btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(155,89,182,0.4); }
+
+/* ===== HUD ===== */
+.hud {
+    width: 100%;
+    max-width: 740px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.hud-q { color: #8ab4c9; font-size: 0.75rem; letter-spacing: 1px; }
+.hud-score { background: rgba(155,89,182,0.15); border: 1px solid rgba(155,89,182,0.4); color: #c39bd3; padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; }
+
+/* Approval bar */
+.approval-bar-outer { width: 100%; max-width: 740px; margin-bottom: 16px; }
+.approval-label { display: flex; justify-content: space-between; font-size: 0.7rem; color: #6b8ca0; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+.approval-bar-track { height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
+.approval-bar-fill { height: 100%; background: linear-gradient(90deg, #9b59b6, #2ecc71); border-radius: 5px; transition: width 0.5s ease; }
+
+/* ===== BOARDROOM TABLE ===== */
+.boardroom {
+    width: 100%;
+    max-width: 740px;
+    background: rgba(10,5,15,0.8);
+    border: 1px solid rgba(155,89,182,0.25);
+    border-radius: 14px;
+    padding: 24px 20px;
+    margin-bottom: 16px;
+    position: relative;
+}
+.board-members {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+.board-member {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    transition: all 0.3s ease;
+    flex: 1;
+    max-width: 140px;
+}
+.member-avatar {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid rgba(155,89,182,0.3);
+    background: rgba(155,89,182,0.08);
+    transition: all 0.3s ease;
+}
+.member-name { font-size: 0.65rem; color: #8ab4c9; text-align: center; letter-spacing: 1px; text-transform: uppercase; }
+.member-status { font-size: 1rem; min-height: 1.2em; text-align: center; }
+
+/* Active member glow */
+.board-member.active .member-avatar {
+    border-color: #9b59b6;
+    box-shadow: 0 0 20px rgba(155,89,182,0.6);
+    transform: scale(1.15);
+    background: rgba(155,89,182,0.2);
+}
+.board-member.active .member-name { color: #c39bd3; font-weight: 700; }
+
+/* Reaction animations */
+.board-member.approving .member-avatar { border-color: #2ecc71; box-shadow: 0 0 20px rgba(46,204,113,0.5); background: rgba(46,204,113,0.1); }
+.board-member.rejecting .member-avatar { border-color: #e74c3c; animation: headShake 0.5s ease; }
+@keyframes headShake {
+    0%,100%{transform:scale(1.15) translateX(0)} 20%{transform:scale(1.15) translateX(-5px)} 60%{transform:scale(1.15) translateX(5px)} 80%{transform:scale(1.15) translateX(-3px)}
+}
+
+/* Speech bubble */
+.speech-bubble {
+    position: relative;
+    background: rgba(30,10,40,0.95);
+    border: 1px solid rgba(155,89,182,0.5);
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 0.92rem;
+    color: #d8e8f0;
+    line-height: 1.6;
+    animation: bubbleIn 0.4s ease;
+    min-height: 60px;
+}
+@keyframes bubbleIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* Table separator */
+.table-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(155,89,182,0.4), transparent);
+    margin: 16px 0;
+}
+
+/* ===== OPTIONS ===== */
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 740px;
+    margin-bottom: 16px;
+}
+.option-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: #c8d8e0;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.option-btn:hover { background: rgba(155,89,182,0.15); border-color: rgba(155,89,182,0.4); color: #c39bd3; }
+.option-btn:disabled { opacity: 0.6; cursor: default; transform: none !important; }
+.option-btn.correct { background: rgba(46,204,113,0.15); border-color: #2ecc71; color: #2ecc71; }
+.option-btn.wrong   { background: rgba(231,76,60,0.12); border-color: #e74c3c; color: #e74c3c; text-decoration: line-through; }
+
+/* ===== FEEDBACK ===== */
+.feedback-panel {
+    width: 100%;
+    max-width: 740px;
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    display: none;
+    animation: feedbackIn 0.3s ease;
+    margin-bottom: 10px;
+}
+@keyframes feedbackIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.feedback-correct { background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.4); border-left: 4px solid #2ecc71; }
+.feedback-wrong   { background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.4); border-left: 4px solid #e74c3c; }
+.feedback-title   { font-weight: 700; margin-bottom: 5px; }
+.feedback-correct .feedback-title { color: #2ecc71; }
+.feedback-wrong .feedback-title   { color: #e74c3c; }
+.feedback-text { color: #c0d8e8; }
+.feedback-def  { margin-top: 8px; padding: 8px 12px; background: rgba(255,255,255,0.04); border-radius: 6px; color: #8ab4c9; font-size: 0.82rem; font-style: italic; }
+.next-btn {
+    float: right;
+    margin-top: 10px;
+    background: rgba(155,89,182,0.15);
+    border: 1px solid #9b59b6;
+    color: #c39bd3;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+}
+.next-btn:hover { background: rgba(155,89,182,0.3); }
+
+/* ===== LOW APPROVAL PULSE ===== */
+.low-approval-warning {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    border: 4px solid rgba(231,76,60,0.6);
+    animation: borderPulse 1s ease-in-out 3;
+    z-index: 200;
+    display: none;
+}
+@keyframes borderPulse { 0%,100%{opacity:0} 50%{opacity:1} }
+
+/* ===== FLOAT SCORE ===== */
+.float-score { position:fixed; font-size:1.4rem; font-weight:900; pointer-events:none; animation:floatUp 1.2s ease forwards; z-index:100; }
+@keyframes floatUp { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-70px) scale(1.3)} }
+
+/* ===== APPROVED FLASH ===== */
+.approved-flash {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 2rem;
+    font-weight: 900;
+    color: #2ecc71;
+    text-shadow: 0 0 30px rgba(46,204,113,0.8);
+    padding: 16px 28px;
+    border: 3px solid #2ecc71;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.8);
+    pointer-events: none;
+    z-index: 300;
+    display: none;
+    animation: approvedStamp 0.8s ease forwards;
+}
+@keyframes approvedStamp {
+    0%{transform:translate(-50%,-50%) scale(2);opacity:0}
+    40%{transform:translate(-50%,-50%) scale(1);opacity:1}
+    75%{transform:translate(-50%,-50%) scale(1);opacity:1}
+    100%{transform:translate(-50%,-50%) scale(0.8);opacity:0}
+}
+
+/* ===== RESULTS ===== */
+#results-screen { text-align: center; }
+.result-icon { font-size: 5rem; margin-bottom: 16px; }
+#results-screen h2 { font-size: 2rem; color: #9b59b6; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 3px; }
+.rank-badge { display:inline-block; padding:10px 28px; border-radius:30px; font-size:1rem; font-weight:700; margin:16px 0; letter-spacing:1px; }
+.score-display { font-size:3rem; font-weight:900; color:#9b59b6; margin:12px 0; text-shadow:0 0 20px rgba(155,89,182,0.5); }
+.score-breakdown { color:#8ab4c9; font-size:0.85rem; margin-bottom:24px; }
+.revision-summary { width:100%; max-width:640px; background:rgba(0,0,0,0.4); border:1px solid rgba(155,89,182,0.25); border-radius:12px; padding:24px; text-align:left; margin-bottom:24px; max-height: 380px; overflow-y: auto; }
+.revision-summary h3 { color:#9b59b6; font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; }
+.def-item { margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.06); }
+.def-item:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+.def-term { color:#c39bd3; font-weight:700; font-size:0.84rem; margin-bottom:3px; }
+.def-text { color:#9fb8c8; font-size:0.8rem; line-height:1.5; }
+.result-btns { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+.result-btn { padding:12px 28px; border-radius:8px; font-weight:700; font-size:0.85rem; letter-spacing:1px; cursor:pointer; border:2px solid; transition:all 0.2s; text-decoration:none; display:inline-block; }
+.btn-primary { background:linear-gradient(135deg,#9b59b6,#7d3c98); color:#fff; border-color:#9b59b6; }
+.btn-secondary { background:transparent; color:#8ab4c9; border-color:rgba(138,180,201,0.4); }
+.btn-primary:hover,.btn-secondary:hover { transform:scale(1.04); }
+.confetti-piece { position:fixed; width:10px; height:10px; pointer-events:none; z-index:500; animation:confettiFall linear forwards; }
+@keyframes confettiFall { 0%{transform:translateY(-100px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+
+@media (max-width: 500px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .board-members { gap: 4px; }
+    .member-avatar { width: 50px; height: 50px; font-size: 1.6rem; }
+}
+</style>
+</head>
+<body>
+
+<div id="approved-flash" class="approved-flash">✅ APPROVED</div>
+<div id="low-approval-warning" class="low-approval-warning"></div>
+
+<!-- ===== WELCOME ===== -->
+<div id="welcome-screen" class="screen active">
+    <div class="boardroom-badge">📊 ANNUAL PROJECT REVIEW — BOARDROOM 4</div>
+    <div class="welcome-icon">📊</div>
+    <h1>Eval Board</h1>
+    <div class="tagline">Get board approval for your software evaluation</div>
+    <div class="mission-brief">
+        <h3>🏢 Situation</h3>
+        <p>The four-member evaluation board is ready to hear your presentation. They'll each ask you questions — answer them correctly to earn their approval.</p>
+        <p>Get 75% approval to pass the review. Wrong answers will cost you credibility.</p>
+        <div class="member-pills">
+            <span class="member-pill">👔 The Client</span>
+            <span class="member-pill">👩‍💻 The Developer</span>
+            <span class="member-pill">👤 The End User</span>
+            <span class="member-pill">📊 The Manager</span>
+        </div>
+    </div>
+    <button class="start-btn" onclick="startActivity()">▶ ENTER BOARDROOM</button>
+</div>
+
+<!-- ===== GAME ===== -->
+<div id="game-screen" class="screen">
+    <div class="hud">
+        <div class="hud-q" id="q-counter">QUESTION 1/16</div>
+        <div class="hud-score">SCORE: <span id="score-display">0</span></div>
+    </div>
+    <div class="approval-bar-outer">
+        <div class="approval-label">
+            <span>Board Approval</span>
+            <span id="approval-pct">0%</span>
+        </div>
+        <div class="approval-bar-track">
+            <div class="approval-bar-fill" id="approval-bar" style="width:0%"></div>
+        </div>
+    </div>
+
+    <div class="boardroom">
+        <div class="board-members" id="board-members">
+            <div class="board-member" id="member-0">
+                <div class="member-avatar">👔</div>
+                <div class="member-name">Client</div>
+                <div class="member-status" id="status-0"></div>
+            </div>
+            <div class="board-member" id="member-1">
+                <div class="member-avatar">👩‍💻</div>
+                <div class="member-name">Developer</div>
+                <div class="member-status" id="status-1"></div>
+            </div>
+            <div class="board-member" id="member-2">
+                <div class="member-avatar">👤</div>
+                <div class="member-name">End User</div>
+                <div class="member-status" id="status-2"></div>
+            </div>
+            <div class="board-member" id="member-3">
+                <div class="member-avatar">📊</div>
+                <div class="member-name">Manager</div>
+                <div class="member-status" id="status-3"></div>
+            </div>
+        </div>
+        <div class="table-line"></div>
+        <div class="speech-bubble" id="question-text">Loading question...</div>
+    </div>
+
+    <div class="options-grid" id="options-grid"></div>
+
+    <div class="feedback-panel" id="feedback-panel">
+        <div class="feedback-title" id="feedback-title"></div>
+        <div class="feedback-text" id="feedback-text"></div>
+        <div class="feedback-def" id="feedback-def" style="display:none"></div>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">NEXT →</button>
+    </div>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div id="results-screen" class="screen">
+    <div class="result-icon" id="result-icon">🏆</div>
+    <h2>BOARD ADJOURNED</h2>
+    <div class="rank-badge" id="rank-badge"></div>
+    <div class="score-display" id="final-score">0</div>
+    <div class="score-breakdown" id="score-breakdown"></div>
+    <div class="revision-summary">
+        <h3>📚 Evaluation — Exam Revision Summary</h3>
+        <div class="def-item">
+            <div class="def-term">Purpose of Evaluation</div>
+            <div class="def-text">To improve the product being developed [1] / to gain feedback from the end user [1] / to check whether user requirements are met [1].</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">Who is Involved</div>
+            <div class="def-text">Client [1] / End user [1] / Developer/programmer [1].</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">Functional Requirements</div>
+            <div class="def-text">Describe <strong>what the system should do</strong> — specific features and outputs [1].</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">Non-functional Requirements</div>
+            <div class="def-text">Describe <strong>how the system should work</strong> — performance, usability, reliability [1].</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">Qualitative Requirements</div>
+            <div class="def-text">Quality-based — can be <strong>subjective</strong>. Different people may judge them differently [1].</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">Quantitative Requirements</div>
+            <div class="def-text"><strong>Measurable</strong> requirements — e.g. "system must respond within 2 seconds" [1].</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">Robustness</div>
+            <div class="def-text">The system's ability to <strong>continue running</strong> when high volumes of valid, invalid or exceptional data are entered [1] / without crashing [1].</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">Evidence in Evaluation</div>
+            <div class="def-text">Design documents [1] / results from testing [1] / user questionnaires/interviews [1] / user acceptance testing [1].</div>
+        </div>
+    </div>
+    <div class="result-btns">
+        <button class="result-btn btn-primary" onclick="restartActivity()">↺ PLAY AGAIN</button>
+        <a href="index.html" class="result-btn btn-secondary">← MENU</a>
+    </div>
+</div>
+
+<script>
+// ===== QUESTIONS =====
+// memberIndex: 0=Client, 1=Developer, 2=End User, 3=Manager
+const allQuestions = [
+    // CLIENT (4)
+    {
+        member: 0,
+        question: "Why should a software system be evaluated?",
+        options: ["To make the code shorter", "To improve the product and check user requirements are met", "To increase the selling price", "To train the developers"],
+        correct: 1,
+        definition: 'Evaluation purpose: "To improve the product [1] / to gain feedback from end users [1] / to check if user requirements are met [1]"'
+    },
+    {
+        member: 0,
+        question: "What documents can be used as evidence to support an evaluation?",
+        options: ["Social media posts", "Design documents and testing outcomes", "Marketing leaflets", "Developer CVs"],
+        correct: 1,
+        definition: 'Evidence: "Design documents [1] / documented results from testing [1] / user questionnaires or observation reports [1]"'
+    },
+    {
+        member: 0,
+        question: "A good evaluation should always include...",
+        options: ["Only the strengths of the system", "Only the weaknesses and bugs found", "Both strengths AND weaknesses compared to user requirements", "A list of planned future features"],
+        correct: 2,
+        definition: 'A good evaluation is objective and comments on both strengths and weaknesses in relation to user requirements.'
+    },
+    {
+        member: 0,
+        question: "How can user requirements help during evaluation?",
+        options: ["They set the price of development", "They act as a checklist to compare against the completed system", "They describe the marketing strategy", "They list the programming tools used"],
+        correct: 1,
+        definition: 'User requirements: "Can be used as a checklist [1] / compare completed system to user requirements to ensure all met [1]"'
+    },
+    // DEVELOPER (4)
+    {
+        member: 1,
+        question: "What is robustness in software?",
+        options: ["How fast the system runs", "The system's ability to continue running when high volumes of valid/invalid/null data are entered without crashing", "How many features the system has", "The amount of memory the system uses"],
+        correct: 1,
+        definition: 'Robustness: "Ability to continue running [1] when high volumes of valid/invalid/exceptional data are entered [1] without crashing [1]"'
+    },
+    {
+        member: 1,
+        question: "How can a developer test for robustness?",
+        options: ["Test with only valid data to keep it simple", "Use a thorough test plan with valid, invalid, extreme and null data", "Ask the client if the app seems stable", "Run the program once and see if it crashes"],
+        correct: 1,
+        definition: 'Testing for robustness: "Use a thorough test plan [1] / test using high volumes of invalid/exceptional data [1]"'
+    },
+    {
+        member: 1,
+        question: "Why should evaluation happen continuously during development — not just at the end?",
+        options: ["To keep the developer busy throughout the project", "Because changes are less costly and easier to make at an early stage", "Because the client will only pay if you do", "To produce more documentation"],
+        correct: 1,
+        definition: 'Continuous evaluation: "Changes are less costly if made early [1] / allows continuous user feedback [1] / identify problems early [1]"'
+    },
+    {
+        member: 1,
+        question: "What is the iterative approach to testing?",
+        options: ["Testing only at the end of the waterfall process", "Testing and making changes at different stages throughout development", "Testing the same data repeatedly without changing anything", "Getting one person to test everything at the end"],
+        correct: 1,
+        definition: 'Iterative testing: "Testing and making changes [1] at different stages in development [1] / repeated testing throughout [1]"'
+    },
+    // END USER (4)
+    {
+        member: 2,
+        question: "What is a functional requirement?",
+        options: ["How fast the system must load", "What the system should do — specific features and outputs", "How the system should look aesthetically", "The hardware the system runs on"],
+        correct: 1,
+        definition: 'Functional: "Describes what the system should do [1] / specific features or outputs [1] — e.g. producing a particular report"'
+    },
+    {
+        member: 2,
+        question: "What is a non-functional requirement?",
+        options: ["A feature that is optional and not important", "How the system should work — e.g. performance, usability, reliability", "Something the system is not allowed to do", "A secondary backup requirement"],
+        correct: 1,
+        definition: 'Non-functional: "Describes how the system should work [1] / performance, usability, reliability [1]"'
+    },
+    {
+        member: 2,
+        question: "A user says: \"The app must feel easy to use.\" This is a...?",
+        options: ["Quantitative requirement", "Qualitative requirement", "Functional requirement", "Technical specification"],
+        correct: 1,
+        definition: 'Qualitative: "Related to quality [1] / subjective — can be judged differently by different people [1]"'
+    },
+    {
+        member: 2,
+        question: "A user says: \"The report must display the total order cost.\" This is a...?",
+        options: ["Non-functional requirement", "Qualitative requirement", "Functional requirement", "Robustness requirement"],
+        correct: 2,
+        definition: 'Functional: "Describes what the system should do [1] — producing a specific output is a functional requirement [1]"'
+    },
+    // MANAGER (4)
+    {
+        member: 3,
+        question: "Who should be involved in the evaluation process?",
+        options: ["Only the development team", "Only the end users", "Client, end users, and developers/programmers", "Only the project manager and CEO"],
+        correct: 2,
+        definition: 'Personnel: "Client [1] / end user [1] / developer/programmer [1]"'
+    },
+    {
+        member: 3,
+        question: "What should happen after problems are identified in an evaluation?",
+        options: ["Abandon the evaluation and start again", "Actions taken to address problems should be documented and included in the evaluation", "Delete the user requirements and rewrite them", "Wait until the next project to implement changes"],
+        correct: 1,
+        definition: '"Actions taken following evaluation should be documented and included in the evaluation document."'
+    },
+    {
+        member: 3,
+        question: "At what stage of development should evaluation take place?",
+        options: ["Only at the very end, after all coding is done", "Only before coding begins", "Continuously throughout development", "Only when the client formally requests it"],
+        correct: 2,
+        definition: '"Evaluation should be carried out throughout development — not only at the end."'
+    },
+    {
+        member: 3,
+        question: "A user states: \"The system must respond within 2 seconds.\" This requirement is best described as...?",
+        options: ["Qualitative — it is a general quality statement", "Qualitative and non-functional", "Quantitative — it is a measurable, specific target", "Functional — it describes what the system should do"],
+        correct: 2,
+        definition: 'Quantitative: "Measurable requirement [1] — e.g. a specific response time target [1]"'
+    }
+];
+
+// ===== STATE =====
+let questionOrder = [];
+let currentQ = 0;
+let score = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let approvalPoints = 0;
+let maxApproval = 0;
+let awaitingNext = false;
+const memberScores = [0, 0, 0, 0]; // per member approval
+
+// ===== UTILS =====
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+// ===== START =====
+function startActivity() {
+    questionOrder = shuffle(allQuestions);
+    currentQ = 0; score = 0; correctCount = 0; wrongCount = 0;
+    approvalPoints = 0; maxApproval = allQuestions.length * 100;
+    memberScores.fill(0);
+    document.querySelectorAll('.member-status').forEach(s => s.textContent = '');
+    showScreen('game-screen');
+    showQuestion();
+}
+
+// ===== QUESTION =====
+function showQuestion() {
+    if (currentQ >= questionOrder.length) {
+        showResults();
+        return;
+    }
+
+    awaitingNext = false;
+    const q = questionOrder[currentQ];
+    const mi = q.member;
+
+    // Update member states
+    document.querySelectorAll('.board-member').forEach((el, i) => {
+        el.className = 'board-member' + (i === mi ? ' active' : '');
+    });
+
+    document.getElementById('question-text').textContent = q.question;
+    document.getElementById('q-counter').textContent = `QUESTION ${currentQ + 1}/${questionOrder.length}`;
+
+    // Build shuffled options
+    const optsDiv = document.getElementById('options-grid');
+    optsDiv.innerHTML = '';
+    const opts = q.options.map((text, idx) => ({ text, idx }));
+    const shuffled = shuffle(opts);
+    shuffled.forEach(({ text, idx }) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = text;
+        btn.dataset.idx = idx;
+        btn.onclick = () => selectAnswer(idx, btn);
+        optsDiv.appendChild(btn);
+    });
+
+    document.getElementById('feedback-panel').style.display = 'none';
+    updateHUD();
+}
+
+// ===== ANSWER =====
+function selectAnswer(chosenIdx, btn) {
+    if (awaitingNext) return;
+    awaitingNext = true;
+
+    const q = questionOrder[currentQ];
+    const mi = q.member;
+    const isCorrect = chosenIdx === q.correct;
+
+    // Disable all buttons, highlight correct/wrong
+    document.querySelectorAll('.option-btn').forEach(b => {
+        b.disabled = true;
+        if (parseInt(b.dataset.idx) === q.correct) b.classList.add('correct');
+    });
+    if (!isCorrect) btn.classList.add('wrong');
+
+    if (isCorrect) {
+        score += 100;
+        correctCount++;
+        approvalPoints += 100;
+        memberScores[mi] += 1;
+        // Member approves
+        const el = document.getElementById(`member-${mi}`);
+        el.className = 'board-member approving';
+        document.getElementById(`status-${mi}`).textContent = '👍';
+        showApprovedFlash();
+        showFloatScore('+100');
+        showFeedback(true, 'Correct! ' + (q.explanation || ''), q.definition);
+    } else {
+        score = Math.max(0, score - 50);
+        wrongCount++;
+        const el = document.getElementById(`member-${mi}`);
+        el.className = 'board-member rejecting';
+        document.getElementById(`status-${mi}`).textContent = '😤';
+        showFloatScore('-50');
+        showFeedback(false, `<strong>Correct answer:</strong> ${q.options[q.correct]}`, q.definition);
+
+        // Low approval warning
+        const approvalPct = (approvalPoints / Math.max(1, (currentQ + 1) * 100)) * 100;
+        if (approvalPct < 40) triggerLowApproval();
+    }
+
+    updateHUD();
+    setTimeout(() => {
+        const el = document.getElementById(`member-${mi}`);
+        el.className = 'board-member';
+    }, 1200);
+}
+
+function nextQuestion() {
+    currentQ++;
+    showQuestion();
+}
+
+// ===== FEEDBACK =====
+function showFeedback(correct, text, def) {
+    const panel = document.getElementById('feedback-panel');
+    panel.className = 'feedback-panel ' + (correct ? 'feedback-correct' : 'feedback-wrong');
+    panel.style.display = 'block';
+    document.getElementById('feedback-title').textContent = correct ? '✅ APPROVED' : '❌ REJECTED';
+    document.getElementById('feedback-text').innerHTML = text;
+
+    const defEl = document.getElementById('feedback-def');
+    if (def) {
+        defEl.textContent = def;
+        defEl.style.display = 'block';
+    } else {
+        defEl.style.display = 'none';
+    }
+
+    const isLast = currentQ === questionOrder.length - 1;
+    document.getElementById('next-btn').textContent = isLast ? 'SEE RESULTS →' : 'NEXT →';
+}
+
+// ===== EFFECTS =====
+function showApprovedFlash() {
+    const el = document.getElementById('approved-flash');
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 900);
+}
+
+function triggerLowApproval() {
+    const el = document.getElementById('low-approval-warning');
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 1200);
+}
+
+function showFloatScore(text) {
+    const el = document.createElement('div');
+    el.className = 'float-score';
+    el.style.color = text.startsWith('+') ? '#2ecc71' : '#e74c3c';
+    el.textContent = text;
+    el.style.left = (window.innerWidth / 2 - 20) + 'px';
+    el.style.top = (window.innerHeight / 2 - 20) + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1300);
+}
+
+// ===== HUD =====
+function updateHUD() {
+    document.getElementById('score-display').textContent = score;
+    const pct = Math.round((approvalPoints / Math.max(1, currentQ * 100)) * 100);
+    const clampedPct = Math.min(100, Math.max(0, pct));
+    document.getElementById('approval-pct').textContent = clampedPct + '%';
+    document.getElementById('approval-bar').style.width = clampedPct + '%';
+}
+
+// ===== RESULTS =====
+function showResults() {
+    showScreen('results-screen');
+    const total = allQuestions.length;
+    const pct = Math.round((correctCount / total) * 100);
+
+    let rank, rankColor, icon;
+    if (pct >= 88)      { rank = '🏆 CHIEF EVALUATOR';       rankColor = '#9b59b6'; icon = '🏆'; }
+    else if (pct >= 75) { rank = '💼 CONSULTANT';             rankColor = '#2ecc71'; icon = '🥇'; }
+    else if (pct >= 60) { rank = '📊 PRESENTER';              rankColor = '#00bfff'; icon = '🎖️'; }
+    else                { rank = '👀 OBSERVER';               rankColor = '#8ab4c9'; icon = '📋'; }
+
+    document.getElementById('result-icon').textContent = icon;
+    document.getElementById('final-score').textContent = score;
+    document.getElementById('rank-badge').textContent = rank;
+    document.getElementById('rank-badge').style.background = rankColor + '22';
+    document.getElementById('rank-badge').style.color = rankColor;
+    document.getElementById('rank-badge').style.border = `2px solid ${rankColor}`;
+    document.getElementById('score-breakdown').textContent = `${correctCount} correct · ${wrongCount} wrong · ${pct}% board approval`;
+
+    if (pct >= 75) launchConfetti();
+}
+
+// ===== CONFETTI =====
+function launchConfetti() {
+    const colours = ['#9b59b6','#2ecc71','#ffd700','#c39bd3','#fff'];
+    for (let i = 0; i < 60; i++) {
+        setTimeout(() => {
+            const el = document.createElement('div');
+            el.className = 'confetti-piece';
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.background = colours[Math.floor(Math.random() * colours.length)];
+            el.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+            el.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }, i * 40);
+    }
+}
+
+// ===== RESTART =====
+function restartActivity() {
+    score = 0; correctCount = 0; wrongCount = 0; approvalPoints = 0;
+    memberScores.fill(0);
+    document.querySelectorAll('.member-status').forEach(s => s.textContent = '');
+    startActivity();
+}
+</script>
+</body>
+</html>

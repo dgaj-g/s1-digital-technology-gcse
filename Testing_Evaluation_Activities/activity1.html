@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Classified 🔐 | Testing &amp; Evaluation</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background: linear-gradient(135deg, #0d1b2a 0%, #0a2e1a 100%);
+    min-height: 100vh;
+    color: #e8e8e8;
+    overflow-x: hidden;
+}
+
+/* ===== SCREENS ===== */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px; }
+
+/* ===== WELCOME ===== */
+#welcome-screen {
+    text-align: center;
+    background: linear-gradient(135deg, #0d1b2a 0%, #0a2e1a 100%);
+}
+.facility-badge {
+    display: inline-block;
+    background: rgba(57, 211, 83, 0.15);
+    border: 1px solid rgba(57, 211, 83, 0.4);
+    color: #39d353;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    animation: blink 2s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.welcome-icon { font-size: 5rem; margin-bottom: 16px; animation: pulse-icon 2s ease-in-out infinite; }
+@keyframes pulse-icon { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+#welcome-screen h1 {
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    font-weight: 900;
+    color: #39d353;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 0 30px rgba(57,211,83,0.5);
+    margin-bottom: 8px;
+}
+#welcome-screen .tagline {
+    color: #8ab4c9;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+}
+.mission-brief {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(57,211,83,0.3);
+    border-left: 4px solid #39d353;
+    border-radius: 8px;
+    padding: 24px 30px;
+    max-width: 560px;
+    text-align: left;
+    margin-bottom: 30px;
+}
+.mission-brief h3 {
+    color: #39d353;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+.mission-brief p {
+    color: #b0c8d8;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 8px;
+    font-family: 'Segoe UI', sans-serif;
+}
+.start-btn {
+    background: linear-gradient(135deg, #39d353, #00b341);
+    color: #000;
+    border: none;
+    padding: 16px 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Courier New', monospace;
+}
+.start-btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(57,211,83,0.4); }
+
+/* ===== GAME HUD ===== */
+.hud {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.hud-lives { font-size: 1.3rem; letter-spacing: 4px; }
+.hud-score {
+    background: rgba(57,211,83,0.15);
+    border: 1px solid rgba(57,211,83,0.3);
+    color: #39d353;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+.hud-round {
+    color: #8ab4c9;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.hud-streak {
+    color: #ffd700;
+    font-size: 0.8rem;
+    font-weight: 700;
+    min-width: 80px;
+    text-align: right;
+}
+
+/* Progress bar */
+.progress-bar-outer {
+    width: 100%;
+    max-width: 700px;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+.progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, #39d353, #00b341);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+/* ===== ROUND INTRO ===== */
+.round-intro {
+    width: 100%;
+    max-width: 700px;
+    text-align: center;
+    padding: 30px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(57,211,83,0.3);
+    border-radius: 12px;
+    animation: slideIn 0.4s ease;
+}
+.round-intro h2 { color: #39d353; font-size: 1.8rem; margin-bottom: 10px; }
+.round-intro p { color: #b0c8d8; font-family: 'Segoe UI', sans-serif; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px; }
+.round-badges { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.round-badge {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+.rb-white { background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.4); color: #fff; }
+.rb-black { background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.3); color: #ccc; }
+.rb-unit  { background: rgba(41,128,185,0.2); border: 2px solid #2980b9; color: #5dade2; }
+.rb-integ { background: rgba(142,68,173,0.2); border: 2px solid #8e44ad; color: #bb8fce; }
+.rb-sys   { background: rgba(192,57,43,0.2); border: 2px solid #c0392b; color: #ec7063; }
+.continue-btn {
+    background: rgba(57,211,83,0.2);
+    border: 1px solid #39d353;
+    color: #39d353;
+    padding: 10px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+}
+.continue-btn:hover { background: rgba(57,211,83,0.35); }
+
+/* ===== CARD ===== */
+.report-card {
+    width: 100%;
+    max-width: 700px;
+    background: rgba(10, 20, 15, 0.9);
+    border: 1px solid rgba(57,211,83,0.25);
+    border-radius: 12px;
+    padding: 28px 32px;
+    position: relative;
+    animation: cardSlideIn 0.4s ease;
+    margin-bottom: 20px;
+}
+@keyframes cardSlideIn { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.report-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(57,211,83,0.2);
+}
+.report-icon { font-size: 1.5rem; }
+.report-meta { flex: 1; }
+.report-title { color: #39d353; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; }
+.report-id { color: #4a6070; font-size: 0.7rem; }
+.classif-stamp {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 1px solid rgba(255,200,0,0.4);
+    color: #ffd700;
+    background: rgba(255,200,0,0.1);
+}
+
+.scenario-text {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #d8e8f0;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+.scenario-label {
+    color: #4a6070;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+/* ===== CLASSIFICATION BUTTONS ===== */
+.classif-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 700px;
+    margin-bottom: 16px;
+}
+.classif-btn {
+    flex: 1;
+    min-width: 130px;
+    padding: 14px 10px;
+    border-radius: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 2px solid;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+.btn-whitebox {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.4);
+    color: #fff;
+}
+.btn-whitebox:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+.btn-blackbox {
+    background: rgba(0,0,0,0.5);
+    border-color: rgba(255,255,255,0.25);
+    color: #ccc;
+}
+.btn-blackbox:hover { background: rgba(0,0,0,0.7); border-color: rgba(255,255,255,0.5); transform: translateY(-2px); }
+.btn-unit {
+    background: rgba(41,128,185,0.15);
+    border-color: #2980b9;
+    color: #5dade2;
+}
+.btn-unit:hover { background: rgba(41,128,185,0.3); transform: translateY(-2px); }
+.btn-integration {
+    background: rgba(142,68,173,0.15);
+    border-color: #8e44ad;
+    color: #bb8fce;
+}
+.btn-integration:hover { background: rgba(142,68,173,0.3); transform: translateY(-2px); }
+.btn-system {
+    background: rgba(192,57,43,0.15);
+    border-color: #c0392b;
+    color: #ec7063;
+}
+.btn-system:hover { background: rgba(192,57,43,0.3); transform: translateY(-2px); }
+
+/* ===== FEEDBACK ===== */
+.feedback-panel {
+    width: 100%;
+    max-width: 700px;
+    border-radius: 10px;
+    padding: 18px 22px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    animation: feedbackIn 0.3s ease;
+    display: none;
+}
+@keyframes feedbackIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.feedback-correct {
+    background: rgba(46,204,113,0.12);
+    border: 1px solid rgba(46,204,113,0.4);
+    border-left: 4px solid #2ecc71;
+}
+.feedback-wrong {
+    background: rgba(231,76,60,0.12);
+    border: 1px solid rgba(231,76,60,0.4);
+    border-left: 4px solid #e74c3c;
+}
+.feedback-title { font-weight: 700; margin-bottom: 6px; }
+.feedback-correct .feedback-title { color: #2ecc71; }
+.feedback-wrong .feedback-title { color: #e74c3c; }
+.feedback-text { color: #c0d8e8; }
+.feedback-definition {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 6px;
+    color: #9fb8c8;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+.next-btn {
+    display: block;
+    margin-top: 14px;
+    background: rgba(57,211,83,0.15);
+    border: 1px solid #39d353;
+    color: #39d353;
+    padding: 9px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    float: right;
+}
+.next-btn:hover { background: rgba(57,211,83,0.3); }
+
+/* ===== FLOATING SCORE ===== */
+.float-score {
+    position: fixed;
+    font-size: 1.5rem;
+    font-weight: 900;
+    pointer-events: none;
+    animation: floatUp 1.2s ease forwards;
+    z-index: 100;
+}
+@keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(1.3); } }
+
+/* ===== STAMP ANIMATION ===== */
+.stamp-overlay {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg) scale(0);
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    padding: 16px 28px;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 200;
+    animation: stampIn 0.8s ease forwards;
+    display: none;
+}
+.stamp-correct {
+    border: 4px solid #2ecc71;
+    color: #2ecc71;
+    text-shadow: 0 0 20px rgba(46,204,113,0.8);
+    background: rgba(0,0,0,0.6);
+}
+.stamp-wrong {
+    border: 4px solid #e74c3c;
+    color: #e74c3c;
+    text-shadow: 0 0 20px rgba(231,76,60,0.8);
+    background: rgba(0,0,0,0.6);
+}
+@keyframes stampIn {
+    0% { transform: translate(-50%,-50%) rotate(-15deg) scale(3); opacity: 0; }
+    40% { transform: translate(-50%,-50%) rotate(-15deg) scale(1); opacity: 1; }
+    70% { transform: translate(-50%,-50%) rotate(-15deg) scale(1); opacity: 1; }
+    100% { transform: translate(-50%,-50%) rotate(-15deg) scale(0.8); opacity: 0; }
+}
+
+/* ===== STREAK FLASH ===== */
+.streak-flash {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #000;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-weight: 900;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    animation: streakFlash 2s ease forwards;
+    z-index: 300;
+    display: none;
+}
+@keyframes streakFlash { 0%,100%{opacity:0;transform:translateX(-50%) scale(0.8)} 20%,80%{opacity:1;transform:translateX(-50%) scale(1)} }
+
+/* ===== RESULTS ===== */
+#results-screen {
+    text-align: center;
+    background: linear-gradient(135deg, #0d1b2a, #0a2e1a);
+}
+.result-icon { font-size: 5rem; margin-bottom: 16px; }
+#results-screen h2 {
+    font-size: 2rem;
+    color: #39d353;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+.rank-badge {
+    display: inline-block;
+    padding: 10px 28px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 16px 0;
+    letter-spacing: 1px;
+}
+.score-display {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #39d353;
+    margin: 12px 0;
+    text-shadow: 0 0 20px rgba(57,211,83,0.5);
+}
+.score-breakdown {
+    color: #8ab4c9;
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+    font-family: 'Segoe UI', sans-serif;
+}
+.revision-summary {
+    width: 100%;
+    max-width: 640px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(57,211,83,0.25);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: left;
+    margin-bottom: 24px;
+}
+.revision-summary h3 {
+    color: #39d353;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+.def-item {
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-family: 'Segoe UI', sans-serif;
+}
+.def-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.def-term { color: #39d353; font-weight: 700; font-size: 0.85rem; margin-bottom: 4px; }
+.def-text { color: #9fb8c8; font-size: 0.82rem; line-height: 1.5; }
+.result-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.result-btn {
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border: 2px solid;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-primary { background: linear-gradient(135deg, #39d353, #00b341); color: #000; border-color: #39d353; }
+.btn-secondary { background: transparent; color: #8ab4c9; border-color: rgba(138,180,201,0.4); }
+.btn-primary:hover,.btn-secondary:hover { transform: scale(1.04); }
+
+/* ===== CONFETTI ===== */
+.confetti-piece {
+    position: fixed;
+    width: 10px; height: 10px;
+    pointer-events: none;
+    z-index: 500;
+    animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+    0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div id="stamp-overlay" class="stamp-overlay"></div>
+<div id="streak-flash" class="streak-flash"></div>
+
+<!-- ===== WELCOME ===== -->
+<div id="welcome-screen" class="screen active">
+    <div class="facility-badge">⚠ CLASSIFICATION REQUIRED ⚠</div>
+    <div class="welcome-icon">🔐</div>
+    <h1>Code Classified</h1>
+    <div class="tagline">Top Secret Testing Facility — Clearance Level Alpha</div>
+    <div class="mission-brief">
+        <h3>📁 Mission Briefing</h3>
+        <p>12 testing reports have arrived at the facility. Each one describes a software testing scenario that must be stamped with the correct classification before it auto-destructs.</p>
+        <p><strong style="color:#39d353">Round 1:</strong> White Box or Black Box testing?<br>
+        <strong style="color:#39d353">Round 2:</strong> Unit, Integration or System testing?</p>
+        <p>You have <strong style="color:#ffd700">3 warnings</strong> before your clearance is revoked. Choose wisely — the exam demands precision.</p>
+    </div>
+    <button class="start-btn" onclick="showRoundIntro(1)">▶ BEGIN CLASSIFICATION</button>
+</div>
+
+<!-- ===== GAME ===== -->
+<div id="game-screen" class="screen">
+    <div class="hud">
+        <div class="hud-lives" id="lives-display">⚠️⚠️⚠️</div>
+        <div class="hud-round" id="round-display">ROUND 1 · CARD 1/6</div>
+        <div class="hud-score">SCORE: <span id="score-display">0</span></div>
+        <div class="hud-streak" id="streak-display"></div>
+    </div>
+    <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="progress-bar" style="width:0%"></div>
+    </div>
+
+    <div id="round-intro-panel" class="round-intro" style="display:none;"></div>
+
+    <div id="report-card" class="report-card" style="display:none;">
+        <div class="report-header">
+            <div class="report-icon">📄</div>
+            <div class="report-meta">
+                <div class="report-title" id="report-title">Testing Report</div>
+                <div class="report-id" id="report-id">REF: TST-001</div>
+            </div>
+            <div class="classif-stamp" id="classif-stamp">UNCLASSIFIED</div>
+        </div>
+        <div class="scenario-label">SCENARIO</div>
+        <div class="scenario-text" id="scenario-text"></div>
+    </div>
+
+    <div class="classif-buttons" id="classif-buttons"></div>
+
+    <div class="feedback-panel" id="feedback-panel">
+        <div class="feedback-title" id="feedback-title"></div>
+        <div class="feedback-text" id="feedback-text"></div>
+        <div class="feedback-definition" id="feedback-def"></div>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">NEXT REPORT →</button>
+    </div>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div id="results-screen" class="screen">
+    <div class="result-icon" id="result-icon">🏆</div>
+    <h2>CLASSIFICATION COMPLETE</h2>
+    <div class="rank-badge" id="rank-badge">Analyst</div>
+    <div class="score-display" id="final-score">0</div>
+    <div class="score-breakdown" id="score-breakdown"></div>
+    <div class="revision-summary">
+        <h3>📚 Exam Revision — Mark Scheme Definitions</h3>
+        <div class="def-item">
+            <div class="def-term">⬜ White Box Testing</div>
+            <div class="def-text">Tests the <strong>internal logic</strong> of code. The tester needs to know how the code works, so the <strong>programmer</strong> carries this out. Every statement/pathway should be executed at least once.</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">⬛ Black Box Testing</div>
+            <div class="def-text">Focuses on <strong>inputs and outputs</strong> only — no knowledge of the underlying code is needed. The tester views the system as a <strong>"black box"</strong> they cannot see inside.</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">🔵 Unit Testing</div>
+            <div class="def-text">A <strong>single module or unit</strong> of code is tested in isolation to ensure it works as expected. Narrow scope — no relationship to code outside the unit.</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">🟡 Integration Testing</div>
+            <div class="def-text">Units are combined and tested <strong>working together</strong>. Focuses on <strong>data passed between units</strong> and tests interfaces/interactions between modules.</div>
+        </div>
+        <div class="def-item">
+            <div class="def-term">🔴 System Testing</div>
+            <div class="def-text">The <strong>complete, fully integrated system</strong> is tested to ensure it produces correct outputs in compliance with <strong>user requirements</strong>. Tested as a whole.</div>
+        </div>
+    </div>
+    <div class="result-btns">
+        <button class="result-btn btn-primary" onclick="restartActivity()">↺ PLAY AGAIN</button>
+        <a href="index.html" class="result-btn btn-secondary">← MENU</a>
+    </div>
+</div>
+
+<script>
+// ===== DATA =====
+
+const round1Questions = [
+    {
+        id: 'TST-001',
+        text: 'Priya is a programmer testing her own code. She checks that every IF branch and ELSE branch executes correctly, ensuring each line runs at least once.',
+        answer: 'whitebox',
+        explanation: 'Priya is testing the <strong>internal logic</strong> of her code and checking every line — this is classic <strong>White Box testing</strong>.',
+        definition: 'White Box: "Tests the internal logic of code [1] / programmer tests / every statement executed at least once [1]"'
+    },
+    {
+        id: 'TST-002',
+        text: 'An independent tester who has never seen the code runs the login system. She enters valid and invalid passwords and checks whether the correct output appears each time.',
+        answer: 'blackbox',
+        explanation: 'The tester has <strong>no knowledge of the code</strong> and is only checking inputs vs outputs — this is <strong>Black Box testing</strong>.',
+        definition: 'Black Box: "Focuses on inputs and outputs [1] / tester views the unit as a black box they cannot see into [1]"'
+    },
+    {
+        id: 'TST-003',
+        text: 'The lead developer uses a trace table to manually track the value of each variable as code executes, looking for logic errors in the sorting algorithm.',
+        answer: 'whitebox',
+        explanation: 'Using a trace table to examine <strong>variable values and code logic</strong> is a White Box technique — the tester has full access to the internal structure.',
+        definition: 'White Box: "Testing the internal logic [1] / specific inputs selected to ensure appropriate output [1] / trace tables used [1]"'
+    },
+    {
+        id: 'TST-004',
+        text: 'A student at Oakfield Academy tests the school\'s new homework submission app by trying to submit assignments and checking the results. She has no programming knowledge.',
+        answer: 'blackbox',
+        explanation: 'The student tests only what she <strong>can see and interact with</strong> — inputs and outputs — without knowing the code. This is <strong>Black Box testing</strong>.',
+        definition: 'Black Box: "Test cases designed around specification [1] / helps identify where user requirements are not met [1]"'
+    },
+    {
+        id: 'TST-005',
+        text: 'A developer methodically checks that every pathway through a complex conditional block is covered. He cannot submit the code review until all branches are tested.',
+        answer: 'whitebox',
+        explanation: 'Ensuring <strong>every pathway and branch</strong> is covered is a key characteristic of <strong>White Box testing</strong> — only possible with full code visibility.',
+        definition: 'White Box: "Allows each line of code to be tested [1] / every statement executed at least once [1] / hidden errors identified [1]"'
+    },
+    {
+        id: 'TST-006',
+        text: 'A QA analyst tests the FrameMagic billing system by entering frame quantities and checking the total cost displayed. She judges results by whether outputs match expected values — not by examining any code.',
+        answer: 'blackbox',
+        explanation: 'She is only looking at <strong>what goes in and what comes out</strong>, with no code knowledge. This is textbook <strong>Black Box testing</strong>.',
+        definition: 'Black Box: "Identifies errors in inputs, outputs and interfaces [1] / test data does not need to be known about by the developer [1]"'
+    }
+];
+
+const round2Questions = [
+    {
+        id: 'INT-001',
+        text: 'Only the "calculateDiscount()" function is tested in isolation. The tester checks it returns the correct discount value for various quantities, with no other parts of the system running.',
+        answer: 'unit',
+        explanation: 'A <strong>single function tested in isolation</strong> — this is classic <strong>Unit testing</strong>. Narrow scope, no interaction with other code.',
+        definition: 'Unit Testing: "A unit of code tested to ensure it works as expected [1] / narrow scope / no relationship to code outside the unit [1]"'
+    },
+    {
+        id: 'INT-002',
+        text: 'The login module and the user profile module are run together for the first time. Testers check whether data passes correctly between them when a user logs in and their details load.',
+        answer: 'integration',
+        explanation: '<strong>Two units working together</strong>, focusing on data passing between them — this is <strong>Integration testing</strong>.',
+        definition: 'Integration Testing: "Units tested working together [1] / focuses on data passed between units [1] / tests interfaces between modules [1]"'
+    },
+    {
+        id: 'INT-003',
+        text: 'The entire FrameMagic ordering system — from browsing frames to generating a customer invoice — is tested end-to-end with realistic volumes of data to verify all client requirements are met.',
+        answer: 'system',
+        explanation: 'The <strong>complete, integrated system</strong> tested against user requirements — this is <strong>System testing</strong>.',
+        definition: 'System Testing: "Carried out on complete and fully integrated system [1] / ensures correct outputs in compliance with user requirements [1]"'
+    },
+    {
+        id: 'INT-004',
+        text: 'A developer tests her new "validateAge()" function by itself, using a range of input values, before it is connected to any other part of the codebase.',
+        answer: 'unit',
+        explanation: 'One function, tested <strong>in isolation</strong> before integration — this is <strong>Unit testing</strong>.',
+        definition: 'Unit Testing: "Single module/unit tested [1] / ensures it works as expected [1] / narrow scope [1]"'
+    },
+    {
+        id: 'INT-005',
+        text: 'The payment processing module and the order history module are tested together. Testers ensure that when a payment completes, the correct order record is written and retrievable.',
+        answer: 'integration',
+        explanation: '<strong>Two modules communicating</strong> — checking the interface and data flow between them. This is <strong>Integration testing</strong>.',
+        definition: 'Integration Testing: "Tests the interfaces between units [1] / identifies problems with interactions between units [1]"'
+    },
+    {
+        id: 'INT-006',
+        text: 'After all individual components have been combined, the complete soccer club booking application is tested as a whole to confirm it meets every requirement the client specified.',
+        answer: 'system',
+        explanation: 'All components combined, tested <strong>as a whole</strong> against client requirements — this is <strong>System testing</strong>.',
+        definition: 'System Testing: "Complete and fully integrated system [1] / tested to ensure compliance with user requirements [1]"'
+    }
+];
+
+// ===== GAME STATE =====
+let currentRound = 1;
+let currentIndex = 0;
+let score = 0;
+let lives = 3;
+let streak = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let questions = [];
+let awaitingNext = false;
+
+// ===== SHUFFLE =====
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// ===== SCREENS =====
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+// ===== ROUND INTRO =====
+function showRoundIntro(round) {
+    showScreen('game-screen');
+    awaitingNext = false;
+    document.getElementById('report-card').style.display = 'none';
+    document.getElementById('classif-buttons').style.display = 'none';
+    document.getElementById('feedback-panel').style.display = 'none';
+
+    const panel = document.getElementById('round-intro-panel');
+    panel.style.display = 'block';
+
+    if (round === 1) {
+        panel.innerHTML = `
+            <h2>🔐 ROUND 1 OF 2</h2>
+            <p>Classify each testing report as <strong>White Box</strong> or <strong>Black Box</strong> testing.</p>
+            <div class="round-badges">
+                <div class="round-badge rb-white">⬜ White Box</div>
+                <div class="round-badge rb-black">⬛ Black Box</div>
+            </div>
+            <p><em style="color:#6b8ca0;font-size:0.8rem">💡 White Box = tests internal code logic. Black Box = tests inputs/outputs only.</em></p>
+            <br>
+            <button class="continue-btn" onclick="startRound(1)">BEGIN ROUND 1 →</button>
+        `;
+    } else {
+        panel.innerHTML = `
+            <h2>🔐 ROUND 2 OF 2</h2>
+            <p>Now classify each report as <strong>Unit</strong>, <strong>Integration</strong>, or <strong>System</strong> testing.</p>
+            <div class="round-badges">
+                <div class="round-badge rb-unit">🔵 Unit</div>
+                <div class="round-badge rb-integ">🟡 Integration</div>
+                <div class="round-badge rb-sys">🔴 System</div>
+            </div>
+            <p><em style="color:#6b8ca0;font-size:0.8rem">💡 Unit = one module. Integration = modules together. System = whole system.</em></p>
+            <br>
+            <button class="continue-btn" onclick="startRound(2)">BEGIN ROUND 2 →</button>
+        `;
+    }
+}
+
+function startRound(round) {
+    currentRound = round;
+    currentIndex = 0;
+    questions = shuffle(round === 1 ? round1Questions : round2Questions);
+    document.getElementById('round-intro-panel').style.display = 'none';
+    document.getElementById('classif-buttons').style.display = 'flex';
+    setupButtons(round);
+    showQuestion();
+}
+
+// ===== BUTTONS =====
+function setupButtons(round) {
+    const container = document.getElementById('classif-buttons');
+    if (round === 1) {
+        container.innerHTML = `
+            <button class="classif-btn btn-whitebox" onclick="classify('whitebox')">⬜ WHITE BOX</button>
+            <button class="classif-btn btn-blackbox" onclick="classify('blackbox')">⬛ BLACK BOX</button>
+        `;
+    } else {
+        container.innerHTML = `
+            <button class="classif-btn btn-unit" onclick="classify('unit')">🔵 UNIT</button>
+            <button class="classif-btn btn-integration" onclick="classify('integration')">🟡 INTEGRATION</button>
+            <button class="classif-btn btn-system" onclick="classify('system')">🔴 SYSTEM</button>
+        `;
+    }
+}
+
+// ===== QUESTION =====
+function showQuestion() {
+    if (currentIndex >= questions.length) {
+        if (currentRound === 1) {
+            showRoundIntro(2);
+        } else {
+            showResults();
+        }
+        return;
+    }
+
+    awaitingNext = false;
+    const q = questions[currentIndex];
+    const totalCards = (currentRound === 1 ? 6 : 12);
+    const cardNum = currentRound === 1 ? currentIndex + 1 : currentIndex + 7;
+
+    document.getElementById('round-display').textContent = `ROUND ${currentRound} · CARD ${currentIndex + 1}/6`;
+    document.getElementById('report-id').textContent = `REF: ${q.id} · CLASSIFICATION PENDING`;
+    document.getElementById('report-title').textContent = currentRound === 1 ? 'Testing Approach Report' : 'Testing Scope Report';
+    document.getElementById('classif-stamp').textContent = 'UNCLASSIFIED';
+    document.getElementById('classif-stamp').style.color = '#ffd700';
+    document.getElementById('classif-stamp').style.borderColor = 'rgba(255,200,0,0.4)';
+    document.getElementById('scenario-text').textContent = q.text;
+
+    document.getElementById('report-card').style.display = 'block';
+    document.getElementById('feedback-panel').style.display = 'none';
+    document.getElementById('classif-buttons').style.display = 'flex';
+
+    // Enable buttons
+    document.querySelectorAll('.classif-btn').forEach(b => b.disabled = false);
+
+    // Progress
+    const progress = ((currentIndex + (currentRound === 2 ? 6 : 0)) / 12) * 100;
+    document.getElementById('progress-bar').style.width = progress + '%';
+
+    // HUD
+    updateHUD();
+}
+
+// ===== CLASSIFY =====
+function classify(choice) {
+    if (awaitingNext) return;
+    awaitingNext = true;
+
+    const q = questions[currentIndex];
+    const isCorrect = choice === q.answer;
+
+    // Disable buttons
+    document.querySelectorAll('.classif-btn').forEach(b => b.disabled = true);
+
+    if (isCorrect) {
+        const pts = 150;
+        score += pts;
+        correctCount++;
+        streak++;
+        showStamp('✅ CLASSIFIED', true);
+        showFloatScore('+150', event);
+        if (streak >= 4) showStreakFlash(`🔥 ${streak} IN A ROW!`);
+        showFeedback(true, q.explanation, q.definition);
+    } else {
+        score = Math.max(0, score - 50);
+        wrongCount++;
+        lives = Math.max(0, lives - 1);
+        streak = 0;
+        showStamp('❌ REJECTED', false);
+        showFloatScore('-50', event);
+        showFeedback(false, `<strong>Correct answer: ${formatAnswer(q.answer)}</strong><br>${q.explanation}`, q.definition);
+        if (lives === 0) {
+            setTimeout(() => showResults(), 1200);
+            return;
+        }
+    }
+
+    updateHUD();
+}
+
+function formatAnswer(ans) {
+    const map = { whitebox: '⬜ White Box', blackbox: '⬛ Black Box', unit: '🔵 Unit', integration: '🟡 Integration', system: '🔴 System' };
+    return map[ans] || ans;
+}
+
+function nextQuestion() {
+    currentIndex++;
+    showQuestion();
+}
+
+// ===== FEEDBACK =====
+function showFeedback(correct, text, def) {
+    const panel = document.getElementById('feedback-panel');
+    panel.className = 'feedback-panel ' + (correct ? 'feedback-correct' : 'feedback-wrong');
+    panel.style.display = 'block';
+    document.getElementById('feedback-title').textContent = correct ? '✅ CLASSIFIED CORRECTLY' : '❌ WRONG CLASSIFICATION';
+    document.getElementById('feedback-text').innerHTML = text;
+    document.getElementById('feedback-def').textContent = def;
+
+    const nextBtn = document.getElementById('next-btn');
+    const isLastInRound = currentIndex === questions.length - 1;
+    if (isLastInRound && currentRound === 2) {
+        nextBtn.textContent = 'SEE RESULTS →';
+    } else if (isLastInRound && currentRound === 1) {
+        nextBtn.textContent = 'ROUND 2 →';
+    } else {
+        nextBtn.textContent = 'NEXT REPORT →';
+    }
+}
+
+// ===== STAMP =====
+function showStamp(text, correct) {
+    const el = document.getElementById('stamp-overlay');
+    el.className = 'stamp-overlay ' + (correct ? 'stamp-correct' : 'stamp-wrong');
+    el.textContent = text;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 900);
+}
+
+// ===== STREAK FLASH =====
+function showStreakFlash(text) {
+    const el = document.getElementById('streak-flash');
+    el.textContent = text;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 2000);
+}
+
+// ===== FLOAT SCORE =====
+function showFloatScore(text, ev) {
+    const el = document.createElement('div');
+    el.className = 'float-score';
+    el.style.color = text.startsWith('+') ? '#2ecc71' : '#e74c3c';
+    el.textContent = text;
+    el.style.left = (window.innerWidth / 2 - 20) + 'px';
+    el.style.top = (window.innerHeight / 2) + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1300);
+}
+
+// ===== HUD =====
+function updateHUD() {
+    const livesMap = ['', '⚠️', '⚠️⚠️', '⚠️⚠️⚠️'];
+    document.getElementById('lives-display').textContent = livesMap[lives] || '💀';
+    document.getElementById('score-display').textContent = score;
+    document.getElementById('streak-display').textContent = streak >= 2 ? `🔥 ×${streak}` : '';
+}
+
+// ===== RESULTS =====
+function showResults() {
+    showScreen('results-screen');
+
+    const total = 12;
+    const pct = Math.round((correctCount / total) * 100);
+
+    let rank, rankColor, icon;
+    if (pct >= 92) { rank = '⭐ CHIEF CLASSIFICATION OFFICER'; rankColor = '#ffd700'; icon = '🏆'; }
+    else if (pct >= 75) { rank = '🔵 SENIOR ANALYST'; rankColor = '#39d353'; icon = '🥇'; }
+    else if (pct >= 58) { rank = '🟡 ANALYST'; rankColor = '#00bfff'; icon = '🎖️'; }
+    else { rank = '⬜ INTERN'; rankColor = '#8ab4c9'; icon = '📋'; }
+
+    document.getElementById('result-icon').textContent = icon;
+    document.getElementById('final-score').textContent = score;
+    document.getElementById('rank-badge').textContent = rank;
+    document.getElementById('rank-badge').style.background = rankColor + '22';
+    document.getElementById('rank-badge').style.color = rankColor;
+    document.getElementById('rank-badge').style.border = `2px solid ${rankColor}`;
+    document.getElementById('score-breakdown').textContent = `${correctCount} correct · ${wrongCount} wrong · ${pct}% accuracy`;
+
+    if (pct >= 75) launchConfetti();
+}
+
+// ===== CONFETTI =====
+function launchConfetti() {
+    const colours = ['#39d353','#00b341','#ffd700','#2ecc71','#fff'];
+    for (let i = 0; i < 60; i++) {
+        setTimeout(() => {
+            const el = document.createElement('div');
+            el.className = 'confetti-piece';
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.background = colours[Math.floor(Math.random() * colours.length)];
+            el.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+            el.style.animationDelay = '0s';
+            el.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }, i * 40);
+    }
+}
+
+// ===== RESTART =====
+function restartActivity() {
+    score = 0; lives = 3; streak = 0; correctCount = 0; wrongCount = 0;
+    currentRound = 1; currentIndex = 0;
+    showRoundIntro(1);
+}
+</script>
+</body>
+</html>
