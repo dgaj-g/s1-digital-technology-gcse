@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Taboo Challenge | Cloud Computing</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;min-height:100vh;background:#1a1a2e;color:#eee;overflow-x:hidden}
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px}
+
+/* Welcome */
+.welcome-card{max-width:700px;width:100%;background:linear-gradient(135deg,#16213e,#0f3460);border:2px solid #e94560;border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(233,69,96,.2)}
+.badge{display:inline-block;background:rgba(233,69,96,.2);border:1px solid #e94560;color:#ff8a9e;padding:6px 14px;border-radius:99px;font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+h1{font-size:clamp(2rem,6vw,3rem);margin-bottom:8px;background:linear-gradient(135deg,#fff,#e94560,#ffb703);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.subtitle{color:#a8b4c8;line-height:1.65;font-size:.95rem;margin-bottom:18px}
+.rules-box{background:rgba(0,0,0,.35);border:1px solid rgba(233,69,96,.3);border-left:4px solid #e94560;border-radius:12px;padding:16px;margin-bottom:20px}
+.rules-box h3{font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;color:#e94560;margin-bottom:8px}
+.rules-box p{font-size:.88rem;color:#c5cfe0;line-height:1.6;margin-bottom:5px}
+.rules-box ol{margin:8px 0 0 18px;font-size:.86rem;color:#b8c5d8;line-height:1.7}
+.start-btn{border:none;border-radius:12px;padding:14px 26px;font-size:.9rem;font-weight:800;letter-spacing:1px;color:#1a1a2e;background:linear-gradient(135deg,#e94560,#ff6b6b);cursor:pointer;transition:transform .2s,box-shadow .2s}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(233,69,96,.35)}
+
+/* Game */
+#game-screen{justify-content:flex-start;padding-top:20px}
+.game-wrap{width:100%;max-width:800px}
+
+.hud{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}
+.hud-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:9px 12px}
+.hud-label{font-size:.68rem;letter-spacing:1.2px;text-transform:uppercase;color:#8a9bb5;margin-bottom:3px}
+.hud-val{font-size:.9rem;font-weight:800;color:#eef3ff}
+.progress-track{height:6px;width:100%;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin-bottom:16px}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#e94560,#ffb703);transition:width .35s}
+
+/* Card */
+.taboo-card{background:linear-gradient(135deg,#c0392b,#e74c3c);border-radius:18px;padding:24px;text-align:center;margin-bottom:16px;box-shadow:0 12px 40px rgba(192,57,43,.3);position:relative;overflow:hidden}
+.taboo-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#ffb703,#ff6b6b,#ffb703)}
+.term-label{font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:8px}
+.term-word{font-size:2rem;font-weight:900;color:#fff;margin-bottom:16px;text-shadow:0 2px 8px rgba(0,0,0,.2)}
+.banned-title{font-size:.68rem;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:8px}
+.banned-list{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.banned-word{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.25);color:#ffd5d5;padding:6px 14px;border-radius:99px;font-size:.82rem;font-weight:700}
+
+/* Input area */
+.input-area{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:18px;margin-bottom:14px}
+.input-prompt{font-size:.88rem;color:#c5cfe0;margin-bottom:10px;line-height:1.5}
+.input-prompt strong{color:#ffb703}
+.text-input{width:100%;min-height:80px;background:rgba(0,0,0,.3);border:2px solid rgba(255,255,255,.18);border-radius:10px;padding:12px;font-size:.95rem;color:#eef3ff;font-family:inherit;resize:vertical;line-height:1.6}
+.text-input:focus{outline:none;border-color:#e94560}
+.text-input:disabled{opacity:.7}
+.char-count{text-align:right;font-size:.72rem;color:#6b7a8f;margin-top:4px}
+
+/* Warnings */
+.banned-warning{display:none;background:rgba(233,69,96,.15);border:1px solid rgba(233,69,96,.4);border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:.82rem;color:#ff8a9e}
+.banned-warning.show{display:block}
+
+/* Actions */
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-bottom:14px}
+.btn{border:none;border-radius:10px;padding:11px 18px;font-size:.82rem;font-weight:800;letter-spacing:.7px;cursor:pointer;transition:transform .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn-submit{background:linear-gradient(135deg,#e94560,#ff6b6b);color:#fff}
+.btn-submit:disabled{opacity:.5;cursor:default;transform:none}
+.btn-next{display:none;background:rgba(255,183,3,.2);border:1px solid rgba(255,183,3,.45);color:#ffe4aa}
+.btn-next.show{display:inline-block}
+
+/* Feedback */
+.feedback{display:none;border-radius:12px;padding:16px;margin-bottom:14px;border-left:4px solid}
+.feedback.show{display:block}
+.feedback.good{background:rgba(46,125,50,.15);border-color:#4caf50;border:1px solid rgba(76,175,80,.4);border-left:4px solid #4caf50}
+.feedback.partial{background:rgba(255,183,3,.12);border-color:#ffb703;border:1px solid rgba(255,183,3,.4);border-left:4px solid #ffb703}
+.feedback.bad{background:rgba(233,69,96,.12);border-color:#e94560;border:1px solid rgba(233,69,96,.4);border-left:4px solid #e94560}
+.fb-title{font-size:.92rem;font-weight:800;margin-bottom:6px}
+.fb-detail{font-size:.84rem;color:#c5cfe0;line-height:1.6;margin-bottom:6px}
+.fb-keywords{font-size:.82rem;color:#ffb703;line-height:1.5}
+.fb-model{font-size:.82rem;color:#8ab4f8;line-height:1.5;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.08)}
+
+/* Results */
+.result-card{max-width:700px;width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:26px;text-align:center}
+.result-card h2{font-size:2rem;margin-bottom:6px}
+.rank-badge{display:inline-block;padding:9px 20px;border-radius:99px;font-size:.9rem;font-weight:800;margin:10px 0 14px}
+.big-score{font-size:3rem;font-weight:900;color:#e94560;margin-bottom:6px}
+.score-sub{font-size:.88rem;color:#8a9bb5;margin-bottom:20px}
+.summary-box{text-align:left;background:rgba(0,0,0,.3);border:1px solid rgba(233,69,96,.25);border-radius:12px;padding:16px;margin-bottom:18px}
+.summary-box h3{font-size:.78rem;letter-spacing:1.4px;text-transform:uppercase;color:#e94560;margin-bottom:10px}
+.sum-item{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sum-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.sum-term{font-size:.86rem;font-weight:700;color:#ffb5c0;margin-bottom:2px}
+.sum-text{font-size:.8rem;color:#a8b8cc;line-height:1.55}
+.result-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.result-actions .btn{padding:12px 18px;text-decoration:none}
+.btn-main{background:linear-gradient(135deg,#e94560,#ff6b6b);color:#fff}
+.btn-sec{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#ddd}
+
+@media(max-width:560px){
+    .welcome-card,.result-card{padding:18px}
+    .term-word{font-size:1.6rem}
+    .banned-list{gap:5px}
+    .banned-word{padding:4px 10px;font-size:.74rem}
+}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div id="welcome-screen" class="screen active">
+    <div class="welcome-card">
+        <div class="badge">Cloud Computing Challenge</div>
+        <h1>Taboo!</h1>
+        <p class="subtitle">Can you explain cloud computing terms <strong>without</strong> using the banned words? This tests whether you truly understand the concepts, not just the textbook definitions.</p>
+        <div class="rules-box">
+            <h3>Rules</h3>
+            <ol>
+                <li>A cloud computing term will appear with a list of <strong>banned words</strong>.</li>
+                <li>Type your own explanation of the term in the text box.</li>
+                <li>Your explanation <strong>must not</strong> contain any of the banned words.</li>
+                <li>It <strong>must</strong> include the key ideas &mdash; the system checks for concept keywords.</li>
+                <li>You score points for covering key concepts while avoiding banned words.</li>
+            </ol>
+        </div>
+        <button class="start-btn" onclick="startGame()">START TABOO &rarr;</button>
+    </div>
+</div>
+
+<!-- GAME -->
+<div id="game-screen" class="screen">
+    <div class="game-wrap">
+        <div class="hud">
+            <div class="hud-item"><div class="hud-label">Round</div><div class="hud-val" id="hud-round">1 / 10</div></div>
+            <div class="hud-item"><div class="hud-label">Score</div><div class="hud-val" id="hud-score">0</div></div>
+            <div class="hud-item"><div class="hud-label">Max Possible</div><div class="hud-val" id="hud-max">0</div></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+
+        <div class="taboo-card">
+            <div class="term-label">Describe This Term</div>
+            <div class="term-word" id="term-word">Loading...</div>
+            <div class="banned-title">Banned Words</div>
+            <div class="banned-list" id="banned-list"></div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-prompt">Type your explanation below. Use <strong>at least 10 words</strong>. Avoid the banned words above!</div>
+            <textarea class="text-input" id="text-input" placeholder="Type your explanation here..." maxlength="500"></textarea>
+            <div class="char-count"><span id="word-count">0</span> words</div>
+        </div>
+
+        <div class="banned-warning" id="banned-warning"></div>
+
+        <div class="actions">
+            <button class="btn btn-submit" id="submit-btn" onclick="submitAnswer()">SUBMIT</button>
+            <button class="btn btn-next" id="next-btn" onclick="nextRound()">NEXT TERM &rarr;</button>
+        </div>
+
+        <div class="feedback" id="feedback">
+            <div class="fb-title" id="fb-title"></div>
+            <div class="fb-detail" id="fb-detail"></div>
+            <div class="fb-keywords" id="fb-keywords"></div>
+            <div class="fb-model" id="fb-model"></div>
+        </div>
+    </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results-screen" class="screen">
+    <div class="result-card">
+        <h2>Taboo Complete!</h2>
+        <div class="rank-badge" id="rank-badge">Rank</div>
+        <div class="big-score" id="final-score">0</div>
+        <div class="score-sub" id="score-sub">out of 0 possible points</div>
+
+        <div class="summary-box">
+            <h3>Key Terms Revision</h3>
+            <div class="sum-item"><div class="sum-term">Cloud Computing</div><div class="sum-text">Using the internet to access software, services and data storage on remote servers rather than local hard drives.</div></div>
+            <div class="sum-item"><div class="sum-term">Bandwidth</div><div class="sum-text">The amount of data that can be transmitted over a network in a fixed amount of time, measured in bits per second.</div></div>
+            <div class="sum-item"><div class="sum-term">Synchronisation</div><div class="sum-text">When a user changes a cloud file, the change appears in versions used by all other users.</div></div>
+            <div class="sum-item"><div class="sum-term">Streaming</div><div class="sum-text">Viewing video or playing games via the internet without downloading the full file first.</div></div>
+            <div class="sum-item"><div class="sum-term">Scalable Storage</div><div class="sum-text">Cloud storage that can be expanded without purchasing additional local hardware.</div></div>
+        </div>
+
+        <div class="result-actions">
+            <button class="btn btn-main" onclick="restartGame()">PLAY AGAIN</button>
+            <a class="btn btn-sec" href="index.html">BACK TO MENU</a>
+        </div>
+    </div>
+</div>
+
+<script>
+const rounds = [
+    {
+        term: 'Cloud Computing',
+        banned: ['cloud', 'computing', 'internet', 'online', 'server'],
+        concepts: [
+            {keywords:['remote','distance','far','away','elsewhere','off-site','offsite'], label:'Remote/off-site access'},
+            {keywords:['data','files','information','documents'], label:'Data or files'},
+            {keywords:['store','storage','save','keep','host','hold'], label:'Storing or saving'},
+            {keywords:['software','program','application','app','service'], label:'Software or services'},
+            {keywords:['network','web','connected','connection','broadband'], label:'Network or web connection'}
+        ],
+        model: 'Accessing programs, files and storage space through a worldwide network on remote machines, instead of using your own hard drive.',
+        points: 5
+    },
+    {
+        term: 'Automatic Updates',
+        banned: ['automatic', 'update', 'install', 'software', 'patch'],
+        concepts: [
+            {keywords:['new','latest','current','recent','newer'], label:'Newer versions'},
+            {keywords:['download','deliver','push','send','roll','receive'], label:'Delivered or pushed'},
+            {keywords:['without','no need','don\'t','doesn\'t','not required','hands-off'], label:'Without manual effort'},
+            {keywords:['cloud','remote','provider','server','online','internet'], label:'Cloud or provider'}
+        ],
+        model: 'The cloud provider delivers newer versions of programs to all users without anyone having to do it by hand.',
+        points: 4
+    },
+    {
+        term: 'Bandwidth',
+        banned: ['bandwidth', 'speed', 'fast', 'slow', 'broadband'],
+        concepts: [
+            {keywords:['data','information','bits','traffic'], label:'Data or bits'},
+            {keywords:['transfer','transmit','send','move','carry','pass','travel'], label:'Transfer or transmit'},
+            {keywords:['time','second','period','moment','rate'], label:'Per unit of time'},
+            {keywords:['network','connection','line','link','wire','channel'], label:'Network or connection'}
+        ],
+        model: 'The amount of data that can be moved across a network connection in a given period, measured in bits per second.',
+        points: 4
+    },
+    {
+        term: 'Downtime',
+        banned: ['downtime', 'down', 'offline', 'fail', 'crash'],
+        concepts: [
+            {keywords:['access','use','using','reach','connect','available','unavailable','get to','work'], label:'Cannot access or use'},
+            {keywords:['service','system','resource','platform','cloud','server'], label:'Service or system'},
+            {keywords:['internet','router','connection','network','provider','broadband'], label:'Internet or router issue'},
+            {keywords:['risk','problem','issue','disrupt','loss','unable','stop','prevent'], label:'Risk or problem'}
+        ],
+        model: 'When a connection problem or provider issue means users are unable to reach their resources or systems for a period.',
+        points: 4
+    },
+    {
+        term: 'Synchronisation',
+        banned: ['sync', 'synchronise', 'synchronisation', 'update', 'automatic'],
+        concepts: [
+            {keywords:['change','edit','modify','alter','amend','adjust'], label:'Changes or edits'},
+            {keywords:['appear','show','reflect','visible','seen','display','mirror','replicate'], label:'Appear for others'},
+            {keywords:['other','everyone','all','shared','team','colleague','user','collaborat'], label:'Other users'},
+            {keywords:['version','copy','file','document'], label:'Versions or copies'}
+        ],
+        model: 'When one person edits a shared file, those changes are immediately reflected in every other person\'s copy of the document.',
+        points: 4
+    },
+    {
+        term: 'Streaming',
+        banned: ['stream', 'streaming', 'watch', 'play', 'download'],
+        concepts: [
+            {keywords:['video','media','game','content','music','film'], label:'Video, game or media'},
+            {keywords:['internet','cloud','online','web','remote','network'], label:'Via the internet'},
+            {keywords:['without','no need','don\'t','instant','immediate','straight','real-time','live'], label:'Without full file first'},
+            {keywords:['view','access','experience','consume','enjoy','use','using','see','receive'], label:'View or access'}
+        ],
+        model: 'Viewing video or experiencing media content over a network connection in real time, without needing to receive the entire file first.',
+        points: 4
+    },
+    {
+        term: 'Cloud File Sharing',
+        banned: ['share', 'sharing', 'cloud', 'send', 'collaborate'],
+        concepts: [
+            {keywords:['file','document','work','data','project','resource'], label:'Files or documents'},
+            {keywords:['other','team','colleague','group','people','user','partner','together'], label:'Multiple users'},
+            {keywords:['access','view','edit','open','use','using','work on','read','write'], label:'Access or edit'},
+            {keywords:['internet','online','remote','web','anywhere','global','location','distance'], label:'From different locations'}
+        ],
+        model: 'Multiple people in different locations can access, view and edit the same documents through an internet-connected platform.',
+        points: 4
+    },
+    {
+        term: 'Cloud Security Risk',
+        banned: ['security', 'risk', 'hack', 'hacker', 'attack'],
+        concepts: [
+            {keywords:['data','information','files','record','personal'], label:'Data or information'},
+            {keywords:['online','internet','cloud','remote','web','stored','server'], label:'Stored online'},
+            {keywords:['unauthorised','criminal','malicious','threat','steal','access','breach','target','intercept','break','exploit','vulnerable'], label:'Unauthorised access or theft'},
+            {keywords:['danger','concern','problem','issue','worry','weakness','exposed'], label:'A danger or concern'}
+        ],
+        model: 'A concern that data held on remote servers could be accessed by unauthorised individuals or criminals who exploit weaknesses in the system.',
+        points: 4
+    },
+    {
+        term: 'Cloud Gaming Benefits',
+        banned: ['cloud', 'game', 'gaming', 'download', 'buy'],
+        concepts: [
+            {keywords:['developer','studio','creator','publisher','maker','producer','company'], label:'Developers or studios'},
+            {keywords:['customer','player','user','gamer','consumer'], label:'Customers or players'},
+            {keywords:['cost','cheap','price','save','money','less','reduce','afford','pay'], label:'Cost savings'},
+            {keywords:['hardware','device','computer','console','machine','equipment','upgrade'], label:'Hardware or devices'}
+        ],
+        model: 'Creators save on distribution costs and reach more customers globally. Players get instant access, spend less, and do not need expensive equipment upgrades.',
+        points: 4
+    },
+    {
+        term: 'Backup and Recovery',
+        banned: ['backup', 'back up', 'recover', 'recovery', 'copy'],
+        concepts: [
+            {keywords:['data','file','information','work','document'], label:'Data or files'},
+            {keywords:['save','store','preserve','protect','keep','retain','duplicate','replicate','second'], label:'Saved or preserved'},
+            {keywords:['lost','lose','destroy','corrupt','damage','delete','gone','disaster','crash'], label:'If lost or damaged'},
+            {keywords:['restore','return','retrieve','get back','original','recreate','rebuild'], label:'Restored or retrieved'}
+        ],
+        model: 'Important files are saved in a secure second location by the provider, so if the originals are lost, damaged or corrupted they can be restored to their previous state.',
+        points: 4
+    }
+];
+
+let currentRound = 0;
+let score = 0;
+let maxPossible = 0;
+const totalPoints = rounds.reduce((s,r) => s + r.points, 0);
+let locked = false;
+
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function shuffle(arr) {
+    const c = [...arr];
+    for (let i = c.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [c[i], c[j]] = [c[j], c[i]];
+    }
+    return c;
+}
+
+function startGame() {
+    currentRound = 0;
+    score = 0;
+    maxPossible = 0;
+    showScreen('game-screen');
+    loadRound();
+}
+
+function loadRound() {
+    locked = false;
+    const r = rounds[currentRound];
+
+    document.getElementById('hud-round').textContent = `${currentRound + 1} / ${rounds.length}`;
+    document.getElementById('hud-score').textContent = score;
+    document.getElementById('hud-max').textContent = totalPoints;
+    document.getElementById('progress-fill').style.width = `${Math.round((currentRound / rounds.length) * 100)}%`;
+
+    document.getElementById('term-word').textContent = r.term;
+
+    const bannedEl = document.getElementById('banned-list');
+    bannedEl.innerHTML = '';
+    r.banned.forEach(w => {
+        const span = document.createElement('span');
+        span.className = 'banned-word';
+        span.textContent = '\u2718 ' + w;
+        bannedEl.appendChild(span);
+    });
+
+    document.getElementById('text-input').value = '';
+    document.getElementById('text-input').disabled = false;
+    document.getElementById('word-count').textContent = '0';
+    document.getElementById('banned-warning').classList.remove('show');
+    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('submit-btn').style.display = 'inline-block';
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('next-btn').classList.remove('show');
+}
+
+// Word count
+document.getElementById('text-input').addEventListener('input', function() {
+    const words = this.value.trim().split(/\s+/).filter(w => w.length > 0);
+    document.getElementById('word-count').textContent = words.length;
+});
+
+function normalise(str) {
+    return str.toLowerCase().replace(/[^a-z0-9\s'-]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function submitAnswer() {
+    if (locked) return;
+    const r = rounds[currentRound];
+    const raw = document.getElementById('text-input').value;
+    const text = normalise(raw);
+    const words = text.split(/\s+/).filter(w => w.length > 0);
+
+    // Check minimum length
+    if (words.length < 10) {
+        document.getElementById('banned-warning').textContent = 'Your explanation needs at least 10 words. Keep going!';
+        document.getElementById('banned-warning').classList.add('show');
+        return;
+    }
+
+    locked = true;
+    document.getElementById('text-input').disabled = true;
+    document.getElementById('submit-btn').style.display = 'none';
+
+    // Check for banned words
+    const usedBanned = [];
+    r.banned.forEach(bw => {
+        const pattern = new RegExp('\\b' + bw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+        if (pattern.test(text)) {
+            usedBanned.push(bw);
+        }
+    });
+
+    // Check for concepts
+    const hitConcepts = [];
+    const missedConcepts = [];
+    r.concepts.forEach(c => {
+        const found = c.keywords.some(kw => {
+            const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            if (new RegExp(escaped, 'i').test(text)) return true;
+            // Stem matching: keywords ending in 'e' (4+ chars) also try without trailing 'e'
+            // e.g. "store" also matches "storing", "save" also matches "saving"
+            if (kw.length > 3 && kw.endsWith('e')) {
+                if (new RegExp(escaped.slice(0, -1), 'i').test(text)) return true;
+            }
+            return false;
+        });
+        if (found) hitConcepts.push(c.label);
+        else missedConcepts.push(c.label);
+    });
+
+    // Scoring
+    let earned = hitConcepts.length;
+    const penalty = usedBanned.length;
+    earned = Math.max(0, earned - penalty);
+    earned = Math.min(earned, r.points);
+    score += earned;
+    maxPossible += r.points;
+
+    document.getElementById('hud-score').textContent = score;
+
+    // Feedback
+    const fb = document.getElementById('feedback');
+    const title = document.getElementById('fb-title');
+    const detail = document.getElementById('fb-detail');
+    const kwInfo = document.getElementById('fb-keywords');
+    const modelEl = document.getElementById('fb-model');
+
+    let bannedMsg = '';
+    if (usedBanned.length > 0) {
+        bannedMsg = `You used banned word${usedBanned.length > 1 ? 's' : ''}: ${usedBanned.map(w => '"' + w + '"').join(', ')}. ${usedBanned.length} point${usedBanned.length > 1 ? 's' : ''} deducted.`;
+    }
+
+    if (earned === r.points && usedBanned.length === 0) {
+        fb.className = 'feedback good show';
+        title.textContent = `\u2705 Excellent! ${earned}/${r.points} points`;
+        title.style.color = '#81c784';
+    } else if (earned > 0) {
+        fb.className = 'feedback partial show';
+        title.textContent = `\u26a0\ufe0f ${earned}/${r.points} points`;
+        title.style.color = '#ffb703';
+    } else {
+        fb.className = 'feedback bad show';
+        title.textContent = `\u274c ${earned}/${r.points} points`;
+        title.style.color = '#ff8a9e';
+    }
+
+    let detailText = '';
+    if (bannedMsg) detailText += bannedMsg + ' ';
+    if (hitConcepts.length > 0) detailText += `Concepts covered: ${hitConcepts.join(', ')}. `;
+    if (missedConcepts.length > 0) detailText += `Missing: ${missedConcepts.join(', ')}.`;
+    detail.textContent = detailText;
+
+    kwInfo.textContent = `Tip: The key ideas for this term are — ${r.concepts.map(c => c.label).join(', ')}.`;
+    modelEl.textContent = `Model answer: "${r.model}"`;
+
+    const isLast = currentRound === rounds.length - 1;
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.textContent = isLast ? 'SEE RESULTS \u2192' : 'NEXT TERM \u2192';
+    nextBtn.classList.add('show');
+}
+
+function nextRound() {
+    currentRound++;
+    if (currentRound >= rounds.length) {
+        showResults();
+        return;
+    }
+    loadRound();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function showResults() {
+    showScreen('results-screen');
+    const pct = totalPoints > 0 ? Math.round((score / totalPoints) * 100) : 0;
+
+    document.getElementById('final-score').textContent = `${score} / ${totalPoints}`;
+    document.getElementById('score-sub').textContent = `${pct}% — ${score} out of ${totalPoints} possible points`;
+
+    let rank = 'Taboo Trainee';
+    let bg = 'rgba(233,69,96,.15)'; let col = '#ff8a9e'; let bdr = '#e94560';
+    if (pct >= 90) { rank = 'Taboo Master'; bg = 'rgba(255,183,3,.15)'; col = '#ffb703'; bdr = '#ffb703'; }
+    else if (pct >= 70) { rank = 'Word Wizard'; bg = 'rgba(129,199,132,.15)'; col = '#81c784'; bdr = '#81c784'; }
+    else if (pct >= 50) { rank = 'Phrase Finder'; bg = 'rgba(138,180,248,.15)'; col = '#8ab4f8'; bdr = '#8ab4f8'; }
+
+    const badge = document.getElementById('rank-badge');
+    badge.textContent = rank;
+    badge.style.background = bg;
+    badge.style.color = col;
+    badge.style.border = `2px solid ${bdr}`;
+
+    document.getElementById('progress-fill').style.width = '100%';
+}
+
+function restartGame() {
+    startGame();
+    window.scrollTo({top: 0});
+}
+</script>
+</body>
+</html>

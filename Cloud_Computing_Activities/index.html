@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Computing - Interactive Activities</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg-1: #031926;
+    --bg-2: #0b2545;
+    --bg-3: #134074;
+    --accent-1: #8ecae6;
+    --accent-2: #219ebc;
+    --accent-3: #ffb703;
+    --text-main: #f3f8ff;
+    --text-dim: #b8ccde;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    color: var(--text-main);
+    background:
+        radial-gradient(circle at 15% 20%, rgba(142, 202, 230, 0.2), transparent 30%),
+        radial-gradient(circle at 85% 10%, rgba(33, 158, 188, 0.22), transparent 32%),
+        radial-gradient(circle at 50% 90%, rgba(255, 183, 3, 0.18), transparent 35%),
+        linear-gradient(130deg, var(--bg-1), var(--bg-2) 45%, var(--bg-3));
+    overflow-x: hidden;
+}
+
+canvas#starfield {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #1d3557, #457b9d);
+    border: 1px solid rgba(142, 202, 230, 0.45);
+    color: #d8f0ff;
+    font-size: 0.74rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+header h1 {
+    font-size: clamp(2rem, 5vw, 3.3rem);
+    line-height: 1.1;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #f1f7ff, #8ecae6, #ffb703);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+header p {
+    max-width: 650px;
+    margin: 0 auto;
+    color: var(--text-dim);
+    line-height: 1.65;
+    font-size: 1rem;
+}
+
+.summary-banner {
+    max-width: 900px;
+    margin: 0 auto 28px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(142, 202, 230, 0.3);
+    border-radius: 12px;
+    padding: 14px 18px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #d2e6f7;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 18px;
+    padding: 22px;
+    min-height: 260px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 3px;
+    background: var(--card-gradient);
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.35);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    background: var(--card-gradient);
+    color: #041220;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.activity-num {
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    color: #a7c4dd;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.card h2 {
+    font-size: 1.35rem;
+    margin-bottom: 8px;
+}
+
+.card p {
+    color: var(--text-dim);
+    line-height: 1.55;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+    flex: 1;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 18px;
+}
+
+.tag {
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.08);
+    color: #d8ebfb;
+}
+
+.play {
+    align-self: flex-start;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 0.82rem;
+    letter-spacing: 0.6px;
+    color: #031926;
+    background: var(--card-gradient);
+}
+
+footer {
+    margin-top: 40px;
+    text-align: center;
+    color: #9bb8cf;
+    font-size: 0.82rem;
+    opacity: 0.8;
+}
+
+@media (max-width: 700px) {
+    .container { padding: 28px 14px; }
+}
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+
+<div class="container">
+    <header>
+        <div class="badge">CCEA GCSE Digital Technology</div>
+        <h1>Cloud Computing</h1>
+        <p>
+            Interactive revision activities aligned to cloud computing classroom notes, slideshow content, and past-paper mark schemes.
+            Play in order or jump to the activity you want to practise.
+        </p>
+    </header>
+
+    <div class="summary-banner">
+        Built from three source sets: class PowerPoint + textbook notes + PPQ question-and-answer mark schemes.
+    </div>
+
+    <div class="grid">
+        <a class="card" href="activity1.html" style="--card-gradient: linear-gradient(135deg, #00b8d4, #0097a7);">
+            <div class="card-header">
+                <div class="icon">💼</div>
+                <div>
+                    <div class="activity-num">Activity 1</div>
+                    <h2>Cloud Consultant</h2>
+                </div>
+            </div>
+            <p>
+                Three clients need your cloud computing advice. Read each brief, then build a proposal by selecting accurate statements and spotting the inaccurate ones. Can you tell fact from fiction?
+            </p>
+            <div class="tags">
+                <span class="tag">Roleplay consultant</span>
+                <span class="tag">Spot inaccuracies</span>
+                <span class="tag">3 real clients</span>
+            </div>
+            <div class="play">PLAY -></div>
+        </a>
+
+        <a class="card" href="activity2.html" style="--card-gradient: linear-gradient(135deg, #e94560, #ff6b6b);">
+            <div class="card-header">
+                <div class="icon">🤐</div>
+                <div>
+                    <div class="activity-num">Activity 2</div>
+                    <h2>Taboo Challenge</h2>
+                </div>
+            </div>
+            <p>
+                Explain cloud computing terms in your own words &mdash; without using the banned words! Tests true understanding, not memorised definitions. Type your answers and score points for key concepts.
+            </p>
+            <div class="tags">
+                <span class="tag">Type your own answers</span>
+                <span class="tag">Avoid banned words</span>
+                <span class="tag">10 key terms</span>
+            </div>
+            <div class="play">PLAY -></div>
+        </a>
+    </div>
+
+    <footer>
+        CCEA GCSE Digital Technology • Cloud Computing • Offline HTML activities
+    </footer>
+</div>
+
+<script>
+const canvas = document.getElementById('starfield');
+const ctx = canvas.getContext('2d');
+let dots = [];
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+function seed() {
+    dots = [];
+    const count = Math.max(45, Math.floor(window.innerWidth / 18));
+    for (let i = 0; i < count; i++) {
+        dots.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 1.8 + 0.5,
+            vx: (Math.random() - 0.5) * 0.25,
+            vy: (Math.random() - 0.5) * 0.25,
+            c: Math.random() > 0.75 ? '#ffb703' : '#8ecae6'
+        });
+    }
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    dots.forEach((d) => {
+        d.x += d.vx;
+        d.y += d.vy;
+        if (d.x < 0 || d.x > canvas.width) d.vx *= -1;
+        if (d.y < 0 || d.y > canvas.height) d.vy *= -1;
+        ctx.globalAlpha = 0.7;
+        ctx.fillStyle = d.c;
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fill();
+    });
+    requestAnimationFrame(animate);
+}
+
+resize();
+seed();
+animate();
+window.addEventListener('resize', () => {
+    resize();
+    seed();
+});
+</script>
+</body>
+</html>

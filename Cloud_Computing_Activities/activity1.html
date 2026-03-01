@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Consultant | Cloud Computing</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0d1b2a;color:#e0e6ed;min-height:100vh;
+  background-image:radial-gradient(circle at 15% 50%,rgba(0,184,212,.04) 0%,transparent 50%),radial-gradient(circle at 85% 20%,rgba(0,184,212,.04) 0%,transparent 50%)}
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+
+/* ---- Animations ---- */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes popIn{0%{opacity:0;transform:scale(.85)}60%{transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}
+@keyframes selectPop{0%{transform:scale(1)}40%{transform:scale(1.03) translateY(-5px)}100%{transform:scale(1) translateY(-5px)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes iconPop{0%{transform:scale(0) rotate(-20deg)}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes shimmer{0%{left:-100%}100%{left:100%}}
+@keyframes celebrate{0%{transform:scale(.8);opacity:0}50%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+
+/* ---- Header ---- */
+.header{background:linear-gradient(135deg,#1b2838 0%,#0d1b2a 50%,#1b2838 100%);background-size:200% 200%;animation:gradShift 10s ease infinite;border-bottom:2px solid #00b8d4;padding:14px 20px;text-align:center}
+.header-title{font-size:1.3rem;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:#00b8d4}
+.header-sub{font-size:.68rem;letter-spacing:2px;color:#5c7a99;margin-top:2px}
+
+/* ---- Welcome ---- */
+.welcome-wrap{max-width:700px;margin:0 auto;padding:50px 20px;animation:fadeIn .6s ease}
+.welcome-icon{font-size:4rem;text-align:center;margin-bottom:20px;animation:float 3s ease-in-out infinite}
+.welcome-wrap h1{font-size:2.2rem;text-align:center;color:#fff;margin-bottom:10px}
+.welcome-wrap .lead{text-align:center;font-size:1.05rem;color:#8899aa;line-height:1.7;margin-bottom:30px}
+.how-box{background:#1a2838;border:1px solid #253545;border-left:4px solid #00b8d4;border-radius:8px;padding:20px;margin-bottom:30px}
+.how-box h3{font-size:.76rem;text-transform:uppercase;letter-spacing:2px;color:#00b8d4;margin-bottom:12px}
+.how-box li{font-size:.92rem;color:#b0bec5;line-height:1.7;padding:4px 0 4px 24px;position:relative;list-style:none}
+.how-box li::before{content:'\2192';color:#00b8d4;position:absolute;left:0}
+.start-btn{display:block;margin:0 auto;background:linear-gradient(135deg,#00b8d4,#0097a7);color:#fff;border:none;padding:16px 36px;font-size:.95rem;font-weight:700;letter-spacing:1.5px;border-radius:8px;cursor:pointer;transition:all .3s;text-transform:uppercase}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,184,212,.35)}
+
+/* ---- HUD ---- */
+.hud{background:#1a2838;border-bottom:1px solid #253545;padding:12px 20px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;position:sticky;top:0;z-index:10}
+.hud-item{font-size:.72rem;color:#5c7a99;letter-spacing:.5px;text-transform:uppercase}
+.hud-item strong{color:#00b8d4;font-size:.88rem}
+.hud-progress{height:4px;background:#253545;flex:1;min-width:100px;border-radius:99px;overflow:hidden}
+.hud-fill{height:100%;width:0;background:linear-gradient(90deg,#00b8d4,#00e5ff);transition:width .6s ease}
+
+/* ---- Client Section ---- */
+.client-section{max-width:860px;margin:0 auto;padding:28px 20px 10px}
+.client-header{animation:slideInLeft .5s ease;display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.client-avatar{width:58px;height:58px;background:linear-gradient(135deg,#1a2838,#253545);border:2px solid #00b8d4;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;flex-shrink:0}
+.client-name{font-size:1.3rem;font-weight:800;color:#fff}
+.client-location{font-size:.8rem;color:#5c7a99;margin-top:1px}
+.brief-card{animation:slideUp .5s ease .1s both;background:#1a2838;border:1px solid #253545;border-radius:10px;padding:18px 20px;margin-bottom:22px;position:relative;overflow:hidden}
+.brief-card::after{content:'';position:absolute;top:0;left:-100%;width:80%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,184,212,.04),transparent);animation:shimmer 3s ease 1s}
+.brief-label{font-size:.66rem;text-transform:uppercase;letter-spacing:2px;color:#00b8d4;margin-bottom:8px;font-weight:700}
+.brief-text{font-size:.92rem;color:#b0bec5;line-height:1.75;font-style:italic}
+
+/* ---- Instruction ---- */
+.instruction{text-align:center;font-size:.84rem;color:#5c7a99;margin-bottom:16px;animation:fadeIn .5s ease .3s both;padding:0 20px}
+.instruction strong{color:#00b8d4}
+
+/* ---- Card Grid ---- */
+.card-grid{max-width:860px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 20px;margin-bottom:12px}
+.card{background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:18px 16px;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;color:#444;font-size:.88rem;line-height:1.7;user-select:none;opacity:0;animation:slideUp .45s ease forwards;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;border-radius:12px;opacity:0;transition:opacity .3s;background:linear-gradient(135deg,rgba(0,184,212,.06),transparent)}
+.card:hover::before{opacity:1}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.25)}
+.card.selected{border-color:#00b8d4;background:#f6feff;transform:translateY(-5px);box-shadow:0 0 0 3px rgba(0,184,212,.18),0 12px 32px rgba(0,184,212,.12)}
+.card.selected::before{opacity:1}
+.card-badge{position:absolute;top:-1px;right:14px;background:#00b8d4;color:#fff;font-size:.58rem;font-weight:800;letter-spacing:1.2px;padding:4px 12px 5px;border-radius:0 0 6px 6px;text-transform:uppercase;opacity:0;transform:translateY(-100%);transition:all .3s cubic-bezier(.4,0,.2,1)}
+.card.selected .card-badge{opacity:1;transform:translateY(0)}
+
+/* ---- Card Result States ---- */
+.card.locked{cursor:default;animation:none;opacity:1;transform:none}
+.card.locked:hover{transform:none;box-shadow:none}
+.card.locked::before{display:none}
+.card.res-correct-inc{border-color:#00c853;background:#f0fdf4;box-shadow:0 0 0 3px rgba(0,200,83,.12)}
+.card.res-wrong-inc{border-color:#ef4444;background:#fef2f2;box-shadow:0 0 0 3px rgba(239,68,68,.12)}
+.card.res-missed{border-color:#f59e0b;background:#fffbeb;box-shadow:0 0 0 3px rgba(245,158,11,.12)}
+.card.res-correct-exc{border-color:#86efac;background:#f8fef9;opacity:.7}
+.res-icon{position:absolute;top:-8px;left:-8px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:#fff;z-index:2;animation:iconPop .4s ease both}
+.res-icon.green{background:#00c853}
+.res-icon.red{background:#ef4444}
+.res-icon.amber{background:#f59e0b}
+.res-icon.muted{background:#86efac;font-size:.7rem}
+.card-fb{margin-top:12px;padding-top:12px;border-top:1px dashed #ddd;font-size:.82rem;line-height:1.6;animation:fadeIn .3s ease}
+.card-fb.green{color:#15803d}
+.card-fb.red{color:#dc2626}
+.card-fb.amber{color:#b45309}
+.card-fb.muted-green{color:#22c55e}
+
+/* ---- Res Badge Override ---- */
+.card .res-badge{position:absolute;top:-1px;right:14px;font-size:.58rem;font-weight:800;letter-spacing:1.2px;padding:4px 12px 5px;border-radius:0 0 6px 6px;text-transform:uppercase;color:#fff;opacity:0;transform:translateY(-100%);animation:slideUp .35s ease forwards}
+
+/* ---- Action Bar ---- */
+.action-bar{max-width:860px;margin:0 auto;padding:14px 20px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.card-counter{font-size:.84rem;color:#5c7a99}
+.card-counter strong{color:#00b8d4}
+.present-btn,.next-btn{background:linear-gradient(135deg,#00b8d4,#0097a7);color:#fff;border:none;padding:14px 26px;font-size:.86rem;font-weight:700;letter-spacing:1px;border-radius:8px;cursor:pointer;transition:all .3s;text-transform:uppercase}
+.present-btn{opacity:.35;pointer-events:none}
+.present-btn.active{opacity:1;pointer-events:auto}
+.present-btn.active:hover,.next-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,184,212,.35)}
+.next-btn{display:none}
+
+/* ---- Score Banner ---- */
+.score-banner{max-width:860px;margin:0 auto 10px;padding:18px 20px;border-radius:10px;text-align:center;display:none;animation:popIn .4s ease}
+.score-banner.show{display:block}
+.score-banner.perfect{background:linear-gradient(135deg,#00c853,#00e676)}
+.score-banner.good{background:linear-gradient(135deg,#00b8d4,#00e5ff)}
+.score-banner.okay{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#333}
+.score-banner.low{background:linear-gradient(135deg,#ef4444,#f87171)}
+.sb-title{font-size:1.1rem;font-weight:800;margin-bottom:3px}
+.sb-detail{font-size:.84rem;opacity:.9}
+
+/* ---- Results ---- */
+.results-wrap{max-width:680px;margin:0 auto;padding:50px 20px;text-align:center;animation:fadeIn .6s ease}
+.results-wrap h2{font-size:2rem;color:#fff;margin-bottom:6px}
+.results-badge{display:inline-block;padding:8px 22px;border-radius:99px;font-size:.88rem;font-weight:800;margin:12px 0 20px;letter-spacing:1px}
+.big-score{font-size:3.5rem;font-weight:900;color:#00b8d4;margin-bottom:6px;animation:celebrate .5s ease}
+.score-sub{font-size:.92rem;color:#5c7a99;margin-bottom:28px}
+.breakdown{background:#1a2838;border:1px solid #253545;border-radius:10px;padding:20px;text-align:left;margin-bottom:20px}
+.breakdown h3,.revision-box h3{font-size:.72rem;text-transform:uppercase;letter-spacing:2px;color:#00b8d4;margin-bottom:14px}
+.bd-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #253545;font-size:.9rem}
+.bd-row:last-child{border-bottom:none}
+.bd-client{color:#e0e6ed;display:flex;align-items:center;gap:10px}
+.bd-emoji{font-size:1.2rem}
+.bd-score{font-weight:800;color:#00b8d4;font-size:.95rem}
+.revision-box{background:#1a2838;border:1px solid #253545;border-radius:10px;padding:20px;text-align:left;margin-bottom:24px}
+.rev-item{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #253545}
+.rev-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.rev-term{font-size:.88rem;font-weight:700;color:#e0e6ed;margin-bottom:3px}
+.rev-text{font-size:.82rem;color:#8899aa;line-height:1.55}
+.results-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.results-actions .btn{border:none;border-radius:8px;padding:14px 24px;font-size:.86rem;font-weight:700;cursor:pointer;text-decoration:none;letter-spacing:.5px;transition:all .3s}
+.btn-primary{background:linear-gradient(135deg,#00b8d4,#0097a7);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,184,212,.35)}
+.btn-secondary{background:#253545;color:#b0bec5}
+.btn-secondary:hover{background:#2f4050}
+
+@media(max-width:640px){
+  .card-grid{grid-template-columns:1fr}
+  .welcome-wrap h1{font-size:1.7rem}
+  .client-name{font-size:1.15rem}
+  .big-score{font-size:2.8rem}
+  .card{font-size:.85rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ======== WELCOME ======== -->
+<div id="welcome-screen" class="screen active">
+<div class="header"><div class="header-title">Cloud Consultant</div><div class="header-sub">CCEA GCSE Digital Technology</div></div>
+<div class="welcome-wrap">
+    <div class="welcome-icon">💼</div>
+    <h1>You're the Consultant</h1>
+    <p class="lead">Three organisations need your advice on cloud computing. Read each client's brief carefully, then build a proposal by selecting the statements that contain <strong>accurate</strong> advice for their situation.</p>
+    <div class="how-box">
+        <h3>How It Works</h3>
+        <ul>
+            <li>Read the client's brief — what do they need?</li>
+            <li>Click statement cards to add them to your proposal</li>
+            <li>Be careful — some statements contain <strong>inaccurate</strong> information that could mislead your client</li>
+            <li>When you're ready, present your proposal and get feedback</li>
+            <li>Score points for every correct decision you make</li>
+        </ul>
+    </div>
+    <button class="start-btn" onclick="startGame()">MEET YOUR FIRST CLIENT →</button>
+</div>
+</div>
+
+<!-- ======== GAME ======== -->
+<div id="game-screen" class="screen">
+<div class="header"><div class="header-title">Cloud Consultant</div><div class="header-sub">Build your proposal — select accurate advice only</div></div>
+<div class="hud">
+    <div class="hud-item">Client <strong id="hud-client">1 / 3</strong></div>
+    <div class="hud-item">Score <strong id="hud-score">0 / 24</strong></div>
+    <div class="hud-progress"><div class="hud-fill" id="hud-fill"></div></div>
+</div>
+<div class="client-section" id="client-section"></div>
+<p class="instruction" id="instruction">Click cards to <strong>include</strong> them in your proposal. Click again to remove.</p>
+<div class="card-grid" id="card-grid"></div>
+<div class="score-banner" id="score-banner"><div class="sb-title" id="sb-title"></div><div class="sb-detail" id="sb-detail"></div></div>
+<div class="action-bar">
+    <div class="card-counter" id="card-counter"><strong>0</strong> cards in your proposal</div>
+    <button class="present-btn" id="present-btn" onclick="presentProposal()">PRESENT PROPOSAL</button>
+    <button class="next-btn" id="next-btn" onclick="nextClient()">NEXT CLIENT →</button>
+</div>
+</div>
+
+<!-- ======== RESULTS ======== -->
+<div id="results-screen" class="screen">
+<div class="header"><div class="header-title">Cloud Consultant</div><div class="header-sub">Session Complete</div></div>
+<div class="results-wrap">
+    <h2>Consultancy Complete</h2>
+    <div class="results-badge" id="results-badge">Consultant</div>
+    <div class="big-score" id="final-score">0 / 24</div>
+    <div class="score-sub" id="score-sub">0% accuracy</div>
+    <div class="breakdown">
+        <h3>Client Breakdown</h3>
+        <div id="breakdown-rows"></div>
+    </div>
+    <div class="revision-box">
+        <h3>Cloud Computing — Key Revision Points</h3>
+        <div class="rev-item"><div class="rev-term">Advantages</div><div class="rev-text">Cost effective software delivery, automatic updates, unlimited storage, backup &amp; recovery (provider's responsibility), access from anywhere with internet, reduced carbon footprint.</div></div>
+        <div class="rev-item"><div class="rev-term">Disadvantages</div><div class="rev-text">Bandwidth limitations and extra charges, potential downtime if internet/router fails, security risks from hackers targeting online data.</div></div>
+        <div class="rev-item"><div class="rev-term">Gaming Impact</div><div class="rev-text">Developers: reduced distribution costs, global customer base, 24/7 sales, reduced piracy. Customers: immediate downloads, no expensive hardware needed, cloud saves.</div></div>
+        <div class="rev-item"><div class="rev-term">File Storage</div><div class="rev-text">High-capacity cloud servers store large files. Automatic saving every few seconds. Files stored permanently online. Provider handles crash recovery.</div></div>
+        <div class="rev-item"><div class="rev-term">File Sharing</div><div class="rev-text">Collaborate from anywhere with internet. Upload and share files instantly. Synchronisation keeps all versions up to date. Example: Google Docs.</div></div>
+    </div>
+    <div class="results-actions">
+        <button class="btn btn-primary" onclick="restartGame()">TRY AGAIN</button>
+        <a class="btn btn-secondary" href="index.html">BACK TO MENU</a>
+    </div>
+</div>
+</div>
+
+<script>
+/* ============================================================
+   DATA — every card mapped to source material (approved by teacher)
+   ============================================================ */
+const clients = [
+  {
+    name:'Oakfield Primary School',
+    location:'Belfast',
+    icon:'\uD83C\uDFEB',
+    brief:"We\u2019re a primary school with 400 pupils and 25 staff. Teachers currently save lesson plans on personal USB drives and share resources by emailing attachments \u2014 no one ever knows which version is the latest. We want to move to a cloud-based system to improve how staff access and share files. Please also flag any risks we should be aware of.",
+    cards:[
+      {text:"Staff will be able to access lesson plans and pupil records from any device with an internet connection, including from home.",correct:true,fb:"Greater accessibility \u2014 users can access data anywhere, from any device, with an internet connection."},
+      {text:"When one teacher edits a shared document, synchronisation ensures all other staff see the changes immediately.",correct:true,fb:"Synchronisation means edits appear in everyone\u2019s version automatically \u2014 no emailing required."},
+      {text:"Teachers and pupils can collaborate on the same document at the same time, even from different classrooms or from home.",correct:true,fb:"Cloud file sharing enables real-time collaboration from different locations on the same project."},
+      {text:"If the school\u2019s internet connection or router fails, staff will temporarily lose access to all cloud-based materials.",correct:true,fb:"Potential downtime \u2014 cloud computing is reliant on the internet. If the connection or a device like a router fails, resources become unavailable."},
+      {text:"Sensitive pupil data stored online could be at risk from hackers.",correct:true,fb:"Security risk \u2014 data stored online can be targeted by hackers. This is a key disadvantage to flag."},
+      {text:"Teachers will be able to access their lesson plans from any device, as long as they are within the school building and connected to the school\u2019s network.",correct:false,fb:"This incorrectly limits access to the school premises. Cloud computing allows access from anywhere with any internet connection, not just the school\u2019s own network."},
+      {text:"When a teacher updates a shared lesson plan, they will need to email colleagues to let them know a new version is available for download.",correct:false,fb:"Synchronisation updates everyone\u2019s version automatically. Emailing updated files is the old way of working this school is trying to move away from."},
+      {text:"Staff will need to save their work manually at the end of each lesson, as cloud systems perform a full backup of data once per day.",correct:false,fb:"Saving is automatic and happens every few seconds, not manually once per day."}
+    ]
+  },
+  {
+    name:'IndieForge Games',
+    location:'London',
+    icon:'\uD83C\uDFAE',
+    brief:"We\u2019re a small game studio about to release our first title. We were planning to sell physical copies through retailers, but we\u2019re now considering cloud-based distribution instead. What benefits would this offer us as developers and our players as customers? Are there any drawbacks we should warn players about?",
+    cards:[
+      {text:"You won\u2019t need to pay high street retailers to distribute physical copies, significantly reducing your costs.",correct:true,fb:"Cloud distribution removes the cost of paying high street retailers for physical distribution."},
+      {text:"The internet is global, giving you access to a much larger customer base with sales available 24 hours a day, 7 days a week.",correct:true,fb:"The global reach of the internet provides access to a worldwide customer base with 24/7 sales."},
+      {text:"Players can download and play your game immediately after purchase, with no need to visit a shop or wait for delivery.",correct:true,fb:"Games can be downloaded immediately \u2014 no need to visit shops or wait for physical delivery."},
+      {text:"Players won\u2019t need to keep upgrading expensive hardware \u2014 processing is handled by powerful cloud servers.",correct:true,fb:"Players don\u2019t need expensive local hardware \u2014 processing is handled by powerful cloud servers."},
+      {text:"Players with limited broadband may experience poor streaming quality, including lag and visual glitches.",correct:true,fb:"Limited broadband capacity can cause poor streaming quality \u2014 a key drawback to flag for players."},
+      {text:"Players will need to ensure they have a high-specification graphics card and processor installed, as cloud-based games require powerful hardware on the player\u2019s own device.",correct:false,fb:"The opposite is true \u2014 cloud servers handle the processing, so players do NOT need powerful local hardware."},
+      {text:"Cloud distribution means players will have a smoother shipping experience before their games arrive to the store or by post.",correct:false,fb:"Cloud distribution replaces physical shipping entirely. Games are downloaded digitally \u2014 there are no stores, no post, and no shipping involved."},
+      {text:"Your games will be available for customers to purchase during standard UK business hours through the cloud platform.",correct:false,fb:"Cloud sales are available 24 hours a day, 7 days a week \u2014 not restricted to standard business hours."}
+    ]
+  },
+  {
+    name:'McAllister & Co Accountants',
+    location:'Newry',
+    icon:'\uD83D\uDCCA',
+    brief:"We\u2019re a small accounting firm with three offices across Northern Ireland. Staff currently store client files on local hard drives and back up manually to external drives once a week. We\u2019ve had two data scares this year. We\u2019re considering cloud-based storage to make our files safer and more accessible. What storage benefits can you offer, and what should we watch out for?",
+    cards:[
+      {text:"Large data files can be stored on powerful, high-capacity cloud servers, removing the need for additional local hard drives.",correct:true,fb:"High-capacity cloud servers can store large data files \u2014 no additional local hard drives needed."},
+      {text:"Files are saved automatically to the cloud every few seconds, significantly reducing the risk of losing work.",correct:true,fb:"Automatic saving every few seconds \u2014 far safer than the firm\u2019s current weekly manual backups."},
+      {text:"The cost of providing software, maintenance and upgrades is cheaper than buying individual licences for each user.",correct:true,fb:"Cloud computing is cost effective \u2014 software delivery, maintenance and upgrades are cheaper than individual licences."},
+      {text:"Cloud providers may impose bandwidth limitations and charge additional fees when data transfer exceeds the monthly allowance.",correct:true,fb:"Bandwidth limitations are a key disadvantage \u2014 providers may cap data transfer and charge extra."},
+      {text:"Sensitive financial data stored online could be at risk from hackers.",correct:true,fb:"Security is a critical risk for accountants \u2014 sensitive financial data online can be targeted by hackers."},
+      {text:"Your accountants will be able to access client files on any office computer, but they should save copies to a USB drive when they need to work remotely or visit clients.",correct:false,fb:"Cloud access works from any device, anywhere with an internet connection. There is no need to save files to a USB drive for remote access."},
+      {text:"We recommend your office manager continues scheduling weekly manual backups of all cloud files to an external hard drive, to keep your data safe.",correct:false,fb:"Data is backed up automatically at regular intervals and recovery is the provider\u2019s responsibility. No manual backup procedures are needed."},
+      {text:"In the unlikely event of a server failure at your cloud provider, your firm would need to hire a specialist IT team to recover any lost client files.",correct:false,fb:"Cloud providers recover lost files themselves if servers crash, returning data to its original state. The firm would not need to hire anyone."}
+    ]
+  }
+];
+
+const TOTAL = clients.reduce((s,c) => s + c.cards.length, 0);
+let cur = 0, totalScore = 0, clientScores = [];
+let selected, shuffled, locked;
+
+/* ---- Helpers ---- */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+/* ---- Game Flow ---- */
+function startGame(){cur=0;totalScore=0;clientScores=[];showScreen('game-screen');loadClient()}
+
+function loadClient(){
+  const c=clients[cur];
+  selected=new Set();locked=false;
+
+  document.getElementById('hud-client').textContent=`${cur+1} / ${clients.length}`;
+  document.getElementById('hud-score').textContent=`${totalScore} / ${TOTAL}`;
+  document.getElementById('hud-fill').style.width=`${Math.round((cur/clients.length)*100)}%`;
+
+  /* Client brief */
+  document.getElementById('client-section').innerHTML=`
+    <div class="client-header">
+      <div class="client-avatar">${c.icon}</div>
+      <div><div class="client-name">${c.name}</div><div class="client-location">${c.location}</div></div>
+    </div>
+    <div class="brief-card">
+      <div class="brief-label">Client Brief</div>
+      <div class="brief-text">"${c.brief}"</div>
+    </div>`;
+
+  /* Shuffle & render cards */
+  shuffled=[...c.cards];
+  shuffle(shuffled);
+
+  const grid=document.getElementById('card-grid');
+  grid.innerHTML='';
+  shuffled.forEach((card,i)=>{
+    const el=document.createElement('div');
+    el.className='card';
+    el.style.animationDelay=`${i*0.07}s`;
+    el.innerHTML=`<div class="card-badge">Included \u2713</div><div class="card-text">${card.text}</div>`;
+    el.addEventListener('click',()=>toggleCard(i,el));
+    grid.appendChild(el);
+  });
+
+  /* Reset UI */
+  document.getElementById('instruction').style.display='';
+  document.getElementById('card-counter').innerHTML='<strong>0</strong> cards in your proposal';
+  document.getElementById('present-btn').className='present-btn';
+  document.getElementById('present-btn').style.display='';
+  document.getElementById('next-btn').style.display='none';
+  document.getElementById('score-banner').className='score-banner';
+  document.getElementById('score-banner').classList.remove('show');
+}
+
+function toggleCard(i,el){
+  if(locked)return;
+  if(selected.has(i)){selected.delete(i);el.classList.remove('selected')}
+  else{selected.add(i);el.classList.remove('selected');void el.offsetWidth;el.classList.add('selected')}
+  const n=selected.size;
+  document.getElementById('card-counter').innerHTML=`<strong>${n}</strong> card${n!==1?'s':''} in your proposal`;
+  document.getElementById('present-btn').className=n>0?'present-btn active':'present-btn';
+}
+
+function presentProposal(){
+  locked=true;
+  document.getElementById('present-btn').style.display='none';
+  document.getElementById('instruction').style.display='none';
+
+  let score=0, correctInc=0, wrongInc=0, missed=0, correctExc=0;
+  const cards=document.getElementById('card-grid').children;
+
+  shuffled.forEach((card,i)=>{
+    const el=cards[i];
+    const isSel=selected.has(i);
+    el.classList.add('locked');
+    el.classList.remove('selected');
+
+    /* Remove the "Included" badge */
+    const oldBadge=el.querySelector('.card-badge');
+    if(oldBadge)oldBadge.remove();
+
+    let type,icon,iconCls,badgeText,badgeBg,fbCls;
+
+    if(isSel&&card.correct){
+      type='res-correct-inc';icon='\u2713';iconCls='green';badgeText='Correct';badgeBg='#00c853';fbCls='green';score++;correctInc++;
+    }else if(isSel&&!card.correct){
+      type='res-wrong-inc';icon='\u2717';iconCls='red';badgeText='Inaccurate';badgeBg='#ef4444';fbCls='red';wrongInc++;
+    }else if(!isSel&&card.correct){
+      type='res-missed';icon='!';iconCls='amber';badgeText='Missed';badgeBg='#f59e0b';fbCls='amber';missed++;
+    }else{
+      type='res-correct-exc';icon='\u2713';iconCls='muted';badgeText='Spotted';badgeBg='#86efac';fbCls='muted-green';score++;correctExc++;
+    }
+
+    setTimeout(()=>{
+      el.classList.add(type);
+      el.insertAdjacentHTML('afterbegin',`<div class="res-icon ${iconCls}">${icon}</div>`);
+      const badge=document.createElement('div');
+      badge.className='res-badge';
+      badge.style.background=badgeBg;
+      badge.textContent=badgeText;
+      el.appendChild(badge);
+      const fb=document.createElement('div');
+      fb.className=`card-fb ${fbCls}`;
+      fb.textContent=(isSel&&card.correct?'\u2713 ':isSel&&!card.correct?'\u2717 ':!isSel&&card.correct?'\u26A0 ':'\u2713 ')+card.fb;
+      el.appendChild(fb);
+    },i*160);
+  });
+
+  totalScore+=score;
+  clientScores.push(score);
+
+  /* Show banner + next button after reveal */
+  setTimeout(()=>{
+    const banner=document.getElementById('score-banner');
+    const t=document.getElementById('sb-title');
+    const d=document.getElementById('sb-detail');
+    const max=shuffled.length;
+
+    t.textContent=`${score} / ${max} — ${score===max?'Perfect!':score>=6?'Great work!':score>=4?'Good effort!':'Keep studying!'}`;
+    d.textContent=`You included ${correctInc} of 5 accurate recommendations and spotted ${correctExc} of 3 inaccurate statements.`;
+
+    banner.className='score-banner show '+(score===max?'perfect':score>=6?'good':score>=4?'okay':'low');
+
+    document.getElementById('hud-score').textContent=`${totalScore} / ${TOTAL}`;
+    document.getElementById('hud-fill').style.width=`${Math.round(((cur+1)/clients.length)*100)}%`;
+
+    const nb=document.getElementById('next-btn');
+    nb.textContent=cur===clients.length-1?'SEE RESULTS \u2192':'NEXT CLIENT \u2192';
+    nb.style.display='inline-block';
+    document.getElementById('card-counter').innerHTML=`<strong>${score}/${max}</strong> correct decisions`;
+  },shuffled.length*160+300);
+}
+
+function nextClient(){
+  cur++;
+  if(cur>=clients.length){showResults();return}
+  loadClient();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showResults(){
+  showScreen('results-screen');
+  const pct=Math.round((totalScore/TOTAL)*100);
+  document.getElementById('final-score').textContent=`${totalScore} / ${TOTAL}`;
+  document.getElementById('score-sub').textContent=`${pct}% accuracy`;
+
+  let rank='Trainee',bg='#1a2838',col='#ef4444',bdr='#ef4444';
+  if(pct>=90){rank='Senior Partner';bg='#1a2838';col='#00e5ff';bdr='#00b8d4'}
+  else if(pct>=75){rank='Lead Consultant';bg='#1a2838';col='#00e676';bdr='#00c853'}
+  else if(pct>=55){rank='Junior Consultant';bg='#1a2838';col='#fbbf24';bdr='#f59e0b'}
+
+  const badge=document.getElementById('results-badge');
+  badge.textContent=rank;
+  badge.style.background=bg;badge.style.color=col;badge.style.border=`2px solid ${bdr}`;
+
+  /* Breakdown */
+  const rows=document.getElementById('breakdown-rows');
+  rows.innerHTML='';
+  clients.forEach((c,i)=>{
+    rows.innerHTML+=`<div class="bd-row"><div class="bd-client"><span class="bd-emoji">${c.icon}</span>${c.name}</div><div class="bd-score">${clientScores[i]} / ${c.cards.length}</div></div>`;
+  });
+}
+
+function restartGame(){startGame();window.scrollTo({top:0})}
+</script>
+</body>
+</html>
