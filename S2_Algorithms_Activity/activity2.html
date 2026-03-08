@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Architect - CCEA GCSE Digital Technology</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #F0F7FF;
+            --card-bg: #FFFFFF;
+            --card-border: #BFDBFE;
+            --primary: #2563EB;
+            --primary-light: #DBEAFE;
+            --primary-dark: #1D4ED8;
+            --secondary: #F59E0B;
+            --secondary-light: #FEF3C7;
+            --danger: #DC2626;
+            --danger-light: #FEE2E2;
+            --success: #16A34A;
+            --success-light: #DCFCE7;
+            --text: #1E293B;
+            --dim: #64748B;
+            --grid-line: rgba(37, 99, 235, 0.06);
+            --mono: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            background-image:
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 24px 24px;
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* ===== SCREENS ===== */
+        .screen {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+        .screen.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.85); opacity: 0; }
+            60% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shakeX {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+        @keyframes starPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+        @keyframes buildComplete {
+            0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); }
+            70% { box-shadow: 0 0 0 16px rgba(22, 163, 74, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+        }
+
+        /* ===== INTRO SCREEN ===== */
+        .intro-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 16px;
+            padding: 40px 32px;
+            text-align: center;
+            max-width: 640px;
+            margin: 60px auto;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.08);
+        }
+        .intro-emoji {
+            font-size: 56px;
+            margin-bottom: 8px;
+        }
+        .intro-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .intro-subtitle {
+            font-size: 14px;
+            color: var(--dim);
+            margin-bottom: 24px;
+        }
+        .intro-instructions {
+            text-align: left;
+            background: var(--primary-light);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            font-size: 15px;
+        }
+        .intro-instructions h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .intro-instructions ol {
+            padding-left: 20px;
+        }
+        .intro-instructions li {
+            margin-bottom: 6px;
+        }
+        .intro-instructions li strong {
+            color: var(--primary-dark);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn:active { transform: translateY(0); }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+        }
+        .btn-secondary {
+            background: var(--secondary);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+        .btn-secondary:hover {
+            background: #D97706;
+        }
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+        .btn-success:hover {
+            background: #15803D;
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding: 12px 18px;
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.06);
+        }
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        .build-counter {
+            background: var(--primary);
+            color: #fff;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .star-display {
+            color: var(--secondary);
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        /* ===== SCENARIO CARD ===== */
+        .scenario-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.06);
+        }
+        .scenario-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .scenario-header .emoji {
+            font-size: 28px;
+        }
+        .scenario-header h2 {
+            font-size: 20px;
+            color: var(--primary);
+        }
+        .scenario-text {
+            font-size: 15px;
+            color: var(--text);
+            line-height: 1.6;
+            background: var(--primary-light);
+            padding: 12px 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* ===== WORKSPACE ===== */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 700px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.06);
+        }
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed var(--card-border);
+        }
+
+        /* ===== TOOLBOX FRAGMENTS ===== */
+        .toolbox-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-height: 120px;
+        }
+        .fragment {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            background: #F8FAFC;
+            border: 2px solid var(--card-border);
+            border-radius: 8px;
+            font-family: var(--mono);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            animation: slideDown 0.25s ease;
+            word-break: break-all;
+        }
+        .fragment:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+        .fragment .frag-icon {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-family: sans-serif;
+        }
+        .fragment.used {
+            opacity: 0.35;
+            pointer-events: none;
+            border-style: dashed;
+        }
+
+        /* ===== BUILD AREA ===== */
+        .build-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-height: 120px;
+        }
+        .build-slot {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 14px;
+            background: #F0FDF4;
+            border: 2px solid #BBF7D0;
+            border-radius: 8px;
+            font-family: var(--mono);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            animation: popIn 0.25s ease;
+            word-break: break-all;
+        }
+        .build-slot:hover {
+            background: var(--danger-light);
+            border-color: var(--danger);
+        }
+        .build-slot .slot-num {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            background: var(--success);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: sans-serif;
+        }
+        .build-slot .slot-text {
+            flex: 1;
+        }
+        .build-slot .slot-remove {
+            flex-shrink: 0;
+            font-size: 14px;
+            color: var(--dim);
+            font-family: sans-serif;
+        }
+
+        /* Indentation styling */
+        .build-slot[data-indent="1"] .slot-text { padding-left: 28px; }
+        .build-slot[data-indent="2"] .slot-text { padding-left: 56px; }
+
+        /* Check result styling */
+        .build-slot.correct-line {
+            background: var(--success-light);
+            border-color: var(--success);
+        }
+        .build-slot.wrong-line {
+            background: var(--danger-light);
+            border-color: var(--danger);
+            animation: shakeX 0.4s ease;
+        }
+
+        .build-placeholder {
+            padding: 30px;
+            text-align: center;
+            color: var(--dim);
+            font-size: 14px;
+            border: 2px dashed var(--card-border);
+            border-radius: 8px;
+            background: #FAFBFC;
+        }
+
+        /* ===== ACTIONS ===== */
+        .actions-bar {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        /* ===== FEEDBACK ===== */
+        .feedback {
+            display: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 16px;
+            animation: popIn 0.3s ease;
+        }
+        .feedback.show { display: block; }
+        .feedback.success {
+            background: var(--success-light);
+            color: var(--success);
+            border: 2px solid var(--success);
+        }
+        .feedback.error {
+            background: var(--danger-light);
+            color: var(--danger);
+            border: 2px solid var(--danger);
+        }
+
+        /* ===== STARS ANIMATION ===== */
+        .stars-award {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+            font-size: 36px;
+        }
+        .stars-award .star {
+            animation: starPop 0.4s ease forwards;
+            opacity: 0;
+        }
+        .stars-award .star:nth-child(1) { animation-delay: 0.1s; }
+        .stars-award .star:nth-child(2) { animation-delay: 0.3s; }
+        .stars-award .star:nth-child(3) { animation-delay: 0.5s; }
+        .stars-award .star.empty { filter: grayscale(1); opacity: 0.3; }
+
+        /* ===== RESULTS SCREEN ===== */
+        .results-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 16px;
+            padding: 36px 32px;
+            text-align: center;
+            max-width: 640px;
+            margin: 40px auto;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.08);
+        }
+        .results-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .results-rank {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 12px 0 20px;
+        }
+        .results-total-stars {
+            font-size: 42px;
+            margin: 8px 0;
+        }
+        .results-breakdown {
+            text-align: left;
+            margin: 20px 0;
+        }
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            background: #F8FAFC;
+            border: 1px solid var(--card-border);
+            font-size: 14px;
+        }
+        .breakdown-row .row-name {
+            font-weight: 600;
+        }
+        .breakdown-row .row-stars {
+            color: var(--secondary);
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+        .results-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        /* ===== NAV LINK ===== */
+        .nav-link {
+            display: block;
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+        .nav-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .nav-link a:hover { text-decoration: underline; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 500px) {
+            .intro-card { padding: 24px 18px; margin: 24px auto; }
+            .intro-title { font-size: 24px; }
+            .scenario-card { padding: 14px 16px; }
+            .panel { padding: 12px; }
+            .fragment, .build-slot { font-size: 12px; padding: 7px 10px; }
+            .results-card { padding: 24px 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ======== INTRO SCREEN ======== -->
+<div id="intro-screen" class="screen active">
+    <div class="intro-card">
+        <div class="intro-emoji">🏗️</div>
+        <h1 class="intro-title">ALGORITHM ARCHITECT</h1>
+        <p class="intro-subtitle">CCEA GCSE Digital Technology &mdash; Sequence &amp; Selection</p>
+        <div class="intro-instructions">
+            <h3>📐 How to Build</h3>
+            <ol>
+                <li>Read the <strong>scenario</strong> carefully &mdash; it tells you what the algorithm must do.</li>
+                <li>The <strong>Toolbox</strong> contains code fragments. Some are correct, some are <strong>distractors</strong> (wrong!).</li>
+                <li><strong>Click</strong> a fragment in the Toolbox to add it to your Build Area.</li>
+                <li><strong>Click</strong> a placed fragment to remove it back to the Toolbox.</li>
+                <li>Press <strong>"Inspect Build"</strong> when you think your algorithm is correct.</li>
+                <li>Earn up to <strong>3 stars</strong> per build &mdash; fewer attempts = more stars!</li>
+            </ol>
+        </div>
+        <p style="font-size: 14px; color: var(--dim); margin-bottom: 20px;">5 builds to complete &bull; 15 stars possible</p>
+        <button class="btn btn-primary" onclick="startGame()">👷 Start Building</button>
+    </div>
+    <div class="nav-link"><a href="index.html">&larr; Back to Activities</a></div>
+</div>
+
+<!-- ======== GAME SCREEN ======== -->
+<div id="game-screen" class="screen">
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <span class="build-counter" id="build-counter">Build 1 / 5</span>
+            <span id="build-name" style="color: var(--text);"></span>
+        </div>
+        <div class="star-display" id="total-stars-display">Total: 0 ⭐</div>
+    </div>
+
+    <div class="scenario-card">
+        <div class="scenario-header">
+            <span class="emoji" id="scenario-emoji"></span>
+            <h2 id="scenario-title"></h2>
+        </div>
+        <p class="scenario-text" id="scenario-text"></p>
+    </div>
+
+    <div class="workspace">
+        <!-- TOOLBOX -->
+        <div class="panel">
+            <div class="panel-header">🔧 Toolbox</div>
+            <div class="toolbox-list" id="toolbox"></div>
+        </div>
+        <!-- BUILD AREA -->
+        <div class="panel">
+            <div class="panel-header">📐 Build Area</div>
+            <div class="build-list" id="build-area">
+                <div class="build-placeholder" id="build-placeholder">Click fragments from the Toolbox to start building your algorithm here.</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+
+    <div class="actions-bar">
+        <button class="btn btn-outline btn-small" onclick="clearBuild()">🔄 Clear Build</button>
+        <button class="btn btn-secondary" onclick="inspectBuild()" id="inspect-btn">🔍 Inspect Build</button>
+    </div>
+</div>
+
+<!-- ======== RESULTS SCREEN ======== -->
+<div id="results-screen" class="screen">
+    <div class="results-card">
+        <div class="intro-emoji">🏗️</div>
+        <h1 class="results-title">Construction Complete!</h1>
+        <p id="results-rank" class="results-rank"></p>
+        <div id="results-total-stars" class="results-total-stars"></div>
+        <p style="color: var(--dim); font-size: 14px; margin-bottom: 10px;">out of 15 stars</p>
+        <div class="results-breakdown" id="results-breakdown"></div>
+        <div class="results-buttons">
+            <button class="btn btn-primary" onclick="restartGame()">🔄 Build Again</button>
+        </div>
+    </div>
+    <div class="nav-link"><a href="index.html">&larr; Back to Activities</a></div>
+</div>
+
+<script>
+    // ============================
+    // DATA: 5 Build Scenarios
+    // ============================
+    const BUILDS = [
+        {
+            name: "The Pass/Fail Checker",
+            emoji: "🔧",
+            scenario: "Write an algorithm that inputs a student's score and outputs whether they pass (score of 40 or above) or fail.",
+            correctLines: [
+                'OUTPUT "Enter your score"',
+                'INPUT score',
+                'IF score >= 40',
+                '    OUTPUT "Pass"',
+                'ELSE',
+                '    OUTPUT "Fail"',
+                'ENDIF'
+            ],
+            distractors: [
+                'IF score > 40',
+                'IF score = 40',
+                'OUTPUT score'
+            ]
+        },
+        {
+            name: "The Game Grader",
+            emoji: "🔨",
+            scenario: "Grade players based on their high score: above 10000 = X, 5000 to 10000 = M, 3000 to 4999 = L, below 3000 = N.",
+            correctLines: [
+                'OUTPUT "Enter high score"',
+                'INPUT highScore',
+                'IF highScore > 10000',
+                '    grade = "X"',
+                'ELSE IF highScore >= 5000',
+                '    grade = "M"',
+                'ELSE IF highScore >= 3000',
+                '    grade = "L"',
+                'ELSE',
+                '    grade = "N"',
+                'ENDIF',
+                'OUTPUT grade'
+            ],
+            distractors: [
+                'IF highScore >= 10000',
+                'IF highScore > 5000',
+                'grade = "A"',
+                'OUTPUT highScore'
+            ]
+        },
+        {
+            name: "The Cupcake Pricer",
+            emoji: "📐",
+            scenario: "Jennie's cupcake company charges: more than 30 cupcakes = \u00a30.55 each, 16 to 30 = \u00a30.65 each, 1 to 15 = \u00a30.75 each. Calculate the total cost.",
+            correctLines: [
+                'OUTPUT "Enter number of cupcakes"',
+                'INPUT numberOfCupcakes',
+                'IF numberOfCupcakes > 30',
+                '    totalCost = 0.55 * numberOfCupcakes',
+                'ELSE IF numberOfCupcakes >= 16',
+                '    totalCost = 0.65 * numberOfCupcakes',
+                'ELSE',
+                '    totalCost = 0.75 * numberOfCupcakes',
+                'ENDIF',
+                'OUTPUT totalCost'
+            ],
+            distractors: [
+                'IF numberOfCupcakes >= 30',
+                'IF numberOfCupcakes > 15',
+                'totalCost = 0.55 + numberOfCupcakes',
+                'totalCost = 0.75 / numberOfCupcakes'
+            ]
+        },
+        {
+            name: "The Insurance Calculator",
+            emoji: "🔧",
+            scenario: "School Travel Insurance: groups of more than 50 = \u00a310 per pupil, 21 to 50 = \u00a315 per pupil, up to 20 = \u00a320 per pupil. Calculate the total cost.",
+            correctLines: [
+                'OUTPUT "Enter the group size"',
+                'INPUT groupSize',
+                'IF groupSize > 50',
+                '    cost = 10 * groupSize',
+                'ELSE IF groupSize >= 21',
+                '    cost = 15 * groupSize',
+                'ELSE',
+                '    cost = 20 * groupSize',
+                'ENDIF',
+                'OUTPUT cost'
+            ],
+            distractors: [
+                'IF groupSize >= 50',
+                'IF groupSize > 20',
+                'cost = 10 + groupSize',
+                'cost = groupSize / 20'
+            ]
+        },
+        {
+            name: "The Race Time Finder",
+            emoji: "🏗️",
+            scenario: "Input 3 race times and output the smallest (fastest) one.",
+            correctLines: [
+                'INPUT racetime1',
+                'INPUT racetime2',
+                'INPUT racetime3',
+                'IF racetime1 < racetime2 AND racetime1 < racetime3',
+                '    OUTPUT racetime1',
+                'ELSE IF racetime2 < racetime3',
+                '    OUTPUT racetime2',
+                'ELSE',
+                '    OUTPUT racetime3',
+                'ENDIF'
+            ],
+            distractors: [
+                'IF racetime1 > racetime2',
+                'IF racetime1 < racetime2 OR racetime1 < racetime3',
+                'OUTPUT racetime1 + racetime2',
+                'INPUT racetime4'
+            ]
+        }
+    ];
+
+    // ============================
+    // GAME STATE
+    // ============================
+    let currentBuild = 0;
+    let attempts = 0;
+    let totalStars = 0;
+    let buildStars = []; // stars per build
+    let buildArea = []; // text strings placed by student
+    let toolboxItems = []; // { text, used }
+    let checking = false;
+
+    // ============================
+    // UTILITY
+    // ============================
+    function stripIndent(s) {
+        return s.replace(/^\s+/, '');
+    }
+
+    // Fisher-Yates shuffle
+    function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    // Check if array matches correct order (both stripped)
+    function arraysMatchStripped(a, b) {
+        if (a.length !== b.length) return false;
+        for (let i = 0; i < a.length; i++) {
+            if (stripIndent(a[i]) !== stripIndent(b[i])) return false;
+        }
+        return true;
+    }
+
+    // Compute auto-indent level for a line based on all lines so far
+    function computeIndentLevels(lines) {
+        const levels = [];
+        let indent = 0;
+        for (const line of lines) {
+            const stripped = stripIndent(line).toUpperCase();
+            // ELSE, ELSE IF, ENDIF reduce indent before printing
+            if (stripped.startsWith('ELSE') || stripped === 'ENDIF') {
+                indent = Math.max(0, indent - 1);
+            }
+            levels.push(indent);
+            // IF or ELSE opens a new block
+            if (stripped.startsWith('IF ') || stripped.startsWith('ELSE')) {
+                indent++;
+            }
+        }
+        return levels;
+    }
+
+    // ============================
+    // SCREEN MANAGEMENT
+    // ============================
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ============================
+    // GAME START
+    // ============================
+    function startGame() {
+        currentBuild = 0;
+        totalStars = 0;
+        buildStars = [];
+        showScreen('game-screen');
+        loadBuild();
+    }
+
+    function restartGame() {
+        startGame();
+    }
+
+    // ============================
+    // LOAD BUILD
+    // ============================
+    function loadBuild() {
+        const build = BUILDS[currentBuild];
+        attempts = 0;
+        buildArea = [];
+        checking = false;
+
+        // Update top bar
+        document.getElementById('build-counter').textContent = `Build ${currentBuild + 1} / 5`;
+        document.getElementById('build-name').textContent = `${build.emoji} ${build.name}`;
+        document.getElementById('total-stars-display').textContent = `Total: ${totalStars} \u2B50`;
+
+        // Scenario
+        document.getElementById('scenario-emoji').textContent = build.emoji;
+        document.getElementById('scenario-title').textContent = build.name;
+        document.getElementById('scenario-text').textContent = build.scenario;
+
+        // Hide feedback
+        hideFeedback();
+
+        // Build toolbox items: correct (stripped) + distractors, shuffled
+        const correctStripped = build.correctLines.map(l => stripIndent(l));
+        const allFragments = [...correctStripped, ...build.distractors];
+
+        // Shuffle ensuring not in correct order
+        let shuffled;
+        do {
+            shuffled = shuffle(allFragments);
+        } while (arraysMatchStripped(shuffled, correctStripped));
+
+        toolboxItems = shuffled.map(text => ({ text, used: false }));
+
+        renderToolbox();
+        renderBuildArea();
+    }
+
+    // ============================
+    // RENDER TOOLBOX
+    // ============================
+    function renderToolbox() {
+        const container = document.getElementById('toolbox');
+        container.innerHTML = '';
+        toolboxItems.forEach((item, idx) => {
+            const el = document.createElement('div');
+            el.className = 'fragment' + (item.used ? ' used' : '');
+            el.innerHTML = `<span class="frag-icon">+</span><span>${escapeHtml(item.text)}</span>`;
+            if (!item.used) {
+                el.addEventListener('click', () => addToBuild(idx));
+            }
+            container.appendChild(el);
+        });
+    }
+
+    // ============================
+    // RENDER BUILD AREA
+    // ============================
+    function renderBuildArea() {
+        const container = document.getElementById('build-area');
+        container.innerHTML = '';
+
+        if (buildArea.length === 0) {
+            container.innerHTML = '<div class="build-placeholder">Click fragments from the Toolbox to start building your algorithm here.</div>';
+            return;
+        }
+
+        const indentLevels = computeIndentLevels(buildArea);
+
+        buildArea.forEach((text, idx) => {
+            const el = document.createElement('div');
+            el.className = 'build-slot';
+            el.setAttribute('data-indent', indentLevels[idx]);
+            el.id = `build-slot-${idx}`;
+            el.innerHTML = `<span class="slot-num">${idx + 1}</span><span class="slot-text">${escapeHtml(text)}</span><span class="slot-remove">\u2716</span>`;
+            el.addEventListener('click', () => removeFromBuild(idx));
+            container.appendChild(el);
+        });
+    }
+
+    // ============================
+    // ADD / REMOVE
+    // ============================
+    function addToBuild(toolboxIdx) {
+        if (checking) return;
+        hideFeedback();
+        toolboxItems[toolboxIdx].used = true;
+        buildArea.push(toolboxItems[toolboxIdx].text);
+        renderToolbox();
+        renderBuildArea();
+    }
+
+    function removeFromBuild(buildIdx) {
+        if (checking) return;
+        hideFeedback();
+        const removedText = buildArea[buildIdx];
+        buildArea.splice(buildIdx, 1);
+
+        // Find the toolbox item and mark it unused
+        for (let i = 0; i < toolboxItems.length; i++) {
+            if (toolboxItems[i].text === removedText && toolboxItems[i].used) {
+                toolboxItems[i].used = false;
+                break;
+            }
+        }
+
+        renderToolbox();
+        renderBuildArea();
+    }
+
+    function clearBuild() {
+        if (checking) return;
+        hideFeedback();
+        buildArea = [];
+        toolboxItems.forEach(item => item.used = false);
+        renderToolbox();
+        renderBuildArea();
+    }
+
+    // ============================
+    // INSPECT BUILD
+    // ============================
+    function inspectBuild() {
+        if (checking) return;
+        if (buildArea.length === 0) {
+            showFeedback('error', '❌ Your Build Area is empty! Click fragments from the Toolbox to build your algorithm.');
+            return;
+        }
+
+        checking = true;
+        attempts++;
+
+        const build = BUILDS[currentBuild];
+        const correctStripped = build.correctLines.map(l => stripIndent(l));
+
+        // Compare
+        const isCorrect = arraysMatchStripped(buildArea, correctStripped);
+
+        if (isCorrect) {
+            // Mark all lines correct
+            buildArea.forEach((_, idx) => {
+                const slot = document.getElementById(`build-slot-${idx}`);
+                if (slot) slot.classList.add('correct-line');
+            });
+
+            // Calculate stars
+            let stars;
+            if (attempts === 1) stars = 3;
+            else if (attempts === 2) stars = 2;
+            else stars = 1;
+
+            buildStars.push(stars);
+            totalStars += stars;
+            document.getElementById('total-stars-display').textContent = `Total: ${totalStars} \u2B50`;
+
+            // Show stars feedback
+            const starHtml = [1, 2, 3].map(i =>
+                `<span class="star${i <= stars ? '' : ' empty'}">\u2B50</span>`
+            ).join('');
+
+            showFeedback('success',
+                `✅ Construction complete!<div class="stars-award">${starHtml}</div>` +
+                `<span style="font-size:14px; color: var(--dim);">` +
+                (attempts === 1 ? 'Perfect first attempt!' : `Completed in ${attempts} attempt${attempts > 1 ? 's' : ''}.`) +
+                `</span>`
+            );
+
+            // Animate build area
+            const buildPanel = document.querySelector('#build-area');
+            buildPanel.style.animation = 'buildComplete 0.8s ease';
+            setTimeout(() => { buildPanel.style.animation = ''; }, 800);
+
+            // Next build or results after delay
+            setTimeout(() => {
+                checking = false;
+                if (currentBuild < BUILDS.length - 1) {
+                    currentBuild++;
+                    loadBuild();
+                } else {
+                    showResults();
+                }
+            }, 2400);
+
+        } else {
+            // Mark which lines are right/wrong
+            const maxLen = Math.max(buildArea.length, correctStripped.length);
+            let wrongCount = 0;
+            let firstWrongIdx = -1;
+
+            for (let i = 0; i < buildArea.length; i++) {
+                const slot = document.getElementById(`build-slot-${i}`);
+                if (!slot) continue;
+                if (i < correctStripped.length && stripIndent(buildArea[i]) === correctStripped[i]) {
+                    slot.classList.add('correct-line');
+                } else {
+                    slot.classList.add('wrong-line');
+                    wrongCount++;
+                    if (firstWrongIdx === -1) firstWrongIdx = i;
+                }
+            }
+
+            // Build helpful message
+            let msg = `❌ Inspector found ${wrongCount} issue${wrongCount > 1 ? 's' : ''} with your build. `;
+            if (buildArea.length !== correctStripped.length) {
+                msg += `Expected ${correctStripped.length} lines but you have ${buildArea.length}. `;
+            }
+            if (firstWrongIdx >= 0) {
+                msg += `Check line ${firstWrongIdx + 1}. `;
+            }
+            msg += 'Review and try again!';
+            showFeedback('error', msg);
+
+            // Allow retry after short delay
+            setTimeout(() => { checking = false; }, 600);
+        }
+    }
+
+    // ============================
+    // FEEDBACK
+    // ============================
+    function showFeedback(type, html) {
+        const fb = document.getElementById('feedback');
+        fb.className = `feedback show ${type}`;
+        fb.innerHTML = html;
+    }
+    function hideFeedback() {
+        const fb = document.getElementById('feedback');
+        fb.className = 'feedback';
+        fb.innerHTML = '';
+    }
+
+    // ============================
+    // RESULTS SCREEN
+    // ============================
+    function showResults() {
+        showScreen('results-screen');
+
+        // Rank
+        let rank, rankEmoji;
+        if (totalStars === 15) { rank = 'Master Architect'; rankEmoji = '🏆'; }
+        else if (totalStars >= 13) { rank = 'Head Engineer'; rankEmoji = '👷'; }
+        else if (totalStars >= 10) { rank = 'Site Manager'; rankEmoji = '🔧'; }
+        else if (totalStars >= 7) { rank = 'Builder'; rankEmoji = '🔨'; }
+        else { rank = 'Apprentice'; rankEmoji = '🪵'; }
+
+        document.getElementById('results-rank').innerHTML = `${rankEmoji} ${rank}`;
+
+        // Total stars display
+        const starsStr = Array(totalStars).fill('\u2B50').join('') + Array(15 - totalStars).fill('<span style="filter:grayscale(1);opacity:0.25;">\u2B50</span>').join('');
+        document.getElementById('results-total-stars').innerHTML = `${totalStars} / 15`;
+
+        // Breakdown
+        const breakdown = document.getElementById('results-breakdown');
+        breakdown.innerHTML = '';
+        BUILDS.forEach((build, idx) => {
+            const s = buildStars[idx] || 0;
+            const starIcons = Array(s).fill('\u2B50').join('') + Array(3 - s).fill('<span style="filter:grayscale(1);opacity:0.3;">\u2B50</span>').join('');
+            const row = document.createElement('div');
+            row.className = 'breakdown-row';
+            row.innerHTML = `<span class="row-name">${build.emoji} ${build.name}</span><span class="row-stars">${starIcons}</span>`;
+            breakdown.appendChild(row);
+        });
+    }
+
+    // ============================
+    // ESCAPE HTML
+    // ============================
+    function escapeHtml(str) {
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return str.replace(/[&<>"']/g, c => map[c]);
+    }
+</script>
+</body>
+</html>

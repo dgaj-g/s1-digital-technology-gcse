@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Algorithm Kitchen - S2 Algorithms</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+    --bg:#FFF8F0;--bg2:#FFF0E0;
+    --card:#FFFFFF;--card-border:#F0E4D4;
+    --primary:#E8652B;--primary-light:#FF8A55;--primary-pale:#FFF0EA;
+    --green:#2E8B57;--green-light:#4DB87A;--green-pale:#EDFAF2;
+    --gold:#D4A017;--gold-light:#FFD700;--gold-pale:#FFF9E6;
+    --blue:#5B8FB9;--blue-pale:#EBF3FA;
+    --purple:#8965C6;--purple-pale:#F3EEFA;
+    --text:#3D2B1F;--text-dim:#9C8B7A;--text-light:#C4B5A4;
+    --danger:#D32F2F;--danger-pale:#FDECEC;
+    --slot-bg:#FEF7F0;--slot-border:#E8DDD0;
+}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.container{max-width:700px;margin:0 auto;padding:24px 16px}
+.hidden{display:none!important}
+
+/* ── INTRO ── */
+#intro{text-align:center;animation:fadeIn .5s ease}
+.chef-hat{font-size:4.5rem;margin-bottom:8px;display:block;animation:wobble 2s ease-in-out infinite}
+#intro h1{font-size:clamp(1.8rem,6vw,2.6rem);color:var(--primary);margin-bottom:6px;font-weight:900;letter-spacing:.5px}
+#intro .tagline{color:var(--text-dim);font-size:1rem;line-height:1.65;margin-bottom:6px;max-width:520px;margin-left:auto;margin-right:auto}
+#intro .sub{color:var(--text-light);font-size:.82rem;margin-bottom:28px}
+.start-btn{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;padding:16px 44px;border-radius:999px;font-size:1.1rem;font-weight:800;cursor:pointer;letter-spacing:.5px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(232,101,43,.3)}
+.start-btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 8px 28px rgba(232,101,43,.4)}
+
+/* ── TOP BAR ── */
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:10px 16px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.recipe-counter{color:var(--text-dim);font-weight:700;font-size:.85rem}
+.stars-display{color:var(--gold);font-size:1.1rem;letter-spacing:2px}
+.progress-track{width:100%;height:5px;background:var(--card-border);border-radius:99px;margin-top:10px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-light));border-radius:99px;transition:width .4s ease}
+
+/* ── SCENARIO CARD ── */
+.scenario-card{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.05);position:relative;overflow:hidden}
+.scenario-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary),var(--gold),var(--green))}
+.recipe-title{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.recipe-emoji{font-size:1.8rem}
+.recipe-name{font-size:1.15rem;font-weight:800;color:var(--primary)}
+.recipe-scenario{color:var(--text-dim);font-size:.92rem;line-height:1.6}
+
+/* ── INGREDIENTS ── */
+.ingredients-section{margin-bottom:16px}
+.section-label{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--card-border)}
+.ingredients-grid{display:flex;flex-wrap:wrap;gap:8px}
+.ingredient{display:inline-flex;align-items:center;padding:10px 16px;background:var(--card);border:2px solid var(--card-border);border-radius:12px;font-family:'Courier New',Courier,monospace;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;user-select:none;position:relative;line-height:1.3}
+.ingredient::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:12px 0 0 12px}
+.ingredient.type-input::before{background:var(--blue)}
+.ingredient.type-input{border-color:#D0E3F0}
+.ingredient.type-output::before{background:var(--green)}
+.ingredient.type-output{border-color:#C8E6D5}
+.ingredient.type-assign::before{background:var(--primary)}
+.ingredient.type-assign{border-color:#F5D5C5}
+.ingredient.type-init::before{background:var(--purple)}
+.ingredient.type-init{border-color:#DDD0F0}
+.ingredient:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.ingredient:active{transform:scale(.97)}
+.ingredient.placed{opacity:.3;pointer-events:none;transform:scale(.95);filter:grayscale(.5)}
+
+/* ── RECIPE CARD ── */
+.recipe-section{margin-bottom:16px}
+.recipe-card{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.recipe-slot{display:flex;align-items:center;gap:12px;padding:10px 14px;margin-bottom:8px;background:var(--slot-bg);border:2px dashed var(--slot-border);border-radius:12px;min-height:50px;transition:all .25s;cursor:pointer;position:relative}
+.recipe-slot:last-child{margin-bottom:0}
+.recipe-slot:hover{border-color:var(--primary);background:var(--primary-pale)}
+.slot-num{width:30px;height:30px;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;color:var(--text-dim);flex-shrink:0;transition:all .25s}
+.recipe-slot.filled{background:var(--card);border-style:solid;border-color:var(--card-border)}
+.recipe-slot.filled .slot-num{background:var(--primary);color:#fff}
+.slot-text{font-family:'Courier New',Courier,monospace;font-size:.85rem;font-weight:700;color:var(--text);flex:1}
+.slot-placeholder{color:var(--text-light);font-size:.82rem;font-style:italic;flex:1}
+.slot-remove{width:26px;height:26px;border-radius:50%;background:var(--danger-pale);color:var(--danger);border:none;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;flex-shrink:0;font-weight:700}
+.recipe-slot.filled:hover .slot-remove{opacity:1}
+
+/* ── BUTTONS ── */
+.btn-row{display:flex;gap:10px;margin-bottom:16px}
+.cook-btn{flex:1;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;font-size:1.05rem;font-weight:800;cursor:pointer;letter-spacing:.5px;transition:all .2s;box-shadow:0 4px 16px rgba(232,101,43,.25);opacity:.4;pointer-events:none}
+.cook-btn.ready{opacity:1;pointer-events:auto;animation:pulse 1.5s ease infinite}
+.cook-btn.ready:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(232,101,43,.4)}
+.clear-btn{padding:16px 20px;border:2px solid var(--card-border);border-radius:14px;background:var(--card);color:var(--text-dim);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s}
+.clear-btn:hover{border-color:var(--danger);color:var(--danger);background:var(--danger-pale)}
+
+/* ── FEEDBACK ── */
+.feedback-panel{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:18px;margin-bottom:16px;animation:slideUp .35s ease;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.fb-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.fb-emoji{font-size:1.6rem}
+.fb-title{font-weight:800;font-size:1rem}
+.fb-title.success{color:var(--green)}
+.fb-title.fail{color:var(--danger)}
+.fb-text{color:var(--text-dim);font-size:.88rem;line-height:1.55}
+.stars-earned{display:flex;gap:4px;margin-top:8px;font-size:1.4rem}
+.star-on{color:var(--gold);animation:starPop .4s ease backwards}
+.star-off{color:var(--card-border)}
+.next-btn{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--green-light));color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;margin-top:12px;transition:all .15s;box-shadow:0 4px 16px rgba(46,139,87,.2)}
+.next-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(46,139,87,.3)}
+
+/* ── SLOT STATES (check animation) ── */
+.recipe-slot.correct{background:var(--green-pale);border-color:var(--green);border-style:solid}
+.recipe-slot.correct .slot-num{background:var(--green);color:#fff}
+.recipe-slot.wrong{background:var(--danger-pale);border-color:var(--danger);border-style:solid;animation:shakeSlot .4s ease}
+.recipe-slot.wrong .slot-num{background:var(--danger);color:#fff}
+
+/* ── RESULTS ── */
+#results{animation:fadeIn .6s ease}
+#results h2{text-align:center;font-size:1.8rem;color:var(--primary);margin-bottom:4px;font-weight:900}
+.results-sub{text-align:center;color:var(--text-dim);font-size:.9rem;margin-bottom:20px}
+.total-stars-ring{width:130px;height:130px;margin:0 auto 8px;border-radius:50%;background:var(--gold-pale);border:4px solid var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.total-stars-num{font-size:2.2rem;font-weight:900;color:var(--gold)}
+.total-stars-label{font-size:.7rem;color:var(--text-dim);font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.chef-rank{text-align:center;margin:12px 0 20px;font-size:1.2rem;font-weight:800;color:var(--primary)}
+.results-grid{display:grid;gap:10px;margin-bottom:20px}
+.result-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border:1px solid var(--card-border);border-radius:12px}
+.result-emoji{font-size:1.4rem;flex-shrink:0}
+.result-info{flex:1}
+.result-name{font-weight:700;font-size:.88rem;color:var(--text)}
+.result-attempts{font-size:.75rem;color:var(--text-dim)}
+.result-stars{font-size:1.1rem;letter-spacing:2px;flex-shrink:0}
+.restart-btn{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(232,101,43,.25);margin-bottom:8px}
+.restart-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(232,101,43,.35)}
+.home-btn{width:100%;padding:12px;border:2px solid var(--card-border);border-radius:14px;background:var(--card);color:var(--text-dim);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;text-decoration:none;display:block;text-align:center}
+.home-btn:hover{border-color:var(--primary);color:var(--primary)}
+
+/* ── COOKING OVERLAY ── */
+.cook-overlay{position:fixed;inset:0;background:rgba(255,248,240,.92);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px)}
+.cook-overlay.show{opacity:1;pointer-events:auto}
+.cook-content{text-align:center}
+.cook-dish{font-size:5rem;animation:dishPop .6s ease backwards;animation-delay:.3s}
+.cook-msg{font-size:1.4rem;font-weight:800;color:var(--green);margin-top:8px;animation:fadeIn .4s ease backwards;animation-delay:.5s}
+
+/* ── CONFETTI ── */
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;z-index:101;pointer-events:none;animation:confettiFall var(--dur) ease-out forwards}
+
+/* ── KEYFRAMES ── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes wobble{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes pulse{0%,100%{box-shadow:0 4px 16px rgba(232,101,43,.25)}50%{box-shadow:0 4px 28px rgba(232,101,43,.45)}}
+@keyframes shakeSlot{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes starPop{from{transform:scale(0) rotate(-30deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+@keyframes dishPop{from{transform:scale(0) rotate(-15deg);opacity:0}60%{transform:scale(1.15) rotate(5deg);opacity:1}to{transform:scale(1) rotate(0)}}
+@keyframes confettiFall{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--rot));opacity:0}}
+@keyframes slotFill{from{transform:scale(.95);opacity:.5}50%{transform:scale(1.02)}to{transform:scale(1);opacity:1}}
+@keyframes correctReveal{0%{background:var(--slot-bg)}50%{background:var(--green-pale);transform:scale(1.02)}100%{background:var(--green-pale);transform:scale(1)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:500px){
+    .container{padding:16px 12px}
+    .ingredient{padding:8px 12px;font-size:.78rem}
+    .slot-text{font-size:.78rem}
+    .recipe-slot{padding:8px 10px;min-height:44px;gap:8px}
+    .slot-num{width:26px;height:26px;font-size:.72rem}
+    .cook-btn{padding:14px;font-size:.95rem}
+    .btn-row{flex-direction:column}
+    .slot-remove{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ═══ INTRO SCREEN ═══ -->
+<div id="intro">
+    <span class="chef-hat">👨‍🍳</span>
+    <h1>THE ALGORITHM KITCHEN</h1>
+    <p class="tagline">
+        Welcome, Chef! Each recipe is a scrambled algorithm. Click the ingredients in the
+        correct order to cook up the perfect sequence. Get it right first time for 3 stars!
+    </p>
+    <p class="sub">6 recipes • Sequence algorithms • Can you earn all 18 ⭐?</p>
+    <button class="start-btn" onclick="startGame()">🍳 START COOKING</button>
+</div>
+
+<!-- ═══ GAME SCREEN ═══ -->
+<div id="game" class="hidden">
+    <div class="top-bar">
+        <span class="recipe-counter" id="recipe-counter">Recipe 1 of 6</span>
+        <span class="stars-display" id="stars-display"></span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+    <div class="scenario-card" id="scenario-card">
+        <div class="recipe-title">
+            <span class="recipe-emoji" id="recipe-emoji">🍲</span>
+            <span class="recipe-name" id="recipe-name">Recipe Name</span>
+        </div>
+        <p class="recipe-scenario" id="recipe-scenario">Scenario text here.</p>
+    </div>
+
+    <div class="ingredients-section">
+        <div class="section-label">Ingredients <span style="font-size:.7rem;color:var(--text-light)">(click to add)</span></div>
+        <div class="ingredients-grid" id="ingredients-grid"></div>
+    </div>
+
+    <div class="recipe-section">
+        <div class="section-label">Your Recipe</div>
+        <div class="recipe-card" id="recipe-card"></div>
+    </div>
+
+    <div class="btn-row">
+        <button class="clear-btn" onclick="clearAll()">🗑️ Clear</button>
+        <button class="cook-btn" id="cook-btn" onclick="cook()">🍳 COOK!</button>
+    </div>
+
+    <div id="feedback-area"></div>
+</div>
+
+<!-- ═══ COOKING OVERLAY ═══ -->
+<div class="cook-overlay" id="cook-overlay">
+    <div class="cook-content">
+        <div class="cook-dish" id="cook-dish">🍲</div>
+        <div class="cook-msg" id="cook-msg">Delicious!</div>
+    </div>
+</div>
+
+<!-- ═══ RESULTS SCREEN ═══ -->
+<div id="results" class="hidden"></div>
+
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   RECIPE DATA — 6 sequence algorithms
+   ════════════════════════════════════════ */
+const RECIPES = [
+    {
+        name: "The Number Crunch Soup",
+        emoji: "🍲",
+        scenario: "Write an algorithm to add two numbers together and display the result.",
+        lines: [
+            "INPUT number1",
+            "INPUT number2",
+            "total = number1 + number2",
+            "OUTPUT total"
+        ]
+    },
+    {
+        name: "The VAT Special Burger",
+        emoji: "🍔",
+        scenario: "Calculate the total cost of items including VAT.",
+        lines: [
+            "INPUT price",
+            "INPUT quantity",
+            "INPUT VAT",
+            "total = (price * quantity) + VAT",
+            "OUTPUT total"
+        ]
+    },
+    {
+        name: "The Test Score Smoothie",
+        emoji: "🥤",
+        scenario: "Input 4 test scores, then calculate and display the average score.",
+        lines: [
+            "INPUT Score1",
+            "INPUT Score2",
+            "INPUT Score3",
+            "INPUT Score4",
+            "average = (Score1 + Score2 + Score3 + Score4) / 4",
+            "OUTPUT average"
+        ]
+    },
+    {
+        name: "Sandwich Sales Stew",
+        emoji: "🥪",
+        scenario: "Michael sells sandwiches on Friday, Saturday and Sunday. Calculate the total sales and the average daily sales.",
+        lines: [
+            "TotalSales = 0",
+            "INPUT FridaySales",
+            "INPUT SaturdaySales",
+            "INPUT SundaySales",
+            "TotalSales = FridaySales + SaturdaySales + SundaySales",
+            "AverageSales = TotalSales / 3",
+            "OUTPUT AverageSales"
+        ]
+    },
+    {
+        name: "The Discount Dessert",
+        emoji: "🍰",
+        scenario: "Calculate the final price of an item after applying a percentage discount.",
+        lines: [
+            "INPUT originalPrice",
+            "INPUT discountPercent",
+            "discount = originalPrice * (discountPercent / 100)",
+            "finalPrice = originalPrice - discount",
+            "OUTPUT finalPrice"
+        ]
+    },
+    {
+        name: "The Rectangle Roast",
+        emoji: "🍖",
+        scenario: "Calculate and display both the area and perimeter of a rectangle.",
+        lines: [
+            "INPUT length",
+            "INPUT width",
+            "area = length * width",
+            "perimeter = 2 * (length + width)",
+            "OUTPUT area",
+            "OUTPUT perimeter"
+        ]
+    }
+];
+
+/* ── STATE ── */
+let currentRecipe = 0;
+let placedLines = [];      // placedLines[slotIdx] = originalLineIndex or null
+let shuffledOrder = [];    // display order of ingredients
+let attempts = 0;
+let starsPerRecipe = [];
+let totalStars = 0;
+let isAnimating = false;
+
+/* ── UTILITIES ── */
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function getLineType(line) {
+    const l = line.trim();
+    if (/^INPUT\b/i.test(l)) return 'input';
+    if (/^OUTPUT\b/i.test(l) || /^output\b/.test(l)) return 'output';
+    if (/=\s*0\s*$/.test(l) || /=\s*""\s*$/.test(l)) return 'init';
+    if (l.includes('=')) return 'assign';
+    return 'assign';
+}
+
+function showScreen(id) {
+    ['intro', 'game', 'results'].forEach(s => {
+        document.getElementById(s).classList.toggle('hidden', s !== id);
+    });
+}
+
+/* ── RENDER ── */
+function renderIngredients() {
+    const grid = document.getElementById('ingredients-grid');
+    const recipe = RECIPES[currentRecipe];
+    grid.innerHTML = '';
+    shuffledOrder.forEach(origIdx => {
+        const line = recipe.lines[origIdx];
+        const el = document.createElement('div');
+        el.className = 'ingredient type-' + getLineType(line);
+        if (placedLines.includes(origIdx)) el.classList.add('placed');
+        el.textContent = line;
+        el.onclick = () => placeIngredient(origIdx);
+        grid.appendChild(el);
+    });
+}
+
+function renderSlots() {
+    const card = document.getElementById('recipe-card');
+    const recipe = RECIPES[currentRecipe];
+    const numSlots = recipe.lines.length;
+    card.innerHTML = '';
+    for (let i = 0; i < numSlots; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'recipe-slot' + (placedLines[i] !== null ? ' filled' : '');
+        const num = document.createElement('div');
+        num.className = 'slot-num';
+        num.textContent = i + 1;
+        slot.appendChild(num);
+
+        if (placedLines[i] !== null) {
+            const text = document.createElement('div');
+            text.className = 'slot-text';
+            text.textContent = recipe.lines[placedLines[i]];
+            slot.appendChild(text);
+
+            const rmBtn = document.createElement('button');
+            rmBtn.className = 'slot-remove';
+            rmBtn.innerHTML = '✕';
+            rmBtn.onclick = (e) => { e.stopPropagation(); removeFromSlot(i); };
+            slot.appendChild(rmBtn);
+        } else {
+            const ph = document.createElement('div');
+            ph.className = 'slot-placeholder';
+            ph.textContent = 'Click an ingredient...';
+            slot.appendChild(ph);
+        }
+        card.appendChild(slot);
+    }
+    updateCookBtn();
+}
+
+function updateCookBtn() {
+    const btn = document.getElementById('cook-btn');
+    const allFilled = placedLines.every(v => v !== null);
+    btn.classList.toggle('ready', allFilled);
+}
+
+function updateTopBar() {
+    document.getElementById('recipe-counter').textContent = `Recipe ${currentRecipe + 1} of ${RECIPES.length}`;
+    document.getElementById('progress-fill').style.width = ((currentRecipe) / RECIPES.length * 100) + '%';
+    let starsHTML = '';
+    for (let i = 0; i < totalStars; i++) starsHTML += '⭐';
+    document.getElementById('stars-display').textContent = starsHTML || '';
+}
+
+/* ── INTERACTION ── */
+function placeIngredient(origIdx) {
+    if (isAnimating) return;
+    if (placedLines.includes(origIdx)) return;
+    const nextEmpty = placedLines.indexOf(null);
+    if (nextEmpty === -1) return;
+    placedLines[nextEmpty] = origIdx;
+    renderIngredients();
+    renderSlots();
+    // animate the slot
+    const slots = document.querySelectorAll('.recipe-slot');
+    if (slots[nextEmpty]) {
+        slots[nextEmpty].style.animation = 'none';
+        void slots[nextEmpty].offsetWidth;
+        slots[nextEmpty].style.animation = 'slotFill .3s ease';
+    }
+}
+
+function removeFromSlot(slotIdx) {
+    if (isAnimating) return;
+    if (placedLines[slotIdx] === null) return;
+    placedLines[slotIdx] = null;
+    renderIngredients();
+    renderSlots();
+}
+
+function clearAll() {
+    if (isAnimating) return;
+    const recipe = RECIPES[currentRecipe];
+    placedLines = new Array(recipe.lines.length).fill(null);
+    renderIngredients();
+    renderSlots();
+}
+
+/* ── CHECK ANSWER ── */
+function cook() {
+    if (isAnimating) return;
+    if (placedLines.some(v => v === null)) return;
+    isAnimating = true;
+    attempts++;
+
+    const recipe = RECIPES[currentRecipe];
+    const results = placedLines.map((origIdx, slotIdx) => origIdx === slotIdx);
+    const allCorrect = results.every(r => r);
+
+    // Animate slots one by one
+    const slots = document.querySelectorAll('.recipe-slot');
+    slots.forEach((slot, i) => {
+        setTimeout(() => {
+            slot.classList.add(results[i] ? 'correct' : 'wrong');
+            const numEl = slot.querySelector('.slot-num');
+            numEl.textContent = results[i] ? '✓' : '✗';
+        }, i * 250);
+    });
+
+    const totalDelay = slots.length * 250 + 400;
+
+    if (allCorrect) {
+        setTimeout(() => showCookingSuccess(), totalDelay);
+    } else {
+        const correctCount = results.filter(r => r).length;
+        setTimeout(() => showWrongFeedback(correctCount, recipe.lines.length), totalDelay);
+    }
+}
+
+function showCookingSuccess() {
+    const recipe = RECIPES[currentRecipe];
+    const stars = attempts === 1 ? 3 : attempts === 2 ? 2 : 1;
+    starsPerRecipe.push({ attempts, stars });
+    totalStars += stars;
+
+    // Show cooking overlay
+    const overlay = document.getElementById('cook-overlay');
+    document.getElementById('cook-dish').textContent = recipe.emoji;
+    const msgs = ['Delicious! Perfect algorithm!', 'Yum! That\'s cooked to perfection!', 'Tasty! The sequence is spot on!'];
+    document.getElementById('cook-msg').textContent = msgs[Math.floor(Math.random() * msgs.length)];
+    overlay.classList.add('show');
+    spawnConfetti();
+
+    setTimeout(() => {
+        overlay.classList.remove('show');
+        showSuccessFeedback(stars);
+    }, 2000);
+}
+
+function showSuccessFeedback(stars) {
+    const area = document.getElementById('feedback-area');
+    let starsHTML = '';
+    for (let i = 0; i < 3; i++) {
+        starsHTML += `<span class="${i < stars ? 'star-on' : 'star-off'}" style="animation-delay:${i * .15}s">${i < stars ? '⭐' : '☆'}</span>`;
+    }
+    const isLast = currentRecipe >= RECIPES.length - 1;
+    area.innerHTML = `
+        <div class="feedback-panel">
+            <div class="fb-header">
+                <span class="fb-emoji">🎉</span>
+                <span class="fb-title success">Perfect Sequence!</span>
+            </div>
+            <p class="fb-text">You got it${attempts === 1 ? ' on your first try! Amazing!' : ` in ${attempts} attempts. Nice work!`}</p>
+            <div class="stars-earned">${starsHTML}</div>
+            <button class="next-btn" onclick="${isLast ? 'showResults()' : 'nextRecipe()'}">${isLast ? '🏆 See Results' : '➡️ Next Recipe'}</button>
+        </div>
+    `;
+    updateTopBar();
+    isAnimating = false;
+}
+
+function showWrongFeedback(correctCount, total) {
+    const area = document.getElementById('feedback-area');
+    area.innerHTML = `
+        <div class="feedback-panel">
+            <div class="fb-header">
+                <span class="fb-emoji">💨</span>
+                <span class="fb-title fail">Not quite right!</span>
+            </div>
+            <p class="fb-text">${correctCount} of ${total} lines are in the correct position. The green lines are right — rearrange the red ones and try again!</p>
+        </div>
+    `;
+
+    // After 2 seconds, reset slot styles and allow re-try
+    setTimeout(() => {
+        document.querySelectorAll('.recipe-slot').forEach(s => {
+            s.classList.remove('correct', 'wrong');
+            // Restore slot numbers
+            const numEl = s.querySelector('.slot-num');
+            const idx = Array.from(s.parentNode.children).indexOf(s);
+            numEl.textContent = idx + 1;
+        });
+        area.innerHTML = '';
+        isAnimating = false;
+    }, 2500);
+}
+
+function spawnConfetti() {
+    const colors = ['#E8652B', '#2E8B57', '#D4A017', '#5B8FB9', '#8965C6', '#FF6B8A'];
+    const emojis = ['🍕', '🍔', '🌮', '🍰', '🧁', '🥧', '🍩', '🍪'];
+    for (let i = 0; i < 30; i++) {
+        const el = document.createElement('div');
+        const isEmoji = Math.random() > .6;
+        if (isEmoji) {
+            el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            el.style.fontSize = (14 + Math.random() * 16) + 'px';
+        } else {
+            el.style.width = (6 + Math.random() * 8) + 'px';
+            el.style.height = (6 + Math.random() * 8) + 'px';
+            el.style.background = colors[Math.floor(Math.random() * colors.length)];
+        }
+        el.className = 'confetti-piece';
+        el.style.left = (10 + Math.random() * 80) + 'vw';
+        el.style.top = '-20px';
+        el.style.setProperty('--dx', (Math.random() * 100 - 50) + 'px');
+        el.style.setProperty('--dy', (60 + Math.random() * 40) + 'vh');
+        el.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+        el.style.setProperty('--dur', (1.5 + Math.random()) + 's');
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 3000);
+    }
+}
+
+/* ── GAME FLOW ── */
+function startGame() {
+    currentRecipe = 0;
+    totalStars = 0;
+    starsPerRecipe = [];
+    showScreen('game');
+    loadRecipe();
+}
+
+function loadRecipe() {
+    const recipe = RECIPES[currentRecipe];
+    attempts = 0;
+    placedLines = new Array(recipe.lines.length).fill(null);
+
+    // Shuffle ingredient display order (ensure not already in correct order)
+    let indices = [...Array(recipe.lines.length).keys()];
+    do { shuffledOrder = shuffle(indices); }
+    while (shuffledOrder.every((v, i) => v === i));
+
+    document.getElementById('recipe-emoji').textContent = recipe.emoji;
+    document.getElementById('recipe-name').textContent = recipe.name;
+    document.getElementById('recipe-scenario').textContent = recipe.scenario;
+    document.getElementById('feedback-area').innerHTML = '';
+
+    // Animate scenario card
+    const card = document.getElementById('scenario-card');
+    card.style.animation = 'none';
+    void card.offsetWidth;
+    card.style.animation = 'slideUp .4s ease';
+
+    renderIngredients();
+    renderSlots();
+    updateTopBar();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextRecipe() {
+    currentRecipe++;
+    if (currentRecipe >= RECIPES.length) {
+        showResults();
+    } else {
+        loadRecipe();
+    }
+}
+
+function showResults() {
+    showScreen('results');
+    const maxStars = RECIPES.length * 3;
+    let rank, rankEmoji;
+    if (totalStars >= 18) { rank = 'Master Chef'; rankEmoji = '🏆'; }
+    else if (totalStars >= 15) { rank = 'Head Chef'; rankEmoji = '👨‍🍳'; }
+    else if (totalStars >= 12) { rank = 'Sous Chef'; rankEmoji = '🍳'; }
+    else if (totalStars >= 9) { rank = 'Line Cook'; rankEmoji = '🔪'; }
+    else { rank = 'Kitchen Porter'; rankEmoji = '🥄'; }
+
+    let rowsHTML = '';
+    RECIPES.forEach((r, i) => {
+        const data = starsPerRecipe[i];
+        let starsStr = '';
+        for (let s = 0; s < 3; s++) starsStr += s < data.stars ? '⭐' : '☆';
+        rowsHTML += `
+            <div class="result-row">
+                <span class="result-emoji">${r.emoji}</span>
+                <div class="result-info">
+                    <div class="result-name">${r.name}</div>
+                    <div class="result-attempts">${data.attempts === 1 ? 'First try!' : data.attempts + ' attempts'}</div>
+                </div>
+                <span class="result-stars">${starsStr}</span>
+            </div>
+        `;
+    });
+
+    document.getElementById('results').innerHTML = `
+        <h2>Kitchen Closed!</h2>
+        <p class="results-sub">All 6 recipes have been cooked</p>
+        <div class="total-stars-ring">
+            <div class="total-stars-num">${totalStars}/${maxStars}</div>
+            <div class="total-stars-label">Stars</div>
+        </div>
+        <div class="chef-rank">${rankEmoji} ${rank}</div>
+        <div class="results-grid">${rowsHTML}</div>
+        <button class="restart-btn" onclick="startGame()">🍳 Cook Again</button>
+        <a class="home-btn" href="index.html">🏠 Back to Menu</a>
+    `;
+    document.getElementById('progress-fill').style.width = '100%';
+}
+</script>
+</body>
+</html>
