@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speed Trial - S2 Legislation</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+    --bg:#0d0b1e;--bg2:#1a0a2e;--bg3:#12061f;
+    --danger:#ef4444;--danger-d:#dc2626;
+    --success:#22c55e;--gold:#ffd700;--gold-d:#d4a017;
+    --text:#f0ece2;--text-dim:#9ca3af;
+    --blue:#3b82f6;--purple:#8b5cf6;--green:#22c55e;--orange:#f59e0b;
+}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(150deg,var(--bg),var(--bg2) 50%,var(--bg3));color:var(--text);min-height:100vh;overflow-x:hidden}
+.container{max-width:680px;margin:0 auto;padding:20px 16px;position:relative}
+
+/* ── INTRO ── */
+#intro{text-align:center;animation:fadeIn .6s ease}
+.bolt{font-size:4rem;margin-bottom:10px;display:block;filter:drop-shadow(0 4px 20px rgba(255,215,0,.4));animation:boltPulse 1.5s ease infinite}
+#intro h1{font-size:clamp(1.8rem,6vw,2.8rem);background:linear-gradient(135deg,var(--gold),#ff6b35,var(--danger));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;letter-spacing:1px}
+#intro .tagline{color:var(--text-dim);font-size:.92rem;line-height:1.6;max-width:520px;margin:0 auto 6px}
+#intro .sub{color:var(--text-dim);font-size:.82rem;margin-bottom:24px;opacity:.7}
+.start-btn{background:linear-gradient(135deg,#ff6b35,var(--danger));color:#fff;border:none;padding:15px 40px;border-radius:999px;font-size:1.1rem;font-weight:800;cursor:pointer;letter-spacing:.5px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 24px rgba(239,68,68,.35)}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(239,68,68,.5)}
+.rules{max-width:420px;margin:0 auto 24px;text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px 18px}
+.rules h3{font-size:.82rem;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
+.rules ul{list-style:none;font-size:.85rem;color:var(--text-dim);line-height:1.8}
+.rules li::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:8px;vertical-align:middle}
+.rules li:nth-child(1)::before{background:var(--success)}
+.rules li:nth-child(2)::before{background:var(--danger)}
+.rules li:nth-child(3)::before{background:var(--gold)}
+
+/* ── GAME ── */
+.game-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.timer-display{font-size:1.8rem;font-weight:900;font-variant-numeric:tabular-nums;transition:color .3s}
+.timer-display.warning{color:var(--danger);animation:timerPulse .5s ease infinite}
+.timer-display.normal{color:var(--gold)}
+.score-area{text-align:right}
+.game-score{font-size:1.4rem;font-weight:800;color:var(--gold)}
+.streak-badge{display:inline-block;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;padding:3px 8px;border-radius:999px;margin-top:2px;opacity:0;transition:opacity .3s,transform .3s}
+.streak-badge.show{opacity:1;animation:streakPop .3s ease}
+.streak-badge.fire{background:rgba(255,107,53,.2);color:#ff6b35;border:1px solid rgba(255,107,53,.3)}
+.streak-badge.unstoppable{background:rgba(255,215,0,.2);color:var(--gold);border:1px solid rgba(255,215,0,.3)}
+
+.timer-bar{width:100%;height:6px;background:rgba(255,255,255,.08);border-radius:99px;margin-bottom:16px;overflow:hidden}
+.timer-fill{height:100%;border-radius:99px;transition:width .1s linear;background:linear-gradient(90deg,var(--danger),var(--gold),var(--success))}
+
+/* ── SCENARIO CARD ── */
+.scenario-wrap{min-height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.scenario-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:20px;text-align:center;width:100%;position:relative;overflow:hidden}
+.scenario-card.enter{animation:cardSlide .3s ease}
+.scenario-card.correct-flash{animation:correctFlash .35s ease}
+.scenario-card.wrong-flash{animation:wrongFlash .35s ease}
+.scenario-num{font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);font-weight:700;margin-bottom:8px}
+.scenario-text{font-size:1rem;line-height:1.6}
+
+/* ── ANSWER FEEDBACK ── */
+.answer-feedback{text-align:center;margin-bottom:10px;min-height:28px;font-size:.82rem;font-weight:700;transition:opacity .3s}
+.answer-feedback.correct{color:var(--success)}
+.answer-feedback.wrong{color:var(--danger)}
+
+/* ── LAW BUTTONS ── */
+.law-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.law-btn{padding:14px 8px;border:2px solid;border-radius:12px;font-size:.78rem;font-weight:700;cursor:pointer;transition:transform .1s,background .15s,opacity .15s;text-align:center;line-height:1.3;min-height:56px;display:flex;align-items:center;justify-content:center;user-select:none}
+.law-btn:active{transform:scale(.95)}
+.law-btn[data-law="cma"]{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.5);color:#93c5fd}
+.law-btn[data-law="cma"]:hover{background:rgba(59,130,246,.2)}
+.law-btn[data-law="cdpa"]{background:rgba(139,92,246,.08);border-color:rgba(139,92,246,.5);color:#c4b5fd}
+.law-btn[data-law="cdpa"]:hover{background:rgba(139,92,246,.2)}
+.law-btn[data-law="dpa"]{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.5);color:#86efac}
+.law-btn[data-law="dpa"]:hover{background:rgba(34,197,94,.2)}
+.law-btn[data-law="ccr"]{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.5);color:#fcd34d}
+.law-btn[data-law="ccr"]:hover{background:rgba(245,158,11,.2)}
+.no-law-btn{width:100%;padding:14px;border:2px solid rgba(255,255,255,.2);border-radius:12px;background:rgba(255,255,255,.04);color:var(--text-dim);font-size:.85rem;font-weight:700;cursor:pointer;transition:transform .1s,background .15s;text-align:center}
+.no-law-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.35)}
+.no-law-btn:active{transform:scale(.95)}
+
+/* ── RESULTS ── */
+#results{animation:fadeIn .6s ease}
+#results h2{text-align:center;font-size:1.8rem;margin-bottom:4px;background:linear-gradient(135deg,var(--gold),#ff6b35);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.results-sub{text-align:center;color:var(--text-dim);font-size:.88rem;margin-bottom:20px;line-height:1.5}
+.big-score{text-align:center;margin-bottom:20px}
+.big-score-num{font-size:3.5rem;font-weight:900;color:var(--gold);line-height:1}
+.big-score-label{font-size:.8rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px}
+.results-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.rg-box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 6px;text-align:center}
+.rg-num{font-size:1.3rem;font-weight:800}
+.rg-label{font-size:.62rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.accuracy-bar{margin-bottom:20px}
+.accuracy-bar h3{font-size:.78rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
+.ab-track{width:100%;height:10px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
+.ab-fill{height:100%;border-radius:99px;transition:width 1s ease}
+.ab-fill.good{background:linear-gradient(90deg,var(--success),#86efac)}
+.ab-fill.ok{background:linear-gradient(90deg,var(--orange),#fcd34d)}
+.ab-fill.poor{background:linear-gradient(90deg,var(--danger),#fca5a5)}
+.ab-pct{text-align:right;font-size:.78rem;font-weight:700;margin-top:4px}
+.law-breakdown{margin-bottom:20px}
+.law-breakdown h3{font-size:.78rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.lb-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;margin-bottom:5px;font-size:.82rem}
+.lb-color{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.lb-name{flex:1;color:var(--text-dim)}
+.lb-score{font-weight:800}
+.retry-btn{width:100%;padding:14px;border:2px solid var(--gold-d);border-radius:12px;background:transparent;color:var(--gold);font-size:1rem;font-weight:800;cursor:pointer;transition:background .2s,transform .15s;letter-spacing:.5px;margin-bottom:10px}
+.retry-btn:hover{background:rgba(212,160,23,.1);transform:translateY(-1px)}
+.home-link{display:block;text-align:center;color:var(--text-dim);font-size:.82rem;text-decoration:none;padding:8px}
+.home-link:hover{color:var(--text)}
+
+/* ── HIDDEN ── */
+.hidden{display:none!important}
+
+/* ── KEYFRAMES ── */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes cardSlide{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes correctFlash{0%{background:rgba(34,197,94,.2)}100%{background:rgba(255,255,255,.06)}}
+@keyframes wrongFlash{0%{background:rgba(239,68,68,.2)}100%{background:rgba(255,255,255,.06)}}
+@keyframes boltPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+@keyframes timerPulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes streakPop{0%{transform:scale(.5)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+
+@media(max-width:500px){
+    .law-btn{padding:12px 6px;font-size:.72rem;min-height:50px}
+    .timer-display{font-size:1.4rem}
+    .scenario-text{font-size:.92rem}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ═══ INTRO ═══ -->
+<div id="intro">
+    <span class="bolt">&#x26A1;</span>
+    <h1>SPEED TRIAL</h1>
+    <p class="tagline">
+        60 seconds on the clock. Scenarios flash up — identify which law has been broken as fast as you can!
+    </p>
+    <div class="rules">
+        <h3>How to play</h3>
+        <ul>
+            <li>Correct answer: <strong>+10 points</strong></li>
+            <li>Wrong answer: <strong>-5 points</strong></li>
+            <li>Get 3+ in a row for streak bonuses!</li>
+        </ul>
+    </div>
+    <p class="sub">20 scenarios &bull; 60 seconds &bull; Beat your high score</p>
+    <button class="start-btn" onclick="startGame()">START TRIAL &#x26A1;</button>
+</div>
+
+<!-- ═══ GAME ═══ -->
+<div id="game" class="hidden">
+    <div class="game-header">
+        <div>
+            <div class="timer-display normal" id="timer-display">60</div>
+        </div>
+        <div class="score-area">
+            <div class="game-score" id="game-score">0</div>
+            <div class="streak-badge" id="streak-badge"></div>
+        </div>
+    </div>
+    <div class="timer-bar"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
+
+    <div class="scenario-wrap">
+        <div class="scenario-card" id="scenario-card">
+            <div class="scenario-num" id="scenario-num">SCENARIO 1</div>
+            <div class="scenario-text" id="scenario-text"></div>
+        </div>
+    </div>
+
+    <div class="answer-feedback" id="answer-feedback">&nbsp;</div>
+
+    <div class="law-grid">
+        <button class="law-btn" data-law="cma" onclick="answer('cma')">Computer Misuse Act 1990</button>
+        <button class="law-btn" data-law="cdpa" onclick="answer('cdpa')">Copyright, Designs &amp; Patents Act 1988</button>
+        <button class="law-btn" data-law="dpa" onclick="answer('dpa')">Data Protection Act 1998</button>
+        <button class="law-btn" data-law="ccr" onclick="answer('ccr')">Consumer Contracts Regulations 2013</button>
+    </div>
+    <button class="no-law-btn" onclick="answer('none')">&#x2714; NO LAW BROKEN</button>
+</div>
+
+<!-- ═══ RESULTS ═══ -->
+<div id="results" class="hidden"></div>
+
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   SCENARIO DATA
+   ════════════════════════════════════════ */
+const SCENARIOS = [
+    { text: "Copying a DVD and giving it to a friend", law: "cdpa", explain: "Distributing copies without permission breaks the Copyright, Designs and Patents Act 1988." },
+    { text: "Streaming a film on Netflix with a paid account", law: "none", explain: "Netflix has obtained licences to distribute content legally. A paid subscription is completely legal." },
+    { text: "A company selling customer phone numbers without their consent", law: "dpa", explain: "Selling personal data without the data subject's consent breaks the Data Protection Act 1998." },
+    { text: "Guessing someone's password to read their emails", law: "cma", explain: "Attempting to access someone's account without permission is unauthorised access under the Computer Misuse Act 1990." },
+    { text: "Returning shoes bought online after 10 days for a refund", law: "none", explain: "Physical goods bought online can be returned within 14 days under the Consumer Contracts Regulations 2013." },
+    { text: "A website hiding delivery charges until after payment", law: "ccr", explain: "All costs must be made available to the customer. Hiding charges breaks the Consumer Contracts Regulations 2013." },
+    { text: "Using a friend's Microsoft Office login to write an essay", law: "cdpa", explain: "Software licences are individual. Using someone else's login is a breach of the Copyright, Designs and Patents Act 1988." },
+    { text: "A hacker planting a virus on a school server", law: "cma", explain: "Planting viruses on computer systems is illegal under the Computer Misuse Act 1990." },
+    { text: "A school storing pupil records on an encrypted, secure server", law: "none", explain: "Storing data safely and securely is exactly what the Data Protection Act requires. No law is broken." },
+    { text: "Keeping customer records for 30 years with no valid reason", law: "dpa", explain: "Data should not be kept longer than necessary — a key principle of the Data Protection Act 1998." },
+    { text: "Downloading a cracked version of Photoshop", law: "cdpa", explain: "Downloading pirated software breaks the Copyright, Designs and Patents Act 1988." },
+    { text: "Installing spyware on a colleague's computer", law: "cma", explain: "Installing spyware — software that secretly collects information — is illegal under the Computer Misuse Act 1990." },
+    { text: "Selling a digital game online without listing compatible devices", law: "ccr", explain: "Digital products sold online must include hardware and software compatibility details under Consumer Contracts Regulations 2013." },
+    { text: "A teacher logging into the school network with their own password", law: "none", explain: "Using your own authorised credentials to access systems you have permission to use is perfectly legal." },
+    { text: "Sending customer data to a company outside the EU with no data protection agreement", law: "dpa", explain: "Data must not be transferred outside the EU without adequate protection — a Data Protection Act 1998 principle." },
+    { text: "Installing software on 50 PCs with a 10-user licence", law: "cdpa", explain: "Exceeding the software licence agreement breaks the Copyright, Designs and Patents Act 1988." },
+    { text: "Changing someone's password to lock them out of their account", law: "cma", explain: "Modifying passwords to prevent access is unauthorised modification under the Computer Misuse Act 1990." },
+    { text: "An online shop offering a full refund for shoes returned within 14 days", law: "none", explain: "Offering refunds within 14 days for physical goods is exactly what the Consumer Contracts Regulations 2013 require." },
+    { text: "Processing personal data without telling people why it is being collected", law: "dpa", explain: "Data must be processed fairly and lawfully — collecting data without transparency breaks the Data Protection Act 1998." },
+    { text: "An online store not providing full product descriptions", law: "ccr", explain: "Online traders must provide full descriptions of products. Failing to do so breaks the Consumer Contracts Regulations 2013." }
+];
+
+const LAW_NAMES = {
+    cma: 'Computer Misuse Act 1990',
+    cdpa: 'Copyright, Designs & Patents Act 1988',
+    dpa: 'Data Protection Act 1998',
+    ccr: 'Consumer Contracts Regulations 2013',
+    none: 'No Law Broken'
+};
+
+const LAW_COLORS = {
+    cma: '#3b82f6', cdpa: '#8b5cf6', dpa: '#22c55e', ccr: '#f59e0b', none: '#9ca3af'
+};
+
+/* ════════════════════════════════════════
+   GAME STATE
+   ════════════════════════════════════════ */
+let shuffled = [];
+let current = 0;
+let score = 0;
+let streak = 0;
+let bestStreak = 0;
+let correct = 0;
+let wrong = 0;
+let answered = 0;
+let timeLeft = 60;
+let timer = null;
+let gameActive = false;
+let lawStats = { cma: {c:0,t:0}, cdpa: {c:0,t:0}, dpa: {c:0,t:0}, ccr: {c:0,t:0}, none: {c:0,t:0} };
+
+function $(id) { return document.getElementById(id); }
+
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+/* ════════════════════════════════════════
+   GAME FLOW
+   ════════════════════════════════════════ */
+function startGame() {
+    shuffled = shuffle(SCENARIOS);
+    current = 0;
+    score = 0;
+    streak = 0;
+    bestStreak = 0;
+    correct = 0;
+    wrong = 0;
+    answered = 0;
+    timeLeft = 60;
+    gameActive = true;
+    lawStats = { cma:{c:0,t:0}, cdpa:{c:0,t:0}, dpa:{c:0,t:0}, ccr:{c:0,t:0}, none:{c:0,t:0} };
+
+    $('intro').classList.add('hidden');
+    $('game').classList.remove('hidden');
+    $('results').classList.add('hidden');
+
+    loadScenario();
+    startTimer();
+}
+
+function startTimer() {
+    updateTimerDisplay();
+    timer = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            gameActive = false;
+            setTimeout(showResults, 500);
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const td = $('timer-display');
+    td.textContent = timeLeft;
+    td.className = 'timer-display ' + (timeLeft <= 10 ? 'warning' : 'normal');
+    $('timer-fill').style.width = ((timeLeft / 60) * 100) + '%';
+}
+
+function loadScenario() {
+    if (current >= shuffled.length) {
+        // Reshuffle if we've gone through all
+        shuffled = shuffle(SCENARIOS);
+        current = 0;
+    }
+    const s = shuffled[current];
+    $('scenario-num').textContent = `SCENARIO ${answered + 1}`;
+    $('scenario-text').textContent = s.text;
+    $('answer-feedback').innerHTML = '&nbsp;';
+    $('answer-feedback').className = 'answer-feedback';
+
+    const card = $('scenario-card');
+    card.classList.remove('enter', 'correct-flash', 'wrong-flash');
+    void card.offsetWidth;
+    card.classList.add('enter');
+
+    // Re-enable buttons
+    document.querySelectorAll('.law-btn, .no-law-btn').forEach(b => b.disabled = false);
+}
+
+function answer(playerLaw) {
+    if (!gameActive) return;
+    const s = shuffled[current];
+    const isCorrect = playerLaw === s.law;
+    const fb = $('answer-feedback');
+    const card = $('scenario-card');
+
+    answered++;
+    document.querySelectorAll('.law-btn, .no-law-btn').forEach(b => b.disabled = true);
+
+    // Track law stats
+    if (s.law !== 'none') {
+        lawStats[s.law].t++;
+        if (isCorrect) lawStats[s.law].c++;
+    } else {
+        lawStats.none.t++;
+        if (isCorrect) lawStats.none.c++;
+    }
+
+    if (isCorrect) {
+        correct++;
+        streak++;
+        if (streak > bestStreak) bestStreak = streak;
+        let points = 10;
+        if (streak >= 5) points = 20;
+        else if (streak >= 3) points = 15;
+        score += points;
+
+        card.classList.add('correct-flash');
+        fb.textContent = `\u2714 Correct! +${points}`;
+        fb.className = 'answer-feedback correct';
+
+        updateStreak();
+    } else {
+        wrong++;
+        streak = 0;
+        score = Math.max(0, score - 5);
+
+        card.classList.add('wrong-flash');
+        fb.textContent = `\u2718 Wrong! It was: ${LAW_NAMES[s.law]}`;
+        fb.className = 'answer-feedback wrong';
+
+        updateStreak();
+    }
+
+    $('game-score').textContent = score;
+
+    // Next scenario
+    current++;
+    setTimeout(loadScenario, 800);
+}
+
+function updateStreak() {
+    const badge = $('streak-badge');
+    if (streak >= 5) {
+        badge.textContent = `\u26A1 ${streak}x UNSTOPPABLE!`;
+        badge.className = 'streak-badge unstoppable show';
+    } else if (streak >= 3) {
+        badge.textContent = `\uD83D\uDD25 ${streak}x ON FIRE!`;
+        badge.className = 'streak-badge fire show';
+    } else {
+        badge.className = 'streak-badge';
+    }
+}
+
+/* ════════════════════════════════════════
+   RESULTS
+   ════════════════════════════════════════ */
+function showResults() {
+    $('game').classList.add('hidden');
+    const r = $('results');
+    r.classList.remove('hidden');
+
+    const accuracy = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+    let verdict = '';
+    if (accuracy >= 90) verdict = "Lightning fast AND accurate! Supreme Court material!";
+    else if (accuracy >= 70) verdict = "Quick thinking, counsellor. A few slip-ups under pressure.";
+    else if (accuracy >= 50) verdict = "Not bad, but slow down and think before you click!";
+    else verdict = "The courtroom is in chaos! Time to revise those laws.";
+
+    const accClass = accuracy >= 70 ? 'good' : accuracy >= 50 ? 'ok' : 'poor';
+
+    let lawBreakdown = '';
+    [
+        { key: 'cma', name: 'Computer Misuse Act', color: '#3b82f6' },
+        { key: 'cdpa', name: 'Copyright Act', color: '#8b5cf6' },
+        { key: 'dpa', name: 'Data Protection Act', color: '#22c55e' },
+        { key: 'ccr', name: 'Consumer Contracts', color: '#f59e0b' },
+        { key: 'none', name: 'No Law Broken', color: '#9ca3af' }
+    ].forEach(l => {
+        const s = lawStats[l.key];
+        if (s.t > 0) {
+            const pct = Math.round((s.c / s.t) * 100);
+            lawBreakdown += `
+                <div class="lb-item">
+                    <div class="lb-color" style="background:${l.color}"></div>
+                    <div class="lb-name">${l.name}</div>
+                    <div class="lb-score" style="color:${l.color}">${s.c}/${s.t} (${pct}%)</div>
+                </div>`;
+        }
+    });
+
+    r.innerHTML = `
+        <h2>TIME'S UP!</h2>
+        <p class="results-sub">${verdict}</p>
+        <div class="big-score">
+            <div class="big-score-num">${score}</div>
+            <div class="big-score-label">points</div>
+        </div>
+        <div class="results-grid">
+            <div class="rg-box"><div class="rg-num" style="color:var(--gold)">${answered}</div><div class="rg-label">Answered</div></div>
+            <div class="rg-box"><div class="rg-num" style="color:var(--success)">${correct}</div><div class="rg-label">Correct</div></div>
+            <div class="rg-box"><div class="rg-num" style="color:var(--danger)">${wrong}</div><div class="rg-label">Wrong</div></div>
+            <div class="rg-box"><div class="rg-num" style="color:var(--orange)">${bestStreak}</div><div class="rg-label">Best Streak</div></div>
+        </div>
+        <div class="accuracy-bar">
+            <h3>Accuracy</h3>
+            <div class="ab-track"><div class="ab-fill ${accClass}" id="acc-fill" style="width:0%"></div></div>
+            <div class="ab-pct" style="color:${accClass === 'good' ? 'var(--success)' : accClass === 'ok' ? 'var(--orange)' : 'var(--danger)'}">${accuracy}%</div>
+        </div>
+        <div class="law-breakdown">
+            <h3>Performance by Law</h3>
+            ${lawBreakdown}
+        </div>
+        <button class="retry-btn" onclick="startGame()">&#x1F504; TRY AGAIN</button>
+        <a href="index.html" class="home-link">&larr; Back to Activities</a>
+    `;
+
+    // Animate accuracy bar
+    setTimeout(() => {
+        const fill = document.getElementById('acc-fill');
+        if (fill) fill.style.width = accuracy + '%';
+    }, 300);
+}
+</script>
+</body>
+</html>

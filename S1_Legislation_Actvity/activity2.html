@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build the Shield - S2 Legislation</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+    --bg:#0d0b1e;--bg2:#0f1a2e;--bg3:#0a1628;
+    --shield:#22c55e;--shield-glow:rgba(34,197,94,.3);
+    --gold:#d4a017;--gold-b:#ffd700;
+    --danger:#ef4444;--success:#22c55e;
+    --text:#f0ece2;--text-dim:#8b97b0;
+    --tile-bg:rgba(255,255,255,.06);
+    --tile-border:rgba(255,255,255,.12);
+}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(160deg,var(--bg),var(--bg2) 50%,var(--bg3));color:var(--text);min-height:100vh;overflow-x:hidden}
+.container{max-width:680px;margin:0 auto;padding:20px 16px}
+
+/* ── INTRO ── */
+#intro{text-align:center;animation:fadeIn .6s ease}
+.shield-intro{margin:0 auto 16px;width:120px;height:140px}
+.shield-intro svg{filter:drop-shadow(0 4px 20px rgba(34,197,94,.3))}
+#intro h1{font-size:clamp(1.8rem,5.5vw,2.6rem);background:linear-gradient(135deg,#86efac,var(--shield),#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+#intro .tagline{color:var(--text-dim);font-size:.92rem;line-height:1.6;max-width:520px;margin:0 auto 6px}
+#intro .sub{color:var(--text-dim);font-size:.82rem;margin-bottom:24px;opacity:.7}
+.start-btn{background:linear-gradient(135deg,var(--shield),#16a34a);color:#fff;border:none;padding:15px 36px;border-radius:999px;font-size:1.05rem;font-weight:800;cursor:pointer;letter-spacing:.5px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 24px rgba(34,197,94,.3)}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(34,197,94,.45)}
+
+/* ── GAME ── */
+.top-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;font-size:.82rem;margin-bottom:14px}
+.placed-count{color:var(--shield);font-weight:800}
+.strikes-display{color:var(--danger);font-weight:700}
+.instruction{text-align:center;color:var(--text-dim);font-size:.85rem;margin-bottom:14px;line-height:1.5}
+.instruction strong{color:var(--shield)}
+
+/* ── SHIELD ── */
+.shield-area{display:flex;justify-content:center;margin-bottom:20px;position:relative}
+.shield-container{position:relative;width:200px;height:230px}
+.shield-svg{width:100%;height:100%;filter:drop-shadow(0 4px 24px rgba(34,197,94,.15));transition:filter .5s}
+.shield-svg.glow{filter:drop-shadow(0 4px 40px rgba(34,197,94,.5))}
+.shield-svg.complete{filter:drop-shadow(0 4px 60px rgba(255,215,0,.6));animation:shieldPulse 1.5s ease infinite}
+.shield-body{fill:rgba(34,197,94,.08);stroke:var(--shield);stroke-width:2;transition:fill .5s}
+.shield-svg.complete .shield-body{fill:rgba(34,197,94,.25);stroke:var(--gold-b);stroke-width:3}
+.slot-markers{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
+.slot-dot{width:10px;height:10px;border-radius:50%;background:rgba(34,197,94,.2);border:1px solid rgba(34,197,94,.4);transition:background .4s,transform .4s,box-shadow .4s}
+.slot-dot.filled{background:var(--shield);box-shadow:0 0 10px rgba(34,197,94,.5);transform:scale(1.2)}
+.slot-row{display:flex;gap:6px}
+.placed-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2.8rem;font-weight:900;color:var(--shield);opacity:.15;pointer-events:none;transition:opacity .3s}
+
+/* ── TILES ── */
+.tiles-label{font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);font-weight:700;margin-bottom:10px;text-align:center}
+.tiles-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:16px}
+.tile{padding:14px 16px;background:var(--tile-bg);border:1.5px solid var(--tile-border);border-radius:12px;font-size:.88rem;line-height:1.5;color:var(--text);cursor:pointer;transition:transform .2s,border-color .2s,background .2s,opacity .2s;user-select:none;position:relative}
+.tile:hover:not(.used):not(.wrong-tile){border-color:var(--shield);background:rgba(34,197,94,.08);transform:translateY(-2px)}
+.tile:active:not(.used):not(.wrong-tile){transform:scale(.98)}
+.tile.used{opacity:.35;cursor:default;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05)}
+.tile.used::after{content:'\2714';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--shield);font-weight:800;font-size:1rem}
+.tile.wrong-tile{border-color:var(--danger);background:rgba(239,68,68,.08);animation:wrongShake .4s ease;cursor:default}
+.tile.wrong-tile::after{content:'\2718';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--danger);font-weight:800;font-size:1rem}
+.tile.fly-up{animation:flyToShield .5s ease forwards}
+
+/* ── FEEDBACK TOAST ── */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:#1e293b;border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 20px;font-size:.88rem;font-weight:700;z-index:200;transition:transform .3s ease;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.correct-toast{border-color:rgba(34,197,94,.4);color:var(--shield)}
+.toast.wrong-toast{border-color:rgba(239,68,68,.4);color:var(--danger)}
+
+/* ── RESULTS ── */
+#results{animation:fadeIn .6s ease}
+#results h2{text-align:center;font-size:1.8rem;margin-bottom:4px;background:linear-gradient(135deg,var(--gold-b),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.results-sub{text-align:center;color:var(--text-dim);font-size:.88rem;margin-bottom:20px;line-height:1.5}
+.final-shield{display:flex;justify-content:center;margin-bottom:20px}
+.final-shield svg{filter:drop-shadow(0 4px 40px rgba(255,215,0,.4))}
+.results-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.stat-box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 8px;text-align:center}
+.stat-num{font-size:1.6rem;font-weight:800}
+.stat-num.green{color:var(--success)}
+.stat-num.red{color:var(--danger)}
+.stat-label{font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.principles-review{margin-bottom:20px}
+.principles-review h3{font-size:.82rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.pr-item{padding:10px 14px;background:rgba(255,255,255,.04);border-radius:10px;margin-bottom:6px;font-size:.85rem;line-height:1.5;border-left:3px solid}
+.pr-item.found{border-color:var(--shield);color:var(--text)}
+.pr-item.missed{border-color:var(--danger);color:var(--text-dim)}
+.pr-status{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.pr-status.found{color:var(--shield)}
+.pr-status.missed{color:var(--danger)}
+.retry-btn{width:100%;padding:14px;border:2px solid var(--shield);border-radius:12px;background:transparent;color:var(--shield);font-size:1rem;font-weight:800;cursor:pointer;transition:background .2s,transform .15s;letter-spacing:.5px;margin-bottom:10px}
+.retry-btn:hover{background:rgba(34,197,94,.1);transform:translateY(-1px)}
+.home-link{display:block;text-align:center;color:var(--text-dim);font-size:.82rem;text-decoration:none;padding:8px}
+.home-link:hover{color:var(--text)}
+
+/* ── HIDDEN ── */
+.hidden{display:none!important}
+
+/* ── KEYFRAMES ── */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes wrongShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes flyToShield{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-60px);opacity:.3}}
+@keyframes shieldPulse{0%,100%{filter:drop-shadow(0 4px 40px rgba(255,215,0,.4))}50%{filter:drop-shadow(0 4px 60px rgba(255,215,0,.7))}}
+@keyframes slotPop{0%{transform:scale(1)}50%{transform:scale(1.6)}100%{transform:scale(1.2)}}
+@keyframes celebrateShake{0%,100%{transform:translate(-50%,-50%) rotate(0)}25%{transform:translate(-50%,-50%) rotate(-3deg)}75%{transform:translate(-50%,-50%) rotate(3deg)}}
+
+@media(max-width:500px){
+    .shield-container{width:160px;height:185px}
+    .tile{padding:12px 14px;font-size:.84rem}
+    .placed-num{font-size:2.2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<div class="container">
+
+<!-- ═══ INTRO ═══ -->
+<div id="intro">
+    <div class="shield-intro">
+        <svg viewBox="0 0 100 120">
+            <path d="M50,8 L92,28 L88,75 Q80,100 50,114 Q20,100 12,75 L8,28 Z" fill="rgba(34,197,94,.12)" stroke="#22c55e" stroke-width="2.5"/>
+            <text x="50" y="68" text-anchor="middle" fill="#22c55e" font-size="32" font-weight="900" font-family="sans-serif">&#x1F6E1;</text>
+        </svg>
+    </div>
+    <h1>BUILD THE SHIELD</h1>
+    <p class="tagline">
+        The Data Protection Shield has been shattered! Rebuild it by selecting the <strong>8 correct principles</strong> of the Data Protection Act 1998 from a pool of 16 statements. But beware — half of them are convincing fakes!
+    </p>
+    <p class="sub">8 real principles &bull; 8 fakes &bull; 3 strikes and you're out</p>
+    <button class="start-btn" onclick="startGame()">BUILD THE SHIELD</button>
+</div>
+
+<!-- ═══ GAME ═══ -->
+<div id="game" class="hidden">
+    <div class="top-bar">
+        <span class="placed-count" id="placed-count">0 / 8 principles found</span>
+        <span class="strikes-display" id="strikes-display">Strikes: 0 / 3</span>
+    </div>
+    <p class="instruction">Select the <strong>real principles</strong> of the Data Protection Act 1998. Wrong picks cost you a strike!</p>
+
+    <div class="shield-area">
+        <div class="shield-container">
+            <svg class="shield-svg" id="shield-svg" viewBox="0 0 100 120">
+                <path class="shield-body" d="M50,8 L92,28 L88,75 Q80,100 50,114 Q20,100 12,75 L8,28 Z"/>
+                <!-- Crack lines that disappear as principles are found -->
+                <line class="crack" id="crack1" x1="35" y1="30" x2="50" y2="55" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+                <line class="crack" id="crack2" x1="65" y1="35" x2="55" y2="60" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+                <line class="crack" id="crack3" x1="30" y1="60" x2="48" y2="75" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+                <line class="crack" id="crack4" x1="70" y1="55" x2="55" y2="78" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+                <line class="crack" id="crack5" x1="40" y1="80" x2="50" y2="95" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+                <line class="crack" id="crack6" x1="60" y1="82" x2="52" y2="98" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+                <line class="crack" id="crack7" x1="25" y1="45" x2="40" y2="52" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+                <line class="crack" id="crack8" x1="75" y1="44" x2="62" y2="50" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+            </svg>
+            <div class="slot-markers">
+                <div class="slot-row"><div class="slot-dot" id="slot0"></div><div class="slot-dot" id="slot1"></div></div>
+                <div class="slot-row"><div class="slot-dot" id="slot2"></div><div class="slot-dot" id="slot3"></div></div>
+                <div class="slot-row"><div class="slot-dot" id="slot4"></div><div class="slot-dot" id="slot5"></div></div>
+                <div class="slot-row"><div class="slot-dot" id="slot6"></div><div class="slot-dot" id="slot7"></div></div>
+            </div>
+            <div class="placed-num" id="placed-num">0</div>
+        </div>
+    </div>
+
+    <div class="tiles-label">SELECT THE REAL PRINCIPLES</div>
+    <div class="tiles-grid" id="tiles-grid"></div>
+</div>
+
+<!-- ═══ RESULTS ═══ -->
+<div id="results" class="hidden"></div>
+
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   PRINCIPLES DATA
+   ════════════════════════════════════════ */
+const REAL_PRINCIPLES = [
+    { text: "Personal data should be processed fairly and lawfully", short: "Processed fairly and lawfully" },
+    { text: "Personal data should be used only for the purpose specified", short: "Used for specified purpose only" },
+    { text: "Personal data should be adequate and relevant for its intended purpose", short: "Adequate and relevant" },
+    { text: "Personal data should be accurate and up to date", short: "Accurate and up to date" },
+    { text: "Personal data should not be kept for longer than necessary", short: "Not kept longer than necessary" },
+    { text: "Personal data should be processed in accordance with the rights of the data subject", short: "Processed within data subject's rights" },
+    { text: "Personal data should be held safely and securely", short: "Held safely and securely" },
+    { text: "Personal data should not be transferred outside the European Union without adequate protection", short: "Not transferred outside EU without protection" }
+];
+
+const FAKE_PRINCIPLES = [
+    { text: "Personal data should be collected only with the data subject's written permission", why: "The Act says data should be processed 'fairly and lawfully' — it does not require specifically written permission." },
+    { text: "Personal data must not be transferred outside the United Kingdom", why: "The Act refers to the European Union, not the United Kingdom. Also, transfers are allowed if adequate protection is in place." },
+    { text: "Personal data should be kept for as long as the data controller decides is appropriate", why: "This contradicts the real principle — data should NOT be kept longer than necessary, not for as long as the controller wants." },
+    { text: "Personal data should be stored using encryption at all times", why: "Encryption is a good security practice, but it is not one of the eight principles of the Data Protection Act." },
+    { text: "Personal data should only be accessed by senior management within the organisation", why: "The Act does not restrict access to senior management. It states data should be held safely and securely." },
+    { text: "Personal data should be backed up to at least two separate locations", why: "While good practice, this is not one of the eight principles of the Data Protection Act." },
+    { text: "Personal data should be made available to any organisation that requests it with a valid reason", why: "This contradicts the Act. Data should be used only for the specified purpose and not shared freely." },
+    { text: "Personal data should be reviewed and deleted every twelve months", why: "The Act says data should not be kept 'longer than necessary' — it does not specify a fixed time period like 12 months." }
+];
+
+/* ════════════════════════════════════════
+   GAME STATE
+   ════════════════════════════════════════ */
+let tiles = [];
+let found = 0;
+let strikes = 0;
+const MAX_STRIKES = 3;
+let gameOver = false;
+let foundSet = new Set(); // tracks which real principle indices were found
+
+function $(id) { return document.getElementById(id); }
+
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function showToast(text, type) {
+    const toast = $('toast');
+    toast.textContent = type === 'correct' ? '\u2714 ' + text : '\u2718 ' + text;
+    toast.className = 'toast ' + (type === 'correct' ? 'correct-toast' : 'wrong-toast') + ' show';
+    setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+/* ════════════════════════════════════════
+   GAME FLOW
+   ════════════════════════════════════════ */
+function startGame() {
+    found = 0;
+    strikes = 0;
+    gameOver = false;
+    foundSet = new Set();
+
+    // Build tiles array
+    tiles = [
+        ...REAL_PRINCIPLES.map((p, i) => ({ text: p.text, real: true, realIdx: i })),
+        ...FAKE_PRINCIPLES.map((p, i) => ({ text: p.text, real: false, why: p.why }))
+    ];
+    tiles = shuffle(tiles);
+
+    $('intro').classList.add('hidden');
+    $('game').classList.remove('hidden');
+    $('results').classList.add('hidden');
+
+    updateUI();
+    renderTiles();
+}
+
+function updateUI() {
+    $('placed-count').textContent = `${found} / 8 principles found`;
+    $('strikes-display').textContent = `Strikes: ${strikes} / ${MAX_STRIKES}`;
+    $('placed-num').textContent = found;
+
+    // Update shield glow
+    const svg = $('shield-svg');
+    svg.classList.toggle('glow', found >= 4);
+
+    // Update slot dots
+    for (let i = 0; i < 8; i++) {
+        const dot = $('slot' + i);
+        dot.classList.toggle('filled', i < found);
+        if (i === found - 1 && found > 0) {
+            dot.style.animation = 'slotPop .35s ease';
+            setTimeout(() => dot.style.animation = '', 400);
+        }
+    }
+
+    // Hide cracks as principles are found
+    for (let i = 1; i <= 8; i++) {
+        const crack = $('crack' + i);
+        if (crack) crack.style.opacity = i <= found ? '0' : '1';
+    }
+}
+
+function renderTiles() {
+    const grid = $('tiles-grid');
+    grid.innerHTML = '';
+    tiles.forEach((tile, idx) => {
+        const div = document.createElement('div');
+        div.className = 'tile';
+        div.textContent = tile.text;
+        div.dataset.idx = idx;
+        div.addEventListener('click', () => selectTile(idx, div));
+        div.style.animation = `slideUp .35s ease ${idx * 0.04}s both`;
+        grid.appendChild(div);
+    });
+}
+
+function selectTile(idx, el) {
+    if (gameOver || el.classList.contains('used') || el.classList.contains('wrong-tile')) return;
+
+    const tile = tiles[idx];
+
+    if (tile.real) {
+        // CORRECT!
+        found++;
+        foundSet.add(tile.realIdx);
+        el.classList.add('used');
+        showToast('Correct! That\'s a real principle.', 'correct');
+        updateUI();
+
+        if (found === 8) {
+            // ALL FOUND — WIN!
+            gameOver = true;
+            const svg = $('shield-svg');
+            svg.classList.add('complete');
+            showToast('DATA PROTECTED! Shield complete!', 'correct');
+            setTimeout(() => showResults(true), 1500);
+        }
+    } else {
+        // WRONG!
+        strikes++;
+        el.classList.add('wrong-tile');
+        showToast(tile.why, 'wrong');
+        updateUI();
+
+        if (strikes >= MAX_STRIKES) {
+            // TOO MANY STRIKES — GAME OVER
+            gameOver = true;
+            showToast('Too many strikes! Shield broken.', 'wrong');
+            setTimeout(() => showResults(false), 1500);
+        }
+    }
+}
+
+/* ════════════════════════════════════════
+   RESULTS
+   ════════════════════════════════════════ */
+function showResults(won) {
+    $('game').classList.add('hidden');
+    const r = $('results');
+    r.classList.remove('hidden');
+
+    const shieldColor = won ? '#22c55e' : '#ef4444';
+    const shieldFill = won ? 'rgba(34,197,94,.2)' : 'rgba(239,68,68,.08)';
+    const shieldIcon = won ? '\u2714' : '\u2718';
+
+    let verdict = '';
+    if (won && strikes === 0) verdict = "Flawless! You know the Data Protection Act inside out!";
+    else if (won) verdict = `Shield complete with ${strikes} strike${strikes !== 1 ? 's' : ''}. Solid knowledge!`;
+    else verdict = `Shield broken! You found ${found} of 8 principles. Time to revise!`;
+
+    r.innerHTML = `
+        <h2>${won ? 'DATA PROTECTED!' : 'SHIELD BROKEN'}</h2>
+        <p class="results-sub">${verdict}</p>
+        <div class="final-shield">
+            <svg viewBox="0 0 100 120" width="120">
+                <path d="M50,8 L92,28 L88,75 Q80,100 50,114 Q20,100 12,75 L8,28 Z" fill="${shieldFill}" stroke="${shieldColor}" stroke-width="2.5"/>
+                <text x="50" y="72" text-anchor="middle" fill="${shieldColor}" font-size="36" font-weight="900" font-family="sans-serif">${found}</text>
+                <text x="50" y="88" text-anchor="middle" fill="${shieldColor}" font-size="10" font-family="sans-serif">/8</text>
+            </svg>
+        </div>
+        <div class="results-stats">
+            <div class="stat-box"><div class="stat-num green">${found}</div><div class="stat-label">Found</div></div>
+            <div class="stat-box"><div class="stat-num red">${strikes}</div><div class="stat-label">Strikes</div></div>
+        </div>
+        <div class="principles-review">
+            <h3>The 8 Principles</h3>
+            ${REAL_PRINCIPLES.map((p, i) => `
+                <div class="pr-item ${foundSet.has(i) ? 'found' : 'missed'}">
+                    <div class="pr-status ${foundSet.has(i) ? 'found' : 'missed'}">${foundSet.has(i) ? '\u2714 Found' : '\u2718 Missed'}</div>
+                    ${p.text}
+                </div>
+            `).join('')}
+        </div>
+        <button class="retry-btn" onclick="startGame()">&#x1F504; TRY AGAIN</button>
+        <a href="index.html" class="home-link">&larr; Back to Activities</a>
+    `;
+}
+</script>
+</body>
+</html>

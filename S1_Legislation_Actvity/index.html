@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S2 Legislation - Interactive Activities</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+    --bg-1:#0d0b1e;--bg-2:#16132b;--bg-3:#1e1a36;
+    --gold:#d4a017;--gold-b:#ffd700;
+    --text:#f0ece2;--text-dim:#a09bb5;
+}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;min-height:100vh;color:var(--text);background:radial-gradient(circle at 20% 15%,rgba(139,92,246,.15),transparent 30%),radial-gradient(circle at 80% 10%,rgba(212,160,23,.15),transparent 30%),radial-gradient(circle at 50% 85%,rgba(239,68,68,.12),transparent 35%),linear-gradient(140deg,var(--bg-1),var(--bg-2) 45%,var(--bg-3));overflow-x:hidden}
+
+canvas#starfield{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+.container{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:40px 20px}
+
+header{text-align:center;margin-bottom:40px}
+.badge{display:inline-block;background:linear-gradient(135deg,#1a1636,#2d2458);border:1px solid rgba(139,92,246,.4);color:#d8d0ff;font-size:.74rem;letter-spacing:2px;text-transform:uppercase;padding:7px 16px;border-radius:999px;font-weight:700;margin-bottom:14px}
+header h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.1;margin-bottom:10px;background:linear-gradient(135deg,#f1f7ff,var(--gold-b),#ff6b35);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header p{max-width:650px;margin:0 auto;color:var(--text-dim);line-height:1.65;font-size:1rem}
+
+.summary-banner{max-width:900px;margin:0 auto 28px;background:rgba(255,255,255,.05);border:1px solid rgba(212,160,23,.25);border-radius:12px;padding:14px 18px;text-align:center;font-size:.88rem;color:#d2dce7}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:20px}
+
+.card{display:flex;flex-direction:column;text-decoration:none;color:inherit;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:22px;min-height:260px;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:var(--card-gradient)}
+.card:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.3);box-shadow:0 16px 45px rgba(0,0,0,.35)}
+
+.card-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.icon{width:54px;height:54px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;background:var(--card-gradient);color:#0d0b1e;box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.activity-num{font-size:.72rem;letter-spacing:2px;color:#a7b8dd;text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.card h2{font-size:1.35rem;margin-bottom:8px}
+.card p{color:var(--text-dim);line-height:1.55;font-size:.9rem;margin-bottom:16px;flex:1}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+.tag{padding:4px 9px;border-radius:999px;font-size:.72rem;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#d8e4fb}
+.play{align-self:flex-start;padding:10px 18px;border-radius:999px;font-weight:800;font-size:.82rem;letter-spacing:.6px;color:#0d0b1e;background:var(--card-gradient)}
+
+footer{margin-top:40px;text-align:center;color:#8b97b5;font-size:.82rem;opacity:.8}
+
+@media(max-width:700px){.container{padding:28px 14px}}
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+
+<div class="container">
+    <header>
+        <div class="badge">CCEA GCSE Digital Technology</div>
+        <h1>Legislation</h1>
+        <p>
+            Interactive revision activities covering the four key laws in the Ethical, Legal and Environmental Impact unit.
+            Play in order or jump to the activity you want to practise.
+        </p>
+    </header>
+
+    <div class="summary-banner">
+        Covers: Computer Misuse Act 1990 &bull; Copyright, Designs &amp; Patents Act 1988 &bull; Data Protection Act 1998 &bull; Consumer Contracts Regulations 2013
+    </div>
+
+    <div class="grid">
+        <a class="card" href="activity1.html" style="--card-gradient:linear-gradient(135deg,#d4a017,#ffd700);">
+            <div class="card-header">
+                <div class="icon">&#x2696;&#xFE0F;</div>
+                <div>
+                    <div class="activity-num">Activity 1</div>
+                    <h2>Order in the Court!</h2>
+                </div>
+            </div>
+            <p>
+                You are the jury! Read each case, deliver your verdict &mdash; GUILTY or NOT GUILTY &mdash; and identify which law has been broken. The judge is watching...
+            </p>
+            <div class="tags">
+                <span class="tag">Courtroom roleplay</span>
+                <span class="tag">12 cases</span>
+                <span class="tag">Identify the law</span>
+            </div>
+            <div class="play">PLAY &#x2192;</div>
+        </a>
+
+        <a class="card" href="activity2.html" style="--card-gradient:linear-gradient(135deg,#22c55e,#86efac);">
+            <div class="card-header">
+                <div class="icon">&#x1F6E1;&#xFE0F;</div>
+                <div>
+                    <div class="activity-num">Activity 2</div>
+                    <h2>Build the Shield</h2>
+                </div>
+            </div>
+            <p>
+                The Data Protection Shield is broken! Select the 8 real principles from a pool of 16 statements to rebuild it. But pick a fake and you'll earn a strike &mdash; three strikes and it shatters!
+            </p>
+            <div class="tags">
+                <span class="tag">DPA principles</span>
+                <span class="tag">Spot the fakes</span>
+                <span class="tag">3 strikes</span>
+            </div>
+            <div class="play">PLAY &#x2192;</div>
+        </a>
+
+        <a class="card" href="activity3.html" style="--card-gradient:linear-gradient(135deg,#ef4444,#ff6b35);">
+            <div class="card-header">
+                <div class="icon">&#x26A1;</div>
+                <div>
+                    <div class="activity-num">Activity 3</div>
+                    <h2>Speed Trial</h2>
+                </div>
+            </div>
+            <p>
+                60 seconds on the clock! Scenarios flash up and you must identify which law applies as fast as you can. Build streaks for bonus points, but wrong answers cost you!
+            </p>
+            <div class="tags">
+                <span class="tag">60-second challenge</span>
+                <span class="tag">Streak bonuses</span>
+                <span class="tag">All 4 laws</span>
+            </div>
+            <div class="play">PLAY &#x2192;</div>
+        </a>
+    </div>
+
+    <footer>
+        CCEA GCSE Digital Technology &bull; Ethical, Legal &amp; Environmental Impact &bull; Offline HTML activities
+    </footer>
+</div>
+
+<script>
+const canvas=document.getElementById('starfield');const ctx=canvas.getContext('2d');let dots=[];
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+function seed(){dots=[];const count=Math.max(40,Math.floor(window.innerWidth/20));for(let i=0;i<count;i++){dots.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.8+.5,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,c:Math.random()>.7?'#ffd700':Math.random()>.4?'#8b5cf6':'#a09bb5'})}}
+function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);dots.forEach(d=>{d.x+=d.vx;d.y+=d.vy;if(d.x<0||d.x>canvas.width)d.vx*=-1;if(d.y<0||d.y>canvas.height)d.vy*=-1;ctx.globalAlpha=.6;ctx.fillStyle=d.c;ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);ctx.fill()});requestAnimationFrame(animate)}
+resize();seed();animate();window.addEventListener('resize',()=>{resize();seed()});
+</script>
+</body>
+</html>
