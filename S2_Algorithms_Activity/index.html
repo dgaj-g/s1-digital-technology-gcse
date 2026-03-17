@@ -110,6 +110,7 @@ body{
 }
 .card.kitchen::before{background:linear-gradient(90deg,#E8652B,#F59E0B)}
 .card.architect::before{background:linear-gradient(90deg,#2563EB,#38BDF8)}
+.card.detective::before{background:linear-gradient(90deg,#16A34A,#22C55E)}
 .card.tracker::before{background:linear-gradient(90deg,#7C3AED,#A78BFA)}
 
 .card-emoji{font-size:2.8rem;margin-bottom:12px;display:block}
@@ -125,6 +126,7 @@ body{
 }
 .card.kitchen .card-num{background:#FFF7ED;color:#C2410C}
 .card.architect .card-num{background:#EFF6FF;color:#1D4ED8}
+.card.detective .card-num{background:#F0FFF4;color:#15803D}
 .card.tracker .card-num{background:#F5F3FF;color:#6D28D9}
 
 .card h2{
@@ -135,6 +137,7 @@ body{
 }
 .card.kitchen h2{color:#E8652B}
 .card.architect h2{color:#2563EB}
+.card.detective h2{color:#16A34A}
 .card.tracker h2{color:#7C3AED}
 
 .card .desc{
@@ -168,6 +171,7 @@ body{
 }
 .card.kitchen .card-btn{background:linear-gradient(135deg,#E8652B,#F59E0B)}
 .card.architect .card-btn{background:linear-gradient(135deg,#2563EB,#38BDF8)}
+.card.detective .card-btn{background:linear-gradient(135deg,#16A34A,#22C55E)}
 .card.tracker .card-btn{background:linear-gradient(135deg,#7C3AED,#A78BFA)}
 .card-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.15)}
 
@@ -219,7 +223,7 @@ body{
     <div class="badge">CCEA GCSE Digital Technology</div>
     <h1>S2 <span>Algorithms</span></h1>
     <p>Create and evaluate algorithms including sequence, selection, and iteration.
-       Three interactive activities to master pseudocode!</p>
+       Four interactive activities to master pseudocode!</p>
     <div class="topics">
         <span class="topic-pill seq">Sequence</span>
         <span class="topic-pill sel">Selection</span>
@@ -258,10 +262,24 @@ body{
         <span class="card-btn">Start Building →</span>
     </a>
 
-    <!-- Activity 3: The Variable Tracker -->
-    <a class="card tracker" href="activity3.html">
+    <!-- Activity 3: Loop Detective -->
+    <a class="card detective" href="activity3.html">
         <span class="card-emoji">🔍</span>
         <span class="card-num">Activity 3</span>
+        <h2>Loop Detective</h2>
+        <p class="desc">The loop keywords have been redacted! Study the code structure and crack each case — is it a FOR, WHILE, or DO WHILE loop?</p>
+        <div class="card-tags">
+            <span class="card-tag">Iteration</span>
+            <span class="card-tag">12 Cases</span>
+            <span class="card-tag">Redacted Code</span>
+        </div>
+        <span class="card-btn">Start Investigating →</span>
+    </a>
+
+    <!-- Activity 4: The Variable Tracker -->
+    <a class="card tracker" href="activity4.html">
+        <span class="card-emoji">📊</span>
+        <span class="card-num">Activity 4</span>
         <h2>The Variable Tracker</h2>
         <p class="desc">Step through algorithms line by line, tracking what each variable equals. Master trace tables for loops, conditions and calculations!</p>
         <div class="card-tags">

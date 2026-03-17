@@ -3,1116 +3,424 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Variable Tracker - S2 Algorithms</title>
+<title>Loop Detective - S2 Algorithms</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-    --bg:#F8F9FA;
-    --card:#FFFFFF;
-    --card-border:#E2E8F0;
-    --primary:#7C3AED;--primary-light:#A78BFA;--primary-pale:#F3EEFA;
-    --blue:#2563EB;--blue-pale:#EFF6FF;
-    --green:#16A34A;--green-light:#4ADE80;--green-pale:#F0FDF4;
-    --gold:#D97706;--gold-bg:rgba(217,119,6,.12);
-    --orange:#EA580C;
-    --danger:#DC2626;--danger-pale:#FEF2F2;
-    --text:#1E293B;--text-dim:#64748B;--text-light:#94A3B8;
-    --code-bg:#FFFFFF;--code-border:#E2E8F0;
-    --line-highlight:#FEF3C7;--line-executed:#F0FDF4;--line-skipped:#F1F5F9;
-    --mono:'Consolas','Monaco','Courier New',monospace;
+    --bg:#F0FFF4;--bg2:#DCFCE7;
+    --card:#FFFFFF;--card-border:#BBF7D0;
+    --primary:#16A34A;--primary-light:#22C55E;--primary-pale:#F0FFF4;
+    --green:#2ecc71;--green-pale:#EDFAF2;
+    --gold:#D4A017;--gold-light:#FFD700;--gold-pale:#FFF9E6;
+    --red:#e74c3c;--red-pale:#FDECEC;
+    --text:#1A2E1A;--text-dim:#6B8F6B;--text-light:#A3C4A3;
+    --danger:#D32F2F;--danger-pale:#FDECEC;
+    --code-bg:#1E293B;--code-text:#E2E8F0;
+    --redacted:#E8652B;
 }
-body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-.container{max-width:750px;margin:0 auto;padding:24px 16px}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.container{max-width:700px;margin:0 auto;padding:24px 16px}
 .hidden{display:none!important}
 
-/* ── ANIMATIONS ── */
-@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes glitch{0%{transform:translate(0)}10%{transform:translate(-3px,2px)}20%{transform:translate(3px,-2px)}30%{transform:translate(-2px,3px)}40%{transform:translate(2px,-3px)}50%{transform:translate(-3px,1px)}60%{transform:translate(3px,2px)}70%{transform:translate(-1px,-3px)}80%{transform:translate(2px,3px)}90%{transform:translate(-3px,-1px)}100%{transform:translate(0)}}
-@keyframes pointerBlink{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes scanline{0%{top:-100%}100%{top:100%}}
-@keyframes popIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
-@keyframes starPop{0%{transform:scale(0) rotate(-30deg);opacity:0}60%{transform:scale(1.3) rotate(10deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
-@keyframes checkFlash{0%{background:var(--green-pale)}50%{background:#BBF7D0}100%{background:var(--green-pale)}}
-@keyframes wobble{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+/* ── HOME LINK ── */
+.home-btn{display:inline-block;color:var(--text-dim);text-decoration:none;font-size:.85rem;font-weight:600;margin-bottom:18px;padding:6px 0;transition:color .2s}
+.home-btn:hover{color:var(--primary)}
 
 /* ── INTRO ── */
 #intro{text-align:center;animation:fadeIn .5s ease}
-.intro-icon{font-size:4.5rem;margin-bottom:8px;display:block;animation:wobble 2s ease-in-out infinite}
-#intro h1{font-size:clamp(1.8rem,6vw,2.6rem);color:var(--primary);margin-bottom:6px;font-weight:900;letter-spacing:1px}
-#intro .tagline{color:var(--text-dim);font-size:1rem;line-height:1.65;margin-bottom:6px;max-width:560px;margin-left:auto;margin-right:auto}
+.detective-icon{font-size:4.5rem;margin-bottom:8px;display:block;animation:wobble 2s ease-in-out infinite}
+#intro h1{font-size:clamp(1.8rem,6vw,2.6rem);color:var(--primary);margin-bottom:6px;font-weight:900;letter-spacing:.5px}
+#intro .tagline{color:var(--text-dim);font-size:1rem;line-height:1.65;margin-bottom:6px;max-width:520px;margin-left:auto;margin-right:auto}
 #intro .sub{color:var(--text-light);font-size:.82rem;margin-bottom:28px}
-.start-btn{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;padding:16px 44px;border-radius:999px;font-size:1.1rem;font-weight:800;cursor:pointer;letter-spacing:.5px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(124,58,237,.3)}
-.start-btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 8px 28px rgba(124,58,237,.4)}
+.start-btn{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;padding:16px 44px;border-radius:999px;font-size:1.1rem;font-weight:800;cursor:pointer;letter-spacing:.5px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(22,163,74,.3)}
+.start-btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 8px 28px rgba(22,163,74,.4)}
 
 /* ── TOP BAR ── */
-.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:10px 16px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.algo-counter{color:var(--text-dim);font-weight:700;font-size:.85rem}
-.stars-display{color:var(--gold);font-size:1.1rem;letter-spacing:2px}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:10px 16px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);flex-wrap:wrap;gap:6px}
+.case-counter{color:var(--text-dim);font-weight:700;font-size:.85rem}
+.score-display{font-weight:800;font-size:.95rem;color:var(--primary)}
+.streak-display{font-size:.85rem;font-weight:700;color:var(--gold)}
 .progress-track{width:100%;height:5px;background:var(--card-border);border-radius:99px;margin-top:10px}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-light));border-radius:99px;transition:width .4s ease}
 
-/* ── ALGORITHM HEADER ── */
-.algo-header{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:18px 20px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.05);position:relative;overflow:hidden}
-.algo-header::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary),var(--blue),var(--green))}
-.algo-title-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-.algo-emoji{font-size:1.6rem}
-.algo-name{font-size:1.15rem;font-weight:800;color:var(--primary)}
-.algo-stars{margin-left:auto;font-size:1rem;letter-spacing:2px;color:var(--text-light)}
-.algo-desc{color:var(--text-dim);font-size:.88rem;line-height:1.5;margin-bottom:8px}
-.given-values{display:inline-block;background:var(--blue-pale);color:var(--blue);font-family:var(--mono);font-size:.82rem;font-weight:700;padding:5px 14px;border-radius:8px;border:1px solid #BFDBFE}
-.array-display{margin-top:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.array-label{font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--primary)}
-.array-cell{width:46px;height:34px;display:flex;align-items:center;justify-content:center;background:var(--card);border:2px solid var(--card-border);border-radius:6px;font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--text);transition:all .3s}
-.array-cell.active{border-color:var(--primary);background:var(--primary-pale);color:var(--primary)}
-.array-idx{font-size:.6rem;color:var(--text-light);text-align:center;width:46px;font-family:var(--mono)}
-.array-indices{display:flex;gap:6px;margin-left:0}
+/* ── QUESTION CARD ── */
+.question-card{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.05);position:relative;overflow:hidden;animation:slideIn .35s ease}
+.question-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary),var(--gold))}
 
-/* ── CODE PANEL ── */
-.code-panel{background:var(--code-bg);border:1px solid var(--code-border);border-radius:14px;overflow:hidden;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
-.code-titlebar{background:#F1F5F9;border-bottom:1px solid var(--card-border);padding:8px 14px;display:flex;align-items:center;gap:8px}
-.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
-.dot-red{background:#EF4444}
-.dot-yellow{background:#F59E0B}
-.dot-green{background:#22C55E}
-.code-filename{margin-left:8px;font-family:var(--mono);font-size:.75rem;color:var(--text-dim);font-weight:600}
-.code-body{padding:4px 0;position:relative;overflow:hidden}
-.code-line{display:flex;align-items:center;padding:3px 14px 3px 0;min-height:30px;transition:background .3s,border-color .3s;border-left:4px solid transparent;position:relative}
-.code-line .line-num{width:36px;text-align:right;font-family:var(--mono);font-size:.72rem;color:var(--text-light);padding-right:12px;flex-shrink:0;user-select:none}
-.code-line .line-text{font-family:var(--mono);font-size:.82rem;font-weight:600;flex:1;white-space:pre;line-height:1.5}
-.code-line.highlight{background:var(--line-highlight);border-left-color:var(--gold)}
-.code-line.highlight::after{content:'';position:absolute;right:12px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:var(--gold);animation:pointerBlink 1s ease-in-out infinite;box-shadow:0 0 8px rgba(217,119,6,.5)}
-.code-line.executed{background:var(--line-executed);border-left-color:var(--green)}
-.code-line.skipped{background:var(--line-skipped);border-left-color:transparent}
-.code-line.skipped .line-text{opacity:.35;text-decoration:line-through;text-decoration-color:var(--text-light)}
-.iteration-badge{display:inline-flex;align-items:center;gap:4px;background:var(--primary-pale);color:var(--primary);font-family:var(--mono);font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:6px;margin:4px 14px 4px 40px;border:1px solid #DDD6FE}
+/* Code type badge */
+.type-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px}
+.type-badge.code-badge{background:#1E293B;color:#94A3B8}
+.type-badge.scenario-badge{background:var(--green-pale);color:var(--primary);border:1px solid var(--card-border)}
 
-/* Syntax highlighting */
-.kw{color:#2563EB;font-weight:800}
-.str{color:#16A34A}
-.num{color:#EA580C}
-.vr{color:#7C3AED}
-.op{color:#64748B}
-.cm{color:#94A3B8;font-style:italic}
+/* Code block */
+.code-block{background:var(--code-bg);border-radius:12px;padding:18px 20px;margin-bottom:6px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.code-block pre{font-family:'Courier New',Courier,monospace;font-size:.88rem;line-height:1.8;color:var(--code-text);white-space:pre;tab-size:4}
+.redacted{background:var(--redacted);color:var(--redacted);border-radius:4px;padding:2px 8px;font-weight:900;letter-spacing:-1px;user-select:none;display:inline-block}
 
-/* ── TRACE TABLE ── */
-.trace-section{background:var(--card);border:1px solid var(--card-border);border-radius:14px;overflow:hidden;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
-.trace-titlebar{background:#F1F5F9;border-bottom:1px solid var(--card-border);padding:8px 14px;font-weight:700;font-size:.8rem;color:var(--text-dim);display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:1.5px}
-.trace-table-wrap{overflow-x:auto;padding:0}
-.trace-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.8rem}
-.trace-table th{background:#F8FAFC;padding:8px 10px;text-align:center;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);border-bottom:2px solid var(--card-border);white-space:nowrap}
-.trace-table td{padding:6px 8px;text-align:center;border-bottom:1px solid #F1F5F9;vertical-align:middle;white-space:nowrap}
-.trace-table tr.completed-row td{background:var(--green-pale);color:var(--green)}
-.trace-table tr.completed-row td .check-mark{display:inline}
-.trace-table tr.active-row td{background:#FFFBEB}
-.trace-table tr.future-row td{color:var(--text-light)}
-.trace-input{width:70px;padding:4px 6px;border:2px solid var(--card-border);border-radius:6px;font-family:var(--mono);font-size:.8rem;font-weight:700;text-align:center;color:var(--text);background:#FFFBEB;transition:border-color .2s}
-.trace-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(124,58,237,.15)}
-.trace-input.correct{border-color:var(--green);background:var(--green-pale);color:var(--green)}
-.trace-input.wrong{border-color:var(--danger);background:var(--danger-pale);color:var(--danger);animation:glitch .3s ease}
-.trace-dash{color:var(--text-light);font-weight:400}
-.trace-val{font-weight:700;color:var(--green)}
-.step-label{font-weight:800;color:var(--primary);font-size:.75rem}
-.line-label{font-size:.7rem;color:var(--text-dim);max-width:130px;overflow:hidden;text-overflow:ellipsis}
+/* Scenario block */
+.scenario-block{background:var(--bg2);border:1px solid var(--card-border);border-radius:12px;padding:18px 20px;margin-bottom:6px;font-size:.95rem;line-height:1.7;color:var(--text)}
+.scenario-block .scenario-icon{font-size:1.6rem;display:block;margin-bottom:8px}
 
-/* ── CHECKPOINT PROMPT ── */
-.checkpoint-area{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.05);animation:slideDown .3s ease}
-.checkpoint-prompt{font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.5}
-.checkpoint-fields{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
-.field-group{display:flex;align-items:center;gap:6px}
-.field-label{font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--primary);min-width:50px;text-align:right}
-.field-equals{color:var(--text-dim);font-weight:700}
-.field-input{width:90px;padding:8px 10px;border:2px solid var(--card-border);border-radius:8px;font-family:var(--mono);font-size:.88rem;font-weight:700;color:var(--text);background:#FFFBEB;transition:all .2s}
-.field-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(124,58,237,.15)}
-.field-input.correct{border-color:var(--green);background:var(--green-pale);color:var(--green)}
-.field-input.wrong{border-color:var(--danger);background:var(--danger-pale);color:var(--danger)}
-.step-btn{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;padding:12px 32px;border-radius:10px;font-size:.92rem;font-weight:800;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 3px 12px rgba(124,58,237,.25);display:flex;align-items:center;gap:8px;margin:0 auto}
-.step-btn:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(124,58,237,.35)}
-.step-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
-.next-algo-btn{background:linear-gradient(135deg,var(--green),var(--green-light));box-shadow:0 3px 12px rgba(22,163,74,.25)}
-.next-algo-btn:hover{box-shadow:0 5px 18px rgba(22,163,74,.35)}
+.question-prompt{font-size:.88rem;color:var(--text-dim);font-weight:600;margin-top:10px;margin-bottom:0}
+
+/* ── ANSWER BUTTONS ── */
+.answers{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.answer-btn{display:flex;align-items:center;gap:14px;padding:16px 20px;background:var(--card);border:2px solid var(--card-border);border-radius:14px;cursor:pointer;transition:all .2s;font-family:inherit;font-size:1rem;text-align:left;position:relative;overflow:hidden}
+.answer-btn:hover{border-color:var(--primary);background:var(--primary-pale);transform:translateY(-1px);box-shadow:0 4px 14px rgba(22,163,74,.12)}
+.answer-btn:active{transform:scale(.98)}
+.answer-btn .btn-emoji{font-size:1.6rem;flex-shrink:0}
+.answer-btn .btn-text{display:flex;flex-direction:column}
+.answer-btn .btn-label{font-weight:800;color:var(--text);font-size:1rem}
+.answer-btn .btn-hint{font-size:.78rem;color:var(--text-dim);font-weight:500;margin-top:1px}
+.answer-btn.correct{border-color:var(--green)!important;background:var(--green-pale)!important}
+.answer-btn.wrong{border-color:var(--red)!important;background:var(--red-pale)!important;animation:shake .4s ease}
+.answer-btn.disabled{pointer-events:none;opacity:.5}
+.answer-btn.correct .btn-label{color:var(--green)}
+.answer-btn.wrong .btn-label{color:var(--red)}
 
 /* ── FEEDBACK ── */
-.feedback{padding:12px 16px;border-radius:10px;font-weight:700;font-size:.88rem;text-align:center;margin-bottom:14px;animation:popIn .3s ease}
-.feedback.success{background:var(--green-pale);color:var(--green);border:1px solid #BBF7D0}
-.feedback.error{background:var(--danger-pale);color:var(--danger);border:1px solid #FECACA}
-.feedback.complete{background:var(--primary-pale);color:var(--primary);border:1px solid #DDD6FE}
-.segfault{font-family:var(--mono);font-size:1.1rem;font-weight:900;letter-spacing:2px;animation:glitch .4s ease}
+.feedback-panel{border-radius:14px;padding:18px 20px;margin-bottom:16px;animation:slideIn .3s ease}
+.feedback-panel.correct-fb{background:var(--green-pale);border:1px solid #A7F3D0}
+.feedback-panel.wrong-fb{background:var(--red-pale);border:1px solid #FCA5A5}
+.feedback-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:800;font-size:1rem}
+.feedback-header.correct-hd{color:#15803D}
+.feedback-header.wrong-hd{color:var(--danger)}
+.feedback-explanation{font-size:.88rem;line-height:1.65;color:var(--text)}
+.next-btn{display:block;margin:14px auto 0;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;padding:12px 36px;border-radius:999px;font-size:.95rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 3px 14px rgba(22,163,74,.25)}
+.next-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(22,163,74,.35)}
 
-/* ── ALGO COMPLETE ── */
-.algo-complete{text-align:center;padding:24px;animation:fadeIn .4s ease}
-.algo-complete h3{font-size:1.3rem;color:var(--primary);margin-bottom:8px}
-.algo-complete .stars-earned{font-size:2.5rem;margin:10px 0;letter-spacing:4px}
-.algo-complete .stars-earned span{display:inline-block;animation:starPop .4s ease forwards;opacity:0}
-.algo-complete .stars-earned span:nth-child(1){animation-delay:.1s}
-.algo-complete .stars-earned span:nth-child(2){animation-delay:.3s}
-.algo-complete .stars-earned span:nth-child(3){animation-delay:.5s}
-.algo-complete p{color:var(--text-dim);font-size:.9rem;margin-bottom:16px}
+/* ── FLOATING SCORE ── */
+.float-score{position:fixed;font-size:1.6rem;font-weight:900;pointer-events:none;z-index:999;animation:floatUp 1s ease-out forwards}
+.float-score.plus{color:var(--green)}
+.float-score.minus{color:var(--red)}
 
 /* ── RESULTS ── */
 #results{text-align:center;animation:fadeIn .5s ease}
-.results-icon{font-size:4rem;margin-bottom:10px;display:block}
-#results h2{font-size:clamp(1.5rem,5vw,2.2rem);color:var(--primary);margin-bottom:4px;font-weight:900}
-.rank-title{font-size:1.1rem;color:var(--text-dim);font-weight:700;margin-bottom:20px}
-.total-stars{font-size:2.8rem;letter-spacing:3px;margin-bottom:20px}
-.total-stars span{display:inline-block;animation:starPop .4s ease forwards;opacity:0}
-.results-breakdown{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;text-align:left}
-.result-row{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--card);border:1px solid var(--card-border);border-radius:10px}
-.result-emoji{font-size:1.2rem;flex-shrink:0}
-.result-name{flex:1;font-weight:700;font-size:.88rem;color:var(--text)}
-.result-stars{font-size:1rem;letter-spacing:2px;flex-shrink:0}
-.result-errors{font-size:.72rem;color:var(--text-dim);flex-shrink:0}
-.btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.secondary-btn{background:var(--card);color:var(--primary);border:2px solid var(--primary);padding:12px 28px;border-radius:10px;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .2s}
-.secondary-btn:hover{background:var(--primary-pale)}
+.results-card{background:var(--card);border:1px solid var(--card-border);border-radius:20px;padding:32px 24px;box-shadow:0 4px 24px rgba(0,0,0,.06);position:relative;overflow:hidden}
+.results-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--primary),var(--gold),var(--green))}
+.result-badge{font-size:4rem;display:block;margin-bottom:8px;animation:popIn .5s ease}
+.result-rank{font-size:1.5rem;font-weight:900;color:var(--primary);margin-bottom:4px}
+.result-score{font-size:1.1rem;color:var(--text-dim);margin-bottom:16px}
+.stars-row{font-size:1.5rem;letter-spacing:4px;margin-bottom:20px;display:block}
+.score-breakdown{display:flex;justify-content:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.breakdown-item{text-align:center}
+.breakdown-num{font-size:1.8rem;font-weight:900;display:block}
+.breakdown-num.green{color:var(--green)}
+.breakdown-num.red{color:var(--red)}
+.breakdown-label{font-size:.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;font-weight:700}
+
+/* Revision box */
+.revision-box{background:var(--bg2);border:1px solid var(--card-border);border-radius:14px;padding:18px;margin-top:20px;text-align:left}
+.revision-box h3{font-size:.85rem;font-weight:800;color:var(--primary);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
+.revision-box ul{list-style:none;padding:0}
+.revision-box li{font-size:.85rem;color:var(--text);line-height:1.6;padding:4px 0;padding-left:20px;position:relative}
+.revision-box li::before{content:'';position:absolute;left:0;top:11px;width:8px;height:8px;border-radius:50%;background:var(--primary)}
+
+.result-btns{display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap}
+.retry-btn{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;padding:14px 36px;border-radius:999px;font-size:1rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 3px 14px rgba(22,163,74,.25)}
+.retry-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(22,163,74,.35)}
+.back-btn{background:var(--card);color:var(--primary);border:2px solid var(--card-border);padding:14px 36px;border-radius:999px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center}
+.back-btn:hover{border-color:var(--primary);background:var(--primary-pale)}
+
+/* ── CONFETTI ── */
+.confetti-piece{position:fixed;width:10px;height:10px;top:-20px;z-index:9999;pointer-events:none;animation:confettiFall linear forwards}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes wobble{0%,100%{transform:rotate(0)}15%{transform:rotate(8deg)}30%{transform:rotate(-6deg)}45%{transform:rotate(4deg)}60%{transform:rotate(-2deg)}75%{transform:rotate(1deg)}}
+@keyframes popIn{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-80px)}}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(105vh) rotate(720deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes greenFlash{0%{box-shadow:0 0 0 0 rgba(46,204,113,.4)}100%{box-shadow:0 0 0 20px rgba(46,204,113,0)}}
 
 /* ── RESPONSIVE ── */
-@media(max-width:600px){
+@media(max-width:500px){
     .container{padding:16px 10px}
-    .checkpoint-fields{flex-direction:column}
-    .field-group{width:100%}
-    .field-input{flex:1}
-    .trace-table{font-size:.72rem}
-    .trace-input{width:55px;font-size:.72rem}
-    .code-line .line-text{font-size:.74rem}
-    .array-cell{width:38px;height:28px;font-size:.72rem}
+    .top-bar{padding:8px 10px}
+    .question-card{padding:16px 14px}
+    .code-block{padding:14px}
+    .code-block pre{font-size:.78rem}
+    .answer-btn{padding:14px 16px}
+    .answer-btn .btn-emoji{font-size:1.3rem}
+    .answer-btn .btn-label{font-size:.92rem}
+    .score-breakdown{gap:16px}
 }
 </style>
 </head>
 <body>
 <div class="container">
 
-<!-- ═══ INTRO SCREEN ═══ -->
+<!-- ═══════════ INTRO SCREEN ═══════════ -->
 <div id="intro">
-    <span class="intro-icon">🔍</span>
-    <h1>THE VARIABLE TRACKER</h1>
-    <p class="tagline">Step through real algorithms line by line. At each checkpoint, enter what the variables equal. Track loops, conditions, and calculations like a real developer!</p>
-    <p class="sub">4 algorithms &bull; Trace tables &bull; Can you debug them all?</p>
-    <button class="start-btn" onclick="startGame()">START DEBUGGING</button>
+    <a href="index.html" class="home-btn">&larr; Back to Activities</a>
+    <span class="detective-icon">🔍</span>
+    <h1>LOOP DETECTIVE</h1>
+    <p class="tagline">The loop keywords have been redacted! Study each code snippet's structure to identify what type of loop it is. Can you crack every case?</p>
+    <p class="sub">12 cases &bull; Redacted code &bull; Scenario analysis</p>
+    <button class="start-btn" onclick="startGame()">Start Investigation &rarr;</button>
 </div>
 
-<!-- ═══ GAME SCREEN ═══ -->
+<!-- ═══════════ GAME SCREEN ═══════════ -->
 <div id="game" class="hidden">
-    <!-- Top bar -->
     <div class="top-bar">
-        <span class="algo-counter" id="algoCounter">Algorithm 1 of 4</span>
-        <span class="stars-display" id="totalStars"></span>
+        <span class="case-counter" id="caseCounter">Case 1/12</span>
+        <span class="score-display" id="scoreDisplay">Score: 0</span>
+        <span class="streak-display" id="streakDisplay">🔥 0</span>
+        <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
     </div>
-    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-
-    <!-- Algorithm content injected here -->
-    <div id="algoContent"></div>
+    <div id="questionArea"></div>
+    <div class="answers" id="answersArea"></div>
+    <div id="feedbackArea"></div>
 </div>
 
-<!-- ═══ RESULTS SCREEN ═══ -->
+<!-- ═══════════ RESULTS SCREEN ═══════════ -->
 <div id="results" class="hidden"></div>
 
 </div>
 
 <script>
-// ═══════════════════════════════════════
-// DATA: 4 ALGORITHMS
-// ═══════════════════════════════════════
-const ALGORITHMS = [
-    {
-        name: "Simple Selection",
-        emoji: "🔍",
-        description: "Trace through this IF/ELSE algorithm to find the result.",
-        givenValues: "Test data: score = 35",
-        arrayData: null,
-        code: [
-            { text: "INPUT score", indent: 0 },
-            { text: "IF score >= 40", indent: 0 },
-            { text: 'result = "Pass"', indent: 1 },
-            { text: "ELSE", indent: 0 },
-            { text: 'result = "Fail"', indent: 1 },
-            { text: "ENDIF", indent: 0 },
-            { text: "OUTPUT result", indent: 0 }
-        ],
-        variables: ["score", "result"],
-        hasOutput: true,
-        // executionPath: indices of lines that actually execute
-        executionPath: [0, 1, 3, 4, 5, 6],
-        // skippedLines: indices that are skipped (branch not taken)
-        skippedLines: [2],
-        checkpoints: [
-            {
-                highlightLine: 0,
-                executedBefore: [],
-                prompt: "INPUT score reads the value 35. What is score now?",
-                fields: [{ var: "score", answer: "35" }],
-                outputField: false
-            },
-            {
-                highlightLine: 4,
-                executedBefore: [0, 1, 3],
-                prompt: "score (35) is NOT >= 40, so we go to ELSE. What is result after this line?",
-                fields: [{ var: "result", answer: "Fail" }],
-                outputField: false
-            },
-            {
-                highlightLine: 6,
-                executedBefore: [0, 1, 3, 4, 5],
-                prompt: "OUTPUT result displays the value. What is the output?",
-                fields: [],
-                outputField: true,
-                outputAnswer: "Fail"
-            }
-        ]
-    },
-    {
-        name: "Cupcake Pricing",
-        emoji: "🧁",
-        description: "Calculate the total cost based on the number of cupcakes ordered.",
-        givenValues: "Test data: numberOfCupcakes = 24",
-        arrayData: null,
-        code: [
-            { text: 'OUTPUT "Enter number of cupcakes"', indent: 0 },
-            { text: "INPUT numberOfCupcakes", indent: 0 },
-            { text: "IF numberOfCupcakes > 30", indent: 0 },
-            { text: "totalCost = 0.55 * numberOfCupcakes", indent: 1 },
-            { text: "ELSE IF numberOfCupcakes >= 16", indent: 0 },
-            { text: "totalCost = 0.65 * numberOfCupcakes", indent: 1 },
-            { text: "ELSE", indent: 0 },
-            { text: "totalCost = 0.75 * numberOfCupcakes", indent: 1 },
-            { text: "ENDIF", indent: 0 },
-            { text: "OUTPUT totalCost", indent: 0 }
-        ],
-        variables: ["numberOfCupcakes", "totalCost"],
-        hasOutput: true,
-        executionPath: [0, 1, 2, 4, 5, 8, 9],
-        skippedLines: [3, 6, 7],
-        checkpoints: [
-            {
-                highlightLine: 1,
-                executedBefore: [0],
-                prompt: "INPUT reads the value 24. What is numberOfCupcakes?",
-                fields: [{ var: "numberOfCupcakes", answer: "24" }],
-                outputField: false
-            },
-            {
-                highlightLine: 5,
-                executedBefore: [0, 1, 2, 4],
-                prompt: "24 is NOT > 30, but IS >= 16, so we use 0.65 per cupcake. What is totalCost?",
-                fields: [{ var: "totalCost", answer: "15.6" }],
-                outputField: false
-            },
-            {
-                highlightLine: 9,
-                executedBefore: [0, 1, 2, 4, 5, 8],
-                prompt: "OUTPUT totalCost displays the result. What is the output?",
-                fields: [],
-                outputField: true,
-                outputAnswer: "15.6"
-            }
-        ]
-    },
-    {
-        name: "Menu Validation Loop",
-        emoji: "🔄",
-        description: "A WHILE loop that keeps asking until a valid menu option (1-4) is entered.",
-        givenValues: "Test inputs: first = 7, then = 3",
-        arrayData: null,
-        code: [
-            { text: "valid = FALSE", indent: 0 },
-            { text: "WHILE valid = FALSE", indent: 0 },
-            { text: 'OUTPUT "Enter option (1-4)"', indent: 1 },
-            { text: "INPUT option", indent: 1 },
-            { text: "IF option >= 1 AND option <= 4", indent: 1 },
-            { text: "valid = TRUE", indent: 2 },
-            { text: "ELSE", indent: 1 },
-            { text: 'OUTPUT "Invalid! Try again"', indent: 2 },
-            { text: "ENDIF", indent: 1 },
-            { text: "END WHILE", indent: 0 }
-        ],
-        variables: ["valid", "option"],
-        hasOutput: true,
-        executionPath: [0, 1, 2, 3, 4, 6, 7, 8, 9, 1, 2, 3, 4, 5, 8, 9],
-        skippedLines: [],
-        checkpoints: [
-            {
-                highlightLine: 0,
-                executedBefore: [],
-                prompt: "The variable valid is initialised. What is valid?",
-                fields: [{ var: "valid", answer: "FALSE" }],
-                outputField: false,
-                iterationLabel: null
-            },
-            {
-                highlightLine: 3,
-                executedBefore: [0, 1, 2],
-                prompt: "Iteration 1: The user enters 7. What is option?",
-                fields: [{ var: "option", answer: "7" }],
-                outputField: false,
-                iterationLabel: "Iteration 1"
-            },
-            {
-                highlightLine: 7,
-                executedBefore: [0, 1, 2, 3, 4, 6],
-                prompt: "7 is NOT between 1-4, so ELSE runs. What is the output, and what is valid?",
-                fields: [{ var: "valid", answer: "FALSE" }],
-                outputField: true,
-                outputAnswer: "Invalid! Try again",
-                iterationLabel: "Iteration 1"
-            },
-            {
-                highlightLine: 3,
-                executedBefore: [0, 1, 2, 3, 4, 6, 7, 8, 9, 1, 2],
-                prompt: "Iteration 2: The loop repeats. The user enters 3. What is option?",
-                fields: [{ var: "option", answer: "3" }],
-                outputField: false,
-                iterationLabel: "Iteration 2"
-            },
-            {
-                highlightLine: 5,
-                executedBefore: [0, 1, 2, 3, 4, 6, 7, 8, 9, 1, 2, 3, 4],
-                prompt: "3 IS between 1-4, so the IF branch runs. What is valid now?",
-                fields: [{ var: "valid", answer: "TRUE" }],
-                outputField: false,
-                iterationLabel: "Iteration 2"
-            }
-        ]
-    },
-    {
-        name: "Traffic Monitoring",
-        emoji: "🚗",
-        description: "A FOR loop processes an array of daily traffic counts, totalling them up and alerting for busy days.",
-        givenValues: "traffic = [123, 150, 236, 100, 145]",
-        arrayData: { name: "traffic", values: [123, 150, 236, 100, 145] },
-        code: [
-            { text: "totalCars = 0", indent: 0 },
-            { text: "FOR i = 0 TO 4", indent: 0 },
-            { text: "totalCars = totalCars + traffic[i]", indent: 1 },
-            { text: "IF traffic[i] > 200", indent: 1 },
-            { text: 'OUTPUT "Alert: day " + (i+1)', indent: 2 },
-            { text: "ENDIF", indent: 1 },
-            { text: "END FOR", indent: 0 },
-            { text: "OUTPUT totalCars", indent: 0 },
-            { text: "averageCars = totalCars / 5", indent: 0 },
-            { text: "OUTPUT averageCars", indent: 0 }
-        ],
-        variables: ["totalCars", "i", "traffic[i]", "averageCars"],
-        hasOutput: true,
-        executionPath: [0, 1, 2, 3, 5, 6, 1, 2, 3, 5, 6, 1, 2, 3, 4, 5, 6, 1, 2, 3, 5, 6, 1, 2, 3, 5, 6, 7, 8, 9],
-        skippedLines: [],
-        checkpoints: [
-            {
-                highlightLine: 0,
-                executedBefore: [],
-                prompt: "totalCars is initialised. What is totalCars?",
-                fields: [{ var: "totalCars", answer: "0" }],
-                extraValues: {},
-                outputField: false,
-                iterationLabel: null,
-                arrayHighlight: -1
-            },
-            {
-                highlightLine: 2,
-                executedBefore: [0, 1],
-                prompt: "i = 0, traffic[0] = 123. What is totalCars after adding traffic[0]?",
-                fields: [{ var: "totalCars", answer: "123" }],
-                extraValues: { "i": "0", "traffic[i]": "123" },
-                outputField: false,
-                iterationLabel: "Iteration 1 (i=0)",
-                arrayHighlight: 0
-            },
-            {
-                highlightLine: 2,
-                executedBefore: [0, 1, 2, 3, 5, 6, 1],
-                prompt: "i = 1, traffic[1] = 150. What is totalCars now?",
-                fields: [{ var: "totalCars", answer: "273" }],
-                extraValues: { "i": "1", "traffic[i]": "150" },
-                outputField: false,
-                iterationLabel: "Iteration 2 (i=1)",
-                arrayHighlight: 1
-            },
-            {
-                highlightLine: 4,
-                executedBefore: [0, 1, 2, 3, 5, 6, 1, 2, 3, 5, 6, 1, 2, 3],
-                prompt: "i = 2, traffic[2] = 236. totalCars = 509. Since 236 > 200, what is the output?",
-                fields: [{ var: "totalCars", answer: "509" }],
-                extraValues: { "i": "2", "traffic[i]": "236" },
-                outputField: true,
-                outputAnswer: "Alert: day 3",
-                iterationLabel: "Iteration 3 (i=2)",
-                arrayHighlight: 2
-            },
-            {
-                highlightLine: 2,
-                executedBefore: [0, 1, 2, 3, 5, 6, 1, 2, 3, 5, 6, 1, 2, 3, 4, 5, 6, 1],
-                prompt: "i = 3, traffic[3] = 100. What is totalCars now?",
-                fields: [{ var: "totalCars", answer: "609" }],
-                extraValues: { "i": "3", "traffic[i]": "100" },
-                outputField: false,
-                iterationLabel: "Iteration 4 (i=3)",
-                arrayHighlight: 3
-            },
-            {
-                highlightLine: 2,
-                executedBefore: [0, 1, 2, 3, 5, 6, 1, 2, 3, 5, 6, 1, 2, 3, 4, 5, 6, 1, 2, 3, 5, 6, 1],
-                prompt: "i = 4, traffic[4] = 145. What is totalCars now?",
-                fields: [{ var: "totalCars", answer: "754" }],
-                extraValues: { "i": "4", "traffic[i]": "145" },
-                outputField: false,
-                iterationLabel: "Iteration 5 (i=4)",
-                arrayHighlight: 4
-            },
-            {
-                highlightLine: 8,
-                executedBefore: [0, 1, 2, 3, 5, 6, 1, 2, 3, 5, 6, 1, 2, 3, 4, 5, 6, 1, 2, 3, 5, 6, 1, 2, 3, 5, 6, 7],
-                prompt: "The loop is done. totalCars = 754. What is averageCars (totalCars / 5)?",
-                fields: [{ var: "averageCars", answer: "150.8" }],
-                extraValues: { "totalCars": "754" },
-                outputField: false,
-                iterationLabel: null,
-                arrayHighlight: -1
-            }
-        ]
-    }
+/* ═══════════════════════════════════════
+   DATA
+   ═══════════════════════════════════════ */
+const questions=[
+{type:"code",code:'<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span> i = 1 <span class="redacted">\u2588\u2588\u2588\u2588\u2588</span> 10\n    OUTPUT i\n<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span>',answer:"FOR",explanation:"The counter variable (i) goes from a start value (1) TO an end value (10) \u2014 this is bounded iteration. The number of repetitions is known in advance."},
+{type:"code",code:'password = ""\n<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span> password != "secret"\n    OUTPUT "Enter password: "\n    INPUT password\n<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span>',answer:"WHILE",explanation:"The loop depends on a condition (password != \u2018secret\u2019) \u2014 this is unbounded iteration. It could run 0 times if password already equals \u2018secret\u2019."},
+{type:"code",code:'<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span>\n    OUTPUT "Enter a mark (0-100): "\n    INPUT mark\n<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span> mark &lt; 0 <span class="redacted">\u2588\u2588\u2588\u2588\u2588</span> mark &gt; 100',answer:"DO WHILE",explanation:"The body runs first (DO), then the condition is checked. This is the exam-standard validation pattern \u2014 it must run at least once because the user hasn\u2019t entered anything yet."},
+{type:"code",code:'total = 0\n<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span> i = 1 <span class="redacted">\u2588\u2588\u2588\u2588\u2588</span> 5\n    INPUT score\n    total = total + score\n<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span>\naverage = total / 5',answer:"FOR",explanation:"This is the accumulator/totalling pattern with bounded iteration. The counter goes from 1 TO 5, so exactly 5 scores are input \u2014 the number of repetitions is known."},
+{type:"code",code:'found = false\n<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span> found == false\n    INPUT name\n    IF name == searchName <span class="redacted">\u2588\u2588\u2588\u2588\u2588</span>\n        found = true\n    <span class="redacted">\u2588\u2588\u2588\u2588\u2588</span>\n<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span>',answer:"WHILE",explanation:"The loop continues while a condition is true (found == false) \u2014 unbounded iteration. The number of repetitions depends on when the item is found."},
+{type:"code",code:'<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span>\n    OUTPUT "Enter age (0-120): "\n    INPUT age\n<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span> age &lt; 0 <span class="redacted">\u2588\u2588\u2588\u2588\u2588</span> age &gt; 120',answer:"DO WHILE",explanation:"This is the validation pattern \u2014 body runs first (input is taken), then the condition checks for INVALID input. Must run at least once."},
+{type:"code",code:'<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span> x = 0 <span class="redacted">\u2588\u2588\u2588\u2588\u2588</span> 4\n    OUTPUT names[x]\n<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span>',answer:"FOR",explanation:"A counter (x) iterates from 0 TO 4, accessing each element of the names array \u2014 bounded iteration with a known number of repetitions."},
+{type:"code",code:'total = 0\nINPUT number\n<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span> number != -1\n    total = total + number\n    INPUT number\n<span class="redacted">\u2588\u2588\u2588\u2588\u2588</span>\nOUTPUT total',answer:"WHILE",explanation:"The loop continues until a sentinel value (-1) is entered \u2014 unbounded iteration. The number of repetitions is unknown in advance."},
+{type:"scenario",text:"A teacher needs to input exactly 30 test marks and calculate the total. Which loop type should they use?",answer:"FOR",explanation:"The number of repetitions is known (30) \u2014 this is bounded iteration. A FOR loop is the correct choice when you know in advance how many times to repeat."},
+{type:"scenario",text:"A program needs to keep asking the user for a valid temperature between -50 and 50. The user must be asked at least once. Which loop type should they use?",answer:"DO WHILE",explanation:"The input must be taken at least once (the user hasn\u2019t entered anything yet), then validated. This is the standard validation pattern using DO WHILE."},
+{type:"scenario",text:"A program reads data from a file until it reaches the end. The file could be empty. Which loop type should they use?",answer:"WHILE",explanation:"The number of repetitions is unknown (depends on file length) and it might not run at all if the file is empty \u2014 unbounded iteration. WHILE checks the condition before entering the loop."},
+{type:"scenario",text:"A quiz program needs to display each of the 20 questions in a question bank, one at a time. Which loop type should they use?",answer:"FOR",explanation:"The number of questions is known (20) \u2014 bounded iteration. A FOR loop with a counter from 1 TO 20 is the correct choice."}
 ];
 
-// ═══════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════
-let currentAlgo = 0;
-let currentCheckpoint = 0;
-let wrongCounts = [0, 0, 0, 0];
-let algoStars = [0, 0, 0, 0];
-let completedRows = []; // trace table rows already confirmed
-let totalStarsEarned = 0;
-let gameStarted = false;
+const answerChoices=[
+{id:"FOR",emoji:"\uD83D\uDD22",label:"FOR Loop",hint:"Known repetitions"},
+{id:"WHILE",emoji:"\u2753",label:"WHILE Loop",hint:"Condition first"},
+{id:"DO WHILE",emoji:"\uD83C\uDF55",label:"DO WHILE Loop",hint:"At least once"}
+];
 
-// ═══════════════════════════════════════
-// SYNTAX HIGHLIGHTING
-// ═══════════════════════════════════════
-function highlightSyntax(text) {
-    // Tokenize the text to avoid conflicts between highlighting passes
-    const indent = text.match(/^(\s*)/)[1];
-    const content = text.slice(indent.length);
+const ranks=[
+{min:11,badge:"\uD83C\uDF1F",title:"Master Detective"},
+{min:9,badge:"\uD83D\uDD0E",title:"Senior Detective"},
+{min:7,badge:"\uD83D\uDCCB",title:"Detective"},
+{min:0,badge:"\uD83D\uDC64",title:"Rookie"}
+];
 
-    // Split into tokens, preserving strings
-    let tokens = [];
-    let remaining = content;
-    while (remaining.length > 0) {
-        // Match a quoted string
-        const strMatch = remaining.match(/^"([^"]*)"/);
-        if (strMatch) {
-            tokens.push({ type: 'string', text: strMatch[0] });
-            remaining = remaining.slice(strMatch[0].length);
-            continue;
-        }
-        // Match a decimal number like 0.55 (before word match)
-        const decMatch = remaining.match(/^\d+\.\d+/);
-        if (decMatch) {
-            tokens.push({ type: 'number', text: decMatch[0] });
-            remaining = remaining.slice(decMatch[0].length);
-            continue;
-        }
-        // Match a word or identifier (including digits and array brackets)
-        const wordMatch = remaining.match(/^[a-zA-Z_][\w\[\]]*/);
-        if (wordMatch) {
-            tokens.push({ type: 'word', text: wordMatch[0] });
-            remaining = remaining.slice(wordMatch[0].length);
-            continue;
-        }
-        // Match an integer number
-        const intMatch = remaining.match(/^\d+/);
-        if (intMatch) {
-            tokens.push({ type: 'number', text: intMatch[0] });
-            remaining = remaining.slice(intMatch[0].length);
-            continue;
-        }
-        // Any other character (operators, spaces, etc.)
-        tokens.push({ type: 'other', text: remaining[0] });
-        remaining = remaining.slice(1);
+/* ═══════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════ */
+let shuffled=[], current=0, score=0, streak=0, bestStreak=0, answered=false;
+
+/* ═══════════════════════════════════════
+   FISHER-YATES SHUFFLE
+   ═══════════════════════════════════════ */
+function shuffle(arr){
+    const a=[...arr];
+    for(let i=a.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [a[i],a[j]]=[a[j],a[i]];
     }
-
-    // Keywords list (longest first for multi-word matching)
-    const multiKeywords = ['ELSE IF', 'END WHILE', 'END FOR'];
-    const singleKeywords = ['INPUT','OUTPUT','IF','ELSE','ENDIF','WHILE','FOR','AND','OR','NOT','TO','TRUE','FALSE'];
-
-    // Reconstruct with syntax highlighting
-    // First pass: join tokens to check for multi-word keywords
-    let result = indent; // white-space:pre handles spacing
-    let i = 0;
-
-    // Check if this line is an assignment (contains = but not == or >=, <=)
-    const isAssignment = /^\w[\w\[\]]*\s*=\s*[^=]/.test(content);
-    let assignedVar = false;
-
-    while (i < tokens.length) {
-        const tok = tokens[i];
-
-        // Check for multi-word keywords (e.g., "ELSE" + " " + "IF")
-        if (tok.type === 'word' && i + 2 < tokens.length) {
-            const combo = tok.text + tokens[i+1].text + (tokens[i+2] ? tokens[i+2].text : '');
-            const matchedMulti = multiKeywords.find(kw => kw === combo);
-            if (matchedMulti) {
-                result += '<span class="kw">' + escHTML(matchedMulti) + '</span>';
-                i += 3;
-                continue;
-            }
-        }
-
-        if (tok.type === 'string') {
-            result += '<span class="str">' + escHTML(tok.text) + '</span>';
-        } else if (tok.type === 'word') {
-            if (singleKeywords.includes(tok.text)) {
-                result += '<span class="kw">' + tok.text + '</span>';
-            } else if (isAssignment && !assignedVar && i === 0) {
-                result += '<span class="vr">' + escHTML(tok.text) + '</span>';
-                assignedVar = true;
-            } else {
-                result += escHTML(tok.text);
-            }
-        } else if (tok.type === 'number') {
-            result += '<span class="num">' + tok.text + '</span>';
-        } else {
-            result += escHTML(tok.text);
-        }
-        i++;
-    }
-
-    return result;
+    return a;
 }
 
-// ═══════════════════════════════════════
-// GAME FLOW
-// ═══════════════════════════════════════
-function startGame() {
+/* ═══════════════════════════════════════
+   START GAME
+   ═══════════════════════════════════════ */
+function startGame(){
+    shuffled=shuffle(questions);
+    current=0; score=0; streak=0; bestStreak=0; answered=false;
     document.getElementById('intro').classList.add('hidden');
+    document.getElementById('results').classList.add('hidden');
     document.getElementById('game').classList.remove('hidden');
-    currentAlgo = 0;
-    currentCheckpoint = 0;
-    wrongCounts = [0, 0, 0, 0];
-    algoStars = [0, 0, 0, 0];
-    totalStarsEarned = 0;
-    completedRows = [];
-    renderAlgorithm();
+    showQuestion();
 }
 
-function renderAlgorithm() {
-    const algo = ALGORITHMS[currentAlgo];
-    currentCheckpoint = 0;
-    completedRows = [];
+/* ═══════════════════════════════════════
+   SHOW QUESTION
+   ═══════════════════════════════════════ */
+function showQuestion(){
+    answered=false;
+    const q=shuffled[current];
+    const total=shuffled.length;
 
-    // Update top bar
-    document.getElementById('algoCounter').textContent = `Algorithm ${currentAlgo + 1} of 4`;
-    updateStarsDisplay();
-    document.getElementById('progressFill').style.width = `${(currentAlgo / 4) * 100}%`;
+    document.getElementById('caseCounter').textContent=`Case ${current+1}/${total}`;
+    document.getElementById('scoreDisplay').textContent=`Score: ${score}`;
+    document.getElementById('streakDisplay').textContent=`\uD83D\uDD25 ${streak}`;
+    document.getElementById('progressFill').style.width=`${(current/total)*100}%`;
+    document.getElementById('feedbackArea').innerHTML='';
 
-    const container = document.getElementById('algoContent');
-    container.innerHTML = '';
-    container.style.animation = 'none';
-    container.offsetHeight; // reflow
-    container.style.animation = 'fadeIn .4s ease';
-
-    // ── Algorithm header ──
-    let headerHTML = `
-        <div class="algo-header">
-            <div class="algo-title-row">
-                <span class="algo-emoji">${algo.emoji}</span>
-                <span class="algo-name">${algo.name}</span>
-                <span class="algo-stars" id="algoStarsDisplay"></span>
-            </div>
-            <p class="algo-desc">${algo.description}</p>
-            <span class="given-values">${algo.givenValues}</span>`;
-
-    // Array display for algorithm 4
-    if (algo.arrayData) {
-        headerHTML += `<div class="array-display" id="arrayDisplay">
-            <span class="array-label">${algo.arrayData.name} =</span>
-            <span style="font-family:var(--mono);color:var(--text-dim);font-weight:700">[</span>`;
-        algo.arrayData.values.forEach((v, i) => {
-            headerHTML += `<div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-                <span class="array-cell" id="arrCell${i}">${v}</span>
-                <span class="array-idx">[${i}]</span>
-            </div>`;
-        });
-        headerHTML += `<span style="font-family:var(--mono);color:var(--text-dim);font-weight:700">]</span></div>`;
-    }
-    headerHTML += '</div>';
-    container.innerHTML += headerHTML;
-
-    // ── Code panel ──
-    let codeHTML = `
-        <div class="code-panel">
-            <div class="code-titlebar">
-                <span class="dot dot-red"></span>
-                <span class="dot dot-yellow"></span>
-                <span class="dot dot-green"></span>
-                <span class="code-filename">algorithm${currentAlgo + 1}.pseudo</span>
-            </div>
-            <div class="code-body" id="codeBody">`;
-
-    algo.code.forEach((line, i) => {
-        const indentation = '    '.repeat(line.indent);
-        const highlighted = highlightSyntax(indentation + line.text);
-        codeHTML += `<div class="code-line" id="codeLine${i}">
-            <span class="line-num">${i + 1}</span>
-            <span class="line-text">${highlighted}</span>
-        </div>`;
-    });
-    codeHTML += '</div></div>';
-    container.innerHTML += codeHTML;
-
-    // ── Trace table ──
-    let traceHTML = `
-        <div class="trace-section">
-            <div class="trace-titlebar">📋 Trace Table</div>
-            <div class="trace-table-wrap">
-                <table class="trace-table">
-                    <thead><tr>
-                        <th>Step</th>
-                        <th>Line</th>`;
-
-    // Variable columns
-    algo.variables.forEach(v => {
-        traceHTML += `<th>${v}</th>`;
-    });
-    if (algo.hasOutput) {
-        traceHTML += '<th>Output</th>';
-    }
-    traceHTML += '</tr></thead><tbody id="traceBody"></tbody></table></div></div>';
-    container.innerHTML += traceHTML;
-
-    // ── Checkpoint area ──
-    container.innerHTML += '<div id="checkpointArea"></div>';
-    // ── Feedback area ──
-    container.innerHTML += '<div id="feedbackArea"></div>';
-
-    // Render first checkpoint
-    renderCheckpoint();
-}
-
-function renderCheckpoint() {
-    const algo = ALGORITHMS[currentAlgo];
-    const cp = algo.checkpoints[currentCheckpoint];
-
-    // Update code highlighting
-    updateCodeHighlighting(cp);
-
-    // Update array highlighting
-    if (algo.arrayData && cp.arrayHighlight !== undefined) {
-        algo.arrayData.values.forEach((_, i) => {
-            const cell = document.getElementById(`arrCell${i}`);
-            if (cell) {
-                if (i === cp.arrayHighlight) {
-                    cell.classList.add('active');
-                } else {
-                    cell.classList.remove('active');
-                }
-            }
-        });
-    }
-
-    // Build trace table body
-    renderTraceTable();
-
-    // Build checkpoint UI
-    const area = document.getElementById('checkpointArea');
-    let html = '<div class="checkpoint-area">';
-
-    // Iteration label
-    if (cp.iterationLabel) {
-        html += `<div class="iteration-badge">${cp.iterationLabel}</div>`;
-    }
-
-    html += `<p class="checkpoint-prompt">${cp.prompt}</p>`;
-    html += '<div class="checkpoint-fields">';
-
-    cp.fields.forEach((f, i) => {
-        html += `<div class="field-group">
-            <span class="field-label">${f.var}</span>
-            <span class="field-equals">=</span>
-            <input type="text" class="field-input" id="fieldInput${i}" autocomplete="off" autocapitalize="off" spellcheck="false">
-        </div>`;
-    });
-
-    if (cp.outputField) {
-        html += `<div class="field-group">
-            <span class="field-label">output</span>
-            <span class="field-equals">=</span>
-            <input type="text" class="field-input" id="outputInput" autocomplete="off" autocapitalize="off" spellcheck="false">
-        </div>`;
-    }
-
-    html += '</div>';
-    html += '<button class="step-btn" id="stepBtn" onclick="checkStep()">STEP <span style="font-size:1.1em">&#8594;</span></button>';
-    html += '</div>';
-
-    area.innerHTML = html;
-    document.getElementById('feedbackArea').innerHTML = '';
-
-    // Focus first input
-    const firstInput = area.querySelector('.field-input');
-    if (firstInput) setTimeout(() => firstInput.focus(), 100);
-
-    // Add enter key handling
-    area.querySelectorAll('.field-input').forEach(input => {
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') checkStep();
-        });
-    });
-}
-
-function updateCodeHighlighting(cp) {
-    const algo = ALGORITHMS[currentAlgo];
-
-    algo.code.forEach((_, i) => {
-        const el = document.getElementById(`codeLine${i}`);
-        el.className = 'code-line';
-    });
-
-    // Mark executed lines
-    if (cp.executedBefore) {
-        const uniqueExecuted = [...new Set(cp.executedBefore)];
-        uniqueExecuted.forEach(idx => {
-            const el = document.getElementById(`codeLine${idx}`);
-            if (el) el.classList.add('executed');
-        });
-    }
-
-    // Mark skipped lines
-    if (algo.skippedLines) {
-        algo.skippedLines.forEach(idx => {
-            const el = document.getElementById(`codeLine${idx}`);
-            if (el) el.classList.add('skipped');
-        });
-    }
-
-    // Highlight current line
-    const el = document.getElementById(`codeLine${cp.highlightLine}`);
-    if (el) {
-        el.classList.remove('executed');
-        el.classList.add('highlight');
-        // Scroll into view if needed
-        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-}
-
-function renderTraceTable() {
-    const algo = ALGORITHMS[currentAlgo];
-    const tbody = document.getElementById('traceBody');
-    let html = '';
-
-    // Completed rows
-    completedRows.forEach((row, i) => {
-        html += `<tr class="completed-row">
-            <td class="step-label">${i + 1}</td>
-            <td class="line-label">${row.lineText}</td>`;
-        algo.variables.forEach(v => {
-            const val = row.values[v];
-            html += `<td>${val !== undefined ? '<span class="trace-val">' + escHTML(val) + '</span>' : '<span class="trace-dash">-</span>'}</td>`;
-        });
-        if (algo.hasOutput) {
-            html += `<td>${row.output ? '<span class="trace-val">' + escHTML(row.output) + '</span>' : '<span class="trace-dash">-</span>'}</td>`;
-        }
-        html += '</tr>';
-    });
-
-    // Current active row
-    if (currentCheckpoint < algo.checkpoints.length) {
-        const cp = algo.checkpoints[currentCheckpoint];
-        const stepNum = completedRows.length + 1;
-        const lineText = algo.code[cp.highlightLine].text.trim();
-        html += `<tr class="active-row">
-            <td class="step-label">${stepNum}</td>
-            <td class="line-label">${escHTML(lineText)}</td>`;
-        algo.variables.forEach(v => {
-            html += '<td><span class="trace-dash">?</span></td>';
-        });
-        if (algo.hasOutput) {
-            html += '<td><span class="trace-dash">?</span></td>';
-        }
-        html += '</tr>';
-    }
-
-    tbody.innerHTML = html;
-}
-
-function escHTML(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-// ═══════════════════════════════════════
-// CHECK STEP
-// ═══════════════════════════════════════
-function checkStep() {
-    const algo = ALGORITHMS[currentAlgo];
-    const cp = algo.checkpoints[currentCheckpoint];
-    let allCorrect = true;
-
-    // Check each field
-    cp.fields.forEach((f, i) => {
-        const input = document.getElementById(`fieldInput${i}`);
-        const userVal = input.value.trim();
-        if (!compareAnswers(userVal, f.answer)) {
-            allCorrect = false;
-            input.classList.add('wrong');
-            input.classList.remove('correct');
-        } else {
-            input.classList.add('correct');
-            input.classList.remove('wrong');
-        }
-    });
-
-    // Check output field
-    if (cp.outputField) {
-        const outputInput = document.getElementById('outputInput');
-        const userVal = outputInput.value.trim();
-        if (!compareAnswers(userVal, cp.outputAnswer)) {
-            allCorrect = false;
-            outputInput.classList.add('wrong');
-            outputInput.classList.remove('correct');
-        } else {
-            outputInput.classList.add('correct');
-            outputInput.classList.remove('wrong');
-        }
-    }
-
-    const feedback = document.getElementById('feedbackArea');
-
-    if (allCorrect) {
-        // Build the completed row data
-        const row = {
-            lineText: algo.code[cp.highlightLine].text.trim(),
-            values: {},
-            output: null
-        };
-
-        // Carry forward previous values
-        if (completedRows.length > 0) {
-            const prev = completedRows[completedRows.length - 1];
-            algo.variables.forEach(v => {
-                if (prev.values[v] !== undefined) {
-                    row.values[v] = prev.values[v];
-                }
-            });
-        }
-
-        // Apply extra auto-populated values (for loop variables, etc.)
-        if (cp.extraValues) {
-            Object.keys(cp.extraValues).forEach(k => {
-                row.values[k] = cp.extraValues[k];
-            });
-        }
-
-        // Update with current checkpoint values
-        cp.fields.forEach(f => {
-            row.values[f.var] = f.answer;
-        });
-
-        if (cp.outputField) {
-            row.output = cp.outputAnswer;
-        }
-
-        completedRows.push(row);
-
-        // Mark current line as executed
-        const lineEl = document.getElementById(`codeLine${cp.highlightLine}`);
-        if (lineEl) {
-            lineEl.classList.remove('highlight');
-            lineEl.classList.add('executed');
-        }
-
-        currentCheckpoint++;
-
-        if (currentCheckpoint >= algo.checkpoints.length) {
-            // Algorithm complete
-            finishAlgorithm();
-        } else {
-            // Show success and move to next checkpoint
-            feedback.innerHTML = '<div class="feedback success">Correct! Moving to next step...</div>';
-            setTimeout(() => {
-                renderCheckpoint();
-            }, 600);
-        }
+    /* Build question card */
+    let cardHTML='<div class="question-card">';
+    if(q.type==='code'){
+        cardHTML+=`<span class="type-badge code-badge">\uD83D\uDCBB REDACTED CODE</span>`;
+        cardHTML+=`<div class="code-block"><pre>${q.code}</pre></div>`;
+        cardHTML+=`<p class="question-prompt">What type of loop has been redacted?</p>`;
     } else {
-        // Wrong answer
-        wrongCounts[currentAlgo]++;
-        feedback.innerHTML = '<div class="feedback error"><span class="segfault">SEGFAULT!</span> Check your values and try again.</div>';
-
-        // Shake the checkpoint area
-        const area = document.querySelector('.checkpoint-area');
-        if (area) {
-            area.style.animation = 'none';
-            area.offsetHeight;
-            area.style.animation = 'glitch .4s ease';
-        }
-
-        // Clear wrong inputs after delay
-        setTimeout(() => {
-            document.querySelectorAll('.field-input.wrong').forEach(input => {
-                input.classList.remove('wrong');
-                input.value = '';
-            });
-        }, 800);
+        cardHTML+=`<span class="type-badge scenario-badge">\uD83D\uDCCB SCENARIO</span>`;
+        cardHTML+=`<div class="scenario-block"><span class="scenario-icon">\uD83D\uDCCB</span>${q.text}</div>`;
     }
+    cardHTML+='</div>';
+    document.getElementById('questionArea').innerHTML=cardHTML;
+
+    /* Build answer buttons */
+    let btnsHTML='';
+    answerChoices.forEach(c=>{
+        btnsHTML+=`<button class="answer-btn" data-answer="${c.id}" onclick="submitAnswer(this,'${c.id}')">
+            <span class="btn-emoji">${c.emoji}</span>
+            <span class="btn-text">
+                <span class="btn-label">${c.label}</span>
+                <span class="btn-hint">${c.hint}</span>
+            </span>
+        </button>`;
+    });
+    document.getElementById('answersArea').innerHTML=btnsHTML;
 }
 
-function compareAnswers(userVal, correctVal) {
-    if (!userVal) return false;
+/* ═══════════════════════════════════════
+   SUBMIT ANSWER
+   ═══════════════════════════════════════ */
+function submitAnswer(btn, choice){
+    if(answered) return;
+    answered=true;
 
-    const u = userVal.toLowerCase().trim();
-    const c = String(correctVal).toLowerCase().trim();
+    const q=shuffled[current];
+    const isCorrect=choice===q.answer;
+    const allBtns=document.querySelectorAll('.answer-btn');
 
-    // Exact match
-    if (u === c) return true;
-
-    // Number comparison (35 == 35.0, 15.6 == 15.60)
-    const uNum = parseFloat(u);
-    const cNum = parseFloat(c);
-    if (!isNaN(uNum) && !isNaN(cNum) && uNum === cNum) return true;
-
-    // Strip quotes for text answers
-    const uStripped = u.replace(/^["']|["']$/g, '');
-    const cStripped = c.replace(/^["']|["']$/g, '');
-    if (uStripped === cStripped) return true;
-
-    return false;
-}
-
-function finishAlgorithm() {
-    const errors = wrongCounts[currentAlgo];
-    let stars = 3;
-    if (errors >= 3) stars = 1;
-    else if (errors >= 1) stars = 2;
-    algoStars[currentAlgo] = stars;
-    totalStarsEarned = algoStars.reduce((a, b) => a + b, 0);
-    updateStarsDisplay();
-
-    // Mark all lines as executed
-    const algo = ALGORITHMS[currentAlgo];
-    algo.code.forEach((_, i) => {
-        const el = document.getElementById(`codeLine${i}`);
-        if (el && !el.classList.contains('skipped')) {
-            el.classList.remove('highlight');
-            el.classList.add('executed');
-        }
+    /* Disable all */
+    allBtns.forEach(b=>{
+        b.classList.add('disabled');
+        if(b.dataset.answer===q.answer) b.classList.add('correct');
     });
 
-    // Render final trace table
-    renderTraceTable();
-
-    // Show completion
-    const area = document.getElementById('checkpointArea');
-    const starStr = generateStarStr(stars, 3);
-    const messages = [
-        'Flawless execution!',
-        'Good trace, minor errors.',
-        'Completed with some bugs.'
-    ];
-
-    const isLast = currentAlgo >= 3;
-
-    area.innerHTML = `
-        <div class="algo-complete">
-            <h3>Algorithm Complete!</h3>
-            <div class="stars-earned">${starStr}</div>
-            <p>${errors === 0 ? messages[0] : errors <= 2 ? messages[1] : messages[2]} (${errors} error${errors !== 1 ? 's' : ''})</p>
-            <button class="step-btn ${isLast ? '' : 'next-algo-btn'}" onclick="${isLast ? 'showResults()' : 'nextAlgorithm()'}">
-                ${isLast ? 'VIEW RESULTS' : 'NEXT ALGORITHM &#8594;'}
-            </button>
-        </div>`;
-
-    document.getElementById('feedbackArea').innerHTML = '<div class="feedback complete">Trace table complete! All variables tracked successfully.</div>';
-}
-
-function generateStarStr(earned, total) {
-    let s = '';
-    for (let i = 0; i < total; i++) {
-        if (i < earned) {
-            s += `<span style="animation-delay:${i * 0.2}s">&#11088;</span>`;
-        } else {
-            s += `<span style="animation-delay:${i * 0.2}s;filter:grayscale(1);opacity:.3">&#11088;</span>`;
-        }
-    }
-    return s;
-}
-
-function nextAlgorithm() {
-    currentAlgo++;
-    currentCheckpoint = 0;
-    completedRows = [];
-    renderAlgorithm();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function updateStarsDisplay() {
-    const el = document.getElementById('totalStars');
-    let s = '';
-    for (let i = 0; i < totalStarsEarned; i++) s += '&#11088;';
-    const remaining = 12 - totalStarsEarned;
-    for (let i = 0; i < remaining; i++) s += '<span style="filter:grayscale(1);opacity:.25">&#11088;</span>';
-    el.innerHTML = s;
-}
-
-// ═══════════════════════════════════════
-// RESULTS
-// ═══════════════════════════════════════
-function showResults() {
-    document.getElementById('game').classList.add('hidden');
-    const results = document.getElementById('results');
-    results.classList.remove('hidden');
-
-    const total = totalStarsEarned;
-    let rank, rankIcon;
-    if (total === 12) { rank = 'Debug Master'; rankIcon = '🏆'; }
-    else if (total >= 10) { rank = 'Senior Dev'; rankIcon = '💻'; }
-    else if (total >= 8) { rank = 'Junior Dev'; rankIcon = '🖥️'; }
-    else if (total >= 6) { rank = 'Intern'; rankIcon = '📱'; }
-    else { rank = 'Student'; rankIcon = '📝'; }
-
-    let starStr = '';
-    for (let i = 0; i < 12; i++) {
-        const delay = i * 0.08;
-        if (i < total) {
-            starStr += `<span style="animation-delay:${delay}s">&#11088;</span>`;
-        } else {
-            starStr += `<span style="animation-delay:${delay}s;filter:grayscale(1);opacity:.3">&#11088;</span>`;
-        }
+    if(isCorrect){
+        score++;
+        streak++;
+        if(streak>bestStreak) bestStreak=streak;
+        btn.classList.add('correct');
+        btn.style.animation='greenFlash .5s ease';
+        spawnFloat(btn,'+1','plus');
+    } else {
+        streak=0;
+        btn.classList.add('wrong');
+        spawnFloat(btn,'\u2718','minus');
     }
 
-    let breakdownHTML = '';
-    ALGORITHMS.forEach((algo, i) => {
-        const s = algoStars[i];
-        const e = wrongCounts[i];
-        let rowStars = '';
-        for (let j = 0; j < 3; j++) {
-            rowStars += j < s ? '&#11088;' : '<span style="filter:grayscale(1);opacity:.3">&#11088;</span>';
-        }
-        breakdownHTML += `
-            <div class="result-row">
-                <span class="result-emoji">${algo.emoji}</span>
-                <span class="result-name">${algo.name}</span>
-                <span class="result-stars">${rowStars}</span>
-                <span class="result-errors">${e} error${e !== 1 ? 's' : ''}</span>
-            </div>`;
-    });
+    /* Update displays */
+    document.getElementById('scoreDisplay').textContent=`Score: ${score}`;
+    document.getElementById('streakDisplay').textContent=`\uD83D\uDD25 ${streak}`;
 
-    results.innerHTML = `
-        <span class="results-icon">${rankIcon}</span>
-        <h2>${rank}</h2>
-        <p class="rank-title">You scored ${total} out of 12 stars</p>
-        <div class="total-stars">${starStr}</div>
-        <div class="results-breakdown">${breakdownHTML}</div>
-        <div class="btn-row">
-            <button class="start-btn" onclick="restartGame()">Debug Again</button>
-            <button class="secondary-btn" onclick="backToMenu()">Back to Menu</button>
+    /* Feedback */
+    const fbClass=isCorrect?'correct':'wrong';
+    const hdClass=isCorrect?'correct':'wrong';
+    const icon=isCorrect?'\u2705':'\u274C';
+    const heading=isCorrect?'Correct!':(`Not quite \u2014 it was a ${q.answer} loop`);
+    const isLast=current>=shuffled.length-1;
+    const nextLabel=isLast?'See Results \u2192':'Next Case \u2192';
+
+    document.getElementById('feedbackArea').innerHTML=`
+        <div class="feedback-panel ${fbClass}-fb">
+            <div class="feedback-header ${hdClass}-hd">${icon} ${heading}</div>
+            <p class="feedback-explanation">${q.explanation}</p>
+            <button class="next-btn" onclick="nextQuestion()">${nextLabel}</button>
         </div>`;
 }
 
-function restartGame() {
-    document.getElementById('results').classList.add('hidden');
-    startGame();
+/* ═══════════════════════════════════════
+   FLOATING SCORE
+   ═══════════════════════════════════════ */
+function spawnFloat(el,text,cls){
+    const rect=el.getBoundingClientRect();
+    const f=document.createElement('div');
+    f.className=`float-score ${cls}`;
+    f.textContent=text;
+    f.style.left=`${rect.left+rect.width/2-16}px`;
+    f.style.top=`${rect.top}px`;
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(),1000);
 }
 
-function backToMenu() {
-    document.getElementById('results').classList.add('hidden');
+/* ═══════════════════════════════════════
+   NEXT QUESTION
+   ═══════════════════════════════════════ */
+function nextQuestion(){
+    current++;
+    if(current>=shuffled.length){
+        showResults();
+    } else {
+        showQuestion();
+    }
+}
+
+/* ═══════════════════════════════════════
+   RESULTS
+   ═══════════════════════════════════════ */
+function showResults(){
     document.getElementById('game').classList.add('hidden');
-    document.getElementById('intro').classList.remove('hidden');
+    const res=document.getElementById('results');
+    res.classList.remove('hidden');
+
+    const total=shuffled.length;
+    const wrong=total-score;
+    const rank=ranks.find(r=>score>=r.min);
+    const stars='\u2B50'.repeat(score)+'\u2606'.repeat(total-score);
+
+    if(score>=9) launchConfetti();
+
+    res.innerHTML=`
+    <a href="index.html" class="home-btn">&larr; Back to Activities</a>
+    <div class="results-card">
+        <span class="result-badge">${rank.badge}</span>
+        <div class="result-rank">${rank.title}</div>
+        <div class="result-score">${score} / ${total} cases solved</div>
+        <span class="stars-row">${stars}</span>
+        <div class="score-breakdown">
+            <div class="breakdown-item"><span class="breakdown-num green">${score}</span><span class="breakdown-label">Correct</span></div>
+            <div class="breakdown-item"><span class="breakdown-num red">${wrong}</span><span class="breakdown-label">Wrong</span></div>
+            <div class="breakdown-item"><span class="breakdown-num" style="color:var(--gold)">${bestStreak}</span><span class="breakdown-label">Best Streak</span></div>
+        </div>
+        <div class="revision-box">
+            <h3>Key Revision Points</h3>
+            <ul>
+                <li><strong>FOR loop</strong> \u2014 bounded iteration; the number of repetitions is known in advance (uses a counter from start TO end).</li>
+                <li><strong>WHILE loop</strong> \u2014 unbounded iteration; condition is checked before the loop body runs, so it could execute 0 times.</li>
+                <li><strong>DO WHILE loop</strong> \u2014 unbounded iteration; body runs first then condition is checked, so it always executes at least once. Standard for input validation.</li>
+                <li><strong>Bounded</strong> = known repetitions. <strong>Unbounded</strong> = unknown repetitions (depends on a condition).</li>
+                <li>The <strong>validation pattern</strong> (DO WHILE) is one of the most frequently examined constructs in CCEA GCSE.</li>
+            </ul>
+        </div>
+        <div class="result-btns">
+            <button class="retry-btn" onclick="startGame()">Try Again</button>
+            <a href="index.html" class="back-btn">Back to Activities</a>
+        </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════
+   CONFETTI
+   ═══════════════════════════════════════ */
+function launchConfetti(){
+    const colors=['#2ecc71','#16A34A','#FFD700','#E8652B','#22C55E','#D4A017'];
+    for(let i=0;i<80;i++){
+        const c=document.createElement('div');
+        c.className='confetti-piece';
+        c.style.left=Math.random()*100+'vw';
+        c.style.background=colors[Math.floor(Math.random()*colors.length)];
+        c.style.width=(Math.random()*8+6)+'px';
+        c.style.height=(Math.random()*8+6)+'px';
+        c.style.borderRadius=Math.random()>.5?'50%':'2px';
+        c.style.animationDuration=(Math.random()*2+2)+'s';
+        c.style.animationDelay=(Math.random()*1.5)+'s';
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),5000);
+    }
 }
 </script>
 </body>
