@@ -239,7 +239,8 @@ const RECIPES = [
             "INPUT number2",
             "total = number1 + number2",
             "OUTPUT total"
-        ]
+        ],
+        groups: [[0,1],[2],[3]]
     },
     {
         name: "The VAT Special Burger",
@@ -251,7 +252,8 @@ const RECIPES = [
             "INPUT VAT",
             "total = (price * quantity) + VAT",
             "OUTPUT total"
-        ]
+        ],
+        groups: [[0,1,2],[3],[4]]
     },
     {
         name: "The Test Score Smoothie",
@@ -264,7 +266,8 @@ const RECIPES = [
             "INPUT Score4",
             "average = (Score1 + Score2 + Score3 + Score4) / 4",
             "OUTPUT average"
-        ]
+        ],
+        groups: [[0,1,2,3],[4],[5]]
     },
     {
         name: "Sandwich Sales Stew",
@@ -278,7 +281,8 @@ const RECIPES = [
             "TotalSales = FridaySales + SaturdaySales + SundaySales",
             "AverageSales = TotalSales / 3",
             "OUTPUT AverageSales"
-        ]
+        ],
+        groups: [[0],[1,2,3],[4],[5],[6]]
     },
     {
         name: "The Discount Dessert",
@@ -290,7 +294,8 @@ const RECIPES = [
             "discount = originalPrice * (discountPercent / 100)",
             "finalPrice = originalPrice - discount",
             "OUTPUT finalPrice"
-        ]
+        ],
+        groups: [[0,1],[2],[3],[4]]
     },
     {
         name: "The Rectangle Roast",
@@ -303,7 +308,8 @@ const RECIPES = [
             "perimeter = 2 * (length + width)",
             "OUTPUT area",
             "OUTPUT perimeter"
-        ]
+        ],
+        groups: [[0,1],[2,3],[4,5]]
     }
 ];
 
@@ -441,6 +447,28 @@ function clearAll() {
 }
 
 /* ── CHECK ANSWER ── */
+function checkWithGroups(recipe) {
+    // Groups define sets of line indices that are interchangeable.
+    // A slot is correct if the line placed there belongs to the same group
+    // AND the set of lines placed across that group's slots matches the expected set.
+    const groups = recipe.groups;
+    const results = new Array(placedLines.length).fill(false);
+
+    for (const group of groups) {
+        // The set of original line indices that should fill this group's slots
+        const expectedSet = new Set(group);
+        // The set of original line indices actually placed in this group's slots
+        const placedSet = new Set(group.map(slotIdx => placedLines[slotIdx]));
+        // If the sets match, every slot in this group is correct
+        const match = expectedSet.size === placedSet.size &&
+                      [...expectedSet].every(v => placedSet.has(v));
+        if (match) {
+            for (const slotIdx of group) results[slotIdx] = true;
+        }
+    }
+    return results;
+}
+
 function cook() {
     if (isAnimating) return;
     if (placedLines.some(v => v === null)) return;
@@ -448,7 +476,7 @@ function cook() {
     attempts++;
 
     const recipe = RECIPES[currentRecipe];
-    const results = placedLines.map((origIdx, slotIdx) => origIdx === slotIdx);
+    const results = checkWithGroups(recipe);
     const allCorrect = results.every(r => r);
 
     // Animate slots one by one

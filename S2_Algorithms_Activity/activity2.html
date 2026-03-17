@@ -735,7 +735,9 @@
                 'IF racetime1 < racetime2 OR racetime1 < racetime3',
                 'OUTPUT racetime1 + racetime2',
                 'INPUT racetime4'
-            ]
+            ],
+            // Line indices where any order is acceptable
+            flexibleGroups: [[0,1,2]]
         }
     ];
 
@@ -774,6 +776,69 @@
             if (stripIndent(a[i]) !== stripIndent(b[i])) return false;
         }
         return true;
+    }
+
+    // Check if array matches, allowing flexible ordering within specified groups
+    function arraysMatchWithFlexible(userLines, correctLines, flexibleGroups) {
+        if (!flexibleGroups || flexibleGroups.length === 0) {
+            return arraysMatchStripped(userLines, correctLines);
+        }
+        if (userLines.length !== correctLines.length) return false;
+
+        // Build a set of all flexible indices for quick lookup
+        const flexibleIndices = new Set();
+        for (const group of flexibleGroups) {
+            for (const idx of group) flexibleIndices.add(idx);
+        }
+
+        // Check non-flexible lines strictly
+        for (let i = 0; i < userLines.length; i++) {
+            if (flexibleIndices.has(i)) continue;
+            if (stripIndent(userLines[i]) !== stripIndent(correctLines[i])) return false;
+        }
+
+        // Check each flexible group: the set of lines in those positions must match
+        for (const group of flexibleGroups) {
+            const expectedSet = group.map(i => stripIndent(correctLines[i])).sort();
+            const actualSet = group.map(i => stripIndent(userLines[i])).sort();
+            for (let j = 0; j < expectedSet.length; j++) {
+                if (expectedSet[j] !== actualSet[j]) return false;
+            }
+        }
+        return true;
+    }
+
+    // Per-line correctness check with flexible groups
+    function lineResultsWithFlexible(userLines, correctLines, flexibleGroups) {
+        const results = new Array(userLines.length).fill(false);
+        const flexibleIndices = new Set();
+        if (flexibleGroups) {
+            for (const group of flexibleGroups) {
+                for (const idx of group) flexibleIndices.add(idx);
+            }
+        }
+
+        // Check non-flexible lines strictly
+        for (let i = 0; i < userLines.length; i++) {
+            if (flexibleIndices.has(i)) continue;
+            if (i < correctLines.length && stripIndent(userLines[i]) === stripIndent(correctLines[i])) {
+                results[i] = true;
+            }
+        }
+
+        // Check flexible groups
+        if (flexibleGroups) {
+            for (const group of flexibleGroups) {
+                const expectedSet = group.map(i => stripIndent(correctLines[i])).sort();
+                const actualSet = group.map(i => stripIndent(userLines[i])).sort();
+                const match = expectedSet.length === actualSet.length &&
+                    expectedSet.every((v, j) => v === actualSet[j]);
+                if (match) {
+                    for (const idx of group) results[idx] = true;
+                }
+            }
+        }
+        return results;
     }
 
     // Compute auto-indent level for a line based on all lines so far
@@ -954,8 +1019,8 @@
         const build = BUILDS[currentBuild];
         const correctStripped = build.correctLines.map(l => stripIndent(l));
 
-        // Compare
-        const isCorrect = arraysMatchStripped(buildArea, correctStripped);
+        // Compare (with flexible group support)
+        const isCorrect = arraysMatchWithFlexible(buildArea, build.correctLines, build.flexibleGroups);
 
         if (isCorrect) {
             // Mark all lines correct
@@ -1003,15 +1068,15 @@
             }, 2400);
 
         } else {
-            // Mark which lines are right/wrong
-            const maxLen = Math.max(buildArea.length, correctStripped.length);
+            // Mark which lines are right/wrong (with flexible group support)
+            const lineResults = lineResultsWithFlexible(buildArea, build.correctLines, build.flexibleGroups);
             let wrongCount = 0;
             let firstWrongIdx = -1;
 
             for (let i = 0; i < buildArea.length; i++) {
                 const slot = document.getElementById(`build-slot-${i}`);
                 if (!slot) continue;
-                if (i < correctStripped.length && stripIndent(buildArea[i]) === correctStripped[i]) {
+                if (lineResults[i]) {
                     slot.classList.add('correct-line');
                 } else {
                     slot.classList.add('wrong-line');
