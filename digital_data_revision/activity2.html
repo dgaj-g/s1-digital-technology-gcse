@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Type Caster — Digital Data HQ</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:linear-gradient(135deg,#1a1000 0%,#3d2e00 40%,#2a1f00 100%);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#e0e0e0;overflow-x:hidden;}
+.container{max-width:850px;margin:0 auto;padding:20px 20px 60px;position:relative;}
+a.back{display:inline-block;color:#ffd54f;text-decoration:none;font-size:0.9em;margin-bottom:18px;opacity:0.8;transition:opacity 0.3s;}a.back:hover{opacity:1;}
+.progress-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;margin-bottom:24px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#ffd54f,#ffb300);border-radius:3px;transition:width 0.5s ease;width:0%;}
+.screen{display:none;animation:fadeIn 0.5s ease;}.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(25px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pop{0%{transform:scale(0.8);opacity:0;}50%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+@keyframes bounceIn{0%{transform:scale(0);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-15px);}to{opacity:1;transform:translateY(0);}}
+@keyframes conveyorMove{0%{transform:translateX(60px);opacity:0;}15%{opacity:1;}85%{opacity:1;}100%{transform:translateX(-60px);opacity:0;}}
+@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+h2{font-size:1.6em;font-weight:700;margin-bottom:6px;color:#ffe082;}
+.phase-label{text-transform:uppercase;font-size:0.75em;letter-spacing:2px;color:#8d6e00;margin-bottom:14px;}
+.btn{display:inline-block;padding:12px 32px;border:none;border-radius:10px;font-size:1em;font-weight:700;cursor:pointer;transition:all 0.3s;color:#fff;}
+.btn-primary{background:linear-gradient(135deg,#ffb300,#ff8f00);color:#1a1000;}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,179,0,0.4);}
+.btn-success{background:linear-gradient(135deg,#2ecc71,#27ae60);}.btn-success:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(46,204,113,0.4);}
+/* Welcome */
+.welcome{text-align:center;padding:40px 0;}
+.welcome-icon{font-size:80px;animation:bounceIn 0.8s ease;}
+.welcome h2{font-size:2em;background:linear-gradient(135deg,#ffd54f,#ffb300);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:16px 0 10px;}
+.welcome p{color:#8899aa;max-width:500px;margin:0 auto 8px;line-height:1.6;}
+.mission-box{background:rgba(255,213,79,0.08);border:1px solid rgba(255,213,79,0.2);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:520px;text-align:left;font-size:0.92em;line-height:1.7;}
+.mission-box strong{color:#ffd54f;}
+/* Teach */
+.teach-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;margin-bottom:18px;animation:fadeInUp 0.5s ease both;}
+.teach-card h3{font-size:1.15em;color:#ffe082;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.teach-card p{font-size:0.93em;color:#b0bec5;line-height:1.7;}
+.highlight{background:rgba(255,213,79,0.1);border-left:3px solid #ffd54f;padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:0.9em;}
+.type-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0;}
+.type-card{background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:16px;text-align:center;transition:all 0.3s;cursor:default;}
+.type-card .t-icon{font-size:1.8em;margin-bottom:6px;}
+.type-card .t-name{font-weight:700;font-size:1em;color:#ffe082;margin-bottom:4px;}
+.type-card .t-desc{font-size:0.8em;color:#8899aa;margin-bottom:6px;}
+.type-card .t-examples{font-size:0.85em;color:#b0bec5;font-weight:600;}
+/* Sort Belt */
+.belt-area{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;margin-bottom:14px;}
+.belt-item{text-align:center;margin-bottom:16px;}
+.belt-item .item-counter{font-size:0.8em;color:#8d6e00;margin-bottom:6px;}
+.belt-item .item-value{font-size:1.6em;font-weight:800;color:#fff;padding:16px 24px;background:rgba(255,213,79,0.08);border:2px solid rgba(255,213,79,0.2);border-radius:12px;display:inline-block;min-width:140px;animation:slideDown 0.4s ease;}
+.bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-top:16px;}
+.bin{padding:14px 8px;border-radius:10px;text-align:center;cursor:pointer;transition:all 0.3s;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);font-size:0.88em;font-weight:600;}
+.bin:hover{border-color:rgba(255,213,79,0.4);background:rgba(255,213,79,0.08);}
+.bin.correct{border-color:#2ecc71!important;background:rgba(46,204,113,0.15)!important;color:#2ecc71;}
+.bin.wrong{border-color:#e74c3c!important;background:rgba(231,76,60,0.15)!important;color:#e74c3c;animation:shake 0.4s ease;}
+.bin:disabled,.bin[disabled]{pointer-events:none;}
+.feedback-box{padding:12px 16px;border-radius:8px;margin-top:12px;font-size:0.88em;line-height:1.5;animation:fadeIn 0.3s ease;}
+.feedback-box.correct{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.25);color:#a5d6a7;}
+.feedback-box.wrong{background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.25);color:#ef9a9a;}
+.score-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.score-display{font-size:0.95em;color:#ffd54f;font-weight:600;}
+.streak-badge{background:rgba(255,152,0,0.15);color:#ffb74d;padding:3px 12px;border-radius:12px;font-size:0.82em;font-weight:600;}
+/* PPQ section */
+.ppq-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;margin-bottom:14px;animation:fadeInUp 0.4s ease both;}
+.ppq-card .year-badge{display:inline-block;background:rgba(255,213,79,0.15);color:#ffd54f;padding:3px 10px;border-radius:8px;font-size:0.78em;font-weight:700;margin-bottom:8px;}
+.ppq-card .q-text{font-size:1em;font-weight:600;margin-bottom:14px;line-height:1.5;}
+.ppq-option{display:block;padding:12px 16px;border:2px solid rgba(255,255,255,0.1);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all 0.3s;font-size:0.92em;}
+.ppq-option:hover{border-color:rgba(255,213,79,0.4);background:rgba(255,213,79,0.05);}
+.ppq-option.correct{border-color:#2ecc71;background:rgba(46,204,113,0.12);color:#a5d6a7;}
+.ppq-option.wrong{border-color:#e74c3c;background:rgba(231,76,60,0.12);color:#ef9a9a;animation:shake 0.3s ease;}
+.ppq-option:disabled,.ppq-option[data-done]{pointer-events:none;}
+/* Table PPQ */
+.ppq-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:0.88em;}
+.ppq-table th{padding:8px 10px;text-align:left;background:rgba(255,213,79,0.12);border:1px solid rgba(255,255,255,0.1);color:#ffe082;}
+.ppq-table td{padding:8px 10px;border:1px solid rgba(255,255,255,0.06);}
+.ppq-table select{padding:6px 10px;border-radius:6px;background:rgba(255,255,255,0.08);color:#e0e0e0;border:1px solid rgba(255,255,255,0.15);font-size:0.95em;width:100%;cursor:pointer;}
+.ppq-table select.correct{border-color:#2ecc71;background:rgba(46,204,113,0.1);}
+.ppq-table select.wrong{border-color:#e74c3c;background:rgba(231,76,60,0.1);}
+/* Results */
+.results{text-align:center;padding:30px 0;}
+.results-icon{font-size:80px;animation:bounceIn 0.6s ease;}
+.results h2{margin:16px 0 6px;}
+.results .score-big{font-size:2.2em;font-weight:900;color:#ffd54f;margin:10px 0;}
+.results .rank{font-size:1.1em;color:#ffe082;margin-bottom:20px;}
+.breakdown{background:rgba(255,255,255,0.04);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:400px;text-align:left;}
+.breakdown-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.9em;}
+.breakdown-row:last-child{border:none;font-weight:700;color:#ffd54f;}
+.revision-box{background:rgba(255,213,79,0.08);border:1px solid rgba(255,213,79,0.2);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:500px;text-align:left;font-size:0.88em;line-height:1.7;}
+.revision-box h4{color:#ffd54f;margin-bottom:8px;}
+.btn-row{display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;animation:confettiFall 3s linear forwards;pointer-events:none;z-index:999;}
+@media(max-width:600px){h2{font-size:1.3em;}.type-grid{grid-template-columns:1fr 1fr;}.bins{grid-template-columns:repeat(3,1fr);}.belt-item .item-value{font-size:1.2em;padding:12px 18px;}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="index.html">← Back to Hub</a>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="screen active" id="welcomeScreen">
+<div class="welcome">
+<div class="welcome-icon">🏭</div>
+<h2>Type Caster</h2>
+<p>Welcome to the Data Type Sorting Factory. Every piece of data that enters the system must be classified by its correct type before it can be processed. It's your job to keep the factory running.</p>
+<div class="mission-box">
+<strong>Mission Briefing:</strong><br>
+Phase 1 — Learn the five data types and what makes each one unique<br>
+Phase 2 — Sort data items into the correct type bins at speed<br>
+Phase 3 — Tackle real past paper questions on data types<br><br>
+<strong>Data types:</strong> Integer, Real, Character, String, Date/Time
+</div>
+<button class="btn btn-primary" onclick="startTeach()">Start Shift →</button>
+</div>
+</div>
+
+<div class="screen" id="teachScreen">
+<div class="phase-label">Phase 1 — Factory Training</div>
+<div id="teachContent"></div>
+<div style="text-align:center;margin-top:20px;">
+<button class="btn btn-primary" id="teachBtn" onclick="nextTeach()">Next →</button>
+</div>
+</div>
+
+<div class="screen" id="sortScreen">
+<div class="phase-label">Phase 2 — Sort the Belt</div>
+<div class="score-bar"><h2>Sort the Item</h2><span class="score-display" id="sortScore">0/0</span></div>
+<div id="sortContent"></div>
+</div>
+
+<div class="screen" id="ppqScreen">
+<div class="phase-label">Phase 3 — Exam Questions</div>
+<h2>Past Paper Challenge</h2>
+<div id="ppqContent"></div>
+</div>
+
+<div class="screen" id="resultsScreen">
+<div class="results" id="resultsContent"></div>
+</div>
+</div>
+
+<script>
+function shuffle(a){let arr=[...a];for(let i=arr.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function setProgress(p){document.getElementById('progressFill').style.width=p+'%';}
+
+/* TEACH */
+let teachIdx=0;
+const teaches=[
+()=>`
+<div class="teach-card">
+<h3>🏭 The Five Data Types</h3>
+<p>A computer is not intelligent — it's just a machine storing data as billions of switch combinations. <strong>Data types</strong> tell the computer what kind of data it is working with, so it knows how to process it correctly.</p>
+<div class="type-grid">
+<div class="type-card" style="border-color:rgba(66,165,245,0.3);"><div class="t-icon">🔢</div><div class="t-name">Integer</div><div class="t-desc">Whole numbers (no decimals)</div><div class="t-examples">24, -5, 100, 0</div></div>
+<div class="type-card" style="border-color:rgba(102,187,106,0.3);"><div class="t-icon">📊</div><div class="t-name">Real</div><div class="t-desc">Numbers with decimal points</div><div class="t-examples">3.14, 6.2, 1.34, -0.5</div></div>
+<div class="type-card" style="border-color:rgba(255,183,77,0.3);"><div class="t-icon">📅</div><div class="t-name">Date/Time</div><div class="t-desc">Dates and times</div><div class="t-examples">22/05/19, 14:30</div></div>
+<div class="type-card" style="border-color:rgba(239,83,80,0.3);"><div class="t-icon">🔤</div><div class="t-name">Character</div><div class="t-desc">A single letter, digit, or symbol</div><div class="t-examples">A, @, &, 7</div></div>
+<div class="type-card" style="border-color:rgba(171,71,188,0.3);"><div class="t-icon">📝</div><div class="t-name">String</div><div class="t-desc">A sequence of characters (text)</div><div class="t-examples">"Main Street", "Hello"</div></div>
+</div>
+</div>`,
+()=>`
+<div class="teach-card">
+<h3>⚠️ Why Data Types Matter</h3>
+<p>Using the wrong data type changes what happens to your data. Consider this code:</p>
+<div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:14px 18px;margin:12px 0;font-family:'Courier New',monospace;font-size:0.9em;line-height:1.8;">
+<div><span style="color:#ff8a65;">string</span> num1 = <span style="color:#a5d6a7;">"1"</span>;</div>
+<div><span style="color:#ff8a65;">string</span> num2 = <span style="color:#a5d6a7;">"2"</span>;</div>
+<div>Console.WriteLine(num1 + num2);</div>
+<div style="color:#ffd54f;margin-top:6px;">// Output: "12" — NOT 3!</div>
+</div>
+<p>Because num1 and num2 are <strong>strings</strong>, the + operator joins them together (concatenation) rather than adding them mathematically. If they were <strong>integers</strong>, the result would be 3.</p>
+<div class="highlight">
+<strong>Key distinction:</strong> A single digit like "7" could be a <strong>character</strong> (just the symbol), an <strong>integer</strong> (the number seven), or part of a <strong>string</strong> (text containing "7"). The data type determines how the computer treats it.
+</div>
+</div>
+<div class="teach-card">
+<h3>💡 Tricky Cases to Watch</h3>
+<p>Some items catch students out in exams:</p>
+<ul style="padding-left:20px;margin-top:8px;line-height:2;">
+<li><strong>"Main Street"</strong> → String (multiple characters forming text)</li>
+<li><strong>@</strong> → Character (a single symbol)</li>
+<li><strong>-23</strong> → Integer (negative whole numbers are still integers)</li>
+<li><strong>1.34</strong> → Real (any number with a decimal point)</li>
+<li><strong>09:45</strong> → Date/Time (a time value)</li>
+<li><strong>"GBP"</strong> → This could be a String (three characters forming a currency code)</li>
+</ul>
+</div>
+<p style="text-align:center;color:#ffe082;font-weight:600;margin-top:12px;">Training complete — let's fire up the conveyor belt.</p>`
+];
+
+function startTeach(){showScreen('teachScreen');teachIdx=0;renderTeach();setProgress(10);}
+function renderTeach(){document.getElementById('teachContent').innerHTML=teaches[teachIdx]();document.getElementById('teachBtn').textContent=teachIdx<teaches.length-1?'Next →':'Start Sorting →';}
+function nextTeach(){teachIdx++;if(teachIdx>=teaches.length){startSort();}else{renderTeach();setProgress(25);}}
+
+/* SORT BELT */
+const sortItems=shuffle([
+  {value:"42",type:"Integer",why:"A whole number with no decimal point."},
+  {value:"3.14",type:"Real",why:"A number with a decimal point — it's not a whole number."},
+  {value:"Main Street",type:"String",why:"Multiple characters forming a piece of text."},
+  {value:"@",type:"Character",why:"A single symbol — just one character."},
+  {value:"22/05/2019",type:"Date/Time",why:"A date value representing a specific day."},
+  {value:"-17",type:"Integer",why:"A negative whole number — still an integer, no decimal."},
+  {value:"09:30",type:"Date/Time",why:"A time value — hours and minutes."},
+  {value:"0.99",type:"Real",why:"Has a decimal point, so it's a real number — not an integer."},
+  {value:"Hello World",type:"String",why:"A sequence of characters (including a space) forming text."},
+  {value:"&",type:"Character",why:"A single symbol — the ampersand is one character."},
+  {value:"2048",type:"Integer",why:"A whole number. Even though it's large, it has no decimal point."},
+  {value:"15/03/2026",type:"Date/Time",why:"A date — day, month, and year."},
+]);
+let sortIdx=0,sortScore=0;
+const types=["Integer","Real","Character","String","Date/Time"];
+
+function startSort(){showScreen('sortScreen');sortIdx=0;sortScore=0;setProgress(40);showSortItem();}
+function showSortItem(){
+  if(sortIdx>=sortItems.length){finishSort();return;}
+  document.getElementById('sortScore').textContent=sortScore+'/'+sortIdx;
+  const item=sortItems[sortIdx];
+  document.getElementById('sortContent').innerHTML=`
+<div class="belt-area">
+<div class="belt-item">
+<div class="item-counter">Item ${sortIdx+1} of ${sortItems.length}</div>
+<div class="item-value">${item.value}</div>
+</div>
+<div class="bins">${types.map(t=>`<div class="bin" onclick="sortAnswer('${t}',this)">${t}</div>`).join('')}</div>
+<div id="sortFeedback"></div>
+</div>`;
+}
+function sortAnswer(choice,el){
+  const item=sortItems[sortIdx];
+  const bins=document.querySelectorAll('.bin');
+  bins.forEach(b=>b.setAttribute('disabled',''));
+  const correct=choice===item.type;
+  if(correct){sortScore++;el.classList.add('correct');}
+  else{el.classList.add('wrong');bins.forEach(b=>{if(b.textContent===item.type)b.classList.add('correct');});}
+  document.getElementById('sortFeedback').innerHTML=`<div class="feedback-box ${correct?'correct':'wrong'}">${correct?'✓ Correct!':'✗ Not quite.'} ${item.why}</div>`;
+  sortIdx++;
+  setTimeout(showSortItem,1600);
+}
+function finishSort(){
+  document.getElementById('sortScore').textContent=sortScore+'/'+sortItems.length;
+  document.getElementById('sortContent').innerHTML=`
+<div style="text-align:center;padding:20px;">
+<div style="font-size:2.5em;animation:bounceIn 0.5s ease;">${sortScore>=10?'🎯':sortScore>=7?'👍':'📚'}</div>
+<p style="margin:12px 0;font-size:1.1em;">Sorting Complete: <strong style="color:#ffd54f;">${sortScore}/${sortItems.length}</strong></p>
+<button class="btn btn-primary" onclick="startPPQ()">Phase 3: Exam Questions →</button>
+</div>`;
+}
+
+/* PPQ CHALLENGE */
+let ppqScore=0,ppqTotal=0;
+function startPPQ(){showScreen('ppqScreen');ppqScore=0;ppqTotal=0;setProgress(70);renderPPQ();}
+function renderPPQ(){
+  document.getElementById('ppqContent').innerHTML=`
+<!-- Q1: 2021 table matching -->
+<div class="ppq-card" style="animation-delay:0s;">
+<span class="year-badge">2021 Paper</span>
+<div class="q-text">Complete the table by selecting the most appropriate data type for each piece of data.</div>
+<table class="ppq-table">
+<tr><th>Data</th><th>Data Type</th></tr>
+<tr><td>24, 125, -23</td><td><select id="tbl1" onchange="checkTableQ(this,'Integer')"><option value="">Select...</option><option>Integer</option><option>Real</option><option>Character</option><option>String</option><option>Date/Time</option></select></td></tr>
+<tr><td>A, &, @</td><td><select id="tbl2" onchange="checkTableQ(this,'Character')"><option value="">Select...</option><option>Integer</option><option>Real</option><option>Character</option><option>String</option><option>Date/Time</option></select></td></tr>
+<tr><td>Main Street</td><td><select id="tbl3" onchange="checkTableQ(this,'String')"><option value="">Select...</option><option>Integer</option><option>Real</option><option>Character</option><option>String</option><option>Date/Time</option></select></td></tr>
+<tr><td>1.34, 6.2</td><td><select id="tbl4" onchange="checkTableQ(this,'Real')"><option value="">Select...</option><option>Integer</option><option>Real</option><option>Character</option><option>String</option><option>Date/Time</option></select></td></tr>
+</table>
+<div id="tblFeedback"></div>
+</div>
+
+<!-- Q2: 2023 storage units -->
+<div class="ppq-card" style="animation-delay:0.15s;">
+<span class="year-badge">2023 Paper</span>
+<div class="q-text">State the most appropriate unit of storage (Bytes, Kilobytes, or Megabytes) for each item below.</div>
+<table class="ppq-table">
+<tr><th>Item</th><th>Unit</th></tr>
+<tr><td>A one-page text document</td><td><select id="unit1" onchange="checkTableQ(this,'Kilobytes')"><option value="">Select...</option><option>Bytes</option><option>Kilobytes</option><option>Megabytes</option></select></td></tr>
+<tr><td>A ten-minute movie clip</td><td><select id="unit2" onchange="checkTableQ(this,'Megabytes')"><option value="">Select...</option><option>Bytes</option><option>Kilobytes</option><option>Megabytes</option></select></td></tr>
+<tr><td>A person's surname</td><td><select id="unit3" onchange="checkTableQ(this,'Bytes')"><option value="">Select...</option><option>Bytes</option><option>Kilobytes</option><option>Megabytes</option></select></td></tr>
+</table>
+<div id="unitFeedback"></div>
+</div>
+
+<!-- Q3: 2022 MCQ -->
+<div class="ppq-card" style="animation-delay:0.3s;">
+<span class="year-badge">2022 Paper</span>
+<div class="q-text">A student scores 51 in their Computing Module. What is the most appropriate data type to store this score?</div>
+<div id="mcq1Options">
+<div class="ppq-option" onclick="checkMCQ(this,'mcq1','Integer')">Integer</div>
+<div class="ppq-option" onclick="checkMCQ(this,'mcq1','Real')">Real</div>
+<div class="ppq-option" onclick="checkMCQ(this,'mcq1','String')">String</div>
+<div class="ppq-option" onclick="checkMCQ(this,'mcq1','Character')">Character</div>
+</div>
+<div id="mcq1Feedback"></div>
+</div>
+
+<!-- Q4: 2022 bits/bytes -->
+<div class="ppq-card" style="animation-delay:0.45s;">
+<span class="year-badge">2022 Paper</span>
+<div class="q-text">A file is 6400 bits in size. How many bytes of storage are required?</div>
+<div id="mcq2Options">
+<div class="ppq-option" onclick="checkMCQ(this,'mcq2','800')">800</div>
+<div class="ppq-option" onclick="checkMCQ(this,'mcq2','51200')">51,200</div>
+<div class="ppq-option" onclick="checkMCQ(this,'mcq2','1600')">1,600</div>
+<div class="ppq-option" onclick="checkMCQ(this,'mcq2','6.25')">6.25</div>
+</div>
+<div id="mcq2Feedback"></div>
+</div>
+
+<div style="text-align:center;margin-top:20px;">
+<button class="btn btn-primary" id="ppqFinishBtn" onclick="finishPPQ()" style="display:none;">See Results →</button>
+</div>`;
+}
+
+let tblAnswered=0,unitAnswered=0,mcqDone={};
+function checkTableQ(sel,correct){
+  if(sel.dataset.done)return;
+  sel.dataset.done='1';
+  ppqTotal++;
+  if(sel.value===correct){ppqScore++;sel.classList.add('correct');}
+  else{sel.classList.add('wrong');}
+  sel.disabled=true;
+  checkPPQComplete();
+}
+function checkMCQ(el,group,correctVal){
+  if(mcqDone[group])return;
+  mcqDone[group]=true;
+  ppqTotal++;
+  const opts=el.parentElement.querySelectorAll('.ppq-option');
+  opts.forEach(o=>o.setAttribute('data-done','1'));
+  const correct=el.textContent.replace(/,/g,'')===correctVal;
+  if(correct){ppqScore++;el.classList.add('correct');}
+  else{
+    el.classList.add('wrong');
+    opts.forEach(o=>{if(o.textContent.replace(/,/g,'')===correctVal)o.classList.add('correct');});
+  }
+  const fb=document.getElementById(group+'Feedback');
+  if(group==='mcq1'){
+    fb.innerHTML=`<div class="feedback-box ${correct?'correct':'wrong'}" style="margin-top:8px;">${correct?'✓ Correct!':'✗ The answer is Integer.'} 51 is a whole number with no decimal point, making it an integer.</div>`;
+  }else{
+    fb.innerHTML=`<div class="feedback-box ${correct?'correct':'wrong'}" style="margin-top:8px;">${correct?'✓ Correct!':'✗ The answer is 800.'} 1 byte = 8 bits, so 6400 ÷ 8 = 800 bytes.</div>`;
+  }
+  checkPPQComplete();
+}
+function checkPPQComplete(){if(ppqTotal>=9)document.getElementById('ppqFinishBtn').style.display='inline-block';}
+function finishPPQ(){showResults();}
+
+/* RESULTS */
+const totalPossible=23; // 12 sort + 4 table + 3 unit + 1 mcq1 + 1 mcq2 ... wait let me recount
+// sort: 12, ppq: 4+3+1+1 = 9, total = 21
+function showResults(){
+  const total=sortScore+ppqScore;
+  const max=sortItems.length+9;
+  const pct=Math.round(total/max*100);
+  let icon='🌱',rank='Apprentice';
+  if(pct>=90){icon='👑';rank='Factory Director';}
+  else if(pct>=70){icon='⭐';rank='Floor Manager';}
+  else if(pct>=50){icon='🏭';rank='Machine Operator';}
+  setProgress(100);showScreen('resultsScreen');fireConfetti();
+  const tips=[];
+  if(sortScore<9)tips.push("Practise distinguishing integer vs real (does it have a decimal point?), character vs string (one symbol vs multiple), and when something is a date/time.");
+  if(ppqScore<6)tips.push("Review past paper questions — they often ask you to match data to types in a table or pick the correct storage unit for a scenario.");
+  document.getElementById('resultsContent').innerHTML=`
+<div class="results-icon">${icon}</div>
+<h2>Shift Complete!</h2>
+<div class="score-big">${total}/${max} (${pct}%)</div>
+<div class="rank">${rank}</div>
+<div class="breakdown">
+<div class="breakdown-row"><span>Sort the Belt</span><span>${sortScore}/${sortItems.length}</span></div>
+<div class="breakdown-row"><span>Exam Questions</span><span>${ppqScore}/9</span></div>
+<div class="breakdown-row"><span>Total</span><span>${total}/${max}</span></div>
+</div>
+${tips.length?`<div class="revision-box"><h4>📝 Revision Notes</h4><ul>${tips.map(t=>'<li>'+t+'</li>').join('')}</ul></div>`:''}
+<div class="btn-row">
+<a href="index.html" class="btn btn-primary" style="text-decoration:none;">← Back to Hub</a>
+<a href="activity3.html" class="btn btn-success" style="text-decoration:none;">Activity 3: Pixel Lab →</a>
+</div>`;
+}
+function fireConfetti(){const colors=['#ffd54f','#2ecc71','#42a5f5','#e74c3c','#9b59b6','#1abc9c'];for(let i=0;i<40;i++){const c=document.createElement('div');c.className='confetti-piece';c.style.left=Math.random()*100+'%';c.style.top='-10px';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.width=(6+Math.random()*8)+'px';c.style.height=(6+Math.random()*8)+'px';c.style.animationDelay=Math.random()*1.5+'s';c.style.animationDuration=(2+Math.random()*2)+'s';document.body.appendChild(c);c.addEventListener('animationend',()=>c.remove());}}
+</script>
+</body>
+</html>

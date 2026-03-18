@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixel Lab — Digital Data HQ</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:linear-gradient(135deg,#1a0a1e 0%,#3a1a42 40%,#2a0e30 100%);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#e0e0e0;overflow-x:hidden;}
+.container{max-width:850px;margin:0 auto;padding:20px 20px 60px;}
+a.back{display:inline-block;color:#f48fb1;text-decoration:none;font-size:0.9em;margin-bottom:18px;opacity:0.8;}a.back:hover{opacity:1;}
+.progress-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;margin-bottom:24px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#f48fb1,#ec407a);border-radius:3px;transition:width 0.5s ease;width:0%;}
+.screen{display:none;animation:fadeIn 0.5s ease;}.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(25px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pop{0%{transform:scale(0.8);opacity:0;}50%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+@keyframes bounceIn{0%{transform:scale(0);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+@keyframes zoomPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.03);}}
+h2{font-size:1.6em;font-weight:700;margin-bottom:6px;color:#f8bbd0;}
+.phase-label{text-transform:uppercase;font-size:0.75em;letter-spacing:2px;color:#8a3a5c;margin-bottom:14px;}
+.btn{display:inline-block;padding:12px 32px;border:none;border-radius:10px;font-size:1em;font-weight:700;cursor:pointer;transition:all 0.3s;color:#fff;}
+.btn-primary{background:linear-gradient(135deg,#ec407a,#c2185b);}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(236,64,122,0.4);}
+.btn-success{background:linear-gradient(135deg,#2ecc71,#27ae60);}.btn-success:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(46,204,113,0.4);}
+.welcome{text-align:center;padding:40px 0;}
+.welcome-icon{font-size:80px;animation:bounceIn 0.8s ease;}
+.welcome h2{font-size:2em;background:linear-gradient(135deg,#f48fb1,#ec407a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:16px 0 10px;}
+.welcome p{color:#8899aa;max-width:500px;margin:0 auto 8px;line-height:1.6;}
+.mission-box{background:rgba(244,143,177,0.08);border:1px solid rgba(244,143,177,0.2);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:520px;text-align:left;font-size:0.92em;line-height:1.7;}
+.mission-box strong{color:#f48fb1;}
+.teach-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;margin-bottom:18px;animation:fadeInUp 0.5s ease both;}
+.teach-card h3{font-size:1.15em;color:#f8bbd0;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.teach-card p{font-size:0.93em;color:#b0bec5;line-height:1.7;}
+.highlight{background:rgba(244,143,177,0.1);border-left:3px solid #f48fb1;padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:0.9em;}
+/* Pixel grid */
+.pixel-grid{display:inline-grid;gap:1px;margin:16px auto;background:rgba(255,255,255,0.1);padding:2px;border-radius:6px;}
+.pixel-cell{width:100%;aspect-ratio:1;border-radius:2px;transition:all 0.3s;}
+/* RGB mixer */
+.rgb-mixer{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px;margin:16px 0;}
+.rgb-row{display:flex;align-items:center;gap:12px;margin:10px 0;flex-wrap:wrap;}
+.rgb-row label{width:30px;font-weight:700;font-size:1em;}
+.rgb-row input[type=range]{flex:1;min-width:120px;accent-color:#f48fb1;}
+.rgb-row .rgb-val{width:40px;text-align:right;font-weight:700;font-family:'Courier New',monospace;}
+.colour-swatch{width:120px;height:120px;border-radius:12px;border:3px solid rgba(255,255,255,0.15);margin:12px auto;transition:background-color 0.1s;}
+.colour-code{text-align:center;font-family:'Courier New',monospace;font-size:0.9em;color:#b0bec5;margin-top:6px;}
+.preset-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0;}
+.preset-btn{padding:6px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:rgba(255,255,255,0.04);color:#b0bec5;font-size:0.8em;cursor:pointer;transition:all 0.3s;}
+.preset-btn:hover{border-color:rgba(244,143,177,0.4);background:rgba(244,143,177,0.08);}
+/* Resolution comparison */
+.res-compare{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:16px 0;}
+.res-box{text-align:center;flex:1;min-width:140px;}
+.res-box .res-label{font-size:0.85em;color:#8a3a5c;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.res-box .res-size{font-size:0.8em;color:#b0bec5;margin-top:6px;}
+.size-bar{height:18px;border-radius:9px;margin:8px auto;transition:width 1s ease;max-width:200px;}
+/* Test */
+.test-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;margin-bottom:14px;animation:fadeInUp 0.4s ease;}
+.test-card .q-text{font-size:1em;font-weight:600;margin-bottom:14px;line-height:1.5;}
+.test-card .q-num{font-size:0.8em;color:#8a3a5c;margin-bottom:6px;}
+.option{display:block;padding:12px 16px;border:2px solid rgba(255,255,255,0.1);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all 0.3s;font-size:0.92em;}
+.option:hover{border-color:rgba(244,143,177,0.4);background:rgba(244,143,177,0.05);}
+.option.correct{border-color:#2ecc71;background:rgba(46,204,113,0.12);color:#a5d6a7;}
+.option.wrong{border-color:#e74c3c;background:rgba(231,76,60,0.12);color:#ef9a9a;animation:shake 0.3s ease;}
+.option[data-done]{pointer-events:none;}
+.feedback-box{padding:12px 16px;border-radius:8px;margin-top:10px;font-size:0.88em;line-height:1.5;animation:fadeIn 0.3s ease;}
+.feedback-box.correct{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.25);color:#a5d6a7;}
+.feedback-box.wrong{background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.25);color:#ef9a9a;}
+.score-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.score-display{font-size:0.95em;color:#f48fb1;font-weight:600;}
+/* Results */
+.results{text-align:center;padding:30px 0;}
+.results-icon{font-size:80px;animation:bounceIn 0.6s ease;}
+.results .score-big{font-size:2.2em;font-weight:900;color:#f48fb1;margin:10px 0;}
+.results .rank{font-size:1.1em;color:#f8bbd0;margin-bottom:20px;}
+.breakdown{background:rgba(255,255,255,0.04);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:400px;text-align:left;}
+.breakdown-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.9em;}
+.breakdown-row:last-child{border:none;font-weight:700;color:#f48fb1;}
+.revision-box{background:rgba(244,143,177,0.08);border:1px solid rgba(244,143,177,0.2);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:500px;text-align:left;font-size:0.88em;line-height:1.7;}
+.revision-box h4{color:#f48fb1;margin-bottom:8px;}
+.btn-row{display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;animation:confettiFall 3s linear forwards;pointer-events:none;z-index:999;}
+@media(max-width:600px){h2{font-size:1.3em;}.res-compare{flex-direction:column;}.rgb-mixer{padding:14px;}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="index.html">← Back to Hub</a>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="screen active" id="welcomeScreen">
+<div class="welcome">
+<div class="welcome-icon">🎨</div>
+<h2>Pixel Lab</h2>
+<p>Welcome to the design studio. Every digital image you've ever seen is built from tiny coloured squares. Today you'll discover exactly how that works — and why it matters for exams.</p>
+<div class="mission-box">
+<strong>Mission Briefing:</strong><br>
+Phase 1 — Explore pixels, RGB colour, and resolution with interactive visuals<br>
+Phase 2 — Test your knowledge with colour challenges, resolution questions, and exam-style tasks<br><br>
+<strong>Topics:</strong> Pixels, RGB (0–255), Resolution, File Size
+</div>
+<button class="btn btn-primary" onclick="startTeach()">Enter the Lab →</button>
+</div>
+</div>
+
+<div class="screen" id="teachScreen">
+<div class="phase-label">Phase 1 — The Lab</div>
+<div id="teachContent"></div>
+<div style="text-align:center;margin-top:20px;">
+<button class="btn btn-primary" id="teachBtn" onclick="nextTeach()">Next →</button>
+</div>
+</div>
+
+<div class="screen" id="testScreen">
+<div class="phase-label">Phase 2 — Lab Tests</div>
+<div class="score-bar"><h2 id="testTitle">Colour Code Challenge</h2><span class="score-display" id="testScore">0/0</span></div>
+<div id="testContent"></div>
+</div>
+
+<div class="screen" id="resultsScreen">
+<div class="results" id="resultsContent"></div>
+</div>
+</div>
+
+<script>
+function shuffle(a){let arr=[...a];for(let i=arr.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function setProgress(p){document.getElementById('progressFill').style.width=p+'%';}
+
+/* TEACH */
+let teachIdx=0;
+function makePixelGrid(size,colors){
+  let cells='';
+  for(let r=0;r<size;r++)for(let c=0;c<size;c++){
+    const col=colors[r*size+c]||'#333';
+    cells+=`<div class="pixel-cell" style="background:${col};"></div>`;
+  }
+  return `<div class="pixel-grid" style="grid-template-columns:repeat(${size},${Math.min(40,320/size)}px);margin:0 auto;display:inline-grid;">${cells}</div>`;
+}
+const lowResColors=['#e74c3c','#e74c3c','#3498db','#3498db','#e74c3c','#f39c12','#f39c12','#3498db','#2ecc71','#2ecc71','#f39c12','#9b59b6','#2ecc71','#2ecc71','#9b59b6','#9b59b6'];
+const teaches=[
+()=>`
+<div class="teach-card">
+<h3>🔬 What is a Pixel?</h3>
+<p>Every digital image — every photo on your phone, every picture on a website — is made up of tiny squares of colour called <strong>pixels</strong>.</p>
+<div class="highlight">
+A <strong>pixel</strong> is the smallest unit of a digital image that can be displayed and edited. Each pixel stores a single colour.
+</div>
+<p style="margin-top:12px;">Here's a 4×4 grid of pixels. Each coloured square is one pixel:</p>
+<div style="text-align:center;">${makePixelGrid(4,lowResColors)}</div>
+<p style="margin-top:12px;">When millions of these tiny squares are packed together, they form the sharp images you see on screens. But zoom in far enough, and you'll always see the individual squares.</p>
+</div>`,
+()=>`
+<div class="teach-card">
+<h3>🌈 RGB Colour — How Pixels Get Their Colour</h3>
+<p>Each pixel's colour is built from three colour channels: <strong style="color:#ef5350;">Red</strong>, <strong style="color:#66bb6a;">Green</strong>, and <strong style="color:#42a5f5;">Blue</strong> (RGB).</p>
+<p>Each channel is stored in 1 byte (8 bits) with a value between <strong>0</strong> (none of that colour) and <strong>255</strong> (maximum brightness).</p>
+<div class="rgb-mixer">
+<div class="rgb-row"><label style="color:#ef5350;">R</label><input type="range" min="0" max="255" value="236" id="rSlider" oninput="updateSwatch()"><span class="rgb-val" id="rVal">236</span></div>
+<div class="rgb-row"><label style="color:#66bb6a;">G</label><input type="range" min="0" max="255" value="64" id="gSlider" oninput="updateSwatch()"><span class="rgb-val" id="gVal">64</span></div>
+<div class="rgb-row"><label style="color:#42a5f5;">B</label><input type="range" min="0" max="255" value="122" id="bSlider" oninput="updateSwatch()"><span class="rgb-val" id="bVal">122</span></div>
+<div class="colour-swatch" id="colourSwatch" style="background:rgb(236,64,122);"></div>
+<div class="colour-code" id="colourCode">rgb(236, 64, 122)</div>
+<div class="preset-btns">
+<div class="preset-btn" onclick="setRGB(255,0,0)">Pure Red</div>
+<div class="preset-btn" onclick="setRGB(0,255,0)">Pure Green</div>
+<div class="preset-btn" onclick="setRGB(0,0,255)">Pure Blue</div>
+<div class="preset-btn" onclick="setRGB(255,255,255)">White</div>
+<div class="preset-btn" onclick="setRGB(0,0,0)">Black</div>
+<div class="preset-btn" onclick="setRGB(255,255,0)">Yellow</div>
+</div>
+</div>
+<div class="highlight">
+<strong>Key combinations:</strong> (255,0,0) = Red, (0,255,0) = Green, (0,0,255) = Blue, (255,255,255) = White, (0,0,0) = Black, (255,255,0) = Yellow (red + green, no blue).
+</div>
+</div>`,
+()=>`
+<div class="teach-card">
+<h3>📏 Resolution — Quality vs File Size</h3>
+<p><strong>Resolution</strong> describes the number of pixels in an image. More pixels means higher quality — but also a larger file size because there's more data to store.</p>
+<div class="res-compare">
+<div class="res-box">
+<div class="res-label">Low Resolution</div>
+<div style="text-align:center;">${makePixelGrid(4,lowResColors)}</div>
+<div class="res-size">16 pixels — small file</div>
+<div class="size-bar" style="width:40%;background:linear-gradient(90deg,#66bb6a,#43a047);"></div>
+</div>
+<div class="res-box">
+<div class="res-label">High Resolution</div>
+<div style="text-align:center;"><div class="pixel-grid" style="grid-template-columns:repeat(8,20px);display:inline-grid;gap:1px;background:rgba(255,255,255,0.1);padding:2px;border-radius:6px;" id="hiResGrid"></div></div>
+<div class="res-size">64 pixels — larger file</div>
+<div class="size-bar" style="width:90%;background:linear-gradient(90deg,#ef5350,#c62828);"></div>
+</div>
+</div>
+<div class="highlight">
+<strong>The trade-off:</strong> Higher resolution = sharper, better quality image, but LARGER file size (more pixel data to store). Lower resolution = blurry image, but SMALLER file size.
+</div>
+</div>
+<p style="text-align:center;color:#f8bbd0;font-weight:600;margin-top:12px;">Lab briefing complete — time for the tests.</p>`
+];
+function startTeach(){showScreen('teachScreen');teachIdx=0;renderTeach();setProgress(10);}
+function renderTeach(){
+  document.getElementById('teachContent').innerHTML=teaches[teachIdx]();
+  document.getElementById('teachBtn').textContent=teachIdx<teaches.length-1?'Next →':'Start Lab Tests →';
+  if(teachIdx===2){
+    const grid=document.getElementById('hiResGrid');
+    if(grid){const hiColors=[];for(let i=0;i<64;i++){const lr=lowResColors[Math.floor(i/8)*2+Math.floor((i%8)/2)];hiColors.push(lr||'#333');}
+    grid.innerHTML=hiColors.map(c=>`<div class="pixel-cell" style="background:${c};width:20px;height:20px;border-radius:2px;"></div>`).join('');}
+  }
+}
+function nextTeach(){teachIdx++;if(teachIdx>=teaches.length)startTest();else{renderTeach();setProgress(10+teachIdx*15);}}
+function updateSwatch(){
+  const r=document.getElementById('rSlider').value,g=document.getElementById('gSlider').value,b=document.getElementById('bSlider').value;
+  document.getElementById('rVal').textContent=r;document.getElementById('gVal').textContent=g;document.getElementById('bVal').textContent=b;
+  document.getElementById('colourSwatch').style.background=`rgb(${r},${g},${b})`;
+  document.getElementById('colourCode').textContent=`rgb(${r}, ${g}, ${b})`;
+}
+function setRGB(r,g,b){
+  document.getElementById('rSlider').value=r;document.getElementById('gSlider').value=g;document.getElementById('bSlider').value=b;
+  updateSwatch();
+}
+
+/* TEST */
+const allQs=shuffle([
+  // RGB
+  {q:"Which RGB value produces pure white?",opts:["(255, 255, 255)","(0, 0, 0)","(255, 0, 0)","(128, 128, 128)"],correct:0,feedback:"White is all three channels at maximum brightness (255 each)."},
+  {q:"Which RGB value produces pure black?",opts:["(0, 0, 0)","(255, 255, 255)","(1, 1, 1)","(0, 0, 255)"],correct:0,feedback:"Black is all three channels at zero — no light at all."},
+  {q:"A pixel has RGB values of (255, 255, 0). What colour is it?",opts:["Yellow","Orange","White","Green"],correct:0,feedback:"Maximum red + maximum green + no blue = yellow. This is how colour mixing works with light."},
+  {q:"A designer sets R=0, G=0, B=255. What colour appears?",opts:["Blue","Purple","Cyan","Green"],correct:0,feedback:"Only the blue channel is active, so pure blue is displayed."},
+  {q:"Each RGB channel can store values from 0 to 255. How many bits does one channel use?",opts:["8 bits (1 byte)","4 bits (1 nibble)","16 bits (2 bytes)","1 bit"],correct:0,feedback:"0 to 255 requires 8 bits (1 byte). So one full pixel colour needs 3 bytes (24 bits) — one byte per channel."},
+  // Resolution
+  {q:"A photographer doubles the number of pixels in an image. What happens?",opts:["Image quality improves but file size increases","Image quality stays the same but loads faster","File size decreases because pixels are smaller","The image becomes blurry"],correct:0,feedback:"More pixels = higher quality (sharper image), but each pixel's colour must be stored, so the file size increases."},
+  {q:"A web developer reduces an image's resolution to make a page load faster. What is the trade-off?",opts:["The image will appear less sharp or blurry","The image colours will change","The image will no longer open on mobile devices","The image format will change automatically"],correct:0,feedback:"Fewer pixels means less data and a smaller file, but the image loses detail and appears lower quality."},
+  // Pixel definition (PPQ style)
+  {q:"Which of these correctly describes a pixel?",opts:["The smallest unit of a digital image that can be displayed and edited","A mathematical instruction that draws a shape on screen","The file format used to store photographs","A measurement of how fast an image loads"],correct:0,feedback:"This is the exact mark-scheme definition — a pixel is the smallest addressable element of a digital image."},
+  // Resolution PPQ
+  {q:"What does 'resolution' refer to when describing a digital image?",opts:["The number of pixels in the image, which determines quality","The file format the image is saved in","The colour depth of each pixel","The compression method used to reduce file size"],correct:0,feedback:"Resolution is the number of pixels. More pixels per inch (higher resolution) means better quality but a larger file."},
+  {q:"An image has a resolution of 72 pixels per inch. A second image has 300 pixels per inch. Which statement is correct?",opts:["The 300ppi image has better quality and a larger file size","The 72ppi image has better quality","Both images have the same file size","The 300ppi image loads faster because it has more detail"],correct:0,feedback:"300ppi has far more pixels per inch, giving a sharper image — but all those extra pixels mean a bigger file."},
+]);
+let testIdx=0,testScore=0;
+function startTest(){showScreen('testScreen');testIdx=0;testScore=0;setProgress(55);showTestQ();}
+function showTestQ(){
+  if(testIdx>=allQs.length){showResults();return;}
+  const q=allQs[testIdx];
+  document.getElementById('testScore').textContent=testScore+'/'+testIdx;
+  document.getElementById('testTitle').textContent=`Question ${testIdx+1} of ${allQs.length}`;
+  const optIdxs=q.opts.map((_,i)=>i);
+  // Shuffle options but track correct index
+  const shuffled=shuffle(optIdxs);
+  const newCorrect=shuffled.indexOf(q.correct);
+  document.getElementById('testContent').innerHTML=`
+<div class="test-card">
+<div class="q-text">${q.q}</div>
+${shuffled.map((oi,i)=>`<div class="option" onclick="answerTest(${i},${newCorrect},${testIdx})">${q.opts[oi]}</div>`).join('')}
+<div id="testFb${testIdx}"></div>
+</div>`;
+}
+function answerTest(chosen,correct,qIdx){
+  if(qIdx!==testIdx)return;
+  const opts=document.querySelectorAll('.option');
+  opts.forEach(o=>o.setAttribute('data-done','1'));
+  const q=allQs[testIdx];
+  const isCorrect=chosen===correct;
+  if(isCorrect){testScore++;opts[chosen].classList.add('correct');}
+  else{opts[chosen].classList.add('wrong');opts[correct].classList.add('correct');}
+  document.getElementById('testFb'+qIdx).innerHTML=`<div class="feedback-box ${isCorrect?'correct':'wrong'}">${isCorrect?'✓ Correct!':'✗ Not quite.'} ${q.feedback}</div>`;
+  testIdx++;
+  setTimeout(showTestQ,1800);
+}
+
+/* RESULTS */
+function showResults(){
+  const pct=Math.round(testScore/allQs.length*100);
+  let icon='🌱',rank='Intern';
+  if(pct>=90){icon='👑';rank='Head Designer';}
+  else if(pct>=70){icon='⭐';rank='Senior Artist';}
+  else if(pct>=50){icon='🎨';rank='Junior Designer';}
+  setProgress(100);showScreen('resultsScreen');fireConfetti();
+  const tips=[];
+  if(pct<70)tips.push("Review RGB colour mixing — remember (255,255,255)=white, (0,0,0)=black, and mixing red+green=yellow.");
+  if(pct<80)tips.push("Make sure you can explain the resolution trade-off: more pixels = better quality but larger file size.");
+  document.getElementById('resultsContent').innerHTML=`
+<div class="results-icon">${icon}</div>
+<h2>Lab Tests Complete!</h2>
+<div class="score-big">${testScore}/${allQs.length} (${pct}%)</div>
+<div class="rank">${rank}</div>
+<div class="breakdown">
+<div class="breakdown-row"><span>Lab Test Questions</span><span>${testScore}/${allQs.length}</span></div>
+</div>
+${tips.length?`<div class="revision-box"><h4>📝 Revision Notes</h4><ul>${tips.map(t=>'<li>'+t+'</li>').join('')}</ul></div>`:''}
+<div class="btn-row">
+<a href="index.html" class="btn btn-primary" style="text-decoration:none;">← Back to Hub</a>
+<a href="activity4.html" class="btn btn-success" style="text-decoration:none;">Activity 4: Graphics Showdown →</a>
+</div>`;
+}
+function fireConfetti(){const colors=['#f48fb1','#2ecc71','#42a5f5','#ffd54f','#9b59b6','#1abc9c'];for(let i=0;i<40;i++){const c=document.createElement('div');c.className='confetti-piece';c.style.left=Math.random()*100+'%';c.style.top='-10px';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.width=(6+Math.random()*8)+'px';c.style.height=(6+Math.random()*8)+'px';c.style.animationDelay=Math.random()*1.5+'s';c.style.animationDuration=(2+Math.random()*2)+'s';document.body.appendChild(c);c.addEventListener('animationend',()=>c.remove());}}
+</script>
+</body>
+</html>

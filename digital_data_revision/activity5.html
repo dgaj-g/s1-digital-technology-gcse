@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sound Studio — Digital Data HQ</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:linear-gradient(135deg,#041a10 0%,#0a3a24 40%,#062a18 100%);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#e0e0e0;overflow-x:hidden;}
+.container{max-width:850px;margin:0 auto;padding:20px 20px 60px;}
+a.back{display:inline-block;color:#69f0ae;text-decoration:none;font-size:0.9em;margin-bottom:18px;opacity:0.8;}a.back:hover{opacity:1;}
+.progress-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;margin-bottom:24px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#69f0ae,#00c853);border-radius:3px;transition:width 0.5s ease;width:0%;}
+.screen{display:none;animation:fadeIn 0.5s ease;}.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(25px);}to{opacity:1;transform:translateY(0);}}
+@keyframes bounceIn{0%{transform:scale(0);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+@keyframes waveFlow{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+@keyframes pop{0%{transform:scale(0.8);opacity:0;}50%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+h2{font-size:1.6em;font-weight:700;margin-bottom:6px;color:#a5d6a7;}
+.phase-label{text-transform:uppercase;font-size:0.75em;letter-spacing:2px;color:#2e7d32;margin-bottom:14px;}
+.btn{display:inline-block;padding:12px 32px;border:none;border-radius:10px;font-size:1em;font-weight:700;cursor:pointer;transition:all 0.3s;color:#fff;}
+.btn-primary{background:linear-gradient(135deg,#00c853,#00961f);}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,200,83,0.4);}
+.btn-success{background:linear-gradient(135deg,#2ecc71,#27ae60);}.btn-success:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(46,204,113,0.4);}
+.welcome{text-align:center;padding:40px 0;}
+.welcome-icon{font-size:80px;animation:bounceIn 0.8s ease;}
+.welcome h2{font-size:2em;background:linear-gradient(135deg,#69f0ae,#00c853);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:16px 0 10px;}
+.welcome p{color:#8899aa;max-width:500px;margin:0 auto 8px;line-height:1.6;}
+.mission-box{background:rgba(105,240,174,0.08);border:1px solid rgba(105,240,174,0.2);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:520px;text-align:left;font-size:0.92em;line-height:1.7;}
+.mission-box strong{color:#69f0ae;}
+.teach-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;margin-bottom:18px;animation:fadeInUp 0.5s ease both;}
+.teach-card h3{font-size:1.15em;color:#a5d6a7;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.teach-card p,.teach-card li{font-size:0.93em;color:#b0bec5;line-height:1.7;}
+.highlight{background:rgba(105,240,174,0.1);border-left:3px solid #69f0ae;padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:0.9em;}
+/* Wave visuals */
+.wave-container{position:relative;height:120px;background:rgba(0,0,0,0.2);border-radius:12px;overflow:hidden;margin:16px 0;}
+.wave-svg{width:100%;height:100%;}
+.wave-label{position:absolute;bottom:6px;left:12px;font-size:0.78em;color:#69f0ae;font-weight:600;}
+/* Control panel */
+.control-panel{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px;margin:16px 0;}
+.control-row{display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06);flex-wrap:wrap;}
+.control-row:last-child{border:none;}
+.control-icon{font-size:1.5em;}
+.control-info{flex:1;min-width:180px;}
+.control-name{font-weight:700;color:#a5d6a7;font-size:1em;margin-bottom:2px;}
+.control-desc{font-size:0.85em;color:#8899aa;}
+.control-unit{background:rgba(105,240,174,0.12);color:#69f0ae;padding:4px 12px;border-radius:8px;font-size:0.82em;font-weight:700;white-space:nowrap;}
+/* Match game */
+.match-container{display:flex;gap:20px;margin:14px 0;flex-wrap:wrap;}
+.match-col{flex:1;min-width:200px;display:flex;flex-direction:column;gap:8px;}
+.match-col h4{font-size:0.85em;color:#2e7d32;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.match-term{padding:12px 16px;border-radius:8px;background:linear-gradient(135deg,#0a3a24,#1a5a3a);color:#a5d6a7;font-weight:700;cursor:pointer;transition:all 0.3s;border:2px solid transparent;text-align:center;font-size:0.9em;}
+.match-term.selected{border-color:#69f0ae;box-shadow:0 0 10px rgba(105,240,174,0.3);}
+.match-term.matched{opacity:0.4;pointer-events:none;border-color:#2ecc71;}
+.match-def{padding:12px 16px;border-radius:8px;background:rgba(255,255,255,0.04);border:2px dashed rgba(255,255,255,0.12);color:#b0bec5;cursor:pointer;transition:all 0.3s;font-size:0.88em;line-height:1.4;}
+.match-def.matched{border-style:solid;border-color:#2ecc71;background:rgba(46,204,113,0.08);}
+.match-def .match-label{font-size:0.78em;color:#2ecc71;font-weight:600;margin-top:4px;}
+/* Test */
+.test-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;margin-bottom:14px;animation:fadeInUp 0.4s ease;}
+.test-card .q-text{font-size:1em;font-weight:600;margin-bottom:14px;line-height:1.5;}
+.option{display:block;padding:12px 16px;border:2px solid rgba(255,255,255,0.1);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all 0.3s;font-size:0.92em;}
+.option:hover{border-color:rgba(105,240,174,0.4);background:rgba(105,240,174,0.05);}
+.option.correct{border-color:#2ecc71;background:rgba(46,204,113,0.12);color:#a5d6a7;}
+.option.wrong{border-color:#e74c3c;background:rgba(231,76,60,0.12);color:#ef9a9a;animation:shake 0.3s ease;}
+.option[data-done]{pointer-events:none;}
+.feedback-box{padding:12px 16px;border-radius:8px;margin-top:10px;font-size:0.88em;line-height:1.5;animation:fadeIn 0.3s ease;}
+.feedback-box.correct{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.25);color:#a5d6a7;}
+.feedback-box.wrong{background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.25);color:#ef9a9a;}
+.score-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.score-display{font-size:0.95em;color:#69f0ae;font-weight:600;}
+/* Fill blanks */
+.fill-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;margin-bottom:14px;animation:fadeInUp 0.4s ease;}
+.fill-card .q-text{font-size:1em;line-height:2;margin-bottom:14px;}
+.fill-card input{width:140px;padding:6px 10px;border:2px solid rgba(105,240,174,0.3);border-radius:6px;background:rgba(255,255,255,0.05);color:#fff;font-size:0.95em;font-weight:600;text-align:center;outline:none;}
+.fill-card input:focus{border-color:#69f0ae;}
+.fill-card input.correct{border-color:#2ecc71;background:rgba(46,204,113,0.1);}
+.fill-card input.wrong{border-color:#e74c3c;background:rgba(231,76,60,0.1);}
+/* Results */
+.results{text-align:center;padding:30px 0;}
+.results-icon{font-size:80px;animation:bounceIn 0.6s ease;}
+.results .score-big{font-size:2.2em;font-weight:900;color:#69f0ae;margin:10px 0;}
+.results .rank{font-size:1.1em;color:#a5d6a7;margin-bottom:20px;}
+.breakdown{background:rgba(255,255,255,0.04);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:400px;text-align:left;}
+.breakdown-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.9em;}
+.breakdown-row:last-child{border:none;font-weight:700;color:#69f0ae;}
+.revision-box{background:rgba(105,240,174,0.08);border:1px solid rgba(105,240,174,0.2);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:500px;text-align:left;font-size:0.88em;line-height:1.7;}
+.revision-box h4{color:#69f0ae;margin-bottom:8px;}
+.btn-row{display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;animation:confettiFall 3s linear forwards;pointer-events:none;z-index:999;}
+@media(max-width:600px){h2{font-size:1.3em;}.match-container{flex-direction:column;}.control-row{flex-direction:column;align-items:flex-start;gap:8px;}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="index.html">← Back to Hub</a>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="screen active" id="welcomeScreen">
+<div class="welcome">
+<div class="welcome-icon">🎵</div>
+<h2>Sound Studio</h2>
+<p>Welcome to the recording studio. Sound in the real world is analogue — but computers only understand digital. Today you'll learn how that conversion works and what controls the quality.</p>
+<div class="mission-box">
+<strong>Mission Briefing:</strong><br>
+Phase 1 — Understand analogue to digital conversion (ADC)<br>
+Phase 2 — Master the three key controls: sample rate, bit depth, bit rate<br>
+Phase 3 — Prove your knowledge across matching, scenario, and exam challenges<br><br>
+<strong>Topics:</strong> ADC, Sample Rate, Bit Depth, Bit Rate
+</div>
+<button class="btn btn-primary" onclick="startTeach()">Enter the Studio →</button>
+</div>
+</div>
+
+<div class="screen" id="teachScreen">
+<div class="phase-label">Phase 1 — Studio Training</div>
+<div id="teachContent"></div>
+<div style="text-align:center;margin-top:20px;">
+<button class="btn btn-primary" id="teachBtn" onclick="nextTeach()">Next →</button>
+</div>
+</div>
+
+<div class="screen" id="matchScreen">
+<div class="phase-label">Round 1 — Match the Controls</div>
+<div class="score-bar"><h2>Define the Controls</h2><span class="score-display" id="matchScore">0/6</span></div>
+<p style="color:#8899aa;font-size:0.9em;margin-bottom:14px;">Click a term, then click its matching definition.</p>
+<div id="matchContent"></div>
+</div>
+
+<div class="screen" id="scenarioScreen">
+<div class="phase-label">Round 2 — Studio Scenarios</div>
+<div class="score-bar"><h2 id="scenTitle">Scenario</h2><span class="score-display" id="scenScore">0/0</span></div>
+<div id="scenContent"></div>
+</div>
+
+<div class="screen" id="ppqScreen">
+<div class="phase-label">Round 3 — Exam Questions</div>
+<h2>Past Paper Blitz</h2>
+<div id="ppqContent"></div>
+</div>
+
+<div class="screen" id="resultsScreen">
+<div class="results" id="resultsContent"></div>
+</div>
+</div>
+
+<script>
+function shuffle(a){let arr=[...a];for(let i=arr.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function setProgress(p){document.getElementById('progressFill').style.width=p+'%';}
+
+/* TEACH */
+let teachIdx=0;
+function makeWave(smooth,numSamples){
+  const w=400,h=100;
+  let path='';
+  if(smooth){
+    path=`M 0 ${h/2}`;
+    for(let x=0;x<=w;x+=2){const y=h/2+Math.sin(x*0.04)*30+Math.sin(x*0.02)*15;path+=` L ${x} ${y}`;}
+    return `<svg class="wave-svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path d="${path}" fill="none" stroke="#69f0ae" stroke-width="2.5"/></svg>`;
+  }else{
+    const step=w/numSamples;
+    let dots='',lines='';
+    let prevX,prevY;
+    for(let i=0;i<=numSamples;i++){
+      const x=i*step;
+      const y=h/2+Math.sin(x*0.04)*30+Math.sin(x*0.02)*15;
+      dots+=`<circle cx="${x}" cy="${y}" r="4" fill="#00c853"/>`;
+      if(i>0)lines+=`<line x1="${prevX}" y1="${prevY}" x2="${x}" y2="${y}" stroke="#00c853" stroke-width="2" stroke-dasharray="4,3"/>`;
+      prevX=x;prevY=y;
+    }
+    const smoothPath=`M 0 ${h/2}`;
+    let sp=smoothPath;
+    for(let x=0;x<=w;x+=2){const y=h/2+Math.sin(x*0.04)*30+Math.sin(x*0.02)*15;sp+=` L ${x} ${y}`;}
+    return `<svg class="wave-svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path d="${sp}" fill="none" stroke="rgba(105,240,174,0.2)" stroke-width="1.5"/>${lines}${dots}</svg>`;
+  }
+}
+const teaches=[
+()=>`
+<div class="teach-card">
+<h3>🌊 Analogue vs Digital</h3>
+<p>Sound in the real world is <strong>analogue</strong> — a smooth, continuous wave that changes constantly. Think of someone speaking or a guitar string vibrating.</p>
+<div class="wave-container">
+${makeWave(true)}
+<div class="wave-label">Analogue sound wave — smooth and continuous</div>
+</div>
+<p>But computers can only store data as <strong>digital</strong> 0s and 1s. They cannot store a smooth wave directly. So the sound must be converted.</p>
+<p style="margin-top:10px;">An <strong>Analogue to Digital Converter (ADC)</strong> takes "snapshots" (samples) of the sound wave at regular intervals and records each snapshot as a binary number.</p>
+<div class="wave-container">
+${makeWave(false,20)}
+<div class="wave-label">Digital approximation — sampled at regular intervals</div>
+</div>
+<div class="highlight">
+<strong>Key point:</strong> The digital version is only an approximation of the original sound. The more samples taken, the closer it matches the real thing.
+</div>
+</div>`,
+()=>`
+<div class="teach-card">
+<h3>🎛️ The Three Controls</h3>
+<p>Three factors determine the quality (and file size) of a digital sound recording:</p>
+<div class="control-panel">
+<div class="control-row">
+<div class="control-icon">📊</div>
+<div class="control-info">
+<div class="control-name">Sample Rate</div>
+<div class="control-desc">The number of sound samples captured <strong>per second</strong>. More samples = closer match to the original wave = better quality. CD quality uses 44,100 samples per second.</div>
+</div>
+<div class="control-unit">Measured in Hz</div>
+</div>
+<div class="control-row">
+<div class="control-icon">📏</div>
+<div class="control-info">
+<div class="control-name">Bit Depth</div>
+<div class="control-desc">The number of <strong>bits used to store each sample</strong>. More bits = more possible levels of loudness = more precise recording. 16-bit audio has 65,536 levels.</div>
+</div>
+<div class="control-unit">Measured in bits per sample</div>
+</div>
+<div class="control-row">
+<div class="control-icon">⚡</div>
+<div class="control-info">
+<div class="control-name">Bit Rate</div>
+<div class="control-desc">The total quantity of data processed <strong>per second</strong> in the audio file. It reflects the overall data throughput — higher bit rate means more data per second.</div>
+</div>
+<div class="control-unit">Measured in kbps</div>
+</div>
+</div>
+<div class="highlight">
+<strong>The trade-off:</strong> Increasing sample rate or bit depth improves sound quality but also increases the file size — more data is being stored for every second of audio.
+</div>
+</div>
+<p style="text-align:center;color:#a5d6a7;font-weight:600;margin-top:12px;">Training complete — let's hit record.</p>`
+];
+function startTeach(){showScreen('teachScreen');teachIdx=0;renderTeach();setProgress(10);}
+function renderTeach(){document.getElementById('teachContent').innerHTML=teaches[teachIdx]();document.getElementById('teachBtn').textContent=teachIdx<teaches.length-1?'Next →':'Start Round 1 →';}
+function nextTeach(){teachIdx++;if(teachIdx>=teaches.length)startMatch();else{renderTeach();setProgress(25);}}
+
+/* ROUND 1: MATCH */
+const matchPairs=[
+  {term:"Sample Rate",def:"The number of audio samples captured per second"},
+  {term:"Bit Depth",def:"The number of bits used to store each individual sound sample"},
+  {term:"Bit Rate",def:"The quantity of data, measured in bits, processed over a given period of time"},
+  {term:"Hz (Hertz)",def:"The unit of measurement for sample rate (samples per second)"},
+  {term:"ADC",def:"Hardware that converts analogue sound waves into digital binary data"},
+  {term:"Analogue",def:"A continuous, smoothly varying signal representing a physical quantity"},
+];
+let matchScore=0,selectedTerm=null;
+function startMatch(){
+  showScreen('matchScreen');matchScore=0;selectedTerm=null;setProgress(40);
+  const terms=shuffle(matchPairs.map((p,i)=>({...p,idx:i})));
+  const defs=shuffle(matchPairs.map((p,i)=>({...p,idx:i})));
+  document.getElementById('matchContent').innerHTML=`
+<div class="match-container">
+<div class="match-col"><h4>Terms</h4>${terms.map(t=>`<div class="match-term" data-idx="${t.idx}" onclick="selectMatchTerm(this)">${t.term}</div>`).join('')}</div>
+<div class="match-col"><h4>Definitions</h4>${defs.map(d=>`<div class="match-def" data-idx="${d.idx}" onclick="selectMatchDef(this)">${d.def}</div>`).join('')}</div>
+</div>`;
+}
+function selectMatchTerm(el){
+  if(el.classList.contains('matched'))return;
+  document.querySelectorAll('.match-term').forEach(t=>t.classList.remove('selected'));
+  el.classList.add('selected');selectedTerm=el.dataset.idx;
+}
+function selectMatchDef(el){
+  if(!selectedTerm||el.classList.contains('matched'))return;
+  if(el.dataset.idx===selectedTerm){
+    matchScore++;el.classList.add('matched');
+    el.innerHTML+=`<div class="match-label">✓ ${matchPairs[parseInt(selectedTerm)].term}</div>`;
+    document.querySelector(`.match-term[data-idx="${selectedTerm}"]`).classList.add('matched');
+    document.querySelector(`.match-term[data-idx="${selectedTerm}"]`).classList.remove('selected');
+    selectedTerm=null;
+    document.getElementById('matchScore').textContent=matchScore+'/'+matchPairs.length;
+    if(matchScore>=matchPairs.length)setTimeout(startScenarios,800);
+  }else{el.style.animation='shake 0.4s ease';el.style.borderColor='#e74c3c';setTimeout(()=>{el.style.animation='';el.style.borderColor='';},500);}
+}
+
+/* ROUND 2: SCENARIOS */
+const scenarios=shuffle([
+  {q:"A music producer increases the sample rate from 22,050 Hz to 44,100 Hz. What will happen to the recording?",opts:["The sound quality will improve, but the file size will increase","The file size will decrease because the sound is cleaner","The bit depth will automatically increase too","Nothing changes — sample rate doesn't affect quality"],correct:0,feedback:"Doubling the sample rate means twice as many snapshots per second. The digital recording matches the original sound more closely, but there's twice as much data to store."},
+  {q:"An audio engineer records at 8-bit depth instead of 16-bit. What is the consequence?",opts:["Fewer levels of loudness can be represented, so the sound quality decreases","The recording will be louder overall","The sample rate automatically increases to compensate","The file will be in a different format"],correct:0,feedback:"8-bit gives only 256 levels of loudness, while 16-bit gives 65,536. Fewer levels means the recording cannot capture subtle differences in volume — quality suffers."},
+  {q:"A podcast app shows one episode at 64 kbps and another at 320 kbps. Assuming the same duration, which episode has the larger file?",opts:["The 320 kbps episode — it processes more data every second","The 64 kbps episode — lower quality means more padding data","Both are the same size — bit rate doesn't affect file size","Cannot be determined without knowing the sample rate"],correct:0,feedback:"Bit rate is the amount of data per second. 320 kbps means 320 thousand bits every second — five times more data than 64 kbps, so a much larger file."},
+  {q:"Why can't a computer store the original analogue sound wave directly?",opts:["Computers can only store data in digital format — binary 0s and 1s","Analogue waves are too loud for computer speakers","Sound waves travel too fast for computers to detect","The computer's microphone converts everything to text first"],correct:0,feedback:"Computers work exclusively with digital data (binary). An analogue wave is continuous and cannot be represented directly — it must be sampled and converted to binary by an ADC."},
+]);
+let scenIdx=0,scenScore=0;
+function startScenarios(){showScreen('scenarioScreen');scenIdx=0;scenScore=0;setProgress(60);showScen();}
+function showScen(){
+  if(scenIdx>=scenarios.length){finishScen();return;}
+  document.getElementById('scenTitle').textContent=`Scenario ${scenIdx+1} of ${scenarios.length}`;
+  document.getElementById('scenScore').textContent=scenScore+'/'+scenIdx;
+  const q=scenarios[scenIdx];
+  const idxs=shuffle([0,1,2,3]);
+  const newCorrect=idxs.indexOf(q.correct);
+  document.getElementById('scenContent').innerHTML=`
+<div class="test-card"><div class="q-text">${q.q}</div>
+${idxs.map((oi,i)=>`<div class="option" onclick="answerScen(${i},${newCorrect})">${q.opts[oi]}</div>`).join('')}
+<div id="scenFb${scenIdx}"></div>
+</div>`;
+}
+function answerScen(chosen,correct){
+  const opts=document.querySelectorAll('.option');
+  opts.forEach(o=>o.setAttribute('data-done','1'));
+  const isCorrect=chosen===correct;
+  if(isCorrect){scenScore++;opts[chosen].classList.add('correct');}
+  else{opts[chosen].classList.add('wrong');opts[correct].classList.add('correct');}
+  document.getElementById('scenFb'+scenIdx).innerHTML=`<div class="feedback-box ${isCorrect?'correct':'wrong'}">${scenarios[scenIdx].feedback}</div>`;
+  scenIdx++;setTimeout(showScen,1800);
+}
+function finishScen(){
+  document.getElementById('scenContent').innerHTML=`
+<div style="text-align:center;padding:20px;">
+<div style="font-size:2.5em;animation:bounceIn 0.5s ease;">${scenScore>=3?'🎯':'👍'}</div>
+<p style="margin:12px 0;">Scenarios Complete: <strong style="color:#69f0ae;">${scenScore}/${scenarios.length}</strong></p>
+<button class="btn btn-primary" onclick="startPPQ()">Round 3: Exam Questions →</button>
+</div>`;
+}
+
+/* ROUND 3: PPQ */
+let ppqScore=0,ppqDone=0,ppqTotal=5;
+function startPPQ(){showScreen('ppqScreen');ppqScore=0;ppqDone=0;setProgress(80);renderPPQ();}
+function renderPPQ(){
+  document.getElementById('ppqContent').innerHTML=`
+<div class="fill-card" style="animation-delay:0s;">
+<span style="display:inline-block;background:rgba(105,240,174,0.15);color:#69f0ae;padding:3px 10px;border-radius:8px;font-size:0.78em;font-weight:700;margin-bottom:8px;">2018 Paper</span>
+<div class="q-text">Complete the sentence: "A <input type="text" id="fill1" style="width:120px;" placeholder="?"> enables a computer to record sound waves. Sounds are recorded in <input type="text" id="fill2" style="width:120px;" placeholder="?"> format."</div>
+<button class="btn btn-primary" onclick="checkFills()" style="font-size:0.9em;padding:8px 24px;">Check →</button>
+<div id="fillFeedback"></div>
+</div>
+
+<div class="test-card" style="animation-delay:0.15s;">
+<span style="display:inline-block;background:rgba(105,240,174,0.15);color:#69f0ae;padding:3px 10px;border-radius:8px;font-size:0.78em;font-weight:700;margin-bottom:8px;">2022 Paper</span>
+<div class="q-text">What do the letters ADC stand for?</div>
+<div id="adcOpts">
+<div class="option" onclick="checkPPQMCQ(this,'adcOpts','Analogue to Digital Converter','adc')">Analogue to Digital Converter</div>
+<div class="option" onclick="checkPPQMCQ(this,'adcOpts','Automatic Data Compression','adc')">Automatic Data Compression</div>
+<div class="option" onclick="checkPPQMCQ(this,'adcOpts','Advanced Digital Controller','adc')">Advanced Digital Controller</div>
+<div class="option" onclick="checkPPQMCQ(this,'adcOpts','Audio Data Channel','adc')">Audio Data Channel</div>
+</div>
+<div id="adcFb"></div>
+</div>
+
+<div class="test-card" style="animation-delay:0.3s;">
+<span style="display:inline-block;background:rgba(105,240,174,0.15);color:#69f0ae;padding:3px 10px;border-radius:8px;font-size:0.78em;font-weight:700;margin-bottom:8px;">2019 Paper</span>
+<div class="q-text">Which statement correctly describes the bit rate of a sound recording?</div>
+<div id="brOpts">
+<div class="option" onclick="checkPPQMCQ(this,'brOpts','The number of bits processed over a certain period of time','br')">The number of bits processed over a certain period of time</div>
+<div class="option" onclick="checkPPQMCQ(this,'brOpts','The number of sound samples recorded per second','br')">The number of sound samples recorded per second</div>
+<div class="option" onclick="checkPPQMCQ(this,'brOpts','The number of bits used to represent each sample','br')">The number of bits used to represent each sample</div>
+<div class="option" onclick="checkPPQMCQ(this,'brOpts','The volume level of the recorded audio','br')">The volume level of the recorded audio</div>
+</div>
+<div id="brFb"></div>
+</div>
+
+<div class="test-card" style="animation-delay:0.45s;">
+<span style="display:inline-block;background:rgba(105,240,174,0.15);color:#69f0ae;padding:3px 10px;border-radius:8px;font-size:0.78em;font-weight:700;margin-bottom:8px;">2023 Paper</span>
+<div class="q-text">Which statement is true about changing the sample rate?</div>
+<div id="srOpts">
+<div class="option" onclick="checkPPQMCQ(this,'srOpts','Increasing the sample rate increases the quality of the audio file','sr')">Increasing the sample rate increases the quality of the audio file</div>
+<div class="option" onclick="checkPPQMCQ(this,'srOpts','Increasing the sample rate decreases the file size','sr')">Increasing the sample rate decreases the file size</div>
+<div class="option" onclick="checkPPQMCQ(this,'srOpts','Decreasing the sample rate increases audio quality','sr')">Decreasing the sample rate increases audio quality</div>
+<div class="option" onclick="checkPPQMCQ(this,'srOpts','Sample rate has no effect on sound quality','sr')">Sample rate has no effect on sound quality</div>
+</div>
+<div id="srFb"></div>
+</div>
+
+<div style="text-align:center;margin-top:20px;">
+<button class="btn btn-primary" id="ppqFinishBtn" onclick="showResults()" style="display:none;">See Results →</button>
+</div>`;
+}
+let fillChecked=false,mcqDone={};
+function checkFills(){
+  if(fillChecked)return;fillChecked=true;
+  const f1=document.getElementById('fill1').value.trim().toLowerCase();
+  const f2=document.getElementById('fill2').value.trim().toLowerCase();
+  let fb='',pts=0;
+  if(f1.includes('microphone')||f1.includes('mic')){pts++;document.getElementById('fill1').classList.add('correct');}
+  else{document.getElementById('fill1').classList.add('wrong');}
+  if(f2.includes('analogue')||f2.includes('analog')){pts++;document.getElementById('fill2').classList.add('correct');}
+  else{document.getElementById('fill2').classList.add('wrong');}
+  ppqScore+=pts;ppqDone+=2;
+  fb=`<div class="feedback-box ${pts===2?'correct':'wrong'}" style="margin-top:12px;">${pts}/2 — The answers are <strong>microphone</strong> and <strong>analogue</strong>. A microphone captures sound waves, which are in analogue format before conversion.</div>`;
+  document.getElementById('fillFeedback').innerHTML=fb;
+  checkPPQDone();
+}
+function checkPPQMCQ(el,group,correctText,key){
+  if(mcqDone[key])return;mcqDone[key]=true;ppqDone++;
+  const opts=el.parentElement.querySelectorAll('.option');
+  opts.forEach(o=>o.setAttribute('data-done','1'));
+  const correct=el.textContent===correctText;
+  if(correct){ppqScore++;el.classList.add('correct');}
+  else{el.classList.add('wrong');opts.forEach(o=>{if(o.textContent===correctText)o.classList.add('correct');});}
+  const fbId=key+'Fb';
+  const feedbacks={
+    adc:"ADC = Analogue to Digital Converter. It converts continuous analogue sound waves into digital binary data that a computer can store.",
+    br:"Bit rate is the total number of bits processed over a given time period, measured in kilobits per second (kbps). Don't confuse it with sample rate (samples per second) or bit depth (bits per sample).",
+    sr:"More samples per second means the digital recording captures the sound wave more frequently, producing a closer match to the original — better quality."
+  };
+  document.getElementById(fbId).innerHTML=`<div class="feedback-box ${correct?'correct':'wrong'}" style="margin-top:8px;">${correct?'✓ Correct!':'✗ Wrong.'} ${feedbacks[key]}</div>`;
+  checkPPQDone();
+}
+function checkPPQDone(){if(ppqDone>=5)document.getElementById('ppqFinishBtn').style.display='inline-block';}
+
+/* RESULTS */
+function showResults(){
+  const total=matchScore+scenScore+ppqScore;
+  const max=matchPairs.length+scenarios.length+5;
+  const pct=Math.round(total/max*100);
+  let icon='🌱',rank='Novice';
+  if(pct>=90){icon='👑';rank='Platinum Producer';}
+  else if(pct>=70){icon='⭐';rank='Gold Engineer';}
+  else if(pct>=50){icon='🎵';rank='Session Musician';}
+  setProgress(100);showScreen('resultsScreen');fireConfetti();
+  const tips=[];
+  if(matchScore<4)tips.push("Make sure you can distinguish: sample rate (samples per second, Hz), bit depth (bits per sample), and bit rate (total bits per second, kbps).");
+  if(scenScore<3)tips.push("Remember the trade-off: increasing sample rate or bit depth improves quality but increases file size.");
+  if(ppqScore<3)tips.push("Practise the key definitions: ADC = Analogue to Digital Converter. Sound is recorded through a microphone in analogue format.");
+  document.getElementById('resultsContent').innerHTML=`
+<div class="results-icon">${icon}</div>
+<h2>Recording Session Complete!</h2>
+<div class="score-big">${total}/${max} (${pct}%)</div>
+<div class="rank">${rank}</div>
+<div class="breakdown">
+<div class="breakdown-row"><span>Round 1: Match the Controls</span><span>${matchScore}/${matchPairs.length}</span></div>
+<div class="breakdown-row"><span>Round 2: Studio Scenarios</span><span>${scenScore}/${scenarios.length}</span></div>
+<div class="breakdown-row"><span>Round 3: Exam Questions</span><span>${ppqScore}/5</span></div>
+<div class="breakdown-row"><span>Total</span><span>${total}/${max}</span></div>
+</div>
+${tips.length?`<div class="revision-box"><h4>📝 Revision Notes</h4><ul>${tips.map(t=>'<li>'+t+'</li>').join('')}</ul></div>`:''}
+<div class="btn-row">
+<a href="index.html" class="btn btn-primary" style="text-decoration:none;">← Back to Hub</a>
+<a href="activity6.html" class="btn btn-success" style="text-decoration:none;">Activity 6: Format Passport Control →</a>
+</div>`;
+}
+function fireConfetti(){const colors=['#69f0ae','#2ecc71','#42a5f5','#ffd54f','#ec407a','#b39ddb'];for(let i=0;i<40;i++){const c=document.createElement('div');c.className='confetti-piece';c.style.left=Math.random()*100+'%';c.style.top='-10px';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.width=(6+Math.random()*8)+'px';c.style.height=(6+Math.random()*8)+'px';c.style.animationDelay=Math.random()*1.5+'s';c.style.animationDuration=(2+Math.random()*2)+'s';document.body.appendChild(c);c.addEventListener('animationend',()=>c.remove());}}
+</script>
+</body>
+</html>
