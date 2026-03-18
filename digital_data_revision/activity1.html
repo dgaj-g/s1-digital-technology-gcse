@@ -263,23 +263,25 @@ ${[1,0,1,1,0,0,1,0].map((v,i)=>`<div class="switch-box ${v?'on':'off'}" onclick=
 <p>Conversion questions appear in nearly every exam paper. The key principle:</p>
 <div class="example-row">
 <div class="example-item" style="border:2px solid #2ecc71;">
-<div class="label">Going Down ↓</div>
+<div class="label">Converting to a smaller unit</div>
 <div class="val">Multiply by 1024</div>
+<div style="font-size:0.78em;color:#8899aa;margin-top:4px;">e.g. MB → KB</div>
 </div>
 <div class="example-item" style="border:2px solid #42a5f5;">
-<div class="label">Going Up ↑</div>
+<div class="label">Converting to a bigger unit</div>
 <div class="val">Divide by 1024</div>
+<div style="font-size:0.78em;color:#8899aa;margin-top:4px;">e.g. KB → MB</div>
 </div>
 </div>
 <p style="margin-top:14px;">Worked examples:</p>
 <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px 18px;margin:10px 0;font-size:0.92em;line-height:1.8;">
-<div>How many KB in <strong>3 MB</strong>? → 3 &times; 1024 = <strong style="color:#2ecc71;">3,072 KB</strong></div>
-<div>How many MB in <strong>4 GB</strong>? → 4 &times; 1024 = <strong style="color:#2ecc71;">4,096 MB</strong></div>
-<div>How many GB in <strong>2 TB</strong>? → 2 &times; 1024 = <strong style="color:#2ecc71;">2,048 GB</strong></div>
-<div>How many bytes in <strong>6400 bits</strong>? → 6400 &divide; 8 = <strong style="color:#2ecc71;">800 bytes</strong></div>
+<div>Convert <strong>3 MB</strong> into KB → 3 &times; 1024 = <strong style="color:#2ecc71;">3,072 KB</strong> <span style="color:#8899aa;font-size:0.82em;">(MB is bigger than KB, so multiply)</span></div>
+<div>Convert <strong>4 GB</strong> into MB → 4 &times; 1024 = <strong style="color:#2ecc71;">4,096 MB</strong> <span style="color:#8899aa;font-size:0.82em;">(GB is bigger than MB, so multiply)</span></div>
+<div>Convert <strong>2 TB</strong> into GB → 2 &times; 1024 = <strong style="color:#2ecc71;">2,048 GB</strong> <span style="color:#8899aa;font-size:0.82em;">(TB is bigger than GB, so multiply)</span></div>
+<div>Convert <strong>6400 bits</strong> into bytes → 6400 &divide; 8 = <strong style="color:#2ecc71;">800 bytes</strong> <span style="color:#8899aa;font-size:0.82em;">(8 bits in a byte)</span></div>
 </div>
 <div class="highlight">
-<strong>Watch out:</strong> Bits to bytes is &divide; 8, not &divide; 1024. The &times;1024 rule starts from bytes upward. Also remember: a nibble = 4 bits, a byte = 8 bits.
+<strong>Think of it this way:</strong> If you're converting into a <em>smaller</em> unit, you'll need <em>more</em> of them, so <strong>multiply</strong>. If you're converting into a <em>bigger</em> unit, you'll need <em>fewer</em> of them, so <strong>divide</strong>. And remember: bits to bytes is always &divide; 8 (not 1024).
 </div>
 </div>
 <div style="text-align:center;margin-top:16px;">
