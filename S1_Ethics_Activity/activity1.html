@@ -124,6 +124,7 @@ a{color:#02C39A;text-decoration:none}a:hover{text-decoration:underline}
     <p>Where do YOU draw the line?</p>
   </div>
   <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div id="connBar" style="display:none;text-align:center;font-size:.8em;color:#6A8A95;margin-bottom:8px">👥 <strong id="connDisplay" style="color:#02C39A">0</strong> connected to room <strong id="roomDisplay" style="color:#02C39A"></strong></div>
 
   <!-- Welcome -->
   <div class="screen active" id="welcomeScreen">
@@ -353,11 +354,15 @@ function joinRoom() {
   connRef.set(true);
   connRef.onDisconnect().remove();
 
-  // Listen for connection count
+  // Listen for connection count — show in persistent bar
   roomRef.child('connections').on('value', snap => {
     const count = snap.numChildren();
     document.getElementById('roomCount').style.display = 'block';
     document.getElementById('roomCount').textContent = count + ' connected';
+    // Also update the persistent bar visible during scenarios
+    document.getElementById('connBar').style.display = 'block';
+    document.getElementById('connDisplay').textContent = count;
+    document.getElementById('roomDisplay').textContent = roomCode;
   });
 
   isOnline = true;
