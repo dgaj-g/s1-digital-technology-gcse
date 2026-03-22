@@ -395,6 +395,20 @@ function startOffline() {
 }
 
 let currentListener = null;
+let pollInterval = null;
+
+function readVotes(votesRef) {
+  votesRef.once('value', snap => {
+    const votes = [];
+    snap.forEach(child => {
+      const v = child.val();
+      votes.push(typeof v === 'object' && v !== null ? v.vote : v);
+    });
+    if (votes.length > 0) {
+      showResults(votes);
+    }
+  });
+}
 
 function loadScenario(idx) {
   currentScenario = idx;
@@ -402,10 +416,14 @@ function loadScenario(idx) {
   const s = SCENARIOS[idx];
   const catClass = 'cat-' + s.category;
 
-  // Clean up previous Firebase listener
+  // Clean up previous Firebase listener and poll
   if (currentListener) {
     currentListener.ref.off('value', currentListener.fn);
     currentListener = null;
+  }
+  if (pollInterval) {
+    clearInterval(pollInterval);
+    pollInterval = null;
   }
 
   document.getElementById('scenarioArea').innerHTML = `
@@ -436,14 +454,15 @@ function loadScenario(idx) {
 
   setupSlider();
 
-  // Attach Firebase listener IMMEDIATELY so all votes are tracked in real time
+  // Attach Firebase listener AND polling fallback for reliable real-time updates
   if (isOnline && roomRef) {
     const votesRef = roomRef.child('votes').child('s' + idx);
+
+    // Real-time listener (should work, but wasn't firing on all devices)
     const listenerFn = snap => {
       const votes = [];
       snap.forEach(child => {
         const v = child.val();
-        // Support both raw integer votes and {vote: int} object votes
         votes.push(typeof v === 'object' && v !== null ? v.vote : v);
       });
       if (votes.length > 0) {
@@ -452,6 +471,9 @@ function loadScenario(idx) {
     };
     votesRef.on('value', listenerFn);
     currentListener = { ref: votesRef, fn: listenerFn };
+
+    // Polling fallback — reads fresh data every 2 seconds in case the listener stalls
+    pollInterval = setInterval(() => readVotes(votesRef), 2000);
 
     // For teachers: show an empty results panel right away so they can see votes arrive
     if (role === 'teacher') {
