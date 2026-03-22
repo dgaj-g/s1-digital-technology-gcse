@@ -377,11 +377,19 @@ function startOffline() {
   loadScenario(0);
 }
 
+let currentListener = null;
+
 function loadScenario(idx) {
   currentScenario = idx;
   setProgress((idx / SCENARIOS.length) * 100);
   const s = SCENARIOS[idx];
   const catClass = 'cat-' + s.category;
+
+  // Clean up previous Firebase listener
+  if (currentListener) {
+    currentListener.ref.off('value', currentListener.fn);
+    currentListener = null;
+  }
 
   document.getElementById('scenarioArea').innerHTML = `
     <div class="scenario-num">Scenario ${idx + 1} of ${SCENARIOS.length}</div>
@@ -410,6 +418,25 @@ function loadScenario(idx) {
   `;
 
   setupSlider();
+
+  // Attach Firebase listener IMMEDIATELY so all votes are tracked in real time
+  if (isOnline && roomRef) {
+    const votesRef = roomRef.child('votes').child('s' + idx);
+    const listenerFn = snap => {
+      const votes = [];
+      snap.forEach(child => votes.push(child.val()));
+      if (votes.length > 0) {
+        showResults(votes);
+      }
+    };
+    votesRef.on('value', listenerFn);
+    currentListener = { ref: votesRef, fn: listenerFn };
+
+    // For teachers: show an empty results panel right away so they can see votes arrive
+    if (role === 'teacher') {
+      showResults([]);
+    }
+  }
 }
 
 function setupSlider() {
@@ -468,31 +495,28 @@ function submitVote() {
   document.getElementById('sliderTrack').style.opacity = '.6';
 
   if (isOnline && roomRef) {
-    // Push vote to Firebase
-    roomRef.child('votes').child('s' + currentScenario).push(zone);
-
-    // Listen for all votes on this scenario
-    roomRef.child('votes').child('s' + currentScenario).on('value', snap => {
-      const votes = [];
-      snap.forEach(child => votes.push(child.val()));
-      showResults(votes);
+    // Push vote to Firebase — the listener attached in loadScenario will update results automatically
+    roomRef.child('votes').child('s' + currentScenario).push(zone).catch(err => {
+      console.error('Vote failed:', err);
     });
   } else {
-    // Solo mode — show just your vote with simulated spread
+    // Solo mode — show just your vote
     showResults([zone]);
   }
 
-  // Show reveal after a short delay
-  setTimeout(() => showReveal(), isOnline ? 2000 : 800);
+  // Show reveal after a short delay (longer for online to let votes accumulate)
+  setTimeout(() => showReveal(), isOnline ? 3000 : 800);
 }
 
 function showResults(votes) {
   const counts = [0, 0, 0, 0, 0];
   votes.forEach(v => counts[v]++);
   const total = votes.length;
-  const maxCount = Math.max(...counts, 1);
 
-  document.getElementById('resultsArea').innerHTML = `
+  const resultsEl = document.getElementById('resultsArea');
+  if (!resultsEl) return; // guard against DOM not ready
+
+  resultsEl.innerHTML = `
     <div class="results-panel">
       <h4>${isOnline ? '📊 Class Results (Live)' : '📊 Your Position'}</h4>
       <div class="bar-chart">
@@ -506,7 +530,7 @@ function showResults(votes) {
           </div>
         `).join('')}
       </div>
-      <div class="total-votes">${total} vote${total !== 1 ? 's' : ''}</div>
+      <div class="total-votes">${total === 0 ? 'Waiting for votes...' : total + ' vote' + (total !== 1 ? 's' : '')}</div>
     </div>
   `;
 }
