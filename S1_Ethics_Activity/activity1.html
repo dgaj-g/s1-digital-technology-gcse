@@ -366,6 +366,18 @@ function joinRoom() {
   });
 
   isOnline = true;
+
+  // Monitor Firebase connection state
+  db.ref('.info/connected').on('value', snap => {
+    if (snap.val() === true) {
+      document.getElementById('roomStatus').textContent = 'Connected to room: ' + roomCode;
+      document.getElementById('roomStatus').className = 'room-status connected';
+    } else {
+      document.getElementById('roomStatus').textContent = '⚠️ Lost connection — reconnecting...';
+      document.getElementById('roomStatus').className = 'room-status error';
+    }
+  });
+
   document.getElementById('roomStatus').textContent = 'Connected to room: ' + roomCode;
   document.getElementById('roomStatus').className = 'room-status connected';
 
@@ -429,7 +441,11 @@ function loadScenario(idx) {
     const votesRef = roomRef.child('votes').child('s' + idx);
     const listenerFn = snap => {
       const votes = [];
-      snap.forEach(child => votes.push(child.val()));
+      snap.forEach(child => {
+        const v = child.val();
+        // Support both raw integer votes and {vote: int} object votes
+        votes.push(typeof v === 'object' && v !== null ? v.vote : v);
+      });
       if (votes.length > 0) {
         showResults(votes);
       }
@@ -501,11 +517,12 @@ function submitVote() {
 
   if (isOnline && roomRef) {
     // Push vote to Firebase — the listener attached in loadScenario will update results automatically
-    roomRef.child('votes').child('s' + currentScenario).push(zone).then(() => {
-      console.log('Vote submitted successfully');
+    const voteData = { vote: zone, ts: firebase.database.ServerValue.TIMESTAMP, role: role };
+    const voteRef = roomRef.child('votes').child('s' + currentScenario).push();
+    voteRef.set(voteData).then(() => {
+      console.log('Vote submitted successfully to', voteRef.toString());
     }).catch(err => {
       console.error('Vote failed:', err);
-      // Show visible error to user
       const resultsEl = document.getElementById('resultsArea');
       if (resultsEl) {
         resultsEl.innerHTML = `<div class="card" style="background:rgba(252,92,101,.15);border:1px solid #FC5C65;padding:14px;margin-top:12px;text-align:center;">
