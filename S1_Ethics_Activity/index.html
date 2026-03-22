@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moral & Ethical Considerations — Activities</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;min-height:100vh;background:linear-gradient(135deg,#0B1622,#122B3A,#0F2027);color:#fff;overflow-x:hidden}
+
+.stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+
+.container{position:relative;z-index:1;max-width:850px;margin:0 auto;padding:40px 20px}
+
+.header{text-align:center;margin-bottom:50px;animation:fadeInDown .8s ease}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:translateY(0)}}
+.header-icon{font-size:64px;margin-bottom:15px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.header h1{font-size:2.2em;margin-bottom:10px;background:linear-gradient(90deg,#02C39A,#00A896,#028090);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header p{font-size:1.05em;color:#8BAAB5;max-width:580px;margin:0 auto;line-height:1.6}
+.spec-badge{display:inline-block;margin-top:12px;padding:6px 16px;background:rgba(2,192,154,.12);border-radius:20px;font-size:.85em;color:#02C39A;border:1px solid rgba(2,192,154,.25)}
+
+.cards{display:flex;flex-direction:column;gap:20px}
+
+.card{display:flex;align-items:stretch;background:rgba(255,255,255,.04);border-radius:16px;border:1px solid rgba(255,255,255,.08);overflow:hidden;animation:fadeInUp .6s ease both;transition:transform .3s,box-shadow .3s;cursor:default}
+.card:nth-child(1){animation-delay:.15s}
+.card:nth-child(2){animation-delay:.3s}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.card-number{display:flex;align-items:center;justify-content:center;min-width:60px;font-size:1.8em;font-weight:800;color:rgba(255,255,255,.9)}
+.card:nth-child(1) .card-number{background:linear-gradient(135deg,#064E5C,#028090)}
+.card:nth-child(2) .card-number{background:linear-gradient(135deg,#5A3D00,#F7B731)}
+
+.card-body{flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:6px}
+.card-top{display:flex;align-items:center;gap:12px}
+.card-icon{font-size:1.8em}
+.card-title{font-size:1.25em;font-weight:700}
+.card:nth-child(1) .card-title{color:#02C39A}
+.card:nth-child(2) .card-title{color:#F7B731}
+.card-desc{color:#8BAAB5;font-size:.95em;line-height:1.5}
+.card-meta{display:flex;align-items:center;gap:16px;margin-top:6px}
+.time-badge{font-size:.8em;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,.06);color:#8BAAB5}
+.topic-tags{display:flex;gap:6px;flex-wrap:wrap}
+.topic-tag{font-size:.7em;padding:2px 8px;border-radius:8px;font-weight:600}
+.tag-internet{background:rgba(252,92,101,.15);color:#FC5C65}
+.tag-personal{background:rgba(250,130,49,.15);color:#FA8231}
+.tag-social{background:rgba(136,84,208,.15);color:#8854D0}
+.tag-gps{background:rgba(56,103,214,.15);color:#3867D6}
+.tag-security{background:rgba(32,191,107,.15);color:#20BF6B}
+
+.card-action{display:flex;align-items:center;justify-content:center;min-width:100px;text-decoration:none;font-weight:700;font-size:1em;color:#fff;transition:all .3s;letter-spacing:.5px}
+.card:nth-child(1) .card-action{background:linear-gradient(135deg,#028090,#02C39A)}
+.card:nth-child(2) .card-action{background:linear-gradient(135deg,#C89200,#F7B731)}
+.card-action:hover{filter:brightness(1.15);letter-spacing:1.5px}
+
+.footer{text-align:center;margin-top:50px;padding:20px;color:#4A6A75;font-size:.85em}
+
+@media(max-width:600px){
+  .card{flex-direction:column}
+  .card-number{min-width:unset;min-height:40px;font-size:1.3em}
+  .card-action{min-width:unset;min-height:50px}
+  .header h1{font-size:1.6em}
+  .container{padding:20px 12px}
+}
+</style>
+</head>
+<body>
+
+<canvas class="stars" id="starCanvas"></canvas>
+
+<div class="container">
+  <div class="header">
+    <div class="header-icon">🔍</div>
+    <h1>Moral & Ethical Considerations</h1>
+    <p>Explore the ethical impact of technology on society. Two activities that test your understanding of internet misuse, personal data, social media, GPS tracking, and data security.</p>
+    <div class="spec-badge">CCEA GCSE Digital Technology — Unit 1</div>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-number">1</div>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-icon">⚖️</span>
+          <span class="card-title">The Grey Zone</span>
+        </div>
+        <div class="card-desc">Where do you draw the line? Debate real ethical dilemmas, see how your class voted live, then discover what the examiner thinks.</div>
+        <div class="card-meta">
+          <span class="time-badge">⏱ 12 min</span>
+          <div class="topic-tags">
+            <span class="topic-tag tag-internet">Internet</span>
+            <span class="topic-tag tag-personal">Personal Info</span>
+            <span class="topic-tag tag-social">Social Media</span>
+            <span class="topic-tag tag-gps">GPS</span>
+            <span class="topic-tag tag-security">Data Security</span>
+          </div>
+        </div>
+      </div>
+      <a href="activity1.html" class="card-action">PLAY →</a>
+    </div>
+
+    <div class="card">
+      <div class="card-number">2</div>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-icon">📝</span>
+          <span class="card-title">Exam Showdown</span>
+        </div>
+        <div class="card-desc">Tackle real CCEA past paper questions on ethical issues. Type your answers, then compare with the mark scheme — build your exam technique.</div>
+        <div class="card-meta">
+          <span class="time-badge">⏱ 7 min</span>
+          <div class="topic-tags">
+            <span class="topic-tag tag-social">Social Media</span>
+            <span class="topic-tag tag-gps">GPS</span>
+            <span class="topic-tag tag-security">Data Security</span>
+          </div>
+        </div>
+      </div>
+      <a href="activity2.html" class="card-action">PLAY →</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    CCEA GCSE Digital Technology — Unit 1<br>
+    Moral & Ethical Considerations
+  </div>
+</div>
+
+<script>
+const canvas=document.getElementById('starCanvas');
+const ctx=canvas.getContext('2d');
+let stars=[];
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;stars=[];for(let i=0;i<100;i++){stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.5+0.5,a:Math.random(),da:(Math.random()-.5)*.01})}}
+function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);for(const s of stars){s.a+=s.da;if(s.a>1||s.a<0.1)s.da*=-1;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(200,230,240,${s.a})`;ctx.fill()}requestAnimationFrame(draw)}
+resize();draw();window.addEventListener('resize',resize);
+</script>
+</body>
+</html>

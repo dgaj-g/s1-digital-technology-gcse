@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activity 1 — The Grey Zone</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;min-height:100vh;background:linear-gradient(135deg,#0B1622,#122B3A);color:#fff;overflow-x:hidden}
+a{color:#02C39A;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:640px;margin:0 auto;padding:20px 14px}
+
+.act-header{text-align:center;margin-bottom:16px;animation:fadeIn .6s ease}
+.act-header .icon{font-size:42px;margin-bottom:4px}
+.act-header h1{font-size:1.5em;background:linear-gradient(90deg,#02C39A,#00A896);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.act-header p{color:#8BAAB5;margin-top:4px;font-size:.85em}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-15px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+.progress-bar{height:5px;background:rgba(255,255,255,.08);border-radius:3px;margin-bottom:12px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#028090,#02C39A);border-radius:3px;transition:width .5s;width:0%}
+
+.screen{display:none;animation:fadeIn .4s ease}.screen.active{display:block}
+
+.btn{display:inline-block;padding:11px 26px;border-radius:25px;font-size:.9em;font-weight:700;cursor:pointer;border:none;transition:all .3s}
+.btn-primary{background:linear-gradient(135deg,#028090,#02C39A);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 5px 18px rgba(2,192,154,.3)}
+.btn-secondary{background:rgba(255,255,255,.08);color:#8BAAB5;border:1px solid rgba(255,255,255,.15)}
+.btn-secondary:hover{background:rgba(255,255,255,.12)}
+.text-center{text-align:center}
+
+/* Welcome */
+.welcome-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:28px 20px;text-align:center}
+.welcome-card h2{font-size:1.2em;margin-bottom:10px;color:#02C39A}
+.welcome-card p{color:#8BAAB5;line-height:1.6;margin-bottom:10px;font-size:.88em}
+
+/* Room setup */
+.room-setup{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px 20px;text-align:center}
+.room-setup h3{color:#02C39A;margin-bottom:12px}
+.room-input{padding:12px 16px;border-radius:10px;background:rgba(0,0,0,.3);border:2px solid rgba(2,195,154,.3);color:#02C39A;font-size:1.1em;font-family:inherit;text-align:center;text-transform:uppercase;letter-spacing:3px;width:220px;outline:none;transition:border-color .3s}
+.room-input:focus{border-color:#02C39A}
+.room-input::placeholder{color:#4A6A75;text-transform:none;letter-spacing:0}
+.room-status{margin-top:10px;font-size:.82em;color:#6A8A95}
+.room-status.connected{color:#20BF6B}
+.room-status.error{color:#FC5C65}
+.room-count{display:inline-block;padding:4px 12px;border-radius:12px;background:rgba(2,195,154,.1);color:#02C39A;font-size:.8em;font-weight:700;margin-top:6px}
+.role-btns{display:flex;gap:10px;justify-content:center;margin:14px 0}
+.role-btn{flex:1;max-width:180px;padding:14px;border-radius:12px;cursor:pointer;border:2px solid;transition:all .3s;text-align:center}
+.role-btn.teacher{background:rgba(2,195,154,.06);border-color:rgba(2,195,154,.3);color:#02C39A}
+.role-btn.student{background:rgba(56,103,214,.06);border-color:rgba(56,103,214,.3);color:#3867D6}
+.role-btn:hover{transform:translateY(-2px)}
+.role-btn .role-icon{font-size:1.8em;display:block;margin-bottom:4px}
+.role-btn .role-label{font-weight:700;font-size:.9em}
+.role-btn .role-desc{font-size:.72em;margin-top:2px;opacity:.7}
+
+/* Scenario card */
+.scenario-num{text-align:center;font-size:.8em;color:#6A8A95;margin-bottom:8px}
+.scenario-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px 20px;margin-bottom:14px;animation:fadeInUp .4s ease}
+.scenario-category{display:inline-block;padding:3px 10px;border-radius:8px;font-size:.72em;font-weight:700;margin-bottom:10px}
+.cat-internet{background:rgba(252,92,101,.12);color:#FC5C65}
+.cat-personal{background:rgba(250,130,49,.12);color:#FA8231}
+.cat-social{background:rgba(136,84,208,.12);color:#8854D0}
+.cat-gps{background:rgba(56,103,214,.12);color:#3867D6}
+.cat-security{background:rgba(32,191,107,.12);color:#20BF6B}
+.scenario-text{font-size:1.05em;line-height:1.6;color:#E8F4F2;margin-bottom:16px}
+
+/* Slider */
+.slider-area{margin:16px 0 10px}
+.slider-labels{display:flex;justify-content:space-between;font-size:.75em;font-weight:700;margin-bottom:6px}
+.slider-labels .fine{color:#20BF6B}
+.slider-labels .wrong{color:#FC5C65}
+.slider-track{position:relative;height:40px;background:linear-gradient(90deg,#20BF6B,#F7B731,#FC5C65);border-radius:20px;cursor:pointer;user-select:none;-webkit-user-select:none}
+.slider-thumb{position:absolute;top:4px;width:32px;height:32px;background:#fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.3);transform:translateX(-50%);transition:left .1s;cursor:grab}
+.slider-thumb:active{cursor:grabbing;transform:translateX(-50%) scale(1.1)}
+.slider-thumb.placed{box-shadow:0 0 0 3px rgba(2,195,154,.5),0 2px 8px rgba(0,0,0,.3)}
+.slider-value{text-align:center;margin-top:8px;font-size:.85em;color:#8BAAB5;min-height:20px}
+.submit-vote{margin-top:10px}
+
+/* Live results */
+.results-panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;margin-top:14px;animation:fadeInUp .4s}
+.results-panel h4{color:#02C39A;font-size:.9em;margin-bottom:10px;text-align:center}
+.bar-chart{margin:10px 0}
+.bar-row{display:flex;align-items:center;gap:8px;margin:4px 0}
+.bar-label{font-size:.72em;color:#6A8A95;min-width:75px;text-align:right}
+.bar-track{flex:1;height:22px;background:rgba(255,255,255,.06);border-radius:11px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:11px;transition:width .6s ease;min-width:0}
+.bar-fill.fine{background:linear-gradient(90deg,#20BF6B,#2ecc71)}
+.bar-fill.mostly-fine{background:linear-gradient(90deg,#7ec850,#a8d840)}
+.bar-fill.neutral{background:linear-gradient(90deg,#F7B731,#fcd34d)}
+.bar-fill.mostly-wrong{background:linear-gradient(90deg,#FA8231,#e67e22)}
+.bar-fill.wrong{background:linear-gradient(90deg,#FC5C65,#e74c3c)}
+.bar-count{font-size:.72em;color:#8BAAB5;min-width:28px;font-weight:700}
+.total-votes{text-align:center;font-size:.75em;color:#4A6A75;margin-top:6px}
+
+/* Reveal */
+.reveal-panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;margin-top:12px;animation:fadeInUp .4s}
+.reveal-panel h4{font-size:.9em;margin-bottom:8px}
+.textbook-quote{background:rgba(2,195,154,.06);border-left:3px solid #02C39A;padding:10px 14px;border-radius:0 8px 8px 0;font-size:.85em;color:#A0C8B5;line-height:1.5;margin:8px 0;font-style:italic}
+.exam-answer{background:rgba(247,183,49,.06);border-left:3px solid #F7B731;padding:10px 14px;border-radius:0 8px 8px 0;font-size:.85em;color:#C0A860;line-height:1.5;margin:8px 0}
+.exam-answer strong{color:#F7B731}
+.key-phrase{display:inline;background:rgba(32,191,107,.12);color:#20BF6B;padding:1px 6px;border-radius:4px;font-weight:700;font-size:.9em}
+
+/* Waiting */
+.waiting{text-align:center;padding:30px;color:#6A8A95;font-size:.9em}
+.waiting .dots::after{content:'';animation:dots 1.5s infinite}
+@keyframes dots{0%{content:''}33%{content:'.'}66%{content:'..'}100%{content:'...'}}
+
+/* Results summary */
+.summary-card{background:rgba(255,255,255,.05);border-radius:14px;padding:24px;text-align:center;border:1px solid rgba(255,255,255,.1)}
+.summary-score{font-size:2em;font-weight:800;color:#02C39A;margin:8px 0}
+.summary-subtitle{color:#8BAAB5;font-size:.9em;margin-bottom:14px}
+.key-takeaways{text-align:left;background:rgba(2,195,154,.06);border:1px solid rgba(2,195,154,.15);border-radius:10px;padding:14px;margin:14px 0;font-size:.85em;color:#A0C8B5;line-height:1.6}
+.key-takeaways h4{color:#02C39A;margin-bottom:6px}
+.summary-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="container">
+  <div style="margin-bottom:8px"><a href="index.html" style="color:#6A8A95;font-size:.8em">← Back to Activities</a></div>
+  <div class="act-header">
+    <div class="icon">⚖️</div>
+    <h1>The Grey Zone</h1>
+    <p>Where do YOU draw the line?</p>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- Welcome -->
+  <div class="screen active" id="welcomeScreen">
+    <div class="welcome-card">
+      <h2>⚖️ The Grey Zone</h2>
+      <p>Technology creates ethical dilemmas that aren't always black and white. For each scenario, decide where <strong style="color:#02C39A">you</strong> stand — then see how your class voted.</p>
+      <p>There are no right or wrong answers here... <strong style="color:#F7B731">but the examiner DOES have an opinion.</strong></p>
+      <p style="color:#6A8A95;font-size:.82em;margin-top:6px">⏱ About 12 minutes • 8 scenarios</p>
+      <button class="btn btn-primary" onclick="showRoomSetup()">Get Started →</button>
+    </div>
+  </div>
+
+  <!-- Room Setup -->
+  <div class="screen" id="roomScreen">
+    <div class="room-setup">
+      <h3>Join a Room</h3>
+      <p style="color:#8BAAB5;font-size:.85em;margin-bottom:14px">Enter the room code from your teacher's screen:</p>
+      <div class="role-btns">
+        <div class="role-btn teacher" onclick="selectRole('teacher')">
+          <span class="role-icon">👩‍🏫</span>
+          <span class="role-label">Teacher</span>
+          <span class="role-desc">Create a room</span>
+        </div>
+        <div class="role-btn student" onclick="selectRole('student')">
+          <span class="role-icon">👩‍🎓</span>
+          <span class="role-label">Student</span>
+          <span class="role-desc">Join a room</span>
+        </div>
+      </div>
+      <div id="passcodeArea" style="display:none">
+        <input type="password" class="room-input" id="teacherPasscode" placeholder="Enter passcode" autocomplete="off" style="letter-spacing:2px;font-size:.95em">
+        <div class="room-status" id="passcodeStatus"></div>
+        <div style="margin-top:8px">
+          <button class="btn btn-primary" onclick="checkPasscode()">Verify</button>
+        </div>
+      </div>
+      <div id="roomInputArea" style="display:none">
+        <input type="text" class="room-input" id="roomCode" placeholder="e.g. MRG-S1A" maxlength="12" autocomplete="off">
+        <div class="room-status" id="roomStatus"></div>
+        <div id="roomCount" style="display:none" class="room-count">0 connected</div>
+        <div style="margin-top:12px">
+          <button class="btn btn-primary" id="roomJoinBtn" onclick="joinRoom()">Join Room</button>
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <button class="btn btn-secondary" onclick="startOffline()" style="font-size:.8em">or continue without a room (solo mode)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game -->
+  <div class="screen" id="gameScreen">
+    <div id="scenarioArea"></div>
+  </div>
+
+  <!-- Summary -->
+  <div class="screen" id="summaryScreen"></div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+// ==========================================
+// FIREBASE CONFIG — PASTE YOUR CONFIG HERE
+// ==========================================
+const firebaseConfig = {
+  apiKey: "AIzaSyAXxehTbNZLNbktdkJK-tOyzOIKFbYZnKo",
+  authDomain: "grey-zone-ethics.firebaseapp.com",
+  databaseURL: "https://grey-zone-ethics-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "grey-zone-ethics",
+  storageBucket: "grey-zone-ethics.firebasestorage.app",
+  messagingSenderId: "651133853164",
+  appId: "1:651133853164:web:23461b485e4e4ceab974c9"
+};
+
+let db = null;
+let roomRef = null;
+let isOnline = false;
+let role = null;
+let roomCode = '';
+let currentScenario = 0;
+let myVotes = [];
+
+// Init Firebase only if config is set
+function initFirebase() {
+  if (!firebaseConfig.apiKey) return false;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    return true;
+  } catch(e) {
+    console.warn('Firebase init failed:', e);
+    return false;
+  }
+}
+
+const SCENARIOS = [
+  {
+    text: "Your school installs CCTV in all corridors and common areas. The head teacher says it's \"for everyone's safety.\"",
+    category: "personal", catLabel: "Access to Personal Information",
+    textbookQuote: "CCTV cameras monitor our activity in cities and shopping centres.",
+    examAnswer: "While CCTV can help prevent bullying and provide evidence for incidents, installing cameras that monitor students throughout the day raises ethical concerns about <span class='key-phrase'>surveillance without consent</span>. Students may feel their movements are being constantly tracked, which could be seen as an <span class='key-phrase'>infringement on their right to privacy</span>.",
+    examTip: "In the exam, always consider BOTH sides. Acknowledge the benefit (safety) but explain WHY it's still an ethical concern (no consent, constant monitoring)."
+  },
+  {
+    text: "A supermarket uses your mum's loyalty card data to build a detailed profile of her shopping habits and shares it with advertising companies who send her targeted offers.",
+    category: "personal", catLabel: "Access to Personal Information",
+    textbookQuote: "Loyalty cards used by supermarkets allow organisations to collect data about our shopping habits. This data can be used to inform their marketing and advertising departments. By analysing credit or debit card transactions, customer information on shopping patterns can be sold on to third parties.",
+    examAnswer: "This is an example of <span class='key-phrase'>sharing personal data between companies without prior permission</span>. Although the customer signed up for the loyalty card, they may not have been fully aware that their shopping habits would be <span class='key-phrase'>collected and analysed</span> and then shared with third-party companies.",
+    examTip: "The textbook phrase 'without us being fully aware of it' is key. Even when people technically agree to terms and conditions, they may not understand what they're consenting to."
+  },
+  {
+    text: "A form teacher regularly checks her students' Instagram and TikTok accounts to \"keep an eye on things.\"",
+    category: "social", catLabel: "Social Media Misuse",
+    textbookQuote: "People may search for profile pages to gain access to personal information such as addresses or phone numbers.",
+    examAnswer: "While the teacher may have good intentions (duty of care), regularly <span class='key-phrase'>searching profile pages to gain access to personal information</span> is one of the ways the textbook describes social media misuse. Even public profiles contain personal details that students may not expect their teacher to be monitoring.",
+    examTip: "Notice how the SAME action can be viewed differently depending on context. In the exam, show you understand this — 'While it could be seen as... it also raises concerns about...'"
+  },
+  {
+    text: "Your school installs GPS on all school buses so parents can track exactly where the bus is in real time.",
+    category: "gps", catLabel: "GPS & Tracking",
+    textbookQuote: "Tracking of buses, taxis and company vans by organisations can be positive for customers as they are aware of arrival and departure times, but also track employee activity.",
+    examAnswer: "This is a direct textbook example. GPS tracking of buses is <span class='key-phrase'>positive for customers</span> (parents know arrival times), but it also means the <span class='key-phrase'>bus driver's activity and movements are being tracked</span>. If the driver was not informed or did not consent, this is an <span class='key-phrase'>infringement on their right to privacy</span>.",
+    examTip: "GPS questions almost always have TWO sides. The textbook explicitly mentions both the positive (customer benefit) and the concern (employee tracking). Always mention BOTH in your answer."
+  },
+  {
+    text: "A popular free revision app gives you personalised study tips based on your location, browsing habits, and contact list.",
+    category: "personal", catLabel: "Access to Personal Information",
+    textbookQuote: "Our personal data can often be collected and analysed without us being fully aware of it.",
+    examAnswer: "A revision app has no legitimate reason to access your <span class='key-phrase'>location, browsing habits, and contact list</span>. This is an example of personal data being <span class='key-phrase'>collected and analysed without users being fully aware</span> of the extent of data harvesting. The app may be sharing this data with third parties for advertising.",
+    examTip: "Think about whether the data being collected is RELEVANT to the app's purpose. A calculator doesn't need your microphone. A revision app doesn't need your contacts."
+  },
+  {
+    text: "A student photographs two pages from the GCSE textbook and shares them in the year group WhatsApp chat to help everyone revise.",
+    category: "internet", catLabel: "Internet Misuse",
+    textbookQuote: "Software piracy — users illegally download copyrighted materials from the internet. Plagiarism — pupils copy and paste materials for coursework assignments and sign it off as their own work.",
+    examAnswer: "Although the intention is to help classmates, photographing and sharing textbook pages is a form of <span class='key-phrase'>distributing copyrighted material</span> without permission. The textbook is protected by copyright law. If students then use this material in coursework without crediting the source, this also becomes <span class='key-phrase'>plagiarism</span>.",
+    examTip: "Good intentions don't make something ethical. The exam often presents scenarios where the MOTIVATION is positive but the ACTION is still problematic."
+  },
+  {
+    text: "A social media app you use every day stores all its European users' personal data on servers in South America.",
+    category: "security", catLabel: "Security of Personal Data",
+    textbookQuote: "Privacy laws vary in different countries, for example EU laws differ from those in non-EU countries. If personal data is processed in a country with less strict laws, this could adversely impact the security of such data.",
+    examAnswer: "This raises concerns about the <span class='key-phrase'>security of personal data</span>. EU privacy laws (like GDPR) offer strong protection, but if data is stored in a country with <span class='key-phrase'>less strict privacy laws</span>, users' personal information may not have the same level of legal protection. This could <span class='key-phrase'>adversely impact the security</span> of that data.",
+    examTip: "The textbook phrase 'adversely impact the security of such data' is exactly what examiners look for. Learn it."
+  },
+  {
+    text: "A family buys their elderly grandmother a smartwatch for her birthday. It has GPS tracking built in and they use it to check where she is throughout the day.",
+    category: "gps", catLabel: "GPS & Tracking",
+    textbookQuote: "When tracking individuals who need to be monitored through an electronic tracking device, for example offenders who are on 'home arrest' or vulnerable patients such as dementia sufferers, this can be a positive use of GPS. If this is done without consent it is an infringement on an individual's right to privacy.",
+    examAnswer: "The textbook describes tracking <span class='key-phrase'>vulnerable patients such as dementia sufferers</span> as a <span class='key-phrase'>positive use of GPS</span>. However, the textbook ALSO states that tracking <span class='key-phrase'>without consent is an infringement on an individual's right to privacy</span>. The ethical tension here is between protecting a vulnerable person and respecting their autonomy.",
+    examTip: "This is the most nuanced scenario. The textbook supports BOTH positions. In the exam, the strongest answers acknowledge this tension rather than taking one side."
+  }
+];
+
+const VOTE_LABELS = ["Totally fine", "Mostly fine", "Unsure", "Mostly wrong", "Totally wrong"];
+const VOTE_CLASSES = ["fine", "mostly-fine", "neutral", "mostly-wrong", "wrong"];
+
+function setProgress(p){document.getElementById('progressFill').style.width=p+'%'}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
+
+function showRoomSetup() {
+  const firebaseOk = initFirebase();
+  if (!firebaseOk) {
+    // No Firebase config — go straight to solo mode
+    startOffline();
+    return;
+  }
+  showScreen('roomScreen');
+}
+
+const _tp = 'ols26*slo';
+
+function selectRole(r) {
+  role = r;
+  document.querySelectorAll('.role-btn').forEach(b => b.style.opacity = '0.4');
+  document.querySelector('.role-btn.' + r).style.opacity = '1';
+
+  if (r === 'teacher') {
+    // Show passcode first
+    document.getElementById('passcodeArea').style.display = 'block';
+    document.getElementById('roomInputArea').style.display = 'none';
+    document.getElementById('teacherPasscode').focus();
+  } else {
+    document.getElementById('passcodeArea').style.display = 'none';
+    document.getElementById('roomInputArea').style.display = 'block';
+    document.getElementById('roomCode').placeholder = 'Enter code';
+    document.getElementById('roomJoinBtn').textContent = 'Join Room';
+  }
+}
+
+function checkPasscode() {
+  const entered = document.getElementById('teacherPasscode').value;
+  if (entered === _tp) {
+    document.getElementById('passcodeArea').style.display = 'none';
+    document.getElementById('roomInputArea').style.display = 'block';
+    document.getElementById('roomCode').placeholder = 'Create a code';
+    document.getElementById('roomJoinBtn').textContent = 'Create Room';
+    document.getElementById('roomCode').focus();
+  } else {
+    document.getElementById('passcodeStatus').textContent = 'Incorrect passcode';
+    document.getElementById('passcodeStatus').className = 'room-status error';
+    document.getElementById('teacherPasscode').value = '';
+    document.getElementById('teacherPasscode').focus();
+  }
+}
+
+function joinRoom() {
+  roomCode = document.getElementById('roomCode').value.trim().toUpperCase();
+  if (!roomCode || roomCode.length < 2) {
+    document.getElementById('roomStatus').textContent = 'Please enter a room code';
+    document.getElementById('roomStatus').className = 'room-status error';
+    return;
+  }
+
+  roomRef = db.ref('rooms/' + roomCode);
+
+  if (role === 'teacher') {
+    // Create room
+    roomRef.set({ created: Date.now(), scenario: 0, phase: 'voting', votes: {} });
+  }
+
+  // Track connection
+  const connRef = roomRef.child('connections').push();
+  connRef.set(true);
+  connRef.onDisconnect().remove();
+
+  // Listen for connection count
+  roomRef.child('connections').on('value', snap => {
+    const count = snap.numChildren();
+    document.getElementById('roomCount').style.display = 'block';
+    document.getElementById('roomCount').textContent = count + ' connected';
+  });
+
+  isOnline = true;
+  document.getElementById('roomStatus').textContent = 'Connected to room: ' + roomCode;
+  document.getElementById('roomStatus').className = 'room-status connected';
+
+  setTimeout(() => {
+    showScreen('gameScreen');
+    loadScenario(0);
+  }, 800);
+}
+
+function startOffline() {
+  isOnline = false;
+  role = 'teacher';
+  showScreen('gameScreen');
+  loadScenario(0);
+}
+
+function loadScenario(idx) {
+  currentScenario = idx;
+  setProgress((idx / SCENARIOS.length) * 100);
+  const s = SCENARIOS[idx];
+  const catClass = 'cat-' + s.category;
+
+  document.getElementById('scenarioArea').innerHTML = `
+    <div class="scenario-num">Scenario ${idx + 1} of ${SCENARIOS.length}</div>
+    <div class="scenario-card">
+      <span class="scenario-category ${catClass}">${s.catLabel}</span>
+      <div class="scenario-text">${s.text}</div>
+
+      <div class="slider-area" id="sliderArea">
+        <div class="slider-labels">
+          <span class="fine">Totally Fine</span>
+          <span class="wrong">Totally Wrong</span>
+        </div>
+        <div class="slider-track" id="sliderTrack">
+          <div class="slider-thumb" id="sliderThumb" style="left:50%"></div>
+        </div>
+        <div class="slider-value" id="sliderValue">Drag the slider to your position</div>
+      </div>
+
+      <div class="text-center submit-vote">
+        <button class="btn btn-primary" id="voteBtn" onclick="submitVote()" disabled style="opacity:.5">Lock In My Position</button>
+      </div>
+    </div>
+    <div id="resultsArea"></div>
+    <div id="revealArea"></div>
+    <div id="navArea" class="text-center" style="margin-top:12px"></div>
+  `;
+
+  setupSlider();
+}
+
+function setupSlider() {
+  const track = document.getElementById('sliderTrack');
+  const thumb = document.getElementById('sliderThumb');
+  const label = document.getElementById('sliderValue');
+  let dragging = false;
+  let hasInteracted = false;
+
+  function updatePosition(clientX) {
+    const rect = track.getBoundingClientRect();
+    let pct = ((clientX - rect.left) / rect.width) * 100;
+    pct = Math.max(0, Math.min(100, pct));
+    thumb.style.left = pct + '%';
+
+    // Map to 5 positions
+    let zone;
+    if (pct < 20) zone = 0;
+    else if (pct < 40) zone = 1;
+    else if (pct < 60) zone = 2;
+    else if (pct < 80) zone = 3;
+    else zone = 4;
+
+    label.textContent = VOTE_LABELS[zone];
+    label.style.color = ['#20BF6B','#7ec850','#F7B731','#FA8231','#FC5C65'][zone];
+    thumb.dataset.zone = zone;
+
+    if (!hasInteracted) {
+      hasInteracted = true;
+      thumb.classList.add('placed');
+      document.getElementById('voteBtn').disabled = false;
+      document.getElementById('voteBtn').style.opacity = '1';
+    }
+  }
+
+  track.addEventListener('mousedown', e => { dragging = true; updatePosition(e.clientX); });
+  document.addEventListener('mousemove', e => { if (dragging) updatePosition(e.clientX); });
+  document.addEventListener('mouseup', () => { dragging = false; });
+
+  track.addEventListener('touchstart', e => { dragging = true; updatePosition(e.touches[0].clientX); }, {passive:true});
+  document.addEventListener('touchmove', e => { if (dragging) updatePosition(e.touches[0].clientX); }, {passive:true});
+  document.addEventListener('touchend', () => { dragging = false; });
+
+  track.addEventListener('click', e => updatePosition(e.clientX));
+}
+
+function submitVote() {
+  const zone = parseInt(document.getElementById('sliderThumb').dataset.zone);
+  myVotes.push(zone);
+
+  // Disable slider and button
+  document.getElementById('voteBtn').disabled = true;
+  document.getElementById('voteBtn').style.opacity = '.5';
+  document.getElementById('voteBtn').textContent = '✓ Locked In';
+  document.getElementById('sliderTrack').style.pointerEvents = 'none';
+  document.getElementById('sliderTrack').style.opacity = '.6';
+
+  if (isOnline && roomRef) {
+    // Push vote to Firebase
+    roomRef.child('votes').child('s' + currentScenario).push(zone);
+
+    // Listen for all votes on this scenario
+    roomRef.child('votes').child('s' + currentScenario).on('value', snap => {
+      const votes = [];
+      snap.forEach(child => votes.push(child.val()));
+      showResults(votes);
+    });
+  } else {
+    // Solo mode — show just your vote with simulated spread
+    showResults([zone]);
+  }
+
+  // Show reveal after a short delay
+  setTimeout(() => showReveal(), isOnline ? 2000 : 800);
+}
+
+function showResults(votes) {
+  const counts = [0, 0, 0, 0, 0];
+  votes.forEach(v => counts[v]++);
+  const total = votes.length;
+  const maxCount = Math.max(...counts, 1);
+
+  document.getElementById('resultsArea').innerHTML = `
+    <div class="results-panel">
+      <h4>${isOnline ? '📊 Class Results (Live)' : '📊 Your Position'}</h4>
+      <div class="bar-chart">
+        ${VOTE_LABELS.map((label, i) => `
+          <div class="bar-row">
+            <div class="bar-label">${label}</div>
+            <div class="bar-track">
+              <div class="bar-fill ${VOTE_CLASSES[i]}" style="width:${total > 0 ? (counts[i] / total) * 100 : 0}%"></div>
+            </div>
+            <div class="bar-count">${counts[i]}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="total-votes">${total} vote${total !== 1 ? 's' : ''}</div>
+    </div>
+  `;
+}
+
+function showReveal() {
+  const s = SCENARIOS[currentScenario];
+  document.getElementById('revealArea').innerHTML = `
+    <div class="reveal-panel">
+      <h4 style="color:#02C39A">📖 What the textbook says:</h4>
+      <div class="textbook-quote">"${s.textbookQuote}"</div>
+
+      <h4 style="color:#F7B731;margin-top:12px">✏️ In the exam, you'd write:</h4>
+      <div class="exam-answer">${s.examAnswer}</div>
+
+      <div style="background:rgba(56,103,214,.06);border-left:3px solid #3867D6;padding:10px 14px;border-radius:0 8px 8px 0;font-size:.82em;color:#80A0C0;line-height:1.5;margin-top:8px">
+        <strong style="color:#3867D6">💡 Exam Tip:</strong> ${s.examTip}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('navArea').innerHTML = `
+    <button class="btn btn-primary" onclick="${currentScenario < SCENARIOS.length - 1 ? 'nextScenario()' : 'showSummary()'}">${currentScenario < SCENARIOS.length - 1 ? 'Next Scenario →' : 'See Summary →'}</button>
+  `;
+}
+
+function nextScenario() {
+  loadScenario(currentScenario + 1);
+}
+
+function showSummary() {
+  setProgress(100);
+  document.getElementById('summaryScreen').innerHTML = `
+    <div class="summary-card">
+      <div style="font-size:2em">⚖️</div>
+      <div class="summary-score">8 / 8</div>
+      <div class="summary-subtitle">All scenarios explored!</div>
+
+      <div class="key-takeaways">
+        <h4>Key Exam Takeaways</h4>
+        <p>• Ethical questions are about <strong>consent</strong> and <strong>awareness</strong> — was the person told? Did they agree?</p>
+        <p>• Always show <strong>both sides</strong> — acknowledge the benefit, then explain the concern</p>
+        <p>• Use textbook phrases: "infringement on the right to privacy", "without consent", "adversely impact the security"</p>
+        <p>• Data collection is often done "without us being fully aware of it" — this is the core ethical issue</p>
+        <p>• GPS tracking can be <strong>positive</strong> (safety, arrivals) AND <strong>negative</strong> (surveillance, no consent) — examiners want you to discuss both</p>
+      </div>
+
+      <div class="summary-actions">
+        <button class="btn btn-primary" onclick="location.reload()">Play Again</button>
+        <a href="activity2.html" class="btn btn-secondary">Exam Showdown →</a>
+        <a href="index.html" class="btn btn-secondary">Home</a>
+      </div>
+    </div>
+  `;
+  showScreen('summaryScreen');
+
+  // Clean up Firebase room data after 24 hours
+  if (isOnline && roomRef && role === 'teacher') {
+    roomRef.child('expires').set(Date.now() + 86400000);
+  }
+}
+</script>
+</body>
+</html>
