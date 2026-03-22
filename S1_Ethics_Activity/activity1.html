@@ -501,8 +501,18 @@ function submitVote() {
 
   if (isOnline && roomRef) {
     // Push vote to Firebase — the listener attached in loadScenario will update results automatically
-    roomRef.child('votes').child('s' + currentScenario).push(zone).catch(err => {
+    roomRef.child('votes').child('s' + currentScenario).push(zone).then(() => {
+      console.log('Vote submitted successfully');
+    }).catch(err => {
       console.error('Vote failed:', err);
+      // Show visible error to user
+      const resultsEl = document.getElementById('resultsArea');
+      if (resultsEl) {
+        resultsEl.innerHTML = `<div class="card" style="background:rgba(252,92,101,.15);border:1px solid #FC5C65;padding:14px;margin-top:12px;text-align:center;">
+          <strong style="color:#FC5C65">⚠️ Vote failed to send</strong><br>
+          <span style="color:#aaa;font-size:.85em">Firebase may be blocking writes. Ask your teacher to check the database rules.</span>
+        </div>`;
+      }
     });
   } else {
     // Solo mode — show just your vote
