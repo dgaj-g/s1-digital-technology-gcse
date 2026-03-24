@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safety First! — Office Inspection</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a0a00;--bg2:#2d1400;--orange:#ff6d00;--orange-b:#ff9e40;--amber:#ffc107;--green:#2ecc71;--red:#e74c3c;--text:#f0ece2;--dim:#b08968;--teal:#00b8d4}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(145deg,var(--bg),var(--bg2));color:var(--text);min-height:100vh;overflow-x:hidden}
+.container{max-width:850px;margin:0 auto;padding:16px}
+a.back{display:inline-block;color:var(--orange-b);text-decoration:none;font-size:.85rem;font-weight:700;margin-bottom:10px;opacity:.8}a.back:hover{opacity:1}
+
+/* WELCOME */
+#welcome{text-align:center;animation:fadeIn .5s}
+#welcome h1{font-size:clamp(2rem,5vw,2.8rem);background:linear-gradient(135deg,var(--orange),var(--orange-b));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:8px 0}
+.mission{background:rgba(255,109,0,.07);border:1px solid rgba(255,158,64,.22);border-radius:14px;padding:20px;margin:18px auto;max-width:600px;text-align:left;line-height:1.75;font-size:.95rem;color:#ffcc80}
+.mission strong{color:var(--orange-b)}
+.start-btn{background:linear-gradient(135deg,var(--orange),var(--orange-b));color:#1a0a00;border:none;padding:16px 44px;border-radius:999px;font-size:1.1rem;font-weight:800;cursor:pointer;margin-top:14px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(255,109,0,.35)}
+.start-btn:hover{transform:translateY(-2px) scale(1.03)}
+
+/* TOP BAR */
+.top-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:12px;font-size:.82rem;flex-wrap:wrap;gap:6px}
+.phase-label{color:var(--orange-b);font-weight:800;font-size:.9rem}
+.score{color:var(--orange-b);font-weight:800}
+.lives{color:var(--red);font-weight:700;font-size:.95rem}
+
+/* CLIPBOARD */
+.clipboard{position:fixed;right:10px;top:50%;transform:translateY(-50%);width:200px;background:rgba(30,20,10,.95);border:2px solid rgba(255,158,64,.3);border-radius:12px;padding:12px;z-index:20;max-height:70vh;overflow-y:auto;font-size:.72rem;transition:opacity .3s}
+.clipboard h4{color:var(--orange-b);font-size:.78rem;margin-bottom:8px;text-align:center;letter-spacing:1px}
+.clipboard-entry{padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:6px;animation:slideUp .3s}
+.clipboard-entry .stamp{font-size:.9rem}
+.clipboard-entry .entry-text{color:var(--dim);font-size:.7rem;line-height:1.4}
+
+/* ── PHASE 1: SPOT HAZARD ── */
+#spotPhase{display:none}
+.scene-showcase{width:100%;border-radius:14px;overflow:hidden;border:2px solid rgba(255,158,64,.25);margin-bottom:14px;position:relative}
+.scene-showcase img{width:100%;display:block}
+.scene-overlay{position:absolute;bottom:0;left:0;right:0;padding:10px 16px;background:linear-gradient(transparent,rgba(0,0,0,.85));text-align:center}
+.scene-label{font-weight:800;font-size:.9rem;color:var(--orange-b)}
+.scene-sublabel{font-size:.72rem;color:var(--dim);margin-top:2px}
+
+.observation-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:10px}
+.obs-card{background:rgba(255,255,255,.04);border:2px solid rgba(255,158,64,.15);border-radius:14px;padding:16px;cursor:pointer;transition:all .3s;position:relative;min-height:100px}
+.obs-card:hover{border-color:var(--orange);transform:translateY(-3px);box-shadow:0 6px 20px rgba(255,109,0,.2)}
+.obs-card.judged{pointer-events:none}
+.obs-card.correct-hazard{border-color:var(--green);background:rgba(46,204,113,.08)}
+.obs-card.correct-safe{border-color:var(--green);background:rgba(46,204,113,.06)}
+.obs-card.wrong-call{border-color:var(--red);background:rgba(231,76,60,.08);opacity:.7}
+.obs-card .obs-emoji{font-size:2rem;margin-bottom:8px}
+.obs-card .obs-title{font-weight:800;font-size:.92rem;color:var(--orange-b);margin-bottom:4px}
+.obs-card .obs-desc{font-size:.82rem;color:var(--dim);line-height:1.5}
+.obs-card .obs-verdict{display:none;margin-top:10px;padding:10px;border-radius:10px;font-size:.82rem;line-height:1.55}
+.obs-card.judged .obs-verdict{display:block}
+.obs-card .obs-badge{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:.85rem;font-weight:800;color:#fff}
+.obs-card.judged .obs-badge{display:flex}
+.obs-card .obs-pulse{position:absolute;top:8px;right:8px;width:14px;height:14px;border-radius:50%;background:var(--orange-b);animation:hzPulse 2s ease-in-out infinite}
+.obs-card.judged .obs-pulse{display:none}
+
+.obs-btns{display:flex;gap:8px;margin-top:12px}
+.obs-btn{flex:1;padding:10px;border:2px solid rgba(255,255,255,.12);border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:700;text-align:center;transition:all .2s;background:rgba(255,255,255,.03)}
+.obs-btn:hover{transform:translateY(-2px)}
+.obs-btn.btn-hazard{color:var(--red);border-color:rgba(231,76,60,.25)}
+.obs-btn.btn-hazard:hover{background:rgba(231,76,60,.12)}
+.obs-btn.btn-safe{color:var(--green);border-color:rgba(46,204,113,.25)}
+.obs-btn.btn-safe:hover{background:rgba(46,204,113,.12)}
+
+/* ── PHASE 2: DIAGNOSE ── */
+#diagnosePhase{display:none}
+.employee-card{background:rgba(255,255,255,.05);border:2px solid rgba(255,158,64,.2);border-radius:16px;padding:24px;margin-bottom:14px;animation:slideUp .4s;display:flex;gap:18px;align-items:flex-start}
+.employee-portrait{width:100px;height:100px;border-radius:12px;overflow:hidden;border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:3rem;background:rgba(255,109,0,.1);flex-shrink:0}
+.employee-portrait img{width:100%;height:100%;object-fit:cover}
+.employee-info{flex:1}
+.employee-name{font-size:1rem;font-weight:800;color:var(--orange-b);margin-bottom:6px}
+.speech-bubble{background:rgba(255,255,255,.08);border-radius:14px;padding:14px;font-size:.92rem;line-height:1.6;position:relative;margin-bottom:14px}
+.speech-bubble::before{content:'';position:absolute;left:-10px;top:16px;width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-right:10px solid rgba(255,255,255,.08)}
+.diagnosis-options{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.diag-btn{padding:12px 18px;border:2px solid rgba(255,255,255,.12);border-radius:12px;cursor:pointer;font-size:.88rem;font-weight:600;background:rgba(255,255,255,.03);transition:all .2s;display:flex;align-items:center;gap:8px;flex:1;min-width:120px;justify-content:center}
+.diag-btn:hover{border-color:var(--orange);background:rgba(255,109,0,.1)}
+.diag-btn.correct-diag{border-color:var(--green)!important;background:rgba(46,204,113,.12)!important;color:var(--green)}
+.diag-btn.wrong-diag{border-color:var(--red)!important;background:rgba(231,76,60,.08)!important;opacity:.5}
+.rx-section{margin-top:12px}
+.rx-label{font-size:.82rem;color:var(--amber);font-weight:700;margin-bottom:8px}
+.rx-toolkit{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.rx-item{padding:10px 14px;border:2px solid rgba(255,255,255,.12);border-radius:10px;cursor:pointer;font-size:.82rem;background:rgba(255,255,255,.04);transition:all .2s;display:flex;align-items:center;gap:6px}
+.rx-item:hover{border-color:var(--orange);transform:translateY(-2px)}
+.rx-item.correct-rx{border-color:var(--green);background:rgba(46,204,113,.1);color:var(--green);pointer-events:none}
+.rx-item.wrong-rx{border-color:var(--red);background:rgba(231,76,60,.08);animation:wrongShake .5s;pointer-events:none}
+.rx-dropzone{min-height:60px;border:2px dashed rgba(255,158,64,.25);border-radius:12px;padding:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;transition:all .25s}
+.rx-dropped{padding:6px 12px;border-radius:8px;font-size:.82rem;display:flex;align-items:center;gap:6px;animation:slideUp .3s}
+.rx-dropped.correct{background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.3);color:var(--green)}
+.rx-dropped.wrong{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.3);color:var(--red)}
+.feedback-box{padding:14px;border-radius:12px;margin-top:10px;font-size:.85rem;line-height:1.55;animation:slideUp .3s}
+.feedback-box.correct{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.2);color:#a5d6a7}
+.feedback-box.wrong{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);color:#ef9a9a}
+.next-btn{background:linear-gradient(135deg,var(--orange),var(--orange-b));color:#1a0a00;border:none;padding:12px 28px;border-radius:999px;font-size:.92rem;font-weight:800;cursor:pointer;margin-top:10px;transition:transform .2s}
+.next-btn:hover{transform:scale(1.04)}
+
+/* RESULTS */
+#results{display:none;text-align:center;animation:fadeIn .5s}
+#results h2{font-size:2rem;margin-bottom:8px;color:var(--orange-b)}
+.rank-badge{display:inline-block;background:linear-gradient(135deg,var(--orange),var(--orange-b));color:#1a0a00;font-size:1.2rem;font-weight:800;padding:12px 28px;border-radius:999px;margin:12px 0}
+.score-breakdown{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px;margin:14px auto;max-width:420px;text-align:left}
+.score-line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:.88rem}
+.score-line:last-child{border:none;font-weight:800;color:var(--orange-b)}
+.revision-box{background:rgba(255,109,0,.06);border:1px solid rgba(255,158,64,.18);border-radius:14px;padding:18px;margin:14px auto;max-width:540px;text-align:left;font-size:.84rem;line-height:1.65;color:#ffcc80}
+.revision-box h3{color:var(--orange-b);margin-bottom:8px;font-size:1rem}
+.confetti{position:fixed;pointer-events:none;z-index:999}
+
+.stamp-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:100;pointer-events:none}
+.stamp-anim{font-size:2.5rem;font-weight:900;padding:10px 24px;border:6px solid;border-radius:12px;transform:rotate(-12deg);animation:stampIn .5s ease forwards}
+.stamp-violation{color:var(--red);border-color:var(--red)}
+.stamp-approved{color:var(--green);border-color:var(--green)}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes hzPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+@keyframes wrongShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes stampIn{0%{transform:rotate(-12deg) scale(2.5);opacity:0}40%{transform:rotate(-12deg) scale(1);opacity:1}100%{transform:rotate(-12deg) scale(1);opacity:0}}
+@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+@media(max-width:700px){.clipboard{display:none}.employee-card{flex-direction:column;align-items:center;text-align:center}.speech-bubble::before{display:none}.fix-comparison{grid-template-columns:1fr}.observation-grid{grid-template-columns:1fr}.exam-img-options{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="index.html">&#x2190; Back to Hub</a>
+
+<!-- WELCOME -->
+<div id="welcome">
+<div style="font-size:3.5rem;margin-bottom:6px;animation:float 2.5s ease-in-out infinite">&#x1F50D;</div>
+<h1>Safety First!</h1>
+<p style="color:var(--dim);margin-bottom:4px">Activity 3 &bull; Health &amp; Safety &bull; ~5 minutes</p>
+<div class="mission">
+<strong>&#x1F4CB; MISSION BRIEFING</strong><br><br>
+You are a <strong>Health &amp; Safety Inspector</strong> arriving at <strong>TechCorp Office</strong> for a routine inspection. This office has some serious problems — but not everything is wrong...<br><br>
+<strong>Phase 1 — Inspect:</strong> Study the office scene. You'll see 10 observations about the workplace. For each one, decide: is it a <strong style="color:var(--red)">HAZARD</strong> or is it <strong style="color:var(--green)">SAFE</strong>? Be careful — flagging something safe as a hazard costs you a life!<br><br>
+<strong>Phase 2 — Diagnose &amp; Prescribe:</strong> Employees describe their symptoms. Identify the health problem, then select the correct prevention from your toolkit.<br><br>
+You have <strong>3 lives</strong> &#x2764;&#xFE0F;&#x2764;&#xFE0F;&#x2764;&#xFE0F; — wrong calls cost lives!
+</div>
+<button class="start-btn" onclick="startSpot()">BEGIN INSPECTION &#x1F50D;</button>
+</div>
+
+<!-- PHASE 1: SPOT -->
+<div id="spotPhase">
+<div class="top-bar">
+<span class="phase-label">&#x1F50D; Phase 1: Inspect the Office</span>
+<span class="lives" id="livesDisplay">&#x2764;&#xFE0F;&#x2764;&#xFE0F;&#x2764;&#xFE0F;</span>
+<span id="hazardCounter" style="color:var(--dim);font-weight:600">0 / 10 judged</span>
+<span class="score" id="scoreSpot">Score: 0</span>
+</div>
+
+<div class="scene-showcase">
+<img src="./images/img_office_scene.png" onerror="this.style.display='none'" alt="Office scene">
+<div class="scene-overlay">
+<div class="scene-label">&#x26A0;&#xFE0F; TechCorp Office — Your Inspection Report</div>
+<div class="scene-sublabel">For each observation below: is it a HAZARD or is it SAFE?</div>
+</div>
+</div>
+
+<div class="observation-grid" id="obsGrid"></div>
+<button class="start-btn" id="diagBtn" style="display:none;margin:18px auto;font-size:.95rem;padding:12px 32px" onclick="endSpotPhase()">INSPECTION COMPLETE! DIAGNOSE EMPLOYEES &#x2192;</button>
+</div>
+
+<!-- PHASE 2: DIAGNOSE -->
+<div id="diagnosePhase">
+<div class="top-bar">
+<span class="phase-label">&#x1F48A; Phase 2: Diagnose &amp; Prescribe</span>
+<span class="lives" id="livesDisplay2">&#x2764;&#xFE0F;&#x2764;&#xFE0F;&#x2764;&#xFE0F;</span>
+<span class="score" id="scoreDiag">Score: 0</span>
+</div>
+<div id="employeeArea"></div>
+</div>
+
+<!-- RESULTS -->
+<div id="results">
+<div style="font-size:3rem;margin-bottom:6px" id="resultsEmoji">&#x1F3C6;</div>
+<h2 id="resultsTitle">Inspection Complete!</h2>
+<div class="rank-badge" id="rankBadge">Inspector</div>
+<div class="score-breakdown" id="scoreBreakdown"></div>
+<div class="revision-box" id="revisionBox"></div>
+<button class="start-btn" onclick="location.reload()" style="margin-top:10px">INSPECT AGAIN &#x21BB;</button>
+<br><br><a class="back" href="index.html">&#x2190; Back to Hub</a>
+</div>
+</div>
+
+<!-- CLIPBOARD -->
+<div class="clipboard" id="clipboard" style="display:none">
+<h4>&#x1F4CB; Inspection Report</h4>
+<div id="clipboardEntries"></div>
+</div>
+
+<script>
+let score=0,lives=3,spotJudged=0,spotCorrect=0,diagCorrect=0,diagWrong=0;
+
+function updateLives(phase){
+    const id=phase===2?'livesDisplay2':'livesDisplay';
+    const el=document.getElementById(id);
+    if(el)el.textContent='\u2764\uFE0F'.repeat(Math.max(0,lives))+'\u{1F5A4}'.repeat(3-Math.max(0,lives));
+}
+
+function addClipboardEntry(emoji,text){
+    const entries=document.getElementById('clipboardEntries');
+    const entry=document.createElement('div');
+    entry.className='clipboard-entry';
+    entry.innerHTML=`<span class="stamp">${emoji}</span><span class="entry-text">${text}</span>`;
+    entries.appendChild(entry);
+}
+
+function showStamp(type){
+    const overlay=document.createElement('div');
+    overlay.className='stamp-overlay';
+    overlay.innerHTML=`<div class="stamp-anim ${type==='violation'?'stamp-violation':'stamp-approved'}">${type==='violation'?'\u274C VIOLATION':'\u2705 CORRECT'}</div>`;
+    document.body.appendChild(overlay);
+    setTimeout(()=>overlay.remove(),600);
+}
+
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+// ═══ PHASE 1: SPOT THE HAZARD (WITH DECOYS) ═══
+const observations=[
+    // REAL HAZARDS (6)
+    {id:'cables',emoji:'\u{1F50C}',title:'Power cables on the floor',
+     desc:'Several power cables are trailing across the walkway between desks. Employees step over them regularly.',
+     isHazard:true,
+     explanation:'\u26A0\uFE0F TRIP HAZARD! Trailing cables across the floor can cause employees to trip and fall, potentially causing serious injury. Cables must be managed with cable trays or trunking.'},
+    {id:'posture',emoji:'\u{1FA91}',title:'Employee hunched over desk',
+     desc:'One worker is sitting with their back curved forward, shoulders rounded, and their chair doesn\'t appear to have any lumbar support.',
+     isHazard:true,
+     explanation:'\u26A0\uFE0F BACK PAIN RISK! Poor posture while sitting causes back pain — one of the three key health problems from computer use. An adjustable ergonomic chair with lumbar support is essential.'},
+    {id:'food',emoji:'\u2615',title:'Coffee beside the keyboard',
+     desc:'A coffee cup and a sandwich are sitting right beside the keyboard and mouse on one desk.',
+     isHazard:true,
+     explanation:'\u26A0\uFE0F SAFETY VIOLATION! No eating or drinking near computers. Spills can damage expensive electrical equipment and create slip hazards. A clear "no food or drink" policy is required.'},
+    {id:'glare',emoji:'\u2600\uFE0F',title:'Bright window behind monitors',
+     desc:'The window behind a row of monitors has no blinds or covering. Bright afternoon sunlight is reflecting off the screens.',
+     isHazard:true,
+     explanation:'\u26A0\uFE0F EYESTRAIN RISK! Screen glare from uncovered windows causes eyestrain — another key health problem. Blinds must be installed and monitors positioned to avoid direct sunlight.'},
+    {id:'nofire',emoji:'\u{1F9EF}',title:'No fire extinguisher in sight',
+     desc:'This area has 12 desktop computers, multiple power strips, and a server rack — but there\'s no fire extinguisher anywhere nearby.',
+     isHazard:true,
+     explanation:'\u26A0\uFE0F FIRE SAFETY VIOLATION! All areas with electrical equipment MUST have a CO\u2082 fire extinguisher. NEVER use water on electrical fires — water conducts electricity!'},
+    {id:'pat',emoji:'\u{1F3F7}\uFE0F',title:'Old sticker on computer',
+     desc:'The PAT testing sticker on one computer\'s power supply shows a test date from over two years ago.',
+     isHazard:true,
+     explanation:'\u26A0\uFE0F PAT TESTING OVERDUE! Portable Appliance Testing must be carried out regularly. Equipment with expired stickers could be faulty or dangerous. All portable electrical appliances must be tested and tagged.'},
+
+    // SAFE OBSERVATIONS (4) — these are DECOYS
+    {id:'wristrest',emoji:'\u2328\uFE0F',title:'Employee using a wrist rest',
+     desc:'One worker has a padded wrist rest in front of their keyboard. Their wrists are resting on it as they type.',
+     isHazard:false,
+     explanation:'\u2705 SAFE! A wrist rest helps prevent RSI (Repetitive Strain Injury) by supporting the wrists during typing. This is good practice — exactly what the mark scheme recommends.'},
+    {id:'adjustable',emoji:'\u{1FA91}',title:'Adjustable chair at workstation',
+     desc:'The desk nearest the door has a fully adjustable ergonomic office chair with lumbar support, adjustable armrests, and a height lever.',
+     isHazard:false,
+     explanation:'\u2705 SAFE! An adjustable chair with proper back support prevents back pain. The chair should allow feet flat on the floor and screen at eye level. This is correct H&S practice.'},
+    {id:'fireexit',emoji:'\u{1F6AA}',title:'Fire exit sign above door',
+     desc:'A green fire exit sign is illuminated above the main door. The route to it is unobstructed.',
+     isHazard:false,
+     explanation:'\u2705 SAFE! A clearly visible, illuminated fire exit sign with an unobstructed route is a legal requirement. This workplace has got this right.'},
+    {id:'screenpos',emoji:'\u{1F5A5}\uFE0F',title:'Monitor at arm\'s length',
+     desc:'One employee\'s monitor is positioned at arm\'s length away from their face, with the top of the screen roughly at eye level.',
+     isHazard:false,
+     explanation:'\u2705 SAFE! The monitor is correctly positioned — arm\'s length away with the top at eye level. This helps prevent eyestrain and neck pain. Good workstation setup!'},
+];
+
+function startSpot(){
+    document.getElementById('welcome').style.display='none';
+    document.getElementById('spotPhase').style.display='block';
+    document.getElementById('clipboard').style.display='block';
+    renderObservations();
+}
+
+function renderObservations(){
+    const grid=document.getElementById('obsGrid');
+    grid.innerHTML='';
+    shuffle([...observations]).forEach(obs=>{
+        const card=document.createElement('div');
+        card.className='obs-card';
+        card.id='obs-'+obs.id;
+        card.innerHTML=`
+            <div class="obs-emoji">${obs.emoji}</div>
+            <div class="obs-title">${obs.title}</div>
+            <div class="obs-desc">${obs.desc}</div>
+            <div class="obs-btns" id="btns-${obs.id}">
+                <div class="obs-btn btn-hazard" onclick="judgeObservation('${obs.id}',true)">&#x26A0;&#xFE0F; HAZARD</div>
+                <div class="obs-btn btn-safe" onclick="judgeObservation('${obs.id}',false)">&#x2705; SAFE</div>
+            </div>
+            <div class="obs-verdict" id="verdict-${obs.id}"></div>
+            <div class="obs-badge" id="badge-${obs.id}"></div>
+            <div class="obs-pulse"></div>`;
+        grid.appendChild(card);
+    });
+}
+
+function judgeObservation(obsId,calledHazard){
+    const obs=observations.find(o=>o.id===obsId);
+    if(!obs)return;
+    const card=document.getElementById('obs-'+obsId);
+    if(card.classList.contains('judged'))return;
+
+    card.classList.add('judged');
+    spotJudged++;
+
+    const isCorrect=(calledHazard===obs.isHazard);
+
+    if(isCorrect){
+        spotCorrect++;
+        score+=100;
+        if(obs.isHazard){
+            card.classList.add('correct-hazard');
+            showStamp('violation');
+            addClipboardEntry('\u26A0\uFE0F',obs.title+' — FLAGGED');
+        } else {
+            card.classList.add('correct-safe');
+            showStamp('approved');
+            addClipboardEntry('\u2705',obs.title+' — Safe');
+        }
+    } else {
+        card.classList.add('wrong-call');
+        lives--;
+        updateLives(1);
+        if(obs.isHazard){
+            addClipboardEntry('\u274C','Missed hazard: '+obs.title);
+        } else {
+            addClipboardEntry('\u274C','False alarm: '+obs.title);
+        }
+    }
+
+    const badge=document.getElementById('badge-'+obsId);
+    badge.style.background=isCorrect?'var(--green)':'var(--red)';
+    badge.textContent=isCorrect?'\u2713':'\u2717';
+
+    const verdict=document.getElementById('verdict-'+obsId);
+    verdict.style.background=isCorrect?'rgba(46,204,113,.08)':'rgba(231,76,60,.08)';
+    verdict.style.border=isCorrect?'1px solid rgba(46,204,113,.2)':'1px solid rgba(231,76,60,.2)';
+    verdict.style.color=isCorrect?'#a5d6a7':'#ef9a9a';
+    verdict.innerHTML=`<strong>${isCorrect?'Correct!':'Wrong!'}</strong> ${obs.explanation}`;
+
+    document.getElementById('scoreSpot').textContent='Score: '+score;
+    document.getElementById('hazardCounter').textContent=`${spotJudged} / ${observations.length} judged`;
+
+    if(spotJudged>=observations.length){
+        document.getElementById('diagBtn').style.display='block';
+        document.getElementById('diagBtn').scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+}
+
+function endSpotPhase(){
+    document.getElementById('spotPhase').style.display='none';
+    startDiagnose();
+}
+
+// ═══ PHASE 2: DIAGNOSE & PRESCRIBE (UNCHANGED — CONFIRMED EXCELLENT) ═══
+const employees=[
+    {id:'wrist',emoji:'\u{1F915}',name:'Sarah from Accounts',imgSrc:'./images/img_employee_wrist.png',
+     speech:'I\'ve been typing invoices all morning without a break. My wrists are killing me and I can barely grip my pen. The pain goes from my fingers right up to my elbow.',
+     diagnosis:'RSI',diagOptions:['RSI','Eyestrain','Back Pain'],
+     rxCorrect:['Wrist rest','Ergonomic keyboard'],
+     rxAll:['Wrist rest','Ergonomic keyboard','Anti-glare filter','Adjustable chair','Footrest','Screen brightness control'],
+     feedback:'Sarah has RSI (Repetitive Strain Injury) from continuous typing. Prevention: take regular breaks, use a wrist rest, and use an ergonomic keyboard. RSI appears in 5 out of 7 past papers!'},
+    {id:'eyes',emoji:'\u{1F623}',name:'James from Marketing',imgSrc:'./images/img_employee_eyes.png',
+     speech:'I\'ve been staring at my screen all day editing graphics. Everything looks blurry now, my eyes are dry and I keep getting headaches. The window behind my screen is making the glare worse.',
+     diagnosis:'Eyestrain',diagOptions:['RSI','Eyestrain','Back Pain'],
+     rxCorrect:['Anti-glare filter','Screen brightness control'],
+     rxAll:['Wrist rest','Anti-glare filter','Adjustable chair','Screen brightness control','Ergonomic keyboard','Footrest'],
+     feedback:'James has eyestrain from prolonged screen use and glare. Prevention: adjust brightness/contrast, use an anti-glare filter, ensure appropriate lighting, and follow the 20-20-20 rule.'},
+    {id:'back',emoji:'\u{1F629}',name:'Priya from HR',imgSrc:'./images/img_employee_back.png',
+     speech:'I\'ve been sat at my desk since 8am without getting up \u2014 it\'s now 3pm! My lower back is agony and my shoulders are completely stiff. My chair doesn\'t seem to adjust properly.',
+     diagnosis:'Back Pain',diagOptions:['RSI','Eyestrain','Back Pain'],
+     rxCorrect:['Adjustable chair','Footrest'],
+     rxAll:['Wrist rest','Anti-glare filter','Adjustable chair','Footrest','Screen brightness control','Ergonomic keyboard'],
+     feedback:'Priya has back pain from sitting too long with poor posture. Prevention: use an adjustable ergonomic chair, maintain proper posture, keep feet flat on the floor, use a footrest, and take regular breaks to stand and stretch.'},
+];
+
+let empIndex=0;
+
+function startDiagnose(){
+    document.getElementById('diagnosePhase').style.display='block';
+    empIndex=0;
+    showEmployee();
+}
+
+function showEmployee(){
+    if(empIndex>=employees.length){
+        document.getElementById('diagnosePhase').style.display='none';
+        showResults();
+        return;
+    }
+    const emp=employees[empIndex];
+    updateLives(2);
+    document.getElementById('scoreDiag').textContent='Score: '+score;
+
+    const area=document.getElementById('employeeArea');
+    area.innerHTML=`
+    <div class="employee-card">
+        <div class="employee-portrait"><img src="${emp.imgSrc}" onerror="this.style.display='none';this.parentElement.textContent='${emp.emoji}'" alt="${emp.name}"></div>
+        <div class="employee-info">
+            <div class="employee-name">${emp.name}</div>
+            <div class="speech-bubble">"${emp.speech}"</div>
+            <div style="font-size:.82rem;color:var(--amber);font-weight:700;margin-bottom:8px">Step 1: What health problem does ${emp.name.split(' ')[0]} have?</div>
+            <div class="diagnosis-options" id="diagOptions">
+                ${shuffle(emp.diagOptions).map(d=>`<div class="diag-btn" onclick="diagnose('${d}','${emp.id}')">${d==='RSI'?'\u{1F590}\uFE0F':d==='Eyestrain'?'\u{1F441}\uFE0F':'\u{1FA91}'} ${d}</div>`).join('')}
+            </div>
+        </div>
+    </div>`;
+}
+
+function diagnose(chosen,empId){
+    const emp=employees.find(e=>e.id===empId);
+    const isCorrect=chosen===emp.diagnosis;
+
+    document.querySelectorAll('.diag-btn').forEach(b=>{
+        b.style.pointerEvents='none';
+        if(b.textContent.includes(emp.diagnosis))b.classList.add('correct-diag');
+        else b.classList.add('wrong-diag');
+    });
+
+    if(isCorrect){
+        score+=100;diagCorrect++;
+        showStamp('approved');
+        addClipboardEntry('\u2705',`Diagnosed ${emp.name.split(' ')[0]}: ${emp.diagnosis}`);
+    } else {
+        lives--;diagWrong++;
+        updateLives(2);
+        addClipboardEntry('\u274C',`Wrong diagnosis for ${emp.name.split(' ')[0]}`);
+    }
+    document.getElementById('scoreDiag').textContent='Score: '+score;
+    setTimeout(()=>showPrescription(emp),800);
+}
+
+function showPrescription(emp){
+    const area=document.getElementById('employeeArea');
+    const rxSection=document.createElement('div');
+    rxSection.className='rx-section';
+    rxSection.style.animation='slideUp .4s ease';
+
+    const shuffledRx=shuffle([...emp.rxAll]);
+    rxSection.innerHTML=`
+    <div class="rx-label">Step 2: Select the correct prevention items for ${emp.diagnosis}:</div>
+    <div class="rx-toolkit" id="rxToolkit">${shuffledRx.map(r=>`<div class="rx-item" onclick="prescribe(this,'${r}','${emp.id}')">${r}</div>`).join('')}</div>
+    <div class="rx-dropzone" id="rxDropzone"><span class="placeholder-text">Click the correct items above \u2191</span></div>
+    <div id="rxFeedback"></div>`;
+    area.appendChild(rxSection);
+    rxSection.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+    emp.rxSelected=[];
+    emp.rxDone=false;
+}
+
+function prescribe(el,item,empId){
+    const emp=employees.find(e=>e.id===empId);
+    if(emp.rxDone||emp.rxSelected.includes(item))return;
+
+    const isCorrect=emp.rxCorrect.includes(item);
+    emp.rxSelected.push(item);
+
+    const dropzone=document.getElementById('rxDropzone');
+    dropzone.querySelector('.placeholder-text')?.remove();
+
+    if(isCorrect){
+        el.classList.add('correct-rx');
+        score+=60;
+        const dropped=document.createElement('div');
+        dropped.className='rx-dropped correct';
+        dropped.textContent='\u2705 '+item;
+        dropzone.appendChild(dropped);
+        addClipboardEntry('\u{1F48A}',`Prescribed: ${item}`);
+    } else {
+        el.classList.add('wrong-rx');
+        const dropped=document.createElement('div');
+        dropped.className='rx-dropped wrong';
+        dropped.textContent='\u274C '+item;
+        dropzone.appendChild(dropped);
+        setTimeout(()=>dropped.remove(),1500);
+    }
+
+    document.getElementById('scoreDiag').textContent='Score: '+score;
+
+    const foundAll=emp.rxCorrect.every(r=>emp.rxSelected.includes(r));
+    if(foundAll){
+        emp.rxDone=true;
+        const fb=document.getElementById('rxFeedback');
+        fb.innerHTML=`<div class="feedback-box correct"><strong>\u2705 All correct items prescribed!</strong><br>${emp.feedback}<br><button class="next-btn" onclick="nextEmployee()">Next Employee \u2192</button></div>`;
+        fb.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+}
+
+function nextEmployee(){
+    empIndex++;
+    showEmployee();
+}
+
+// ═══ RESULTS ═══
+function showResults(){
+    document.getElementById('spotPhase').style.display='none';
+    document.getElementById('diagnosePhase').style.display='none';
+    document.getElementById('clipboard').style.display='none';
+    document.getElementById('results').style.display='block';
+
+    const totalPossible=observations.length*100+employees.length*100+employees.reduce((s,e)=>s+e.rxCorrect.length*60,0);
+    const pct=Math.round((score/totalPossible)*100);
+    let rank,emoji;
+    if(pct>=85&&lives===3){rank='Chief Inspector';emoji='\u{1F3C6}'}
+    else if(pct>=70){rank='Senior Inspector';emoji='\u2B50'}
+    else if(pct>=55){rank='Inspector';emoji='\u{1F4CB}'}
+    else if(pct>=35){rank='Trainee Inspector';emoji='\u{1F477}'}
+    else{rank='Desk Duty';emoji='\u{1F4DD}'}
+
+    document.getElementById('resultsEmoji').textContent=emoji;
+    document.getElementById('resultsTitle').textContent=pct>=70?'Outstanding Inspection!':pct>=45?'Inspection Passed':'Needs Improvement';
+    document.getElementById('rankBadge').textContent=`${emoji} ${rank}`;
+    document.getElementById('scoreBreakdown').innerHTML=`
+        <div class="score-line"><span>Phase 1: Observations correct</span><span>${spotCorrect} / ${observations.length}</span></div>
+        <div class="score-line"><span>Phase 2: Diagnoses correct</span><span>${diagCorrect} / ${employees.length}</span></div>
+        <div class="score-line"><span>Lives remaining</span><span>${'\u2764\uFE0F'.repeat(Math.max(0,lives))}${'\u{1F5A4}'.repeat(3-Math.max(0,lives))}</span></div>
+        <div class="score-line"><span>Total score</span><span>${score}</span></div>`;
+    document.getElementById('revisionBox').innerHTML=`
+        <h3>&#x1F4DD; Revision Summary \u2014 Health &amp; Safety</h3>
+        <strong>Three health problems:</strong><br>
+        &bull; <strong>RSI</strong> (Repetitive Strain Injury) \u2014 continuous mouse/keyboard use \u2192 wrist rest, breaks, ergonomic keyboard<br>
+        &bull; <strong>Eyestrain</strong> \u2014 prolonged screen use, glare \u2192 adjust brightness, anti-glare filter, 20-20-20 rule<br>
+        &bull; <strong>Back Pain</strong> \u2014 poor posture, sitting too long \u2192 adjustable chair, proper posture, footrest, regular breaks<br><br>
+        <strong>Workplace safety:</strong><br>
+        &bull; <strong>PAT testing</strong> \u2014 Portable Appliance Testing, must be done regularly<br>
+        &bull; <strong>Cable management</strong> \u2014 no trailing cables (trip hazard)<br>
+        &bull; <strong>CO&#x2082; fire extinguishers</strong> \u2014 NEVER water on electrical fires!<br>
+        &bull; <strong>No food/drink</strong> near computers \u2014 spillage damages equipment<br>
+        &bull; <strong>Air conditioning</strong> \u2014 cool rooms with lots of equipment<br><br>
+        <strong>&#x26A0;&#xFE0F; Exam tip:</strong> RSI = Repetitive Strain Injury (appears in 5 out of 7 past papers!). Always learn the problem AND its prevention together \u2014 the exam often asks for both.`;
+
+    if(pct>=50)launchConfetti();
+}
+
+function launchConfetti(){
+    const colors=['#ff9e40','#ff6d00','#2ecc71','#ffc107','#00e5ff'];
+    for(let i=0;i<50;i++){
+        const c=document.createElement('div');c.className='confetti';
+        c.style.cssText=`left:${Math.random()*100}vw;top:-10px;width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation:confettiFall ${1.5+Math.random()*2}s ease ${Math.random()*.8}s forwards`;
+        document.body.appendChild(c);setTimeout(()=>c.remove(),4000);
+    }
+}
+</script>
+</body>
+</html>

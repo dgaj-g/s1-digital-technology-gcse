@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employment & Health and Safety - Interactive Activities</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+    --bg-1:#0a1628;--bg-2:#111d35;--bg-3:#182848;
+    --teal:#00b8d4;--teal-b:#00e5ff;
+    --orange:#ff6d00;--orange-b:#ff9e40;
+    --text:#f0ece2;--text-dim:#8e99a4;
+}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;min-height:100vh;color:var(--text);background:radial-gradient(circle at 20% 20%,rgba(0,184,212,.12),transparent 35%),radial-gradient(circle at 80% 15%,rgba(255,109,0,.1),transparent 30%),radial-gradient(circle at 50% 90%,rgba(156,39,176,.1),transparent 35%),linear-gradient(145deg,var(--bg-1),var(--bg-2) 50%,var(--bg-3));overflow-x:hidden}
+
+canvas#bgCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+.container{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:40px 20px}
+
+header{text-align:center;margin-bottom:36px}
+.badge{display:inline-block;background:linear-gradient(135deg,#111d35,#1e3a5f);border:1px solid rgba(0,184,212,.35);color:#80deea;font-size:.72rem;letter-spacing:2.5px;text-transform:uppercase;padding:7px 18px;border-radius:999px;font-weight:700;margin-bottom:14px}
+header h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.1;margin-bottom:10px;background:linear-gradient(135deg,#00e5ff,#ff9e40,#e040fb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header p{max-width:650px;margin:0 auto;color:var(--text-dim);line-height:1.65;font-size:1rem}
+
+.summary-banner{max-width:900px;margin:0 auto 28px;background:rgba(255,255,255,.04);border:1px solid rgba(0,229,255,.2);border-radius:12px;padding:14px 18px;text-align:center;font-size:.88rem;color:#b2dfdb}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:20px}
+
+.card{display:flex;flex-direction:column;text-decoration:none;color:inherit;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:22px;min-height:280px;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:var(--card-gradient)}
+.card:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.3);box-shadow:0 16px 45px rgba(0,0,0,.4)}
+
+.card-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.9rem;background:var(--card-gradient);color:#0a1628;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.activity-num{font-size:.7rem;letter-spacing:2.5px;color:#80cbc4;text-transform:uppercase;font-weight:700;margin-bottom:3px}
+.card h2{font-size:1.35rem;margin-bottom:8px}
+.card p{color:var(--text-dim);line-height:1.6;font-size:.9rem;margin-bottom:16px;flex:1}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+.tag{padding:4px 10px;border-radius:999px;font-size:.72rem;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#b0bec5}
+.play{align-self:flex-start;padding:10px 20px;border-radius:999px;font-weight:800;font-size:.82rem;letter-spacing:.7px;color:#0a1628;background:var(--card-gradient);transition:transform .15s}
+.play:hover{transform:scale(1.05)}
+
+footer{margin-top:40px;text-align:center;color:#607d8b;font-size:.82rem;opacity:.7}
+
+@media(max-width:700px){.container{padding:28px 14px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+
+<div class="container">
+    <header>
+        <div class="badge">CCEA GCSE Digital Technology</div>
+        <h1>Employment & Health and Safety</h1>
+        <p>
+            Interactive revision activities covering how digital technology changes employment and the health &amp; safety issues of using computers in the workplace.
+        </p>
+    </header>
+
+    <div class="summary-banner">
+        Covers: New Jobs &bull; Job Displacement &bull; Teleworking &bull; Upskilling &bull; RSI &bull; Eyestrain &bull; Back Pain &bull; Workplace Safety
+    </div>
+
+    <div class="grid">
+        <a class="card" href="activity1.html" style="--card-gradient:linear-gradient(135deg,#00b8d4,#00e5ff);">
+            <div class="card-header">
+                <div class="icon">&#x23F3;</div>
+                <div>
+                    <div class="activity-num">Activity 1</div>
+                    <h2>Then &amp; Now</h2>
+                </div>
+            </div>
+            <p>
+                Travel between <strong>1990</strong> and <strong>2025</strong> to explore how digital technology transformed the workplace. Click on workers to discover their stories, then <strong>drag</strong> job cards into the right category.
+            </p>
+            <div class="tags">
+                <span class="tag">Time machine</span>
+                <span class="tag">Scene explorer</span>
+                <span class="tag">Drag &amp; drop</span>
+            </div>
+            <div class="play">PLAY &#x2192;</div>
+        </a>
+
+        <a class="card" href="activity2.html" style="--card-gradient:linear-gradient(135deg,#9c27b0,#e040fb);">
+            <div class="card-header">
+                <div class="icon">&#x1F3E0;</div>
+                <div>
+                    <div class="activity-num">Activity 2</div>
+                    <h2>Remote Ready</h2>
+                </div>
+            </div>
+            <p>
+                Your company just announced teleworking! <strong>Drag equipment</strong> to build your home office, survive a <strong>full day of decisions</strong>, then <strong>swipe</strong> statements in The Great Debate.
+            </p>
+            <div class="tags">
+                <span class="tag">Office builder</span>
+                <span class="tag">Branching scenarios</span>
+                <span class="tag">Swipe debate</span>
+            </div>
+            <div class="play">PLAY &#x2192;</div>
+        </a>
+
+        <a class="card" href="activity3.html" style="--card-gradient:linear-gradient(135deg,#ff6d00,#ff9e40);">
+            <div class="card-header">
+                <div class="icon">&#x1F50D;</div>
+                <div>
+                    <div class="activity-num">Activity 3</div>
+                    <h2>Safety First!</h2>
+                </div>
+            </div>
+            <p>
+                You're the H&amp;S Inspector! <strong>Click hazards</strong> in the office scene, <strong>diagnose</strong> employee health problems, <strong>prescribe</strong> solutions from your toolkit, then <strong>drag fixes</strong> to make the office safe.
+            </p>
+            <div class="tags">
+                <span class="tag">Spot the hazard</span>
+                <span class="tag">Diagnose &amp; prescribe</span>
+                <span class="tag">Fix the office</span>
+            </div>
+            <div class="play">PLAY &#x2192;</div>
+        </a>
+    </div>
+
+    <footer>
+        CCEA GCSE Digital Technology &bull; Ethical, Legal &amp; Environmental Impact &bull; Offline HTML activities
+    </footer>
+</div>
+
+<script>
+const canvas=document.getElementById('bgCanvas');const ctx=canvas.getContext('2d');let dots=[];
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+function seed(){dots=[];const count=Math.max(50,Math.floor(window.innerWidth/16));for(let i=0;i<count;i++){dots.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.6+.4,vx:(Math.random()-.5)*.15,vy:(Math.random()-.5)*.15,c:Math.random()>.65?'#00e5ff':Math.random()>.35?'#ff9e40':'#e040fb'})}}
+function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);dots.forEach(d=>{d.x+=d.vx;d.y+=d.vy;if(d.x<0||d.x>canvas.width)d.vx*=-1;if(d.y<0||d.y>canvas.height)d.vy*=-1;ctx.globalAlpha=.5;ctx.fillStyle=d.c;ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);ctx.fill()});requestAnimationFrame(animate)}
+resize();seed();animate();window.addEventListener('resize',()=>{resize();seed()});
+</script>
+</body>
+</html>

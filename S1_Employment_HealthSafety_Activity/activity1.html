@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Then &amp; Now — Employment Timeline Explorer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a1628;--bg2:#0d1f3c;--teal:#00b8d4;--teal-b:#00e5ff;--cyan:#80deea;--green:#2ecc71;--red:#e74c3c;--amber:#ffc107;--text:#f0ece2;--dim:#8e99a4;--created:rgba(46,204,113,.15);--transformed:rgba(255,193,7,.15);--displaced:rgba(231,76,60,.15)}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.container{max-width:900px;margin:0 auto;padding:16px}
+a.back{display:inline-block;color:var(--teal);text-decoration:none;font-size:.85rem;font-weight:700;margin-bottom:10px;opacity:.8}a.back:hover{opacity:1}
+
+/* ── WELCOME ── */
+#welcome{text-align:center;animation:fadeIn .5s}
+#welcome h1{font-size:clamp(2rem,5vw,2.8rem);background:linear-gradient(135deg,var(--teal-b),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:8px 0}
+.mission{background:rgba(0,184,212,.07);border:1px solid rgba(0,184,212,.22);border-radius:14px;padding:20px;margin:18px auto;max-width:600px;text-align:left;line-height:1.75;font-size:.95rem;color:var(--cyan)}
+.mission strong{color:var(--teal-b)}
+.start-btn{background:linear-gradient(135deg,var(--teal),var(--teal-b));color:#0a1628;border:none;padding:16px 44px;border-radius:999px;font-size:1.1rem;font-weight:800;cursor:pointer;margin-top:14px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(0,184,212,.3)}
+.start-btn:hover{transform:translateY(-2px) scale(1.03)}
+
+/* ── TOP BAR ── */
+.top-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:12px;font-size:.82rem;flex-wrap:wrap;gap:6px}
+.phase-label{color:var(--teal-b);font-weight:800;font-size:.9rem}
+.score{color:var(--teal-b);font-weight:800}
+.progress-track{width:100%;height:4px;background:rgba(255,255,255,.08);border-radius:99px;margin-top:6px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-b));border-radius:99px;transition:width .5s}
+
+/* ── PHASE 1: ERA COMPARISON ── */
+#explorePhase{display:none}
+.era-compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.era-panel{border-radius:14px;overflow:hidden;border:2px solid rgba(0,229,255,.15);position:relative}
+.era-panel img{width:100%;height:100%;object-fit:cover;display:block}
+.era-label{position:absolute;bottom:0;left:0;right:0;padding:8px 14px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-weight:800;font-size:.85rem;text-align:center}
+.era-label.lbl-old{color:var(--amber)}
+.era-label.lbl-new{color:var(--teal-b)}
+.era-vs{display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;color:var(--dim);letter-spacing:2px}
+
+/* ── WORKER CARDS GRID ── */
+.worker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px}
+.worker-card{position:relative;border-radius:14px;overflow:hidden;cursor:pointer;border:2px solid rgba(0,229,255,.15);transition:all .3s;aspect-ratio:3/4;background:#111d35}
+.worker-card:hover{border-color:var(--teal-b);transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,184,212,.25)}
+.worker-card.discovered{border-color:rgba(255,255,255,.08);opacity:.65}
+.worker-card.discovered:hover{opacity:.85}
+.worker-card img{width:100%;height:100%;object-fit:cover;display:block}
+.worker-card .card-overlay{position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(0,0,0,.9));display:flex;flex-direction:column;justify-content:flex-end;padding:12px}
+.worker-card .card-name{font-weight:800;font-size:.85rem;color:var(--text)}
+.worker-card .card-hint{font-size:.72rem;color:var(--dim);margin-top:2px}
+.worker-card .card-check{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:var(--green);display:none;align-items:center;justify-content:center;font-size:.85rem;font-weight:800;color:#fff;box-shadow:0 2px 8px rgba(46,204,113,.4)}
+.worker-card.discovered .card-check{display:flex}
+.worker-card .undiscovered-pulse{position:absolute;top:8px;right:8px;width:14px;height:14px;border-radius:50%;background:var(--teal-b);animation:cardPulse 2s ease-in-out infinite}
+.worker-card.discovered .undiscovered-pulse{display:none}
+.worker-card .card-emoji-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;background:linear-gradient(135deg,#111d35,#1a2a4a)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .25s}
+.modal-card{background:#111d35;border:2px solid var(--teal);border-radius:18px;max-width:520px;width:100%;padding:0;overflow:hidden;animation:modalPop .35s ease;position:relative}
+.modal-header{display:flex;align-items:center;gap:14px;padding:18px 20px;background:rgba(0,184,212,.08)}
+.modal-portrait{width:80px;height:80px;border-radius:12px;overflow:hidden;border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:rgba(0,184,212,.1)}
+.modal-portrait img{width:100%;height:100%;object-fit:cover}
+.modal-title{font-size:1.2rem;font-weight:800;color:var(--teal-b)}
+.modal-subtitle{font-size:.82rem;color:var(--dim);margin-top:2px}
+.modal-body{padding:20px}
+.then-now{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.then-box,.now-box{padding:14px;border-radius:10px;font-size:.88rem;line-height:1.6}
+.then-box{background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.25)}
+.then-box h4{color:var(--amber);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.now-box{background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.25)}
+.now-box h4{color:var(--teal-b);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.modal-category{display:inline-block;padding:5px 14px;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:1px}
+.cat-created{background:rgba(46,204,113,.15);color:var(--green);border:1px solid rgba(46,204,113,.3)}
+.cat-transformed{background:rgba(255,193,7,.15);color:var(--amber);border:1px solid rgba(255,193,7,.3)}
+.cat-displaced{background:rgba(231,76,60,.15);color:var(--red);border:1px solid rgba(231,76,60,.3)}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--dim);font-size:1.4rem;cursor:pointer;padding:4px 8px}
+.modal-close:hover{color:var(--text)}
+
+/* ── PHASE 2: CLASSIFY ── */
+#classifyPhase{display:none}
+.classify-intro{text-align:center;margin-bottom:16px;color:var(--dim);font-size:.9rem}
+.classify-intro strong{color:var(--teal-b)}
+
+.drop-zones{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.drop-zone{min-height:180px;border:3px dashed rgba(255,255,255,.15);border-radius:14px;padding:12px;text-align:center;transition:all .25s;position:relative}
+.drop-zone h3{font-size:.85rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.drop-zone.zone-created{border-color:rgba(46,204,113,.3)}
+.drop-zone.zone-created h3{color:var(--green)}
+.drop-zone.zone-transformed{border-color:rgba(255,193,7,.3)}
+.drop-zone.zone-transformed h3{color:var(--amber)}
+.drop-zone.zone-displaced{border-color:rgba(231,76,60,.3)}
+.drop-zone.zone-displaced h3{color:var(--red)}
+.drop-zone.drag-over{background:rgba(0,229,255,.08);border-color:var(--teal-b);transform:scale(1.02)}
+.drop-zone .dropped-card{background:rgba(255,255,255,.06);border-radius:8px;padding:8px 10px;margin-top:6px;font-size:.82rem;display:flex;align-items:center;gap:8px;animation:slideUp .3s ease}
+.dropped-card.correct{border-left:3px solid var(--green)}
+.dropped-card.wrong{border-left:3px solid var(--red)}
+
+.drag-tray{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;min-height:80px}
+.drag-card{background:rgba(0,184,212,.08);border:2px solid rgba(0,229,255,.25);border-radius:12px;padding:12px 16px;cursor:grab;font-size:.88rem;font-weight:600;display:flex;align-items:center;gap:8px;transition:transform .15s,box-shadow .15s;user-select:none;-webkit-user-select:none;touch-action:none}
+.drag-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.drag-card:active{cursor:grabbing;transform:scale(.96)}
+.drag-card.dragging{opacity:.4}
+.drag-card .card-emoji{font-size:1.3rem}
+
+.classify-feedback{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;margin-top:12px;animation:slideUp .3s}
+.classify-feedback.fb-correct{border-color:rgba(46,204,113,.4)}
+.classify-feedback.fb-wrong{border-color:rgba(231,76,60,.4)}
+.fb-header{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.fb-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:800}
+.fb-icon.correct{background:rgba(46,204,113,.2);color:var(--green)}
+.fb-icon.wrong{background:rgba(231,76,60,.2);color:var(--red)}
+.fb-label{font-weight:800;font-size:.9rem}
+.fb-label.correct{color:var(--green)}
+.fb-label.wrong{color:var(--red)}
+.fb-text{font-size:.85rem;line-height:1.55;color:var(--dim)}
+
+/* ── RESULTS ── */
+#results{display:none;text-align:center;animation:fadeIn .5s}
+#results h2{font-size:2rem;margin-bottom:8px;color:var(--teal-b)}
+.rank-badge{display:inline-block;background:linear-gradient(135deg,var(--teal),var(--teal-b));color:#0a1628;font-size:1.2rem;font-weight:800;padding:12px 28px;border-radius:999px;margin:12px 0}
+.score-breakdown{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px;margin:14px auto;max-width:420px;text-align:left}
+.score-line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:.88rem}
+.score-line:last-child{border:none;font-weight:800;color:var(--teal-b)}
+.revision-box{background:rgba(0,184,212,.06);border:1px solid rgba(0,184,212,.18);border-radius:14px;padding:18px;margin:14px auto;max-width:540px;text-align:left;font-size:.84rem;line-height:1.65;color:var(--cyan)}
+.revision-box h3{color:var(--teal-b);margin-bottom:8px;font-size:1rem}
+.confetti{position:fixed;pointer-events:none;z-index:999}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cardPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+@keyframes modalPop{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+@keyframes stampIn{0%{transform:rotate(-12deg) scale(2.5);opacity:0}40%{transform:rotate(-12deg) scale(1);opacity:1}100%{transform:rotate(-12deg) scale(1);opacity:0}}
+
+@media(max-width:600px){.then-now{grid-template-columns:1fr}.drop-zones{grid-template-columns:1fr}.era-compare{grid-template-columns:1fr}.worker-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="index.html">&#x2190; Back to Hub</a>
+
+<!-- ═══ WELCOME ═══ -->
+<div id="welcome">
+<div style="font-size:3.5rem;margin-bottom:6px;animation:float 2.5s ease-in-out infinite">&#x23F3;</div>
+<h1>Then &amp; Now</h1>
+<p style="color:var(--dim);margin-bottom:4px">Activity 1 &bull; Employment &bull; ~5 minutes</p>
+<div class="mission">
+<strong>&#x1F570;&#xFE0F; MISSION BRIEFING</strong><br><br>
+Welcome to the <strong>Time Machine</strong>! You're about to explore how digital technology has completely transformed the workplace between <strong>1990</strong> and <strong>2025</strong>.<br><br>
+<strong>Phase 1 — Discover:</strong> Tap on each worker's card to learn their story. How has technology affected their job?<br><br>
+<strong>Phase 2 — Classify:</strong> Drag each worker into the correct category:<br>
+&#x2705; <strong>Created</strong> — brand new job that didn't exist before tech<br>
+&#x1F504; <strong>Transformed</strong> — job still exists but changed by tech<br>
+&#x274C; <strong>Displaced</strong> — job lost or replaced by technology<br><br>
+Discover all 10 workers, then prove you understand the impact!
+</div>
+<button class="start-btn" onclick="startExplore()">ENTER THE TIME MACHINE &#x23F3;</button>
+</div>
+
+<!-- ═══ PHASE 1: EXPLORE ═══ -->
+<div id="explorePhase">
+<div class="top-bar">
+<span class="phase-label">&#x1F50D; Phase 1: Discover</span>
+<span>Explored: <strong id="discoverCount">0</strong> / <strong id="discoverTotal">10</strong></span>
+<span class="score" id="scoreDisplay">Score: 0</span>
+</div>
+<div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0"></div></div>
+
+<!-- Era comparison images -->
+<div class="era-compare">
+<div class="era-panel">
+<img src="./images/img_office_1990.png" onerror="this.style.display='none'" alt="1990s office">
+<div class="era-label lbl-old">&#x1F4C7; 1990s Workplace</div>
+</div>
+<div class="era-panel">
+<img src="./images/img_office_2025.png" onerror="this.style.display='none'" alt="2025 office">
+<div class="era-label lbl-new">&#x1F4BB; 2025 Workplace</div>
+</div>
+</div>
+
+<p style="text-align:center;margin:6px 0 4px;font-size:.82rem;color:var(--dim)">&#x1F4A1; Tap each worker below to discover their story</p>
+
+<!-- Worker portrait cards -->
+<div class="worker-grid" id="workerGrid"></div>
+
+<button class="start-btn" id="classifyBtn" style="display:none;margin:18px auto;font-size:.95rem;padding:12px 32px" onclick="startClassify()">ALL DISCOVERED! START CLASSIFYING &#x2192;</button>
+</div>
+
+<!-- ═══ PHASE 2: CLASSIFY ═══ -->
+<div id="classifyPhase">
+<div class="top-bar">
+<span class="phase-label">&#x1F4E6; Phase 2: Classify</span>
+<span id="classifyCounter" style="color:var(--dim);font-weight:600">0 / 0 sorted</span>
+<span class="score" id="scoreDisplay2">Score: 0</span>
+</div>
+<div class="progress-track"><div class="progress-fill" id="progressFill2" style="width:0"></div></div>
+
+<p class="classify-intro">Drag each job card from the tray below into the correct category zone. <strong>Think carefully!</strong></p>
+
+<div class="drop-zones">
+<div class="drop-zone zone-created" id="zone-created" ondragover="zoneDragOver(event)" ondragleave="zoneDragLeave(event)" ondrop="zoneDrop(event,'created')">
+<h3>&#x2705; Created</h3>
+<p style="font-size:.75rem;color:var(--dim)">New jobs that exist because of tech</p>
+</div>
+<div class="drop-zone zone-transformed" id="zone-transformed" ondragover="zoneDragOver(event)" ondragleave="zoneDragLeave(event)" ondrop="zoneDrop(event,'transformed')">
+<h3>&#x1F504; Transformed</h3>
+<p style="font-size:.75rem;color:var(--dim)">Jobs changed by technology</p>
+</div>
+<div class="drop-zone zone-displaced" id="zone-displaced" ondragover="zoneDragOver(event)" ondragleave="zoneDragLeave(event)" ondrop="zoneDrop(event,'displaced')">
+<h3>&#x274C; Displaced</h3>
+<p style="font-size:.75rem;color:var(--dim)">Jobs lost or replaced by tech</p>
+</div>
+</div>
+
+<div class="drag-tray" id="dragTray"></div>
+<div id="classifyFeedback"></div>
+</div>
+
+<!-- ═══ RESULTS ═══ -->
+<div id="results">
+<div style="font-size:3rem;margin-bottom:6px" id="resultsEmoji">&#x1F3C6;</div>
+<h2 id="resultsTitle">Time Travel Complete!</h2>
+<div class="rank-badge" id="rankBadge">Historian</div>
+<div class="score-breakdown" id="scoreBreakdown"></div>
+<div class="revision-box" id="revisionBox"></div>
+<button class="start-btn" onclick="location.reload()" style="margin-top:10px">PLAY AGAIN &#x21BB;</button>
+<br><br><a class="back" href="index.html">&#x2190; Back to Hub</a>
+</div>
+</div>
+
+<script>
+// ── DATA ──
+const workers = [
+    // Displaced roles
+    {id:'secretary',emoji:'📝',title:'Office Secretary',img:'img_worker_secretary.jpg',
+     then:'Types letters on a typewriter, files paper documents in cabinets, manages the boss\'s diary in a paper planner, answers the office phone.',
+     now:'This role has largely been <strong>displaced</strong>. Workers now type their own letters using word processing software, manage their own digital calendars, and use email instead of dictation.',
+     category:'displaced',feedback:'Traditional secretarial roles have been DISPLACED — workers now use generic software (word processing, email, calendars) themselves.'},
+    {id:'factory',emoji:'🏭',title:'Assembly Line Worker',img:'img_worker_factory.jpg',
+     then:'Stands on a production line manually assembling products — car parts, electronics components — repetitive physical work, 8 hours a day.',
+     now:'Most assembly line jobs have been <strong>displaced</strong> by robots and automated machinery. Robots are cheaper, faster, and more accurate for repetitive tasks.',
+     category:'displaced',feedback:'Factory assembly jobs have been DISPLACED by robots and automation in manufacturing. Workers need to retrain for new roles.'},
+    {id:'checkout',emoji:'🏪',title:'Shop Checkout Operator',img:'img_worker_checkout.jpg',
+     then:'Scans items, handles cash, bags shopping, and chats with customers at the supermarket till all day.',
+     now:'Many checkout roles have been <strong>displaced</strong> by self-service checkouts and online shopping. Fewer till operators are needed in modern stores.',
+     category:'displaced',feedback:'Checkout roles are being DISPLACED by self-service technology and e-commerce. Fewer retail staff are needed.'},
+
+    // Transformed roles
+    {id:'accountant',emoji:'📊',title:'Accountant',img:'img_worker_accountant.jpg',
+     then:'Keeps financial records in paper ledgers, calculates by hand or with a basic calculator, files paper tax returns.',
+     now:'The job still exists but has been <strong>transformed</strong>. Accountants now use spreadsheet software, specialist accounting programs, and submit tax returns digitally.',
+     category:'transformed',feedback:'Accounting still exists, but the job has been TRANSFORMED — workers now need skills in generic software like spreadsheets and databases.'},
+    {id:'journalist',emoji:'📰',title:'Newspaper Journalist',img:'img_worker_journalist.jpg',
+     then:'Writes stories for the printed newspaper, interviews sources by phone, takes notes with pen and paper, submits articles to the editor.',
+     now:'The job still exists but has been <strong>transformed</strong>. Journalists now publish online, manage social media accounts, create video content, and may work remotely.',
+     category:'transformed',feedback:'Journalism has been TRANSFORMED by technology — journalists now need digital skills (social media, video, online publishing).'},
+    {id:'bankteller',emoji:'🏦',title:'Bank Teller',img:'img_worker_bankteller.jpg',
+     then:'Handled all transactions face-to-face at the counter — deposits, withdrawals, cheque cashing, account enquiries.',
+     now:'The job still exists but has been <strong>transformed</strong>. Online banking means fewer branches and staff. Remaining tellers need tech skills and focus more on advice than transactions.',
+     category:'transformed',feedback:'Banking has been TRANSFORMED by technology — online banking means fewer staff in branches, and remaining staff need digital skills.'},
+
+    // Created roles
+    {id:'engineer',emoji:'👨‍💻',title:'Software Engineer',img:'img_worker_engineer.jpg',
+     then:'This job <strong>did not exist</strong> before digital technology. There was no software to write!',
+     now:'Designs, builds and maintains software applications and systems. One of the most in-demand careers globally, entirely <strong>created</strong> by technology.',
+     category:'created',feedback:'Software engineering is a job that was CREATED by digital technology. It didn\'t exist before computers!'},
+    {id:'designer',emoji:'🎨',title:'App & Web Designer',img:'img_worker_designer.jpg',
+     then:'This job <strong>did not exist</strong>. There were no apps, websites, or digital interfaces to design.',
+     now:'Creates the look, feel and user experience of mobile apps and websites. Part of the growing <strong>digital media</strong> sector — entirely new.',
+     category:'created',feedback:'App/web design is part of the DIGITAL MEDIA sector — entirely new job roles CREATED by technology.'},
+    {id:'forensic',emoji:'🔍',title:'Forensic Computer Analyst',img:'img_worker_forensic.jpg',
+     then:'This job <strong>did not exist</strong>. There was no cybercrime to investigate and no digital evidence to recover.',
+     now:'Investigates cybercrime by recovering and analysing digital evidence from computers, phones and servers. A career <strong>created</strong> entirely by the digital age.',
+     category:'created',feedback:'Forensic computer analysis is a NEW career that only exists because of digital technology and cybercrime.'},
+    {id:'dba',emoji:'🗄️',title:'Database Administrator',img:'img_worker_dba.jpg',
+     then:'This job <strong>did not exist</strong>. Records were kept in paper filing cabinets, not electronic databases.',
+     now:'Manages, organises and secures large electronic databases of information for organisations. <strong>Created</strong> by the need to manage digital records.',
+     category:'created',feedback:'Database administrators manage digital data stores — a role CREATED by the need to manage electronic records.'},
+];
+
+let discovered = new Set();
+let score = 0;
+let classifyCorrect = 0;
+let classifyWrong = 0;
+let classifySorted = 0;
+let shuffledClassify = [];
+
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+// ── PHASE 1: EXPLORE ──
+function startExplore(){
+    document.getElementById('welcome').style.display='none';
+    document.getElementById('explorePhase').style.display='block';
+    document.getElementById('discoverTotal').textContent=workers.length;
+    renderWorkerCards();
+}
+
+function renderWorkerCards(){
+    const grid=document.getElementById('workerGrid');
+    grid.innerHTML='';
+    const shuffled=shuffle([...workers]);
+    shuffled.forEach(w=>{
+        const card=document.createElement('div');
+        card.className='worker-card'+(discovered.has(w.id)?' discovered':'');
+        card.id='card-'+w.id;
+        card.onclick=()=>openWorkerModal(w);
+        card.innerHTML=`
+            <img src="./images/${w.img}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="${w.title}">
+            <div class="card-emoji-fallback" style="display:none">${w.emoji}</div>
+            <div class="card-overlay">
+                <div class="card-name">${w.title}</div>
+                <div class="card-hint">${discovered.has(w.id)?'✓ Explored':'Tap to discover'}</div>
+            </div>
+            <div class="card-check">✓</div>
+            <div class="undiscovered-pulse"></div>`;
+        grid.appendChild(card);
+    });
+}
+
+function openWorkerModal(w){
+    if(!discovered.has(w.id)){
+        discovered.add(w.id);
+        score+=50;
+        document.getElementById('discoverCount').textContent=discovered.size;
+        document.getElementById('scoreDisplay').textContent='Score: '+score;
+        document.getElementById('progressFill').style.width=(discovered.size/workers.length*50)+'%';
+        // Update card
+        const card=document.getElementById('card-'+w.id);
+        if(card){card.classList.add('discovered');card.querySelector('.card-hint').textContent='✓ Explored'}
+    }
+    if(discovered.size===workers.length){
+        document.getElementById('classifyBtn').style.display='block';
+    }
+
+    const catClass=w.category==='created'?'cat-created':w.category==='transformed'?'cat-transformed':'cat-displaced';
+    const catLabel=w.category==='created'?'✅ Created by Tech':w.category==='transformed'?'🔄 Transformed by Tech':'❌ Displaced by Tech';
+    const imgSrc='./images/'+w.img;
+
+    const overlay=document.createElement('div');
+    overlay.className='modal-overlay';
+    overlay.onclick=e=>{if(e.target===overlay)overlay.remove()};
+    overlay.innerHTML=`
+    <div class="modal-card">
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&#x2715;</button>
+        <div class="modal-header">
+            <div class="modal-portrait"><img src="${imgSrc}" onerror="this.style.display='none';this.parentElement.textContent='${w.emoji}'" alt="${w.title}"></div>
+            <div><div class="modal-title">${w.title}</div><div class="modal-subtitle">${w.category==='created'?'New role — didn\'t exist before tech':w.category==='transformed'?'Existing role — changed by tech':'Traditional role — replaced by tech'}</div></div>
+        </div>
+        <div class="modal-body">
+            <div class="then-now">
+                <div class="then-box"><h4>&#x1F4C5; Then (1990s)</h4>${w.then}</div>
+                <div class="now-box"><h4>&#x1F4BB; Now (2025)</h4>${w.now}</div>
+            </div>
+            <div class="modal-category ${catClass}">${catLabel}</div>
+        </div>
+    </div>`;
+    document.body.appendChild(overlay);
+}
+
+// ── PHASE 2: CLASSIFY ──
+function startClassify(){
+    document.getElementById('explorePhase').style.display='none';
+    document.getElementById('classifyPhase').style.display='block';
+    shuffledClassify=shuffle([...workers]);
+    classifySorted=0;classifyCorrect=0;classifyWrong=0;
+    document.getElementById('classifyCounter').textContent=`0 / ${shuffledClassify.length} sorted`;
+    renderDragTray();
+}
+
+function renderDragTray(){
+    const tray=document.getElementById('dragTray');
+    tray.innerHTML='';
+    const remaining=shuffledClassify.filter(w=>!w.sorted);
+    remaining.forEach(w=>{
+        const card=document.createElement('div');
+        card.className='drag-card';
+        card.draggable=true;
+        card.dataset.id=w.id;
+        card.innerHTML=`<span class="card-emoji">${w.emoji}</span> ${w.title}`;
+        card.ondragstart=e=>{
+            e.dataTransfer.setData('text/plain',w.id);
+            card.classList.add('dragging');
+        };
+        card.ondragend=()=>card.classList.remove('dragging');
+
+        // Touch support
+        let touchStartX,touchStartY,clone;
+        card.ontouchstart=e=>{
+            const t=e.touches[0];
+            touchStartX=t.clientX;touchStartY=t.clientY;
+            clone=card.cloneNode(true);
+            clone.style.cssText='position:fixed;z-index:200;pointer-events:none;opacity:.85;transform:scale(1.05)';
+            document.body.appendChild(clone);
+            card.classList.add('dragging');
+        };
+        card.ontouchmove=e=>{
+            e.preventDefault();
+            const t=e.touches[0];
+            if(clone){clone.style.left=(t.clientX-60)+'px';clone.style.top=(t.clientY-20)+'px'}
+            document.querySelectorAll('.drop-zone').forEach(z=>{
+                const r=z.getBoundingClientRect();
+                z.classList.toggle('drag-over',t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom);
+            });
+        };
+        card.ontouchend=e=>{
+            if(clone){clone.remove();clone=null}
+            card.classList.remove('dragging');
+            const t=e.changedTouches[0];
+            document.querySelectorAll('.drop-zone').forEach(z=>{
+                const r=z.getBoundingClientRect();
+                if(t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom){
+                    const cat=z.id.replace('zone-','');
+                    processClassify(w.id,cat);
+                }
+                z.classList.remove('drag-over');
+            });
+        };
+
+        tray.appendChild(card);
+    });
+
+    if(remaining.length===0){
+        setTimeout(showResults,600);
+    }
+}
+
+function zoneDragOver(e){e.preventDefault();e.currentTarget.classList.add('drag-over')}
+function zoneDragLeave(e){e.currentTarget.classList.remove('drag-over')}
+function zoneDrop(e,category){
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    const wId=e.dataTransfer.getData('text/plain');
+    processClassify(wId,category);
+}
+
+function processClassify(wId,chosenCategory){
+    const w=shuffledClassify.find(x=>x.id===wId);
+    if(!w||w.sorted)return;
+    w.sorted=true;
+    classifySorted++;
+    const isCorrect=chosenCategory===w.category;
+
+    if(isCorrect){classifyCorrect++;score+=100}
+    else{classifyWrong++}
+
+    // Add to zone
+    const zone=document.getElementById('zone-'+chosenCategory);
+    const droppedCard=document.createElement('div');
+    droppedCard.className='dropped-card '+(isCorrect?'correct':'wrong');
+    droppedCard.innerHTML=`${w.emoji} ${w.title} ${isCorrect?'✓':'✗'}`;
+    zone.appendChild(droppedCard);
+
+    // If wrong, also show in correct zone
+    if(!isCorrect){
+        const correctZone=document.getElementById('zone-'+w.category);
+        const correctCard=document.createElement('div');
+        correctCard.className='dropped-card correct';
+        correctCard.innerHTML=`${w.emoji} ${w.title} ↩️`;
+        correctCard.style.opacity='.6';
+        correctZone.appendChild(correctCard);
+    }
+
+    // Feedback
+    const fbArea=document.getElementById('classifyFeedback');
+    fbArea.innerHTML=`
+    <div class="classify-feedback ${isCorrect?'fb-correct':'fb-wrong'}">
+        <div class="fb-header">
+            <div class="fb-icon ${isCorrect?'correct':'wrong'}">${isCorrect?'✓':'✗'}</div>
+            <span class="fb-label ${isCorrect?'correct':'wrong'}">${isCorrect?'Correct!':'Wrong!'} ${w.title}</span>
+        </div>
+        <div class="fb-text">${w.feedback}</div>
+    </div>`;
+
+    // Stamp animation
+    const stamp=document.createElement('div');
+    stamp.style.cssText='position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:100;pointer-events:none';
+    stamp.innerHTML=`<div style="font-size:2.5rem;font-weight:900;padding:10px 24px;border:5px solid ${isCorrect?'var(--green)':'var(--red)'};border-radius:10px;color:${isCorrect?'var(--green)':'var(--red)'};transform:rotate(-12deg);animation:stampIn .5s ease forwards">${isCorrect?'✅ CORRECT':'❌ WRONG'}</div>`;
+    document.body.appendChild(stamp);
+    setTimeout(()=>stamp.remove(),600);
+
+    // Update UI
+    document.getElementById('scoreDisplay2').textContent='Score: '+score;
+    document.getElementById('classifyCounter').textContent=`${classifySorted} / ${shuffledClassify.length} sorted`;
+    document.getElementById('progressFill2').style.width=(50+classifySorted/shuffledClassify.length*50)+'%';
+
+    renderDragTray();
+}
+
+// ── RESULTS ──
+function showResults(){
+    document.getElementById('classifyPhase').style.display='none';
+    document.getElementById('results').style.display='block';
+
+    const total=workers.length;
+    const pct=Math.round((classifyCorrect/total)*100);
+    let rank,emoji;
+    if(pct>=90){rank='Time Lord';emoji='🏆'}
+    else if(pct>=75){rank='History Professor';emoji='⭐'}
+    else if(pct>=60){rank='Time Traveller';emoji='⏳'}
+    else if(pct>=40){rank='Tourist';emoji='📸'}
+    else{rank='Lost in Time';emoji='🌀'}
+
+    document.getElementById('resultsEmoji').textContent=emoji;
+    document.getElementById('resultsTitle').textContent=pct>=75?'Outstanding!':pct>=50?'Good Effort!':'Keep Practising!';
+    document.getElementById('rankBadge').textContent=`${emoji} ${rank}`;
+    document.getElementById('scoreBreakdown').innerHTML=`
+        <div class="score-line"><span>Workers discovered</span><span>${discovered.size} / ${total}</span></div>
+        <div class="score-line"><span>Correctly classified</span><span>${classifyCorrect} / ${total}</span></div>
+        <div class="score-line"><span>Accuracy</span><span>${pct}%</span></div>
+        <div class="score-line"><span>Total score</span><span>${score}</span></div>`;
+    document.getElementById('revisionBox').innerHTML=`
+        <h3>&#x1F4DD; Revision Summary</h3>
+        <strong>Jobs CREATED by tech:</strong> software engineers, hardware technicians, app/web designers, CGI artists, forensic computer analysts, database administrators<br><br>
+        <strong>Jobs DISPLACED by tech:</strong> factory assembly workers (robots), secretaries (generic software), checkout operators (self-service)<br><br>
+        <strong>Jobs TRANSFORMED by tech:</strong> accountants (spreadsheets), bank tellers (online banking), journalists (digital publishing)<br><br>
+        <strong>Key term:</strong> Generic software = software used for many purposes (word processing, spreadsheets, databases).<br><br>
+        <strong>&#x26A0;&#xFE0F; Exam tip:</strong> The 2023 paper had a 6-mark QWC question asking you to "describe the impacts of digital technology on employment" — cover BOTH jobs created AND jobs lost.`;
+
+    if(pct>=60)launchConfetti();
+}
+
+function launchConfetti(){
+    const colors=['#00e5ff','#2ecc71','#ffc107','#e040fb','#ff9e40'];
+    for(let i=0;i<50;i++){
+        const c=document.createElement('div');c.className='confetti';
+        c.style.cssText=`left:${Math.random()*100}vw;top:-10px;width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation:confettiFall ${1.5+Math.random()*2}s ease ${Math.random()*.8}s forwards`;
+        document.body.appendChild(c);setTimeout(()=>c.remove(),4000);
+    }
+}
+</script>
+</body>
+</html>
