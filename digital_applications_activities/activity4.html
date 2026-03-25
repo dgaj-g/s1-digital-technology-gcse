@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam Heist - Digital Applications</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+--bg:#0a0a12;--panel:#12121f;--accent:#00FF41;--accent2:#00cc33;
+--rose:#E11D48;--rose2:#BE123C;--gold:#FFD700;--silver:#C0C0C0;
+--green:#2ecc71;--red:#e74c3c;--white:#e0e0e0;--dim:#555;
+--grid:rgba(0,255,65,0.06);
+}
+
+body{
+font-family:'Segoe UI',system-ui,sans-serif;
+background:var(--bg);color:var(--white);
+min-height:100vh;overflow-x:hidden;
+}
+
+/* Blueprint grid background */
+body::before{
+content:'';position:fixed;inset:0;z-index:0;
+background:
+  linear-gradient(var(--grid) 1px,transparent 1px),
+  linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+background-size:40px 40px;
+pointer-events:none;
+}
+
+/* Security camera corners */
+.cam-corner{position:fixed;width:60px;height:60px;z-index:1000;pointer-events:none;opacity:0.4}
+.cam-corner::before,.cam-corner::after{content:'';position:absolute;background:var(--accent)}
+.cam-tl{top:8px;left:8px}.cam-tl::before{width:20px;height:2px;top:0;left:0}.cam-tl::after{width:2px;height:20px;top:0;left:0}
+.cam-tr{top:8px;right:8px}.cam-tr::before{width:20px;height:2px;top:0;right:0}.cam-tr::after{width:2px;height:20px;top:0;right:0}
+.cam-bl{bottom:8px;left:8px}.cam-bl::before{width:20px;height:2px;bottom:0;left:0}.cam-bl::after{width:2px;height:20px;bottom:0;left:0}
+.cam-br{bottom:8px;right:8px}.cam-br::before{width:20px;height:2px;bottom:0;right:0}.cam-br::after{width:2px;height:20px;bottom:0;right:0}
+
+.container{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:16px}
+
+/* ===== WELCOME SCREEN ===== */
+#welcome{text-align:center;padding:30px 20px}
+.heist-logo{font-size:3.5em;margin-bottom:10px;animation:glitch 3s infinite}
+@keyframes glitch{
+0%,92%,100%{text-shadow:0 0 20px var(--accent),0 0 40px var(--accent)}
+93%{text-shadow:-3px 0 var(--red),3px 0 var(--accent)}
+96%{text-shadow:3px 0 var(--red),-3px 0 var(--accent)}
+}
+.heist-title{font-size:2.4em;font-weight:900;
+background:linear-gradient(135deg,var(--rose),var(--rose2));
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+background-clip:text;color:transparent;
+margin-bottom:6px}
+.heist-sub{color:var(--accent);font-family:'Courier New',monospace;font-size:1em;margin-bottom:25px;
+display:inline-block;border-right:2px solid var(--accent);padding-right:4px;
+animation:blink-cursor 1s steps(1) infinite}
+@keyframes blink-cursor{0%,49%{border-right-color:var(--accent)}50%,100%{border-right-color:transparent}}
+
+.briefing-box{
+background:var(--panel);border:1px solid var(--accent);border-radius:12px;
+padding:25px;margin:20px auto;max-width:650px;text-align:left;
+box-shadow:0 0 30px rgba(0,255,65,0.1);position:relative;overflow:hidden}
+.briefing-box::before{content:'CLASSIFIED';position:absolute;top:10px;right:15px;
+font-size:0.7em;color:var(--red);font-weight:700;letter-spacing:3px;opacity:0.5}
+.briefing-box h3{color:var(--accent);font-family:'Courier New',monospace;margin-bottom:12px;font-size:1.1em}
+.briefing-box p{line-height:1.7;margin-bottom:10px;font-size:0.95em;color:#ccc}
+.briefing-box strong{color:var(--gold)}
+
+.mission-list{list-style:none;padding:0;margin:15px 0}
+.mission-list li{padding:8px 0 8px 30px;position:relative;font-family:'Courier New',monospace;font-size:0.9em}
+.mission-list li::before{content:'>';position:absolute;left:10px;color:var(--accent);font-weight:bold}
+
+.start-btn{
+display:inline-block;margin-top:25px;padding:18px 50px;
+font-size:1.2em;font-weight:800;color:#fff;border:none;cursor:pointer;
+background:linear-gradient(135deg,var(--rose),var(--rose2));
+border-radius:50px;letter-spacing:2px;text-transform:uppercase;
+box-shadow:0 0 30px rgba(225,29,72,0.4);
+transition:all 0.3s;position:relative;overflow:hidden}
+.start-btn:hover{transform:scale(1.05);box-shadow:0 0 50px rgba(225,29,72,0.6)}
+.start-btn::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+background:linear-gradient(transparent,rgba(255,255,255,0.1),transparent);
+transform:rotate(45deg);animation:btn-shine 3s infinite}
+@keyframes btn-shine{0%{transform:translateX(-100%) rotate(45deg)}100%{transform:translateX(100%) rotate(45deg)}}
+
+/* ===== GAME HUD ===== */
+#game-hud{
+display:none;position:sticky;top:0;z-index:100;
+background:rgba(10,10,18,0.95);border-bottom:2px solid var(--accent);
+padding:10px 16px;backdrop-filter:blur(10px)}
+.hud-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.hud-item{display:flex;align-items:center;gap:6px;font-family:'Courier New',monospace;font-size:0.9em}
+.hud-label{color:var(--dim);font-size:0.75em;text-transform:uppercase;letter-spacing:1px}
+.hud-val{color:var(--accent);font-weight:700;font-size:1.1em}
+.hud-marks{color:var(--gold)}
+
+/* Circular countdown */
+.timer-ring{position:relative;width:52px;height:52px;flex-shrink:0}
+.timer-ring svg{transform:rotate(-90deg)}
+.timer-ring circle{fill:none;stroke-width:4}
+.timer-ring .ring-bg{stroke:#1a1a2e}
+.timer-ring .ring-fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke 0.3s}
+.timer-ring.danger .ring-fg{stroke:var(--red)}
+.timer-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+font-family:'Courier New',monospace;font-size:0.8em;font-weight:700}
+.timer-ring.danger .timer-text{color:var(--red);animation:pulse-danger 0.5s infinite}
+@keyframes pulse-danger{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* Alert banner */
+.alert-banner{display:none;background:var(--red);color:#fff;text-align:center;
+padding:6px;font-weight:700;font-size:0.85em;letter-spacing:3px;
+animation:alert-flash 0.5s infinite}
+@keyframes alert-flash{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* Lives */
+.lives{display:flex;gap:3px}
+.life{font-size:1.1em;transition:all 0.3s}
+.life.lost{opacity:0.2;transform:scale(0.7)}
+
+/* ===== VAULT SCREENS ===== */
+.vault-screen{display:none;padding:20px 0;animation:fadeInUp 0.6s}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+.vault-header{text-align:center;margin-bottom:20px}
+.vault-num{font-family:'Courier New',monospace;color:var(--accent);font-size:0.8em;letter-spacing:3px;text-transform:uppercase}
+.vault-name{font-size:1.8em;font-weight:900;margin:4px 0;
+background:linear-gradient(135deg,var(--rose),var(--gold));
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+background-clip:text;color:transparent}
+.vault-desc{color:#888;font-size:0.9em}
+
+/* ===== VAULT 1 — Combination Lock ===== */
+.lock-visual{position:relative;width:220px;height:220px;margin:0 auto 15px}
+.lock-ring{position:absolute;inset:0;border:4px solid #222;border-radius:50%;
+box-shadow:0 0 20px rgba(0,255,65,0.1),inset 0 0 30px rgba(0,0,0,0.5)}
+.lock-ring::after{content:'';position:absolute;top:-4px;left:50%;width:4px;height:20px;
+background:var(--accent);transform:translateX(-50%);border-radius:2px;
+box-shadow:0 0 10px var(--accent)}
+.tumbler{position:absolute;width:32px;height:32px;border-radius:50%;
+border:2px solid #333;display:flex;align-items:center;justify-content:center;
+font-weight:700;font-size:0.8em;color:#444;font-family:'Courier New',monospace;
+transition:all 0.5s;background:var(--panel)}
+.tumbler.cracked{border-color:var(--accent);color:var(--accent);
+box-shadow:0 0 15px rgba(0,255,65,0.5);animation:tumbler-click 0.5s}
+@keyframes tumbler-click{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
+
+.combo-display{text-align:center;font-family:'Courier New',monospace;font-size:2em;
+letter-spacing:8px;color:#333;margin:10px auto 20px;
+background:#0a0a0a;padding:10px 20px;border-radius:8px;border:1px solid #222;
+display:inline-block}
+.combo-wrap{text-align:center}
+.combo-digit{transition:all 0.5s}.combo-digit.revealed{color:var(--accent);text-shadow:0 0 10px var(--accent)}
+
+.match-columns{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.terms-grid{display:flex;flex-direction:column;gap:8px;width:100%;max-width:380px}
+.term-btn{
+padding:12px 16px;background:var(--panel);border:2px solid #222;border-radius:8px;
+cursor:pointer;font-family:'Courier New',monospace;font-size:0.9em;color:var(--accent);
+transition:all 0.3s;text-align:center;user-select:none}
+.term-btn:hover{border-color:var(--accent);box-shadow:0 0 15px rgba(0,255,65,0.2)}
+.term-btn.selected{border-color:var(--gold);color:var(--gold);box-shadow:0 0 15px rgba(255,215,0,0.3)}
+.term-btn.matched{border-color:var(--green);color:var(--green);opacity:0.5;pointer-events:none}
+.term-btn.encrypted{letter-spacing:3px}
+
+.defs-grid{display:flex;flex-direction:column;gap:8px;width:100%;max-width:450px}
+.def-btn{
+padding:12px 16px;background:var(--panel);border:2px solid #222;border-radius:8px;
+cursor:pointer;font-size:0.85em;color:#bbb;transition:all 0.3s;text-align:left;user-select:none;
+line-height:1.4}
+.def-btn:hover{border-color:var(--rose);box-shadow:0 0 15px rgba(225,29,72,0.2)}
+.def-btn.matched{border-color:var(--green);color:var(--green);opacity:0.5;pointer-events:none}
+
+/* Alarm flash */
+.alarm-overlay{display:none;position:fixed;inset:0;background:rgba(231,76,60,0.15);
+z-index:50;pointer-events:none;animation:alarm-pulse 0.3s 3}
+@keyframes alarm-pulse{0%,100%{opacity:0}50%{opacity:1}}
+
+/* ===== VAULT 2 — Laser Grid ===== */
+.laser-container{position:relative;margin:20px auto;max-width:700px}
+.laser-question{background:var(--panel);border:1px solid var(--accent);border-radius:10px;
+padding:18px;margin-bottom:20px;text-align:center}
+.laser-question .q-text{font-size:1.1em;font-weight:600;margin-bottom:4px}
+.laser-question .q-marks{color:var(--gold);font-size:0.85em}
+
+.laser-grid-visual{position:relative;height:80px;margin:15px 0;overflow:hidden;
+border-radius:8px;background:rgba(0,0,0,0.3)}
+.laser-line{position:absolute;height:2px;width:100%;
+background:var(--red);box-shadow:0 0 8px var(--red),0 0 20px rgba(231,76,60,0.3);
+transition:all 0.8s;animation:laser-flicker 2s infinite}
+@keyframes laser-flicker{0%,100%{opacity:1}50%{opacity:0.7}75%{opacity:1}}
+.laser-line.deactivated{background:var(--green);box-shadow:0 0 8px var(--green);opacity:0.3;animation:none}
+
+.fragments-area{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:15px 0}
+.fragment-tile{
+padding:10px 16px;background:var(--panel);border:2px solid #333;border-radius:8px;
+cursor:pointer;font-size:0.88em;transition:all 0.3s;user-select:none;
+position:relative;max-width:280px}
+.fragment-tile:hover{border-color:var(--accent);transform:translateY(-2px);
+box-shadow:0 4px 15px rgba(0,255,65,0.1)}
+.fragment-tile.correct-frag{border-color:var(--green);background:rgba(46,204,113,0.1);pointer-events:none;color:var(--green)}
+.fragment-tile.wrong-frag{border-color:var(--red);animation:shake 0.5s;background:rgba(231,76,60,0.1)}
+.fragment-tile .mark-badge{position:absolute;top:-8px;right:-8px;background:var(--gold);
+color:#000;font-size:0.65em;font-weight:700;padding:2px 6px;border-radius:10px;display:none}
+.fragment-tile.correct-frag .mark-badge{display:block}
+
+.answer-build{background:rgba(0,255,65,0.05);border:1px dashed var(--accent);border-radius:8px;
+padding:15px;min-height:50px;margin:15px 0;font-family:'Courier New',monospace;font-size:0.9em}
+.answer-build .collected{color:var(--green);margin:4px 0;animation:slideIn 0.3s}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+
+.feedback-box{padding:12px;border-radius:8px;margin:10px 0;font-size:0.88em;display:none;
+animation:fadeInUp 0.3s;line-height:1.5}
+.feedback-box.wrong-fb{background:rgba(231,76,60,0.15);border:1px solid var(--red);color:#ff6b6b}
+.feedback-box.correct-fb{background:rgba(46,204,113,0.15);border:1px solid var(--green);color:#6bff8a}
+
+.next-q-btn{display:none;margin:15px auto;padding:12px 30px;background:linear-gradient(135deg,var(--rose),var(--rose2));
+color:#fff;border:none;border-radius:25px;cursor:pointer;font-weight:700;font-size:1em;
+transition:all 0.3s}
+.next-q-btn:hover{transform:scale(1.05);box-shadow:0 0 20px rgba(225,29,72,0.3)}
+
+/* ===== VAULT 3 — Speed Crack ===== */
+.safe-visual{text-align:center;margin:15px auto}
+.safe-body{display:inline-block;background:#0d0d15;border:3px solid #333;border-radius:15px;
+padding:20px 25px;position:relative;box-shadow:0 0 30px rgba(0,0,0,0.5),inset 0 0 30px rgba(0,0,0,0.3)}
+.safe-display{font-family:'Courier New',monospace;font-size:2em;letter-spacing:5px;
+color:#222;background:#060608;padding:10px 16px;border-radius:8px;
+border:1px solid #1a1a2e;min-width:200px;text-align:center}
+.safe-digit{transition:all 0.3s;display:inline-block;width:0.9em;text-align:center}
+.safe-digit.lit{color:var(--accent);text-shadow:0 0 10px var(--accent)}
+.safe-digit.wrong-digit{color:var(--red);text-shadow:0 0 10px var(--red)}
+
+.speed-question{background:var(--panel);border:1px solid #333;border-radius:10px;
+padding:18px;margin:15px 0;text-align:center}
+.speed-question .q-num{color:var(--accent);font-family:'Courier New',monospace;font-size:0.8em;margin-bottom:6px}
+.speed-question .q-text{font-size:1.05em;font-weight:600;line-height:1.4}
+
+.q-timer-ring{width:60px;height:60px;margin:10px auto;position:relative}
+.q-timer-ring svg{transform:rotate(-90deg)}
+.q-timer-ring circle{fill:none;stroke-width:5}
+.q-timer-ring .qt-bg{stroke:#1a1a2e}
+.q-timer-ring .qt-fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 0.1s linear}
+.q-timer-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+font-family:'Courier New',monospace;font-weight:700;font-size:1em}
+
+.keypad-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:600px;margin:15px auto}
+.keypad-btn{
+padding:14px 12px;background:var(--panel);border:2px solid #333;border-radius:10px;
+cursor:pointer;font-size:0.9em;color:var(--white);transition:all 0.2s;text-align:center;
+user-select:none;line-height:1.4}
+.keypad-btn:hover{border-color:var(--accent);background:#1a1a2e}
+.keypad-btn.correct-key{border-color:var(--green);background:rgba(46,204,113,0.15);color:var(--green)}
+.keypad-btn.wrong-key{border-color:var(--red);background:rgba(231,76,60,0.15);color:var(--red)}
+
+.spark-overlay{display:none;position:fixed;inset:0;z-index:200;pointer-events:none}
+.spark{position:absolute;width:4px;height:4px;background:var(--gold);border-radius:50%;
+animation:spark-fly 0.6s forwards}
+@keyframes spark-fly{
+0%{opacity:1;transform:scale(1) translate(0,0)}
+100%{opacity:0;transform:scale(0) translate(var(--tx),var(--ty))}
+}
+
+/* ===== CRACKED STAMP ===== */
+.cracked-stamp{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-15deg) scale(0);
+z-index:300;font-size:3em;font-weight:900;color:var(--green);border:6px solid var(--green);
+padding:15px 40px;border-radius:15px;font-family:'Courier New',monospace;
+text-shadow:0 0 20px var(--green);box-shadow:0 0 40px rgba(46,204,113,0.3);
+background:rgba(10,10,18,0.95)}
+.cracked-stamp.show{display:block;animation:stamp-in 0.6s forwards}
+@keyframes stamp-in{
+0%{transform:translate(-50%,-50%) rotate(-15deg) scale(3);opacity:0}
+60%{transform:translate(-50%,-50%) rotate(-15deg) scale(0.9);opacity:1}
+100%{transform:translate(-50%,-50%) rotate(-15deg) scale(1);opacity:1}
+}
+
+/* Vault door animation */
+.vault-door{display:none;position:fixed;inset:0;z-index:250;perspective:1000px;
+background:rgba(0,0,0,0.7)}
+.vault-door-panel{position:absolute;inset:0;
+background:linear-gradient(135deg,#1a1a2e,#0a0a12);
+border:4px solid #333;display:flex;align-items:center;justify-content:center;
+transform-origin:left center}
+.vault-door-panel .door-handle{width:60px;height:60px;border:4px solid #555;border-radius:50%;
+position:relative}
+.vault-door-panel .door-handle::after{content:'';position:absolute;top:50%;left:50%;
+width:30px;height:4px;background:#555;transform:translate(-50%,-50%)}
+.vault-door.opening .vault-door-panel{animation:door-open 1.2s forwards}
+@keyframes door-open{
+0%{transform:rotateY(0)}
+30%{transform:rotateY(-5deg)}
+100%{transform:rotateY(-110deg)}
+}
+
+/* ===== RESULTS SCREEN ===== */
+#results{display:none;text-align:center;padding:30px 20px;animation:fadeInUp 0.8s}
+.results-badge{font-size:4em;margin-bottom:10px}
+.results-rank{font-size:2em;font-weight:900;margin-bottom:5px;
+background:linear-gradient(135deg,var(--gold),#ff8c00);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+background-clip:text;color:transparent}
+.results-score{font-size:1.3em;color:var(--accent);font-family:'Courier New',monospace;margin-bottom:8px}
+.results-time{color:#888;font-size:0.9em;margin-bottom:20px}
+
+.haul-display{background:var(--panel);border:2px solid var(--gold);border-radius:15px;
+padding:20px;margin:20px auto;max-width:500px;
+box-shadow:0 0 30px rgba(255,215,0,0.15)}
+.haul-title{color:var(--gold);font-weight:700;font-size:1.1em;margin-bottom:15px;
+font-family:'Courier New',monospace;letter-spacing:2px}
+.haul-row{display:flex;justify-content:space-between;padding:8px 0;
+border-bottom:1px solid #222;font-size:0.95em}
+.haul-row:last-child{border-bottom:none}
+.haul-row .vault-label{color:#aaa}
+.haul-row .vault-score{color:var(--accent);font-weight:700;font-family:'Courier New',monospace}
+
+.revision-box{background:var(--panel);border:1px solid var(--accent);border-radius:12px;
+padding:20px;margin:20px auto;max-width:600px;text-align:left}
+.revision-box h3{color:var(--accent);font-family:'Courier New',monospace;margin-bottom:12px;font-size:1em}
+.revision-item{padding:8px 0;border-bottom:1px solid #1a1a2e;font-size:0.88em;color:#bbb;line-height:1.5}
+.revision-item:last-child{border-bottom:none}
+.revision-item strong{color:var(--white)}
+
+.back-btn,.retry-btn{
+display:inline-block;margin:10px 8px;padding:14px 35px;border-radius:30px;
+font-weight:700;font-size:1em;cursor:pointer;border:none;transition:all 0.3s}
+.retry-btn{background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff}
+.retry-btn:hover{transform:scale(1.05)}
+.back-btn{background:transparent;border:2px solid var(--accent);color:var(--accent);text-decoration:none}
+.back-btn:hover{background:var(--accent);color:var(--bg)}
+
+/* Confetti */
+.confetti-piece{position:fixed;z-index:400;pointer-events:none;animation:confetti-fall linear forwards}
+@keyframes confetti-fall{
+0%{opacity:1;transform:translateY(0) rotate(0deg)}
+100%{opacity:0;transform:translateY(100vh) rotate(720deg)}
+}
+
+/* Shake */
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+/* Floating score */
+.float-score{position:fixed;z-index:300;font-weight:900;font-size:1.5em;pointer-events:none;
+animation:float-up 1s forwards;font-family:'Courier New',monospace}
+@keyframes float-up{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(1.5)}}
+
+/* Golden glow for treasure */
+@keyframes golden-glow{
+0%,100%{box-shadow:0 0 20px rgba(255,215,0,0.3)}
+50%{box-shadow:0 0 50px rgba(255,215,0,0.6),0 0 80px rgba(255,215,0,0.2)}
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:600px){
+  .heist-title{font-size:1.6em}
+  .heist-logo{font-size:2.5em}
+  .match-columns{flex-direction:column;align-items:center}
+  .terms-grid,.defs-grid{max-width:100%}
+  .keypad-grid{grid-template-columns:1fr}
+  .combo-display{font-size:1.4em;letter-spacing:4px}
+  .vault-name{font-size:1.4em}
+  .safe-display{font-size:1.4em;letter-spacing:3px}
+  .lock-visual{width:180px;height:180px}
+  .start-btn{padding:14px 35px;font-size:1em}
+  .cracked-stamp{font-size:2em;padding:10px 25px}
+  .fragment-tile{max-width:100%;font-size:0.82em;padding:8px 12px}
+}
+</style>
+</head>
+<body>
+
+<div class="cam-corner cam-tl"></div>
+<div class="cam-corner cam-tr"></div>
+<div class="cam-corner cam-bl"></div>
+<div class="cam-corner cam-br"></div>
+
+<div class="alarm-overlay" id="alarmOverlay"></div>
+<div class="cracked-stamp" id="crackedStamp">CRACKED</div>
+<div class="vault-door" id="vaultDoor"><div class="vault-door-panel"><div class="door-handle"></div></div></div>
+<div class="spark-overlay" id="sparkOverlay"></div>
+
+<div class="container">
+
+<!-- ===== WELCOME ===== -->
+<div id="welcome">
+  <div class="heist-logo">🔓</div>
+  <div class="heist-title">EXAM HEIST</div>
+  <div class="heist-sub">// CCEA VAULT BREACH PROTOCOL _</div>
+
+  <div class="briefing-box">
+    <h3>> MISSION BRIEFING</h3>
+    <p>Agent, tonight we breach the <strong>CCEA Exam Vault</strong>. Inside are the exam marks your class needs. Three increasingly secure vaults stand between you and the haul of a lifetime.</p>
+    <p>You have <strong>6 minutes</strong> before security arrives. Every wrong answer triggers alarms and costs you precious time. Crack all three vaults to escape with the marks.</p>
+    <ul class="mission-list">
+      <li>VAULT 1: Definition Decoder &mdash; Crack the combination lock</li>
+      <li>VAULT 2: Laser Grid &mdash; Navigate through mark-scheme answers</li>
+      <li>VAULT 3: The Final Safe &mdash; Speed-crack the keypad</li>
+    </ul>
+    <p style="color:var(--red);font-weight:600;margin-top:12px">&#9888; You have 5 lives. Lose them all and the mission fails.</p>
+  </div>
+
+  <button class="start-btn" onclick="startGame()">INITIATE BREACH</button>
+</div>
+
+<!-- ===== HUD ===== -->
+<div id="game-hud">
+  <div class="alert-banner" id="alertBanner">&#9888; ALERT &mdash; SECURITY RESPONSE IMMINENT &#9888;</div>
+  <div class="hud-row">
+    <div class="hud-item">
+      <div class="timer-ring" id="mainTimer">
+        <svg width="52" height="52"><circle class="ring-bg" cx="26" cy="26" r="22"/><circle class="ring-fg" id="timerCircle" cx="26" cy="26" r="22"/></svg>
+        <div class="timer-text" id="timerText">6:00</div>
+      </div>
+    </div>
+    <div class="hud-item">
+      <div><div class="hud-label">Marks Stolen</div><div class="hud-val hud-marks" id="hudMarks">0</div></div>
+    </div>
+    <div class="hud-item">
+      <div><div class="hud-label">Vault</div><div class="hud-val" id="hudVault">1/3</div></div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label" style="margin-right:4px">Lives</div>
+      <div class="lives" id="hudLives"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VAULT 1 ===== -->
+<div class="vault-screen" id="vault1">
+  <div class="vault-header">
+    <div class="vault-num">// Vault 01</div>
+    <div class="vault-name">DEFINITION DECODER</div>
+    <div class="vault-desc">Hover to decrypt each term, then match it to its definition. Each correct match cracks one tumbler.</div>
+  </div>
+
+  <div class="lock-visual" id="lockVisual">
+    <div class="lock-ring"></div>
+  </div>
+  <div class="combo-wrap"><div class="combo-display" id="comboDisplay"></div></div>
+
+  <div class="match-columns">
+    <div class="terms-grid" id="termsGrid"></div>
+    <div class="defs-grid" id="defsGrid"></div>
+  </div>
+</div>
+
+<!-- ===== VAULT 2 ===== -->
+<div class="vault-screen" id="vault2">
+  <div class="vault-header">
+    <div class="vault-num">// Vault 02</div>
+    <div class="vault-name">LASER GRID</div>
+    <div class="vault-desc">Select the correct answer fragments to deactivate the lasers. Choose wisely &mdash; wrong picks trigger more lasers!</div>
+  </div>
+
+  <div class="laser-container">
+    <div class="laser-question" id="laserQuestion">
+      <div class="q-text" id="laserQText"></div>
+      <div class="q-marks" id="laserQMarks"></div>
+    </div>
+    <div class="laser-grid-visual" id="laserGridVisual"></div>
+    <div class="answer-build" id="answerBuild">Collected evidence: <em style="color:#555">none yet</em></div>
+    <div class="fragments-area" id="fragmentsArea"></div>
+    <div class="feedback-box" id="laserFeedback"></div>
+    <button class="next-q-btn" id="laserNextBtn" onclick="nextLaserQuestion()">Next Lock &gt;</button>
+  </div>
+</div>
+
+<!-- ===== VAULT 3 ===== -->
+<div class="vault-screen" id="vault3">
+  <div class="vault-header">
+    <div class="vault-num">// Vault 03</div>
+    <div class="vault-name">THE FINAL SAFE</div>
+    <div class="vault-desc">8 seconds per question. No second chances. Crack it fast.</div>
+  </div>
+
+  <div class="safe-visual">
+    <div class="safe-body">
+      <div class="safe-display" id="safeDisplay"></div>
+    </div>
+  </div>
+
+  <div class="q-timer-ring" id="qTimerRing">
+    <svg width="60" height="60"><circle class="qt-bg" cx="30" cy="30" r="25"/><circle class="qt-fg" id="qTimerCircle" cx="30" cy="30" r="25"/></svg>
+    <div class="q-timer-text" id="qTimerText">8</div>
+  </div>
+
+  <div class="speed-question" id="speedQuestion">
+    <div class="q-num" id="speedQNum"></div>
+    <div class="q-text" id="speedQText"></div>
+  </div>
+
+  <div class="keypad-grid" id="keypadGrid"></div>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div id="results">
+  <div class="results-badge" id="resultsBadge"></div>
+  <div class="results-rank" id="resultsRank"></div>
+  <div class="results-score" id="resultsScore"></div>
+  <div class="results-time" id="resultsTime"></div>
+
+  <div class="haul-display">
+    <div class="haul-title">&#128176; HEIST HAUL &#128176;</div>
+    <div id="haulRows"></div>
+  </div>
+
+  <div class="revision-box">
+    <h3>> INTEL DEBRIEF</h3>
+    <div id="revisionList"></div>
+  </div>
+
+  <button class="retry-btn" onclick="location.reload()">&#128260; Try Again</button>
+  <a href="index.html" class="back-btn">&larr; Back to Hub</a>
+</div>
+
+</div>
+
+<script>
+/* ========================================================
+   EXAM HEIST — Activity 4
+   Pure vanilla JS, zero dependencies
+   ======================================================== */
+
+// ===== GAME STATE =====
+let totalTime = 360, timeLeft, timerInterval;
+let lives = 5, maxLives = 5, totalMarks = 0;
+let v1Score = 0, v2Score = 0, v3Score = 0;
+const v1Max = 6, v2Max = 6, v3Total = 10;
+let gameActive = false;
+let revisionNotes = [];
+
+// ===== FISHER-YATES SHUFFLE =====
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ===== UTILITIES =====
+function $(id) { return document.getElementById(id); }
+function show(id) { $(id).style.display = 'block'; }
+function hide(id) { $(id).style.display = 'none'; }
+
+function floatScore(text, color, x, y) {
+  const el = document.createElement('div');
+  el.className = 'float-score';
+  el.textContent = text;
+  el.style.color = color;
+  el.style.left = Math.min(x, window.innerWidth - 100) + 'px';
+  el.style.top = y + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
+function triggerAlarm() {
+  const ov = $('alarmOverlay');
+  ov.style.display = 'block';
+  ov.style.animation = 'none';
+  void ov.offsetWidth;
+  ov.style.animation = 'alarm-pulse 0.3s 3';
+  setTimeout(() => { ov.style.display = 'none'; }, 900);
+}
+
+function showSparks(x, y) {
+  const ov = $('sparkOverlay');
+  ov.style.display = 'block';
+  for (let i = 0; i < 15; i++) {
+    const s = document.createElement('div');
+    s.className = 'spark';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 30 + Math.random() * 70;
+    s.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+    s.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+    ov.appendChild(s);
+    setTimeout(() => s.remove(), 600);
+  }
+  setTimeout(() => { ov.style.display = 'none'; }, 700);
+}
+
+function launchConfetti() {
+  const colors = ['#E11D48', '#FFD700', '#00FF41', '#BE123C', '#2ecc71', '#fff', '#00cc33'];
+  for (let i = 0; i < 70; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.top = '-10px';
+    const size = 4 + Math.random() * 8;
+    c.style.width = size + 'px';
+    c.style.height = (size * (0.5 + Math.random())) + 'px';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDuration = (2 + Math.random() * 2) + 's';
+    c.style.animationDelay = (Math.random() * 0.6) + 's';
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4500);
+  }
+}
+
+function showCracked(cb) {
+  const s = $('crackedStamp');
+  s.style.display = 'none';
+  s.classList.remove('show');
+  void s.offsetWidth;
+  s.style.display = 'block';
+  s.classList.add('show');
+  setTimeout(() => {
+    s.style.display = 'none';
+    s.classList.remove('show');
+    if (cb) cb();
+  }, 1500);
+}
+
+function showVaultDoor(cb) {
+  const d = $('vaultDoor');
+  d.style.display = 'block';
+  d.classList.remove('opening');
+  void d.offsetWidth;
+  d.classList.add('opening');
+  setTimeout(() => {
+    d.style.display = 'none';
+    d.classList.remove('opening');
+    if (cb) cb();
+  }, 1400);
+}
+
+function loseLife() {
+  lives--;
+  updateLives();
+  if (lives <= 0) endGame(false);
+}
+
+function updateLives() {
+  const el = $('hudLives');
+  el.innerHTML = '';
+  for (let i = 0; i < maxLives; i++) {
+    const s = document.createElement('span');
+    s.className = 'life' + (i >= lives ? ' lost' : '');
+    s.textContent = '\u{1F534}';
+    el.appendChild(s);
+  }
+}
+
+function updateMarks() { $('hudMarks').textContent = totalMarks; }
+
+// ===== MAIN TIMER =====
+const circumference = 2 * Math.PI * 22;
+const qCircumference = 2 * Math.PI * 25;
+
+function startTimer() {
+  timeLeft = totalTime;
+  const circle = $('timerCircle');
+  circle.style.strokeDasharray = circumference;
+  circle.style.strokeDashoffset = 0;
+
+  timerInterval = setInterval(() => {
+    if (!gameActive) return;
+    timeLeft--;
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    $('timerText').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    const pct = timeLeft / totalTime;
+    circle.style.strokeDashoffset = circumference * (1 - pct);
+
+    if (timeLeft <= 60) {
+      $('mainTimer').classList.add('danger');
+      $('alertBanner').style.display = 'block';
+    } else {
+      $('mainTimer').classList.remove('danger');
+      $('alertBanner').style.display = 'none';
+    }
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      endGame(false);
+    }
+  }, 1000);
+}
+
+function addTime(sec) {
+  timeLeft = Math.max(0, timeLeft + sec);
+  // Clamp to max
+  if (timeLeft > totalTime) timeLeft = totalTime;
+}
+
+// ===== START GAME =====
+function startGame() {
+  hide('welcome');
+  $('game-hud').style.display = 'block';
+  gameActive = true;
+  lives = maxLives;
+  totalMarks = 0;
+  v1Score = 0; v2Score = 0; v3Score = 0;
+  revisionNotes = [];
+  updateLives();
+  updateMarks();
+  startTimer();
+  initVault1();
+}
+
+// ============================================================
+//  VAULT 1: DEFINITION DECODER — Combination Lock
+// ============================================================
+const v1Data = [
+  { term: 'Multimedia', def: 'The integration of text, graphics, video, animation and sound' },
+  { term: 'Simulation', def: 'A computer model designed to represent a real-life object or situation' },
+  { term: 'Virtual Reality', def: "Simulations to recreate 'real' experiences using vision, hearing and touch" },
+  { term: 'E-commerce', def: 'The buying and selling of goods and services over the internet' },
+  { term: 'Online Banking', def: 'Using the internet to access bank accounts via a secure website' },
+  { term: 'Online Training', def: 'Web-based training programs delivered to employees via the internet' }
+];
+
+let selectedTermName = null;
+let selectedTermBtn = null;
+let v1Matched = 0;
+
+function scrambleWord(text) {
+  const chars = text.split('');
+  // Fisher-Yates on the characters
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  // Ensure it's actually different
+  if (chars.join('') === text && chars.length > 1) {
+    [chars[0], chars[1]] = [chars[1], chars[0]];
+  }
+  return chars.join('');
+}
+
+function initVault1() {
+  show('vault1'); hide('vault2'); hide('vault3');
+  $('hudVault').textContent = '1/3';
+  v1Matched = 0;
+  selectedTermName = null;
+  selectedTermBtn = null;
+
+  // Place tumblers around lock ring
+  const lockEl = $('lockVisual');
+  lockEl.querySelectorAll('.tumbler').forEach(t => t.remove());
+  const radius = lockEl.offsetWidth >= 200 ? 80 : 65;
+  const cx = lockEl.offsetWidth / 2;
+  const cy = lockEl.offsetHeight / 2;
+  for (let i = 0; i < 6; i++) {
+    const t = document.createElement('div');
+    t.className = 'tumbler';
+    t.id = 'tumbler' + i;
+    const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
+    t.style.left = (cx + Math.cos(angle) * radius - 16) + 'px';
+    t.style.top = (cy + Math.sin(angle) * radius - 16) + 'px';
+    t.textContent = '?';
+    lockEl.appendChild(t);
+  }
+
+  // Combo display
+  $('comboDisplay').innerHTML = Array.from({ length: 6 }, (_, i) =>
+    '<span class="combo-digit" id="cd' + i + '">?</span>'
+  ).join(' ');
+
+  // Shuffled terms
+  const shuffledTerms = shuffle(v1Data);
+  const tg = $('termsGrid');
+  tg.innerHTML = '';
+  shuffledTerms.forEach(item => {
+    const btn = document.createElement('div');
+    btn.className = 'term-btn encrypted';
+    const scrambled = scrambleWord(item.term);
+    btn.textContent = scrambled;
+    btn.dataset.term = item.term;
+    btn.dataset.scrambled = scrambled;
+    // Hover to decrypt
+    btn.addEventListener('mouseenter', function() {
+      if (!this.classList.contains('matched')) {
+        this.textContent = this.dataset.term;
+        this.classList.remove('encrypted');
+      }
+    });
+    btn.addEventListener('mouseleave', function() {
+      if (!this.classList.contains('matched') && !this.classList.contains('selected')) {
+        this.textContent = this.dataset.scrambled;
+        this.classList.add('encrypted');
+      }
+    });
+    // Touch support for mobile
+    btn.addEventListener('touchstart', function(e) {
+      if (!this.classList.contains('matched')) {
+        this.textContent = this.dataset.term;
+        this.classList.remove('encrypted');
+      }
+    }, { passive: true });
+    btn.addEventListener('click', function() { selectTerm(this); });
+    tg.appendChild(btn);
+  });
+
+  // Shuffled definitions
+  const shuffledDefs = shuffle(v1Data);
+  const dg = $('defsGrid');
+  dg.innerHTML = '';
+  shuffledDefs.forEach(item => {
+    const btn = document.createElement('div');
+    btn.className = 'def-btn';
+    btn.dataset.term = item.term;
+    btn.textContent = item.def;
+    btn.addEventListener('click', function() { selectDef(this); });
+    dg.appendChild(btn);
+  });
+}
+
+function selectTerm(btn) {
+  if (btn.classList.contains('matched') || !gameActive) return;
+  // Deselect previous
+  if (selectedTermBtn && selectedTermBtn !== btn) {
+    selectedTermBtn.classList.remove('selected');
+    if (!selectedTermBtn.classList.contains('matched')) {
+      selectedTermBtn.textContent = selectedTermBtn.dataset.scrambled;
+      selectedTermBtn.classList.add('encrypted');
+    }
+  }
+  btn.classList.add('selected');
+  btn.classList.remove('encrypted');
+  btn.textContent = btn.dataset.term;
+  selectedTermName = btn.dataset.term;
+  selectedTermBtn = btn;
+}
+
+function selectDef(btn) {
+  if (!selectedTermName || btn.classList.contains('matched') || !gameActive) return;
+  const rect = btn.getBoundingClientRect();
+
+  if (btn.dataset.term === selectedTermName) {
+    // CORRECT MATCH
+    btn.classList.add('matched');
+    selectedTermBtn.classList.add('matched');
+    selectedTermBtn.classList.remove('selected', 'encrypted');
+    selectedTermBtn.textContent = selectedTermBtn.dataset.term;
+
+    // Crack tumbler
+    const tumbler = $('tumbler' + v1Matched);
+    if (tumbler) { tumbler.classList.add('cracked'); tumbler.textContent = '\u2713'; }
+
+    // Reveal combo digit
+    const cd = $('cd' + v1Matched);
+    if (cd) { cd.classList.add('revealed'); cd.textContent = (v1Matched + 1).toString(); }
+
+    v1Matched++;
+    v1Score++;
+    totalMarks++;
+    updateMarks();
+    floatScore('+1 MARK', '#2ecc71', rect.left, rect.top);
+
+    selectedTermName = null;
+    selectedTermBtn = null;
+
+    if (v1Matched >= 6) {
+      setTimeout(() => {
+        launchConfetti();
+        showCracked(() => {
+          showVaultDoor(() => { hide('vault1'); initVault2(); });
+        });
+      }, 400);
+    }
+  } else {
+    // WRONG MATCH
+    triggerAlarm();
+    addTime(-10);
+    floatScore('-10s', '#e74c3c', rect.left, rect.top);
+    btn.style.animation = 'none';
+    void btn.offsetWidth;
+    btn.style.animation = 'shake 0.5s';
+    setTimeout(() => { btn.style.animation = ''; }, 500);
+    revisionNotes.push({
+      q: 'Definition matching — ' + selectedTermName,
+      note: 'You matched the wrong definition. Read each definition carefully and look for key distinguishing words.'
+    });
+  }
+}
+
+// ============================================================
+//  VAULT 2: LASER GRID — Navigate Through Mark Scheme
+// ============================================================
+const v2Questions = [
+  {
+    q: 'State two features of a mobile phone app',
+    marks: 2,
+    correct: [
+      'Designed for mobile devices [1]',
+      'Downloaded from app store [1]',
+      'Touch screen interface [1]',
+      'Uses phone features like GPS and camera [1]',
+      'Can work offline [1]'
+    ],
+    wrong: [
+      { text: 'Requires broadband internet', feedback: 'Incorrect. Apps do NOT require broadband \u2014 many work on mobile data or offline.' },
+      { text: 'Only works on laptops', feedback: 'Apps are designed for mobile devices, not laptops.' },
+      { text: 'Must be updated manually', feedback: 'Apps can auto-update through the app store.' },
+      { text: 'Cannot access phone hardware', feedback: 'Wrong \u2014 apps CAN access phone features like GPS, camera, and microphone.' }
+    ],
+    needed: 2
+  },
+  {
+    q: 'State two health hazards of computer gaming',
+    marks: 2,
+    correct: [
+      'Eye strain [1]',
+      'Backache / back pain [1]',
+      'RSI (Repetitive Strain Injury) [1]',
+      'Epilepsy [1]'
+    ],
+    wrong: [
+      { text: 'Sore back', feedback: 'REJECTED by examiners! "Sore back" is too vague. You must use the specific term "backache" or "back pain" to get the mark.' },
+      { text: 'Headache', feedback: 'REJECTED by examiners! "Headache" is too vague and generic. Use specific conditions like "eye strain" or "RSI" instead.' },
+      { text: 'Tiredness', feedback: 'Not a recognised health hazard in the CCEA mark scheme.' },
+      { text: 'Boredom', feedback: 'Boredom is not a health hazard!' }
+    ],
+    needed: 2
+  },
+  {
+    q: 'State two risks of social media',
+    marks: 2,
+    correct: [
+      'Cyberbullying [1]',
+      'Fake/bogus profiles [1]',
+      'Privacy issues / data theft [1]',
+      'Identity fraud [1]',
+      'Cyberstalking [1]'
+    ],
+    wrong: [
+      { text: 'Too many notifications', feedback: 'Annoying maybe, but not a risk \u2014 think about safety and security.' },
+      { text: 'Battery drain', feedback: 'A technical inconvenience, not a social media risk.' },
+      { text: 'Slow loading', feedback: 'This is a performance issue, not a risk of social media.' },
+      { text: 'Boring content', feedback: 'Not a risk! Think cyberbullying, identity fraud, privacy...' }
+    ],
+    needed: 2
+  }
+];
+
+let currentLQ = 0;
+let lqCollected = 0;
+let lqAnswered = false;
+
+function initVault2() {
+  show('vault2'); hide('vault1'); hide('vault3');
+  $('hudVault').textContent = '2/3';
+  currentLQ = 0;
+  loadLaserQuestion();
+}
+
+function loadLaserQuestion() {
+  if (!gameActive) return;
+  if (currentLQ >= v2Questions.length) {
+    // Vault 2 complete
+    setTimeout(() => {
+      launchConfetti();
+      showCracked(() => {
+        showVaultDoor(() => { hide('vault2'); initVault3(); });
+      });
+    }, 300);
+    return;
+  }
+
+  const q = v2Questions[currentLQ];
+  $('laserQText').textContent = q.q;
+  $('laserQMarks').textContent = '[' + q.marks + ' marks]';
+  $('answerBuild').innerHTML = 'Collected evidence: <em style="color:#555">none yet</em>';
+  $('laserFeedback').style.display = 'none';
+  $('laserFeedback').className = 'feedback-box';
+  $('laserNextBtn').style.display = 'none';
+  lqCollected = 0;
+  lqAnswered = false;
+
+  // Draw laser lines
+  const lgv = $('laserGridVisual');
+  lgv.innerHTML = '';
+  const numLasers = q.needed + 3;
+  for (let i = 0; i < numLasers; i++) {
+    const line = document.createElement('div');
+    line.className = 'laser-line';
+    line.style.top = (((i + 1) / (numLasers + 1)) * 100) + '%';
+    line.style.animationDelay = (i * 0.15) + 's';
+    lgv.appendChild(line);
+  }
+
+  // Build fragment tiles
+  const fa = $('fragmentsArea');
+  fa.innerHTML = '';
+
+  // Pick correct fragments (shuffle and take needed amount)
+  const correctPool = shuffle(q.correct);
+  const chosenCorrect = correctPool.slice(0, q.needed);
+
+  // Build all tiles
+  const allFrags = shuffle([
+    ...chosenCorrect.map(c => ({ text: c, isCorrect: true, feedback: '' })),
+    ...q.wrong.map(w => ({ text: w.text, isCorrect: false, feedback: w.feedback }))
+  ]);
+
+  allFrags.forEach(f => {
+    const tile = document.createElement('div');
+    tile.className = 'fragment-tile';
+    tile.textContent = f.isCorrect ? f.text.replace(' [1]', '') : f.text;
+    tile.dataset.full = f.text;
+    tile.dataset.correct = f.isCorrect;
+    tile.dataset.feedback = f.feedback;
+    tile.addEventListener('click', function() { clickFragment(this, q); });
+    fa.appendChild(tile);
+  });
+}
+
+function clickFragment(tile, q) {
+  if (tile.classList.contains('correct-frag') || tile.classList.contains('wrong-frag') || lqAnswered || !gameActive) return;
+  const rect = tile.getBoundingClientRect();
+
+  if (tile.dataset.correct === 'true') {
+    // CORRECT fragment
+    tile.classList.add('correct-frag');
+    const mb = document.createElement('span');
+    mb.className = 'mark-badge';
+    mb.textContent = '[1]';
+    tile.appendChild(mb);
+
+    lqCollected++;
+    v2Score++;
+    totalMarks++;
+    updateMarks();
+    floatScore('+1 MARK', '#2ecc71', rect.left, rect.top);
+
+    // Deactivate a laser
+    const laser = document.querySelector('#laserGridVisual .laser-line:not(.deactivated)');
+    if (laser) laser.classList.add('deactivated');
+
+    // Update answer build
+    const ab = $('answerBuild');
+    if (lqCollected === 1) ab.innerHTML = '';
+    const p = document.createElement('div');
+    p.className = 'collected';
+    p.textContent = '\u2713 ' + tile.dataset.full;
+    ab.appendChild(p);
+
+    if (lqCollected >= q.needed) {
+      lqAnswered = true;
+      // Deactivate remaining lasers
+      document.querySelectorAll('#laserGridVisual .laser-line:not(.deactivated)').forEach(l => l.classList.add('deactivated'));
+
+      $('laserFeedback').className = 'feedback-box correct-fb';
+      $('laserFeedback').textContent = '\u2713 All lasers deactivated! Lock bypassed.';
+      $('laserFeedback').style.display = 'block';
+
+      $('laserNextBtn').style.display = 'block';
+      $('laserNextBtn').textContent = currentLQ < v2Questions.length - 1 ? 'Next Lock \u203A' : 'Open Vault \u203A';
+    }
+  } else {
+    // WRONG fragment
+    tile.classList.add('wrong-frag');
+    showSparks(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    loseLife();
+    floatScore('WRONG', '#e74c3c', rect.left, rect.top);
+
+    // Add extra laser
+    const lgv = $('laserGridVisual');
+    const extra = document.createElement('div');
+    extra.className = 'laser-line';
+    extra.style.top = (10 + Math.random() * 70) + '%';
+    lgv.appendChild(extra);
+
+    if (tile.dataset.feedback) {
+      $('laserFeedback').className = 'feedback-box wrong-fb';
+      $('laserFeedback').innerHTML = '\u26A0 ' + tile.dataset.feedback;
+      $('laserFeedback').style.display = 'block';
+      revisionNotes.push({ q: q.q, note: tile.dataset.feedback });
+    }
+
+    setTimeout(() => { tile.classList.remove('wrong-frag'); }, 600);
+  }
+}
+
+function nextLaserQuestion() {
+  currentLQ++;
+  loadLaserQuestion();
+}
+
+// ============================================================
+//  VAULT 3: THE FINAL SAFE — Speed Crack
+// ============================================================
+const v3Pool = [
+  { q: 'What does e-commerce mean?', a: 'Buying/selling goods and services over the internet', w: ['Using email for business', 'Social media marketing', 'Cloud computing'] },
+  { q: 'Which is an advantage of online banking FOR THE BANK?', a: 'Fewer branches needed = less staff cost', w: ['Available 24/7', 'Access accounts abroad', 'Faster payments'] },
+  { q: 'Which is NOT an example of a simulation?', a: 'Social media platform', w: ['Flight training', 'Crash testing', 'Medical surgery practice'] },
+  { q: 'What does VR use to create experiences?', a: 'Vision, hearing and touch', w: ['Only vision', 'Only hearing', 'Smell and taste'] },
+  { q: "Why is 'sore back' rejected for health hazards?", a: "Too vague \u2014 use 'backache' or 'back pain'", w: ["It's not a real condition", 'It only affects older people', "Gaming doesn't cause it"] },
+  { q: 'Which is a DISADVANTAGE of online training?', a: 'Not suited to all learning styles', w: ['Learn at own pace', 'No travel needed', 'Multimedia content'] },
+  { q: 'What is a simulation?', a: 'Computer model of a real-life situation', w: ['A type of video game', 'Virtual reality headset', '3D animation software'] },
+  { q: 'Who benefits from e-statements?', a: 'The bank \u2014 saves paper and postage', w: ['The customer', 'The government', 'App developers'] },
+  { q: 'Which is a RISK of social media?', a: 'Cyberbullying', w: ['Fast communication', 'Global connections', 'Photo sharing'] },
+  { q: 'What can employers do with online training?', a: 'Monitor progress via tracking systems', w: ['Force employees to work faster', 'Replace all classroom teaching', 'Guarantee promotion'] },
+  { q: 'Which feature involves text, graphics, video, animation and sound?', a: 'Multimedia', w: ['Virtual Reality', 'Cloud computing', 'Social media'] },
+  { q: "What's a disadvantage of e-commerce for customers?", a: 'Cannot see/try products before buying', w: ['Wider product choice', 'Compare prices easily', 'Shop 24/7'] }
+];
+
+let v3Questions, v3Current, v3QTimer, v3TimeLeft;
+const v3QTime = 8;
+let v3Answering = false;
+
+function initVault3() {
+  show('vault3'); hide('vault1'); hide('vault2');
+  $('hudVault').textContent = '3/3';
+  v3Questions = shuffle(v3Pool).slice(0, v3Total);
+  v3Current = 0;
+
+  // Safe display digits
+  $('safeDisplay').innerHTML = '';
+  for (let i = 0; i < v3Total; i++) {
+    const s = document.createElement('span');
+    s.className = 'safe-digit';
+    s.id = 'sd' + i;
+    s.textContent = '\u2022';
+    $('safeDisplay').appendChild(s);
+  }
+
+  loadSpeedQ();
+}
+
+function loadSpeedQ() {
+  if (!gameActive) { clearInterval(v3QTimer); return; }
+
+  if (v3Current >= v3Total) {
+    // Vault 3 done
+    clearInterval(v3QTimer);
+    setTimeout(() => {
+      showCracked(() => {
+        launchConfetti();
+        showVaultDoor(() => { endGame(true); });
+      });
+    }, 400);
+    return;
+  }
+
+  v3Answering = true;
+  const q = v3Questions[v3Current];
+  $('speedQNum').textContent = 'QUESTION ' + (v3Current + 1) + ' OF ' + v3Total;
+  $('speedQText').textContent = q.q;
+
+  // Shuffle options
+  const opts = shuffle([
+    { text: q.a, correct: true },
+    ...q.w.map(w => ({ text: w, correct: false }))
+  ]);
+
+  const kg = $('keypadGrid');
+  kg.innerHTML = '';
+  opts.forEach(o => {
+    const btn = document.createElement('div');
+    btn.className = 'keypad-btn';
+    btn.textContent = o.text;
+    btn.dataset.correct = o.correct;
+    btn.addEventListener('click', function() { answerSpeed(this, o.correct, q); });
+    kg.appendChild(btn);
+  });
+
+  // Question timer
+  v3TimeLeft = v3QTime;
+  $('qTimerText').textContent = v3QTime;
+  const circle = $('qTimerCircle');
+  circle.style.strokeDasharray = qCircumference;
+  circle.style.strokeDashoffset = 0;
+  circle.style.stroke = 'var(--accent)';
+
+  clearInterval(v3QTimer);
+  v3QTimer = setInterval(() => {
+    if (!gameActive) { clearInterval(v3QTimer); return; }
+    v3TimeLeft -= 0.1;
+    const display = Math.ceil(v3TimeLeft);
+    $('qTimerText').textContent = display > 0 ? display : 0;
+    const pct = Math.max(0, v3TimeLeft / v3QTime);
+    circle.style.strokeDashoffset = qCircumference * (1 - pct);
+    if (v3TimeLeft <= 3) circle.style.stroke = '#e74c3c';
+
+    if (v3TimeLeft <= 0) {
+      clearInterval(v3QTimer);
+      if (v3Answering) timeOutSpeed(q);
+    }
+  }, 100);
+}
+
+function answerSpeed(btn, correct, q) {
+  if (!v3Answering || !gameActive) return;
+  v3Answering = false;
+  clearInterval(v3QTimer);
+  const rect = btn.getBoundingClientRect();
+
+  // Disable all buttons
+  document.querySelectorAll('.keypad-btn').forEach(b => { b.style.pointerEvents = 'none'; });
+
+  if (correct) {
+    btn.classList.add('correct-key');
+    const digit = $('sd' + v3Current);
+    if (digit) { digit.classList.add('lit'); digit.textContent = '\u2713'; }
+    v3Score++;
+    totalMarks++;
+    updateMarks();
+    floatScore('+1 MARK', '#2ecc71', rect.left, rect.top);
+  } else {
+    btn.classList.add('wrong-key');
+    // Show correct answer
+    document.querySelectorAll('.keypad-btn').forEach(b => {
+      if (b.dataset.correct === 'true') b.classList.add('correct-key');
+    });
+    const digit = $('sd' + v3Current);
+    if (digit) { digit.classList.add('wrong-digit'); digit.textContent = '\u2717'; }
+    showSparks(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    addTime(-5);
+    floatScore('-5s', '#e74c3c', rect.left, rect.top);
+    revisionNotes.push({ q: q.q, note: 'The correct answer is: ' + q.a });
+  }
+
+  v3Current++;
+  setTimeout(loadSpeedQ, 1200);
+}
+
+function timeOutSpeed(q) {
+  v3Answering = false;
+  document.querySelectorAll('.keypad-btn').forEach(b => {
+    b.style.pointerEvents = 'none';
+    if (b.dataset.correct === 'true') b.classList.add('correct-key');
+  });
+  const digit = $('sd' + v3Current);
+  if (digit) { digit.classList.add('wrong-digit'); digit.textContent = '\u2717'; }
+  triggerAlarm();
+  addTime(-5);
+  revisionNotes.push({ q: q.q, note: 'Ran out of time! The answer is: ' + q.a });
+  v3Current++;
+  setTimeout(loadSpeedQ, 1200);
+}
+
+// ============================================================
+//  END GAME
+// ============================================================
+function endGame(completed) {
+  gameActive = false;
+  clearInterval(timerInterval);
+  clearInterval(v3QTimer);
+  hide('vault1'); hide('vault2'); hide('vault3');
+  $('game-hud').style.display = 'none';
+  $('alertBanner').style.display = 'none';
+
+  const maxMarks = v1Max + v2Max + v3Total;
+  const pct = totalMarks / maxMarks;
+  let rank, badge;
+
+  if (!completed || lives <= 0 || timeLeft <= 0) {
+    // Failed
+    badge = '\uD83D\uDEA8'; // siren
+    $('resultsBadge').textContent = badge;
+    $('resultsRank').textContent = 'BUSTED';
+    $('resultsRank').style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+  } else if (pct >= 0.9) {
+    rank = 'LEGENDARY'; badge = '\uD83D\uDC51'; // crown
+    $('resultsBadge').textContent = badge;
+    $('resultsRank').textContent = rank;
+    $('resultsRank').style.background = 'linear-gradient(135deg, #FFD700, #ff8c00)';
+  } else if (pct >= 0.7) {
+    rank = 'MASTER THIEF'; badge = '\uD83C\uDFAD'; // masks
+    $('resultsBadge').textContent = badge;
+    $('resultsRank').textContent = rank;
+    $('resultsRank').style.background = 'linear-gradient(135deg, #FFD700, #ff8c00)';
+  } else if (pct >= 0.5) {
+    rank = 'AGENT'; badge = '\uD83D\uDD75\uFE0F'; // detective
+    $('resultsBadge').textContent = badge;
+    $('resultsRank').textContent = rank;
+    $('resultsRank').style.background = 'linear-gradient(135deg, #C0C0C0, #999)';
+  } else {
+    rank = 'APPRENTICE'; badge = '\uD83D\uDD11'; // key
+    $('resultsBadge').textContent = badge;
+    $('resultsRank').textContent = rank;
+    $('resultsRank').style.background = 'linear-gradient(135deg, #C0C0C0, #999)';
+  }
+
+  const timeUsed = totalTime - Math.max(0, timeLeft);
+  const mins = Math.floor(timeUsed / 60);
+  const secs = timeUsed % 60;
+  $('resultsScore').textContent = totalMarks + ' / ' + maxMarks + ' MARKS STOLEN';
+  $('resultsTime').textContent = 'Heist time: ' + mins + 'm ' + secs + 's';
+
+  // Haul breakdown
+  $('haulRows').innerHTML =
+    '<div class="haul-row"><span class="vault-label">Vault 1 \u2014 Definition Decoder</span><span class="vault-score">' + v1Score + '/' + v1Max + '</span></div>' +
+    '<div class="haul-row"><span class="vault-label">Vault 2 \u2014 Laser Grid</span><span class="vault-score">' + v2Score + '/' + v2Max + '</span></div>' +
+    '<div class="haul-row"><span class="vault-label">Vault 3 \u2014 The Final Safe</span><span class="vault-score">' + v3Score + '/' + v3Total + '</span></div>' +
+    '<div class="haul-row" style="border-top:2px solid var(--gold);padding-top:12px;margin-top:4px">' +
+    '<span class="vault-label" style="color:var(--gold);font-weight:700">TOTAL HAUL</span>' +
+    '<span class="vault-score" style="color:var(--gold);font-size:1.1em">' + totalMarks + '/' + maxMarks + '</span></div>';
+
+  // Revision debrief
+  const rl = $('revisionList');
+  if (revisionNotes.length === 0) {
+    rl.innerHTML = '<div class="revision-item">Perfect heist! No intel needed \u2014 you knew everything. Top marks, agent.</div>';
+  } else {
+    const seen = new Set();
+    const unique = [];
+    revisionNotes.forEach(r => {
+      if (!seen.has(r.note)) { seen.add(r.note); unique.push(r); }
+    });
+    rl.innerHTML = unique.map(r =>
+      '<div class="revision-item"><strong>' + r.q + ':</strong> ' + r.note + '</div>'
+    ).join('');
+  }
+
+  show('results');
+  if (pct >= 0.7) launchConfetti();
+}
+</script>
+</body>
+</html>

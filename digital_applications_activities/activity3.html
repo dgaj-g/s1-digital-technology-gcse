@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Dragons — Investment Pitch Game</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+/* ── KEYFRAMES ── */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(100px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-100px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideOutLeft{from{opacity:1;transform:translateX(0) rotate(0)}to{opacity:0;transform:translateX(-200px) rotate(-15deg)}}
+@keyframes slideOutRight{from{opacity:1;transform:translateX(0) rotate(0)}to{opacity:0;transform:translateX(200px) rotate(15deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(16,185,129,0.3)}50%{box-shadow:0 0 40px rgba(16,185,129,0.6)}}
+@keyframes spotlight{0%,100%{opacity:0.6}50%{opacity:1}}
+@keyframes walkIn{0%{transform:translateX(300px) scale(0.5);opacity:0}60%{transform:translateX(0) scale(1);opacity:1}80%{transform:translateX(-10px)}100%{transform:translateX(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes cardFlip{0%{transform:rotateY(0)}50%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
+@keyframes kaChingFloat{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(1.5)}}
+@keyframes moneyBurn{0%{opacity:1;transform:scale(1) rotate(0)}50%{opacity:0.6;transform:scale(0.8) rotate(10deg);filter:brightness(2) sepia(1) saturate(5) hue-rotate(-10deg)}100%{opacity:0;transform:scale(0) rotate(30deg)}}
+@keyframes dealCard{0%{transform:translate(200px,-100px) rotate(20deg) scale(0.3);opacity:0}100%{transform:translate(0,0) rotate(0) scale(1);opacity:1}}
+@keyframes stampSlam{0%{transform:scale(3) rotate(-20deg);opacity:0}60%{transform:scale(0.9) rotate(2deg);opacity:1}80%{transform:scale(1.05) rotate(-1deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes confettiFall{0%{transform:translateY(-100vh) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+@keyframes shakeNo{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes floatEmoji{0%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(5deg)}100%{transform:translateY(0) rotate(0)}}
+@keyframes chairRock{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glowPulse{0%,100%{filter:drop-shadow(0 0 10px rgba(16,185,129,0.4))}50%{filter:drop-shadow(0 0 25px rgba(16,185,129,0.8))}}
+@keyframes barFill{from{width:0}to{width:var(--fill)}}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes revealStamp{0%{transform:scale(4) rotate(-30deg);opacity:0}50%{transform:scale(0.85) rotate(5deg);opacity:1}70%{transform:scale(1.1) rotate(-2deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes pairGlow{0%,100%{box-shadow:0 0 10px rgba(46,204,113,0.3)}50%{box-shadow:0 0 30px rgba(46,204,113,0.8)}}
+@keyframes dropIn{0%{transform:translateY(-200px) scale(0.5);opacity:0}60%{transform:translateY(10px) scale(1.05);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes speechBubble{0%{transform:scale(0);opacity:0}60%{transform:scale(1.1);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes buildLine{from{opacity:0;max-height:0}to{opacity:1;max-height:60px}}
+@keyframes investTick{0%{color:#34d399}50%{color:#fff;text-shadow:0 0 15px rgba(16,185,129,0.8)}100%{color:#34d399}}
+
+body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    min-height:100vh;
+    background:#0a0a0a;
+    color:#f0f0f0;
+    overflow-x:hidden;
+}
+
+/* ── WELCOME SCREEN ── */
+.welcome-screen{
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,#0a0a0a 0%,#062e22 50%,#0a0a0a 100%);
+    text-align:center;padding:20px;position:relative;overflow:hidden;
+}
+.welcome-spotlight{
+    position:absolute;top:-100px;left:50%;transform:translateX(-50%);
+    width:500px;height:500px;
+    background:radial-gradient(ellipse,rgba(16,185,129,0.15) 0%,transparent 70%);
+    pointer-events:none;
+}
+.welcome-title{
+    font-size:clamp(2.5rem,7vw,4.5rem);font-weight:900;
+    background:linear-gradient(135deg,#10B981,#059669,#34d399);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;margin-bottom:10px;
+    animation:fadeInDown 0.8s ease;
+}
+.welcome-subtitle{
+    font-size:clamp(1rem,3vw,1.4rem);color:#9ca3af;margin-bottom:30px;
+    animation:fadeInUp 0.8s ease 0.2s both;
+}
+.welcome-dragon{
+    font-size:clamp(4rem,12vw,7rem);margin-bottom:20px;
+    animation:floatEmoji 3s ease-in-out infinite;
+}
+.mission-box{
+    background:rgba(16,185,129,0.08);border:2px solid rgba(16,185,129,0.3);
+    border-radius:20px;padding:30px;max-width:600px;width:90%;
+    animation:fadeInUp 0.8s ease 0.4s both;
+}
+.mission-label{
+    font-size:0.8rem;text-transform:uppercase;letter-spacing:3px;
+    color:#10B981;margin-bottom:12px;font-weight:700;
+}
+.mission-text{
+    font-size:clamp(0.95rem,2.5vw,1.1rem);line-height:1.7;color:#d1d5db;
+}
+.mission-text strong{color:#34d399}
+.round-preview{
+    display:flex;gap:15px;justify-content:center;margin-top:20px;flex-wrap:wrap;
+}
+.round-chip{
+    background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);
+    border-radius:12px;padding:8px 16px;font-size:0.85rem;color:#6ee7b7;
+}
+.start-btn{
+    margin-top:30px;padding:18px 50px;font-size:1.2rem;font-weight:700;
+    background:linear-gradient(135deg,#10B981,#059669);color:#fff;
+    border:none;border-radius:16px;cursor:pointer;
+    animation:fadeInUp 0.8s ease 0.6s both,glow 2s ease-in-out infinite;
+    transition:transform 0.2s;
+}
+.start-btn:hover{transform:scale(1.05)}
+
+/* ── GAME CONTAINER ── */
+.game-container{display:none;min-height:100vh;position:relative}
+
+/* ── TOP BAR ── */
+.top-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:12px 20px;background:rgba(0,0,0,0.6);
+    border-bottom:2px solid rgba(16,185,129,0.3);
+    position:sticky;top:0;z-index:100;backdrop-filter:blur(10px);
+    flex-wrap:wrap;gap:8px;
+}
+.back-link{
+    color:#6ee7b7;text-decoration:none;font-size:0.9rem;font-weight:600;
+    transition:color 0.2s;
+}
+.back-link:hover{color:#34d399}
+.round-label{
+    font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;
+    color:#10B981;font-weight:700;
+}
+.investment-tracker{
+    display:flex;align-items:center;gap:8px;
+    font-weight:700;font-size:1.1rem;color:#34d399;
+}
+.investment-amount{
+    background:rgba(16,185,129,0.15);padding:4px 14px;border-radius:8px;
+    border:1px solid rgba(16,185,129,0.3);font-variant-numeric:tabular-nums;
+    transition:all 0.3s;min-width:100px;text-align:center;
+}
+.investment-amount.up{animation:investTick 0.5s ease}
+.investment-amount.down{animation:shakeNo 0.4s ease;color:#e74c3c}
+
+/* ── DRAGONS DEN SET ── */
+.den-set{
+    position:relative;min-height:calc(100vh - 60px);
+    background:linear-gradient(180deg,#0d0d0d 0%,#1a0e00 30%,#0d0d0d 100%);
+    overflow:hidden;padding:20px;
+}
+.den-spotlights{
+    position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;
+}
+.den-spot{
+    position:absolute;
+    background:radial-gradient(ellipse,rgba(255,200,50,0.08) 0%,transparent 70%);
+    animation:spotlight 4s ease-in-out infinite;
+}
+.den-spot:nth-child(1){width:400px;height:600px;top:-100px;left:10%;animation-delay:0s}
+.den-spot:nth-child(2){width:500px;height:700px;top:-100px;left:35%;animation-delay:1s}
+.den-spot:nth-child(3){width:400px;height:600px;top:-100px;right:10%;animation-delay:2s}
+
+/* Dragon chairs */
+.dragon-panel{
+    display:flex;justify-content:center;gap:clamp(15px,4vw,40px);
+    margin-bottom:20px;position:relative;z-index:1;
+}
+.dragon-chair{
+    text-align:center;animation:fadeInDown 0.5s ease both;
+}
+.dragon-chair:nth-child(2){animation-delay:0.15s}
+.dragon-chair:nth-child(3){animation-delay:0.3s}
+.chair-emoji{
+    font-size:clamp(2rem,5vw,3.5rem);display:block;
+    animation:chairRock 4s ease-in-out infinite;
+}
+.chair-label{
+    font-size:0.65rem;color:#6b7280;text-transform:uppercase;
+    letter-spacing:1px;margin-top:4px;
+}
+.chair-active .chair-emoji{animation:chairRock 2s ease-in-out infinite,glowPulse 2s ease-in-out infinite}
+.chair-active .chair-label{color:#10B981}
+
+/* Stage area */
+.stage{
+    position:relative;z-index:1;
+    display:flex;flex-direction:column;align-items:center;
+    min-height:300px;
+}
+.stage-spotlight{
+    position:absolute;top:-50px;left:50%;transform:translateX(-50%);
+    width:300px;height:400px;
+    background:radial-gradient(ellipse at top,rgba(255,220,100,0.1) 0%,transparent 60%);
+    pointer-events:none;
+}
+
+/* Entrepreneur */
+.entrepreneur{
+    font-size:clamp(3rem,8vw,5rem);margin:10px 0;
+    animation:walkIn 1.2s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.entrepreneur-name{
+    font-size:clamp(1.2rem,3vw,1.6rem);font-weight:800;color:#f0f0f0;
+    margin-bottom:4px;
+}
+.entrepreneur-pitch{
+    font-size:clamp(0.85rem,2vw,1rem);color:#9ca3af;max-width:500px;
+    text-align:center;line-height:1.5;
+}
+
+/* Slide deck */
+.slide-deck{
+    background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;padding:25px;margin:20px auto;max-width:500px;width:90%;
+    text-align:center;animation:fadeInUp 0.6s ease;
+}
+.slide-deck h3{font-size:clamp(1.1rem,3vw,1.4rem);color:#34d399;margin-bottom:8px}
+.slide-deck .slide-icon{font-size:2.5rem;margin-bottom:10px}
+.slide-deck p{font-size:0.95rem;color:#d1d5db;line-height:1.6}
+.slide-progress{
+    display:flex;gap:6px;justify-content:center;margin-top:12px;
+}
+.slide-dot{
+    width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);
+    transition:background 0.3s;
+}
+.slide-dot.active{background:#10B981}
+
+/* ── SWIPE CARDS ── */
+.swipe-area{
+    position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;
+    margin-top:15px;width:100%;
+}
+.swipe-instruction{
+    font-size:clamp(0.75rem,2vw,0.85rem);color:#6b7280;margin-bottom:10px;
+    animation:fadeIn 0.5s ease;text-align:center;padding:0 10px;
+}
+.card-stack{
+    position:relative;width:clamp(280px,80vw,420px);height:200px;
+}
+.claim-card{
+    position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:clamp(260px,75vw,400px);
+    background:linear-gradient(135deg,#1a1a2e,#16213e);
+    border:2px solid rgba(255,255,255,0.1);
+    border-radius:20px;padding:25px;text-align:center;
+    cursor:grab;user-select:none;
+    transition:border-color 0.3s,box-shadow 0.3s;
+    animation:cardFlip 0.6s ease;
+}
+.claim-card.swiping-left{
+    animation:slideOutLeft 0.5s ease forwards;
+    border-color:#e74c3c;box-shadow:0 0 30px rgba(231,76,60,0.4);
+}
+.claim-card.swiping-right{
+    animation:slideOutRight 0.5s ease forwards;
+    border-color:#2ecc71;box-shadow:0 0 30px rgba(46,204,113,0.4);
+}
+.claim-card .card-number{
+    font-size:0.7rem;color:#6b7280;text-transform:uppercase;letter-spacing:2px;
+    margin-bottom:10px;
+}
+.claim-card .claim-text{
+    font-size:clamp(0.95rem,2.5vw,1.1rem);line-height:1.6;color:#e0e0e0;
+    font-weight:600;
+}
+
+.swipe-buttons{
+    display:flex;gap:30px;margin-top:20px;
+}
+.swipe-btn{
+    width:clamp(60px,15vw,80px);height:clamp(60px,15vw,80px);
+    border-radius:50%;border:3px solid;font-size:clamp(1.5rem,4vw,2rem);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:transform 0.2s,box-shadow 0.2s;background:rgba(0,0,0,0.5);
+}
+.swipe-btn:hover{transform:scale(1.15)}
+.swipe-btn.reject{border-color:#e74c3c;color:#e74c3c}
+.swipe-btn.reject:hover{box-shadow:0 0 25px rgba(231,76,60,0.4)}
+.swipe-btn.accept{border-color:#2ecc71;color:#2ecc71}
+.swipe-btn.accept:hover{box-shadow:0 0 25px rgba(46,204,113,0.4)}
+
+.card-counter{
+    margin-top:12px;font-size:0.8rem;color:#6b7280;
+}
+
+/* Ka-ching / burn floater */
+.float-feedback{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-size:clamp(1.8rem,5vw,3rem);pointer-events:none;z-index:200;
+    font-weight:900;text-shadow:0 2px 20px rgba(0,0,0,0.5);
+}
+.float-feedback.correct{animation:kaChingFloat 1s ease forwards;color:#2ecc71}
+.float-feedback.wrong{animation:moneyBurn 1s ease forwards;color:#e74c3c}
+
+/* Verdict panel */
+.verdict-panel{
+    background:rgba(16,185,129,0.05);border:2px solid rgba(16,185,129,0.25);
+    border-radius:20px;padding:25px;margin:20px auto;max-width:600px;width:90%;
+    animation:fadeInUp 0.6s ease;position:relative;z-index:2;
+}
+.verdict-header{
+    display:flex;align-items:center;gap:10px;margin-bottom:15px;flex-wrap:wrap;
+}
+.verdict-header h3{font-size:clamp(1rem,3vw,1.3rem);color:#10B981}
+.verdict-section{margin-bottom:12px}
+.verdict-section h4{font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.verdict-section h4.adv{color:#2ecc71}
+.verdict-section h4.dis{color:#e74c3c}
+.verdict-item{
+    font-size:0.9rem;color:#d1d5db;padding:4px 0;padding-left:15px;
+    position:relative;line-height:1.5;
+}
+.verdict-item::before{
+    content:'';position:absolute;left:0;top:10px;
+    width:6px;height:6px;border-radius:50%;
+}
+.verdict-section.advs .verdict-item::before{background:#2ecc71}
+.verdict-section.diss .verdict-item::before{background:#e74c3c}
+.verdict-continue{
+    margin-top:15px;padding:14px 36px;font-size:1rem;font-weight:700;
+    background:linear-gradient(135deg,#10B981,#059669);color:#fff;
+    border:none;border-radius:12px;cursor:pointer;transition:transform 0.2s;
+}
+.verdict-continue:hover{transform:scale(1.05)}
+
+/* ── ROUND 2 — NEGOTIATION TABLE ── */
+.poker-table{
+    position:relative;z-index:1;
+    max-width:700px;margin:0 auto;padding:20px;
+}
+.table-felt{
+    background:linear-gradient(135deg,#0b3d2e,#145a3e,#0b3d2e);
+    border:8px solid #2c1810;border-radius:30px;
+    padding:20px;box-shadow:inset 0 0 60px rgba(0,0,0,0.5),0 10px 40px rgba(0,0,0,0.5);
+    min-height:300px;position:relative;
+}
+.table-label{
+    text-align:center;font-size:0.75rem;text-transform:uppercase;
+    letter-spacing:2px;color:rgba(255,255,255,0.4);margin-bottom:15px;
+    font-weight:700;
+}
+.table-sides{
+    display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;
+}
+.table-side{
+    border:2px dashed rgba(255,255,255,0.15);border-radius:16px;
+    padding:15px;min-height:150px;text-align:center;
+    transition:border-color 0.3s,background 0.3s;
+}
+.table-side.highlight{
+    border-color:rgba(16,185,129,0.6);background:rgba(16,185,129,0.05);
+}
+.table-side h4{
+    font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;
+    color:rgba(255,255,255,0.5);margin-bottom:10px;
+}
+.table-side .placed-cards{
+    display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
+}
+.placed-mini{
+    background:rgba(255,255,255,0.1);border-radius:8px;padding:6px 10px;
+    font-size:0.75rem;color:#d1d5db;border:1px solid rgba(255,255,255,0.1);
+    animation:fadeIn 0.3s ease;text-align:left;
+}
+.placed-mini.correct-place{border-color:#2ecc71;color:#6ee7b7}
+.placed-mini.wrong-place{border-color:#e74c3c;color:#fca5a5}
+
+/* Deal card */
+.deal-card{
+    background:linear-gradient(135deg,#1a1a2e,#16213e);
+    border:2px solid rgba(255,255,255,0.15);border-radius:16px;
+    padding:20px;text-align:center;max-width:450px;margin:0 auto;
+    animation:dealCard 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.deal-card .deal-text{
+    font-size:clamp(0.9rem,2.5vw,1.05rem);color:#e0e0e0;
+    line-height:1.6;font-weight:600;margin-bottom:15px;
+}
+.deal-buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.deal-btn{
+    padding:12px 24px;border-radius:12px;border:2px solid;
+    font-size:0.9rem;font-weight:700;cursor:pointer;
+    transition:transform 0.2s,box-shadow 0.2s;background:rgba(0,0,0,0.4);
+}
+.deal-btn:hover{transform:scale(1.05)}
+.deal-btn.cust{border-color:#3b82f6;color:#3b82f6}
+.deal-btn.cust:hover{box-shadow:0 0 20px rgba(59,130,246,0.3)}
+.deal-btn.biz{border-color:#f59e0b;color:#f59e0b}
+.deal-btn.biz:hover{box-shadow:0 0 20px rgba(245,158,11,0.3)}
+
+.deal-feedback{
+    margin-top:12px;padding:12px;border-radius:12px;font-size:0.9rem;
+    line-height:1.5;animation:fadeInUp 0.3s ease;
+}
+.deal-feedback.correct{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);color:#6ee7b7}
+.deal-feedback.wrong{background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);color:#fca5a5}
+
+/* ── ROUND 3 — BOARDROOM ── */
+.boardroom{
+    position:relative;z-index:1;
+    background:linear-gradient(180deg,#0a0a0a,#1a0a00,#0a0a0a);
+    min-height:calc(100vh - 60px);padding:20px;
+}
+.boardroom-header{
+    text-align:center;margin-bottom:20px;animation:fadeInDown 0.6s ease;
+}
+.boardroom-header h2{
+    font-size:clamp(1.3rem,4vw,1.8rem);color:#f59e0b;font-weight:900;
+}
+.lord-sugar{
+    display:flex;align-items:flex-start;gap:12px;max-width:600px;
+    margin:0 auto 20px;animation:fadeInUp 0.5s ease;
+}
+.lord-emoji{font-size:clamp(2.5rem,6vw,3.5rem);flex-shrink:0}
+.speech-bubble{
+    background:rgba(245,158,11,0.08);border:2px solid rgba(245,158,11,0.25);
+    border-radius:16px;padding:15px;position:relative;
+    animation:speechBubble 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+.speech-bubble::before{
+    content:'';position:absolute;left:-10px;top:15px;
+    border:8px solid transparent;border-right-color:rgba(245,158,11,0.25);
+}
+.speech-bubble p{font-size:clamp(0.9rem,2.5vw,1.05rem);color:#fcd34d;line-height:1.6}
+.speech-bubble .marks{font-size:0.8rem;color:#9ca3af;margin-top:6px}
+
+/* Answer slots */
+.answer-builder{
+    max-width:650px;margin:0 auto 20px;
+}
+.slot-row{
+    display:flex;gap:8px;margin-bottom:8px;align-items:stretch;
+    animation:fadeInUp 0.4s ease both;
+}
+.slot-row:nth-child(2){animation-delay:0.1s}
+.slot-row:nth-child(3){animation-delay:0.2s}
+.slot{
+    flex:1;min-height:55px;border:2px dashed rgba(255,255,255,0.15);
+    border-radius:12px;display:flex;align-items:center;justify-content:center;
+    padding:10px;font-size:0.85rem;color:#6b7280;text-align:center;
+    transition:all 0.3s;background:rgba(0,0,0,0.3);cursor:pointer;
+}
+.slot.point-slot{border-color:rgba(59,130,246,0.3)}
+.slot.point-slot:hover{border-color:rgba(59,130,246,0.6);background:rgba(59,130,246,0.05)}
+.slot.expand-slot{border-color:rgba(245,158,11,0.3)}
+.slot.expand-slot:hover{border-color:rgba(245,158,11,0.6);background:rgba(245,158,11,0.05)}
+.slot.filled{
+    border-style:solid;color:#e0e0e0;font-weight:600;cursor:default;
+}
+.slot.filled.correct-slot{border-color:#2ecc71;background:rgba(46,204,113,0.08)}
+.slot.filled.wrong-slot{border-color:#e74c3c;background:rgba(231,76,60,0.08);animation:shakeNo 0.4s ease}
+.slot-label{
+    font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;
+    color:#6b7280;margin-bottom:4px;
+}
+.slot-header{
+    display:flex;gap:8px;margin-bottom:4px;
+}
+.slot-header span{
+    font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;
+    padding:2px 8px;border-radius:6px;font-weight:700;
+}
+.slot-header .point-label{background:rgba(59,130,246,0.15);color:#60a5fa}
+.slot-header .expand-label{background:rgba(245,158,11,0.15);color:#fbbf24}
+
+/* Tile pool */
+.tile-pool{
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+    max-width:650px;margin:0 auto;padding:10px;
+}
+.answer-tile{
+    padding:10px 16px;border-radius:12px;font-size:0.85rem;
+    font-weight:600;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s,outline 0.2s;
+    animation:dropIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    max-width:280px;text-align:center;line-height:1.4;
+}
+.answer-tile:hover{transform:scale(1.05)}
+.answer-tile.point-tile{
+    background:rgba(59,130,246,0.12);border:2px solid rgba(59,130,246,0.3);color:#93c5fd;
+}
+.answer-tile.point-tile:hover{box-shadow:0 0 20px rgba(59,130,246,0.3)}
+.answer-tile.expand-tile{
+    background:rgba(245,158,11,0.12);border:2px solid rgba(245,158,11,0.3);color:#fde68a;
+}
+.answer-tile.expand-tile:hover{box-shadow:0 0 20px rgba(245,158,11,0.3)}
+.answer-tile.distractor{
+    background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.1);color:#9ca3af;
+}
+.answer-tile.used{opacity:0.3;pointer-events:none;transform:scale(0.9)}
+.answer-tile.selected{outline:3px solid #10B981;outline-offset:2px}
+
+/* Built answer preview */
+.answer-script{
+    max-width:600px;margin:15px auto;padding:20px;
+    background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);
+    border-radius:16px;
+}
+.answer-script h4{
+    font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;
+    color:#6b7280;margin-bottom:10px;
+}
+.script-line{
+    padding:6px 0;font-size:0.9rem;color:#d1d5db;line-height:1.5;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    animation:buildLine 0.4s ease both;
+}
+.script-line:last-child{border-bottom:none}
+.script-line .mark-tag{
+    display:inline-block;background:rgba(16,185,129,0.15);color:#34d399;
+    font-size:0.7rem;padding:2px 6px;border-radius:4px;margin-left:6px;
+    font-weight:700;
+}
+
+/* Lord Sugar feedback */
+.sugar-feedback{
+    text-align:center;margin:15px auto;max-width:500px;
+}
+.sugar-feedback.hired{
+    color:#2ecc71;font-size:clamp(1.5rem,4vw,2rem);font-weight:900;
+    animation:revealStamp 0.6s cubic-bezier(0.34,1.56,0.64,1);
+}
+.sugar-feedback.fired{
+    color:#e74c3c;font-size:clamp(1rem,3vw,1.5rem);font-weight:900;
+    animation:stampSlam 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+/* Selection mode indicator */
+.selection-mode{
+    text-align:center;padding:8px;margin:10px auto;max-width:450px;
+    background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);
+    border-radius:10px;font-size:0.85rem;color:#6ee7b7;
+    animation:pulse 1.5s ease-in-out infinite;
+}
+
+/* ── RESULTS SCREEN ── */
+.results-screen{
+    display:none;min-height:100vh;
+    background:linear-gradient(180deg,#0a0a0a 0%,#062e22 50%,#0a0a0a 100%);
+    padding:30px 20px;text-align:center;
+}
+.results-inner{max-width:600px;margin:0 auto}
+.results-title{
+    font-size:clamp(2rem,6vw,3rem);font-weight:900;
+    background:linear-gradient(135deg,#10B981,#34d399);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;margin-bottom:10px;
+    animation:fadeInDown 0.6s ease;
+}
+.results-rank{
+    margin:20px auto;animation:revealStamp 0.8s cubic-bezier(0.34,1.56,0.64,1) 0.3s both;
+}
+.rank-badge{
+    display:inline-flex;flex-direction:column;align-items:center;
+    background:rgba(16,185,129,0.1);border:3px solid rgba(16,185,129,0.4);
+    border-radius:24px;padding:20px 40px;
+}
+.rank-emoji{font-size:4rem;margin-bottom:5px}
+.rank-title{font-size:1.5rem;font-weight:900;color:#34d399}
+.rank-subtitle{font-size:0.85rem;color:#6b7280;margin-top:4px}
+
+.score-breakdown{
+    margin:25px 0;display:grid;gap:12px;
+}
+.score-row{
+    display:flex;justify-content:space-between;align-items:center;
+    background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);
+    border-radius:12px;padding:12px 18px;
+    animation:fadeInUp 0.4s ease both;
+}
+.score-row:nth-child(2){animation-delay:0.1s}
+.score-row:nth-child(3){animation-delay:0.2s}
+.score-row:nth-child(4){animation-delay:0.3s}
+.score-row .label{font-size:0.9rem;color:#9ca3af;white-space:nowrap}
+.score-row .value{font-size:1.1rem;font-weight:700;color:#34d399;white-space:nowrap}
+.score-bar{
+    height:6px;background:rgba(255,255,255,0.1);border-radius:3px;
+    flex:1;margin:0 15px;min-width:60px;
+}
+.score-bar-fill{
+    height:100%;border-radius:3px;background:linear-gradient(90deg,#10B981,#34d399);
+    animation:barFill 1s ease both;
+}
+
+.revision-summary{
+    margin:25px 0;text-align:left;
+    background:rgba(16,185,129,0.05);border:2px solid rgba(16,185,129,0.2);
+    border-radius:16px;padding:20px;
+}
+.revision-summary h3{
+    font-size:1rem;color:#10B981;margin-bottom:12px;
+    text-transform:uppercase;letter-spacing:1px;
+}
+.revision-point{
+    font-size:0.9rem;color:#d1d5db;padding:8px 0;line-height:1.5;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.revision-point:last-child{border-bottom:none}
+.revision-point strong{color:#34d399}
+
+.results-buttons{
+    display:flex;gap:15px;justify-content:center;margin-top:25px;flex-wrap:wrap;
+}
+.results-btn{
+    padding:14px 30px;border-radius:14px;font-size:1rem;font-weight:700;
+    cursor:pointer;transition:transform 0.2s;border:none;
+}
+.results-btn:hover{transform:scale(1.05)}
+.results-btn.primary{background:linear-gradient(135deg,#10B981,#059669);color:#fff}
+.results-btn.secondary{background:rgba(255,255,255,0.08);color:#d1d5db;border:2px solid rgba(255,255,255,0.15)}
+
+/* ── CONFETTI ── */
+.confetti-container{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    pointer-events:none;z-index:999;overflow:hidden;
+}
+.confetti-piece{
+    position:absolute;top:-20px;
+    width:10px;height:10px;
+    animation:confettiFall 3s linear forwards;
+}
+
+/* Round transition */
+.round-transition{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,0.95);display:flex;flex-direction:column;
+    align-items:center;justify-content:center;z-index:300;
+    animation:fadeIn 0.5s ease;
+}
+.round-transition h2{
+    font-size:clamp(2rem,6vw,3rem);font-weight:900;color:#10B981;
+    animation:fadeInDown 0.6s ease;
+}
+.round-transition p{
+    font-size:1.1rem;color:#9ca3af;margin-top:10px;
+    animation:fadeInUp 0.6s ease 0.2s both;
+}
+.round-transition .round-emoji{
+    font-size:4rem;margin-bottom:15px;
+    animation:bounce 1s ease-in-out infinite;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+    .table-sides{grid-template-columns:1fr}
+    .dragon-panel{gap:10px}
+    .swipe-buttons{gap:20px}
+    .slot-row{flex-direction:column}
+    .tile-pool{gap:6px}
+    .answer-tile{font-size:0.8rem;padding:8px 12px;max-width:100%}
+    .top-bar{justify-content:center}
+    .lord-sugar{flex-direction:column;align-items:center}
+    .speech-bubble::before{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- WELCOME SCREEN -->
+<div class="welcome-screen" id="welcomeScreen">
+    <div class="welcome-spotlight"></div>
+    <div class="welcome-dragon">🐉</div>
+    <h1 class="welcome-title">DIGITAL DRAGONS</h1>
+    <p class="welcome-subtitle">The Investment Pitch Game</p>
+    <div class="mission-box">
+        <div class="mission-label">Mission Briefing</div>
+        <p class="mission-text">
+            You've landed a seat in the <strong>Dragons' Den</strong>. Three entrepreneurs will pitch their digital businesses to you — online banking, online training, and e-commerce.<br><br>
+            Your job? Spot the <strong>genuine advantages</strong> and expose the <strong>exaggerated claims</strong>. Invest wisely, negotiate smartly, and prove yourself in the boardroom.<br><br>
+            Starting fund: <strong>£100,000</strong>. Don't lose it all.
+        </p>
+        <div class="round-preview">
+            <div class="round-chip">🎤 R1: Investment Pitch</div>
+            <div class="round-chip">🃏 R2: Negotiation Table</div>
+            <div class="round-chip">💼 R3: The Boardroom</div>
+        </div>
+    </div>
+    <button class="start-btn" onclick="startGame()">ENTER THE DEN</button>
+</div>
+
+<!-- GAME CONTAINER -->
+<div class="game-container" id="gameContainer">
+    <div class="top-bar">
+        <a href="index.html" class="back-link">← Back to Hub</a>
+        <div class="round-label" id="roundLabel">ROUND 1: INVESTMENT PITCH</div>
+        <div class="investment-tracker">
+            💰 <span class="investment-amount" id="investmentDisplay">£100,000</span>
+        </div>
+    </div>
+    <div id="gameArea"></div>
+</div>
+
+<!-- RESULTS SCREEN -->
+<div class="results-screen" id="resultsScreen">
+    <div class="results-inner" id="resultsInner"></div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   DIGITAL DRAGONS — The Investment Pitch Game
+   ═══════════════════════════════════════════════ */
+
+// State
+let investment = 100000;
+let round1Score = 0, round1Total = 0;
+let round2Score = 0, round2Total = 0;
+let round3Score = 0, round3Total = 0;
+let currentPitch = 0;
+let currentCard = 0;
+let pitchCards = [];
+let round2Cards = [];
+let round2Index = 0;
+let round3Question = 0;
+let selectedTile = null;
+let placedPairs = [];
+let tilesUsed = [];
+let swipeLocked = false;
+let dealLocked = false;
+
+// Fisher-Yates shuffle
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// Pitch data
+const pitches = [
+    {
+        name: "BankEasy",
+        entrepreneur: "🧑‍💼",
+        tagline: "A fully online bank with no physical branches",
+        icon: "🏦",
+        slides: [
+            { icon: "📱", title: "Mobile-First Banking", text: "All services on your phone — transfers, statements, savings. No queues, no waiting." },
+            { icon: "🌍", title: "Global Access", text: "Access your account from anywhere in the world, 24 hours a day, 7 days a week." },
+            { icon: "💡", title: "Zero Overhead", text: "No physical branches means massive savings passed on to customers." }
+        ],
+        claims: [
+            { text: "Customers can access their account 24/7 from anywhere", real: true },
+            { text: "Transactions can be done at home, work or on the move", real: true },
+            { text: "The bank saves money as fewer branches and staff are needed", real: true },
+            { text: "E-statements save paper and postage costs", real: true },
+            { text: "Online banking is 100% safe from hackers", real: false, why: "Security concerns are a key disadvantage — risk of hacking and phishing" },
+            { text: "All customers prefer online banking to visiting branches", real: false, why: "Lack of personal, face-to-face interaction is a disadvantage" },
+            { text: "You never need internet access to use online banking", real: false, why: "Online banking relies on a stable internet connection" },
+            { text: "Online banking can give personalised financial advice", real: false, why: "Lacks face-to-face interaction with a bank teller for personal advice" }
+        ],
+        advantages: [
+            "Available 24/7 — customers can access accounts anytime, anywhere",
+            "Transactions at home, work or on the move — convenient for customers",
+            "Fewer branches and staff needed — reduces costs for the bank",
+            "E-statements save paper and postage costs"
+        ],
+        disadvantages: [
+            "Security concerns — risk of hacking, phishing emails and data theft",
+            "Lack of personal, face-to-face interaction with bank staff",
+            "Requires a stable internet connection to access services",
+            "Not suitable for customers uncomfortable with technology"
+        ]
+    },
+    {
+        name: "SkillForge",
+        entrepreneur: "👩‍🏫",
+        tagline: "An online training platform for businesses",
+        icon: "🎓",
+        slides: [
+            { icon: "⏰", title: "Learn Anytime", text: "Employees train at their own pace — no fixed timetable, no travel required." },
+            { icon: "🎮", title: "Immersive Tech", text: "Multimedia assets and VR simulations make training engaging and memorable." },
+            { icon: "📊", title: "Track Progress", text: "Employers monitor employee progress through built-in tracking systems." }
+        ],
+        claims: [
+            { text: "Employees can learn at their own pace at a convenient time", real: true },
+            { text: "No travel to training venues — saves time and money", real: true },
+            { text: "Employers can monitor employee progress through tracking systems", real: true },
+            { text: "Multimedia assets and VR simulations make training engaging", real: true },
+            { text: "Online training suits every learning style perfectly", real: false, why: "Online training does not suit all learning styles" },
+            { text: "Employees never feel isolated with online learning", real: false, why: "Lack of human contact and peer interaction is a key disadvantage" },
+            { text: "Everyone has reliable internet for online training", real: false, why: "Poor internet connection can interrupt or prevent learning" },
+            { text: "Online training completely replaces face-to-face teaching", real: false, why: "Limited opportunities for asking questions and getting immediate help" }
+        ],
+        advantages: [
+            "Learn at own pace — employees choose convenient times to train",
+            "No travel needed — saves time and money for both employee and employer",
+            "Tracking systems let employers monitor employee progress",
+            "Multimedia and VR make training engaging and interactive"
+        ],
+        disadvantages: [
+            "Does not suit all learning styles — some learn better face-to-face",
+            "Lack of human contact — employees may feel isolated",
+            "Requires reliable internet — poor connection interrupts learning",
+            "Limited opportunities for asking questions and getting immediate feedback"
+        ]
+    },
+    {
+        name: "ShopSphere",
+        entrepreneur: "🧑‍💻",
+        tagline: "A global e-commerce marketplace",
+        icon: "🛒",
+        slides: [
+            { icon: "🌐", title: "Shop the World", text: "Millions of products from global sellers — available 24/7 without leaving home." },
+            { icon: "💰", title: "Price Power", text: "Compare prices instantly across hundreds of sellers to get the best deal." },
+            { icon: "🏪", title: "No Rent Needed", text: "Businesses sell online without expensive retail premises — huge cost savings." }
+        ],
+        claims: [
+            { text: "Customers can shop 24/7 without leaving home", real: true },
+            { text: "Prices can be easily compared across different websites", real: true },
+            { text: "Businesses don't need expensive retail premises", real: true },
+            { text: "A wider choice of products than any single high street shop", real: true },
+            { text: "Products always match their online descriptions perfectly", real: false, why: "Products may not meet customer expectations when delivered" },
+            { text: "Delivery is always free and arrives next day", real: false, why: "Delivery delays and additional charges are common disadvantages" },
+            { text: "Shopping online has zero security risks", real: false, why: "Concerns about credit card fraud and data theft" },
+            { text: "Returning online purchases is quick and easy", real: false, why: "Returning goods can be difficult and time-consuming" }
+        ],
+        advantages: [
+            "Shop 24/7 without leaving home — convenient for customers",
+            "Easy to compare prices across different websites",
+            "No need for expensive retail premises — reduces business costs",
+            "Wider choice of products than a single high street shop"
+        ],
+        disadvantages: [
+            "Products may not meet expectations — cannot try before buying",
+            "Delivery delays and additional delivery charges",
+            "Security risks — concerns about credit card fraud and data theft",
+            "Returning goods can be difficult and time-consuming"
+        ]
+    }
+];
+
+// Round 2 data
+const negotiationCards = [
+    { text: "Transactions at home, work or on the move", side: "customer", type: "advantage" },
+    { text: "Fewer branches means less staff cost", side: "business", type: "advantage" },
+    { text: "E-statements save paper and postage", side: "business", type: "advantage" },
+    { text: "Access account when abroad", side: "customer", type: "advantage" },
+    { text: "Concerns about credit card fraud", side: "customer", type: "disadvantage" },
+    { text: "Must implement complex security systems", side: "business", type: "disadvantage" },
+    { text: "Can attract a larger customer base", side: "business", type: "advantage" },
+    { text: "Available 24/7 for banking and shopping", side: "customer", type: "advantage" },
+    { text: "Risk of phishing emails targeting customers", side: "customer", type: "disadvantage" },
+    { text: "Convenient for families who can't travel to shops", side: "customer", type: "advantage" },
+    { text: "No need for expensive retail premises", side: "business", type: "advantage" },
+    { text: "Products may not match online descriptions", side: "customer", type: "disadvantage" }
+];
+
+// Round 3 data
+const boardroomQuestions = [
+    {
+        question: "Describe three disadvantages of shopping online",
+        marks: 6,
+        pairs: [
+            { point: "Cannot physically see or try products", expansion: "Goods may not meet customer expectations when delivered" },
+            { point: "Delivery delays and additional charges", expansion: "Time delay and extra costs on top of the product price" },
+            { point: "Security risks when shopping online", expansion: "Concerns about credit card fraud and personal data theft" }
+        ],
+        distractors: ["Open 24/7", "Wider product choice", "Saves time travelling", "No branches needed"]
+    },
+    {
+        question: "Describe two disadvantages of online banking",
+        marks: 4,
+        pairs: [
+            { point: "Security concerns with online banking", expansion: "Risk of hacking, phishing emails and unauthorised access to accounts" },
+            { point: "Lacks personal face-to-face interaction", expansion: "Difficult to get personalised advice from a bank teller" }
+        ],
+        distractors: ["Available 24/7", "Saves paper costs", "Convenient from home"]
+    }
+];
+
+// Utilities
+function $(id) { return document.getElementById(id); }
+
+function updateInvestment(delta) {
+    investment += delta;
+    if (investment < 0) investment = 0;
+    const el = $('investmentDisplay');
+    el.textContent = '£' + investment.toLocaleString();
+    el.classList.remove('up', 'down');
+    void el.offsetWidth;
+    el.classList.add(delta > 0 ? 'up' : 'down');
+}
+
+function showFloatFeedback(correct) {
+    const el = document.createElement('div');
+    el.className = 'float-feedback ' + (correct ? 'correct' : 'wrong');
+    el.textContent = correct ? '💰 +£5,000' : '🔥 -£3,000';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1100);
+}
+
+function showFloatCustom(text, isCorrect) {
+    const el = document.createElement('div');
+    el.className = 'float-feedback ' + (isCorrect ? 'correct' : 'wrong');
+    el.textContent = text;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1100);
+}
+
+function fireConfetti(count) {
+    count = count || 40;
+    const container = document.createElement('div');
+    container.className = 'confetti-container';
+    const colors = ['#10B981', '#34d399', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6', '#2ecc71'];
+    for (let i = 0; i < count; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + '%';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDelay = Math.random() * 1.5 + 's';
+        piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+        piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        piece.style.width = (6 + Math.random() * 8) + 'px';
+        piece.style.height = (6 + Math.random() * 8) + 'px';
+        container.appendChild(piece);
+    }
+    document.body.appendChild(container);
+    setTimeout(function() { container.remove(); }, 4000);
+}
+
+// ═══════════════════════════════════════════
+// GAME START
+// ═══════════════════════════════════════════
+function startGame() {
+    $('welcomeScreen').style.display = 'none';
+    $('gameContainer').style.display = 'block';
+    startRound1();
+}
+
+// ═══════════════════════════════════════════
+// ROUND 1 — INVESTMENT PITCH
+// ═══════════════════════════════════════════
+function startRound1() {
+    $('roundLabel').textContent = 'ROUND 1: INVESTMENT PITCH';
+    currentPitch = 0;
+    showPitchIntro();
+}
+
+function showPitchIntro() {
+    if (currentPitch >= pitches.length) {
+        transitionToRound2();
+        return;
+    }
+    const p = pitches[currentPitch];
+    $('gameArea').innerHTML =
+        '<div class="den-set">' +
+            '<div class="den-spotlights">' +
+                '<div class="den-spot"></div>' +
+                '<div class="den-spot"></div>' +
+                '<div class="den-spot"></div>' +
+            '</div>' +
+            '<div class="dragon-panel">' +
+                '<div class="dragon-chair chair-active"><span class="chair-emoji">🐉</span><div class="chair-label">You</div></div>' +
+                '<div class="dragon-chair"><span class="chair-emoji">🪑</span><div class="chair-label">Dragon 2</div></div>' +
+                '<div class="dragon-chair"><span class="chair-emoji">🪑</span><div class="chair-label">Dragon 3</div></div>' +
+            '</div>' +
+            '<div class="stage">' +
+                '<div class="stage-spotlight"></div>' +
+                '<div class="entrepreneur" id="pitcherEmoji">' + p.entrepreneur + '</div>' +
+                '<div class="entrepreneur-name" style="animation:fadeInUp 0.6s ease 0.8s both">' + p.name + '</div>' +
+                '<p class="entrepreneur-pitch" style="animation:fadeInUp 0.6s ease 1s both">"' + p.tagline + '"</p>' +
+                '<div id="slideDeck" style="animation:fadeInUp 0.6s ease 1.4s both"></div>' +
+            '</div>' +
+        '</div>';
+    setTimeout(function() { showSlides(p, 0); }, 1600);
+}
+
+function showSlides(pitch, idx) {
+    if (idx >= pitch.slides.length) {
+        setTimeout(function() { startSwipePhase(pitch); }, 600);
+        return;
+    }
+    var s = pitch.slides[idx];
+    var dots = '';
+    for (var i = 0; i < pitch.slides.length; i++) {
+        dots += '<div class="slide-dot' + (i <= idx ? ' active' : '') + '"></div>';
+    }
+    $('slideDeck').innerHTML =
+        '<div class="slide-deck">' +
+            '<div class="slide-icon">' + s.icon + '</div>' +
+            '<h3>' + s.title + '</h3>' +
+            '<p>' + s.text + '</p>' +
+            '<div class="slide-progress">' + dots + '</div>' +
+        '</div>';
+    setTimeout(function() { showSlides(pitch, idx + 1); }, 2800);
+}
+
+function startSwipePhase(pitch) {
+    pitchCards = shuffle(pitch.claims.slice());
+    currentCard = 0;
+    round1Total += pitchCards.length;
+    swipeLocked = false;
+
+    $('gameArea').innerHTML =
+        '<div class="den-set">' +
+            '<div class="den-spotlights"><div class="den-spot"></div><div class="den-spot"></div><div class="den-spot"></div></div>' +
+            '<div class="dragon-panel">' +
+                '<div class="dragon-chair chair-active"><span class="chair-emoji">🐉</span><div class="chair-label">You</div></div>' +
+                '<div class="dragon-chair"><span class="chair-emoji">🪑</span><div class="chair-label">Dragon 2</div></div>' +
+                '<div class="dragon-chair"><span class="chair-emoji">🪑</span><div class="chair-label">Dragon 3</div></div>' +
+            '</div>' +
+            '<div class="swipe-area">' +
+                '<div class="swipe-instruction">' +
+                    '❌ LEFT = Reject false claim &nbsp;&nbsp;|&nbsp;&nbsp; ✅ RIGHT = Invest in genuine advantage' +
+                '</div>' +
+                '<div class="card-stack" id="cardStack"></div>' +
+                '<div class="swipe-buttons">' +
+                    '<button class="swipe-btn reject" onclick="swipeCard(false)" id="btnReject" aria-label="Reject claim">✕</button>' +
+                    '<button class="swipe-btn accept" onclick="swipeCard(true)" id="btnAccept" aria-label="Accept claim">✓</button>' +
+                '</div>' +
+                '<div class="card-counter" id="cardCounter"></div>' +
+            '</div>' +
+        '</div>';
+    showNextCard();
+    setupTouchSwipe();
+}
+
+function showNextCard() {
+    if (currentCard >= pitchCards.length) {
+        setTimeout(showVerdict, 400);
+        return;
+    }
+    var c = pitchCards[currentCard];
+    var stack = $('cardStack');
+    stack.innerHTML =
+        '<div class="claim-card" id="activeCard">' +
+            '<div class="card-number">Claim ' + (currentCard + 1) + ' of ' + pitchCards.length + '</div>' +
+            '<div class="claim-text">"' + c.text + '"</div>' +
+        '</div>';
+    $('cardCounter').textContent = (currentCard + 1) + ' / ' + pitchCards.length;
+    swipeLocked = false;
+}
+
+function swipeCard(accepted) {
+    if (swipeLocked) return;
+    var card = $('activeCard');
+    if (!card) return;
+    swipeLocked = true;
+    var c = pitchCards[currentCard];
+    var correct = (accepted === c.real);
+
+    card.classList.add(accepted ? 'swiping-right' : 'swiping-left');
+
+    if (correct) {
+        round1Score++;
+        updateInvestment(5000);
+        showFloatFeedback(true);
+    } else {
+        updateInvestment(-3000);
+        showFloatCustom('🔥 -£3,000', false);
+    }
+
+    setTimeout(function() {
+        currentCard++;
+        showNextCard();
+    }, 550);
+}
+
+function setupTouchSwipe() {
+    var startX = 0;
+    var area = $('gameArea');
+    area.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+    }, { passive: true });
+    area.addEventListener('touchend', function(e) {
+        var diff = e.changedTouches[0].clientX - startX;
+        if (Math.abs(diff) > 60) {
+            swipeCard(diff > 0);
+        }
+    }, { passive: true });
+}
+
+function showVerdict() {
+    var p = pitches[currentPitch];
+    var advHTML = '';
+    for (var i = 0; i < p.advantages.length; i++) {
+        advHTML += '<div class="verdict-item">' + p.advantages[i] + '</div>';
+    }
+    var disHTML = '';
+    for (var i = 0; i < p.disadvantages.length; i++) {
+        disHTML += '<div class="verdict-item">' + p.disadvantages[i] + '</div>';
+    }
+
+    var btnText = currentPitch < pitches.length - 1 ? 'Next Pitcher' : 'Continue to Round 2';
+
+    $('gameArea').innerHTML =
+        '<div class="den-set" style="display:flex;flex-direction:column;align-items:center;padding-top:30px">' +
+            '<div class="den-spotlights"><div class="den-spot"></div><div class="den-spot"></div><div class="den-spot"></div></div>' +
+            '<div style="font-size:3rem;animation:stampSlam 0.6s cubic-bezier(0.34,1.56,0.64,1);position:relative;z-index:2">⚖️</div>' +
+            '<div class="verdict-panel">' +
+                '<div class="verdict-header">' +
+                    '<span style="font-size:1.5rem">' + p.icon + '</span>' +
+                    '<h3>THE DRAGON\'S VERDICT — ' + p.name + '</h3>' +
+                '</div>' +
+                '<div class="verdict-section advs">' +
+                    '<h4 class="adv">Genuine Advantages</h4>' +
+                    advHTML +
+                '</div>' +
+                '<div class="verdict-section diss">' +
+                    '<h4 class="dis">Key Disadvantages</h4>' +
+                    disHTML +
+                '</div>' +
+                '<div style="text-align:center">' +
+                    '<button class="verdict-continue" onclick="nextPitch()">' + btnText + ' →</button>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+}
+
+function nextPitch() {
+    currentPitch++;
+    showPitchIntro();
+}
+
+// ═══════════════════════════════════════════
+// ROUND 2 — THE NEGOTIATION TABLE
+// ═══════════════════════════════════════════
+function transitionToRound2() {
+    showRoundTransition('🃏', 'ROUND 2', 'The Negotiation Table', function() {
+        $('roundLabel').textContent = 'ROUND 2: NEGOTIATION TABLE';
+        round2Cards = shuffle(negotiationCards.slice());
+        round2Index = 0;
+        round2Total = round2Cards.length;
+        showNegotiationTable();
+    });
+}
+
+function showRoundTransition(emoji, title, subtitle, callback) {
+    var overlay = document.createElement('div');
+    overlay.className = 'round-transition';
+    overlay.innerHTML =
+        '<div class="round-emoji">' + emoji + '</div>' +
+        '<h2>' + title + '</h2>' +
+        '<p>' + subtitle + '</p>';
+    document.body.appendChild(overlay);
+    setTimeout(function() {
+        overlay.style.opacity = '0';
+        overlay.style.transition = 'opacity 0.5s';
+        setTimeout(function() { overlay.remove(); callback(); }, 500);
+    }, 2200);
+}
+
+function showNegotiationTable() {
+    $('gameArea').innerHTML =
+        '<div class="den-set" style="background:linear-gradient(180deg,#0d0d0d 0%,#0a1f15 50%,#0d0d0d 100%)">' +
+            '<div class="poker-table">' +
+                '<div class="table-felt">' +
+                    '<div class="table-label">🃏 The Negotiation Table — Who benefits?</div>' +
+                    '<div class="table-sides">' +
+                        '<div class="table-side" id="customerSide">' +
+                            '<h4>👤 For the Customer</h4>' +
+                            '<div class="placed-cards" id="customerCards"></div>' +
+                        '</div>' +
+                        '<div class="table-side" id="businessSide">' +
+                            '<h4>🏢 For the Business / Bank</h4>' +
+                            '<div class="placed-cards" id="businessCards"></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div id="dealArea"></div>' +
+                    '<div class="card-counter" id="dealCounter" style="text-align:center;margin-top:10px"></div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    dealNextCard();
+}
+
+function dealNextCard() {
+    if (round2Index >= round2Cards.length) {
+        finishRound2();
+        return;
+    }
+    dealLocked = false;
+    var c = round2Cards[round2Index];
+    $('dealCounter').textContent = 'Card ' + (round2Index + 1) + ' of ' + round2Cards.length;
+    $('dealArea').innerHTML =
+        '<div class="deal-card" id="currentDeal">' +
+            '<div class="deal-text">"' + c.text + '"</div>' +
+            '<div class="deal-buttons">' +
+                '<button class="deal-btn cust" onclick="playCard(\'customer\')">👤 Customer</button>' +
+                '<button class="deal-btn biz" onclick="playCard(\'business\')">🏢 Business</button>' +
+            '</div>' +
+            '<div id="dealFeedback"></div>' +
+        '</div>';
+}
+
+function playCard(choice) {
+    if (dealLocked) return;
+    dealLocked = true;
+    var c = round2Cards[round2Index];
+    var correct = (choice === c.side);
+    var typeLabel = c.type === 'advantage' ? 'an advantage' : 'a disadvantage';
+
+    if (correct) {
+        round2Score++;
+        updateInvestment(4000);
+        showFloatCustom('💰 +£4,000', true);
+    } else {
+        updateInvestment(-2000);
+        showFloatCustom('🔥 -£2,000', false);
+    }
+
+    // Add to correct side visually
+    var targetId = c.side === 'customer' ? 'customerCards' : 'businessCards';
+    var miniEl = document.createElement('div');
+    miniEl.className = 'placed-mini ' + (correct ? 'correct-place' : 'wrong-place');
+    var displayText = c.text.length > 40 ? c.text.substring(0, 40) + '...' : c.text;
+    miniEl.textContent = displayText;
+    $(targetId).appendChild(miniEl);
+
+    var fb = $('dealFeedback');
+    if (correct) {
+        fb.innerHTML = '<div class="deal-feedback correct">Correct! This is ' + typeLabel + ' for the <strong>' + c.side + '</strong>.</div>';
+    } else {
+        fb.innerHTML = '<div class="deal-feedback wrong">Not quite — this is ' + typeLabel + ' for the <strong>' + c.side + '</strong>, not the ' + choice + '.</div>';
+    }
+
+    // Disable buttons
+    var btns = document.querySelectorAll('.deal-btn');
+    for (var i = 0; i < btns.length; i++) {
+        btns[i].disabled = true;
+        btns[i].style.opacity = '0.4';
+    }
+
+    setTimeout(function() {
+        round2Index++;
+        dealNextCard();
+    }, 2000);
+}
+
+function finishRound2() {
+    $('dealArea').innerHTML =
+        '<div style="text-align:center;padding:20px;animation:fadeInUp 0.5s ease">' +
+            '<div style="font-size:2.5rem;margin-bottom:10px">🤝</div>' +
+            '<p style="color:#6ee7b7;font-size:1.1rem;font-weight:700;margin-bottom:5px">Negotiations Complete!</p>' +
+            '<p style="color:#9ca3af;font-size:0.9rem">You placed ' + round2Score + ' of ' + round2Total + ' cards correctly.</p>' +
+            '<button class="verdict-continue" onclick="transitionToRound3()" style="margin-top:15px">Enter the Boardroom →</button>' +
+        '</div>';
+    if (round2Score >= round2Total * 0.8) fireConfetti(30);
+}
+
+// ═══════════════════════════════════════════
+// ROUND 3 — THE BOARDROOM
+// ═══════════════════════════════════════════
+function transitionToRound3() {
+    showRoundTransition('💼', 'ROUND 3', 'The Boardroom', function() {
+        $('roundLabel').textContent = 'ROUND 3: THE BOARDROOM';
+        round3Question = 0;
+        showBoardroomQuestion();
+    });
+}
+
+function showBoardroomQuestion() {
+    if (round3Question >= boardroomQuestions.length) {
+        showResults();
+        return;
+    }
+    var q = boardroomQuestions[round3Question];
+    placedPairs = [];
+    tilesUsed = [];
+    selectedTile = null;
+
+    // Store for checking
+    window._currentQ = q;
+
+    // Build slot HTML
+    var slotsHTML = '';
+    for (var i = 0; i < q.pairs.length; i++) {
+        slotsHTML +=
+            '<div style="margin-bottom:8px">' +
+                '<div class="slot-header">' +
+                    '<span class="point-label">Point ' + (i + 1) + '</span>' +
+                    '<span class="expand-label">Expansion</span>' +
+                '</div>' +
+                '<div class="slot-row">' +
+                    '<div class="slot point-slot" id="pslot' + i + '" onclick="placeInSlot(\'point\',' + i + ')" data-pair="' + i + '" data-type="point">' +
+                        'Click a blue tile, then click here' +
+                    '</div>' +
+                    '<div class="slot expand-slot" id="eslot' + i + '" onclick="placeInSlot(\'expand\',' + i + ')" data-pair="' + i + '" data-type="expand">' +
+                        'Click a yellow tile, then click here' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+    }
+
+    // Build tiles
+    var allTiles = [];
+    for (var i = 0; i < q.pairs.length; i++) {
+        allTiles.push({ text: q.pairs[i].point, tileType: 'point', pairIdx: i, id: 'pt_' + i });
+        allTiles.push({ text: q.pairs[i].expansion, tileType: 'expand', pairIdx: i, id: 'ex_' + i });
+    }
+    for (var i = 0; i < q.distractors.length; i++) {
+        allTiles.push({ text: q.distractors[i], tileType: 'distractor', pairIdx: -1, id: 'dis_' + i });
+    }
+    var shuffledTiles = shuffle(allTiles);
+
+    var tilesHTML = '';
+    for (var idx = 0; idx < shuffledTiles.length; idx++) {
+        var t = shuffledTiles[idx];
+        var cls = 'answer-tile ';
+        if (t.tileType === 'point') cls += 'point-tile';
+        else if (t.tileType === 'expand') cls += 'expand-tile';
+        else cls += 'distractor';
+        tilesHTML += '<div class="' + cls + '" id="tile_' + t.id + '" onclick="selectTile(\'' + t.id + '\',this)" ' +
+            'data-tiletype="' + t.tileType + '" data-pairidx="' + t.pairIdx + '" ' +
+            'style="animation-delay:' + (idx * 0.06) + 's">' + t.text + '</div>';
+    }
+
+    $('gameArea').innerHTML =
+        '<div class="boardroom">' +
+            '<div class="boardroom-header">' +
+                '<h2>THE BOARDROOM</h2>' +
+            '</div>' +
+            '<div class="lord-sugar">' +
+                '<div class="lord-emoji">🧔</div>' +
+                '<div class="speech-bubble">' +
+                    '<p>"' + q.question + '"</p>' +
+                    '<div class="marks">[' + q.marks + ' marks]</div>' +
+                '</div>' +
+            '</div>' +
+            '<div id="selectionMode" class="selection-mode" style="display:none"></div>' +
+            '<div class="answer-builder" id="answerBuilder">' +
+                slotsHTML +
+            '</div>' +
+            '<div class="tile-pool" id="tilePool">' +
+                tilesHTML +
+            '</div>' +
+            '<div class="answer-script" id="answerScript">' +
+                '<h4>Your Exam Answer</h4>' +
+                '<div id="scriptLines" style="color:#6b7280;font-size:0.9rem">Select tiles and place them in slots to build your answer...</div>' +
+            '</div>' +
+            '<div id="boardroomFeedback"></div>' +
+        '</div>';
+}
+
+function selectTile(tileId, el) {
+    if (tilesUsed.indexOf(tileId) !== -1) return;
+
+    // Deselect previous
+    var allTiles = document.querySelectorAll('.answer-tile');
+    for (var i = 0; i < allTiles.length; i++) {
+        allTiles[i].classList.remove('selected');
+    }
+
+    if (selectedTile === tileId) {
+        selectedTile = null;
+        $('selectionMode').style.display = 'none';
+        return;
+    }
+
+    selectedTile = tileId;
+    el.classList.add('selected');
+
+    var tileType = el.dataset.tiletype;
+    var label;
+    if (tileType === 'point') label = 'a POINT slot (left)';
+    else if (tileType === 'expand') label = 'an EXPANSION slot (right)';
+    else label = 'any slot';
+    $('selectionMode').style.display = 'block';
+    $('selectionMode').textContent = 'Tile selected — now click ' + label + ' to place it';
+}
+
+function placeInSlot(slotType, slotIdx) {
+    if (!selectedTile) return;
+
+    var tileEl = $('tile_' + selectedTile);
+    if (!tileEl) return;
+
+    var tileType = tileEl.dataset.tiletype;
+    var pairIdx = parseInt(tileEl.dataset.pairidx);
+
+    var slotEl = slotType === 'point' ? $('pslot' + slotIdx) : $('eslot' + slotIdx);
+    if (slotEl.classList.contains('filled')) return;
+
+    // Type checking — only allow matching types (or distractors anywhere)
+    if (tileType !== 'distractor') {
+        if (slotType === 'point' && tileType !== 'point') {
+            shakeElement(slotEl);
+            return;
+        }
+        if (slotType === 'expand' && tileType !== 'expand') {
+            shakeElement(slotEl);
+            return;
+        }
+    }
+
+    // Place tile
+    slotEl.textContent = tileEl.textContent;
+    slotEl.classList.add('filled');
+    slotEl.dataset.placedTile = selectedTile;
+    slotEl.dataset.placedPairIdx = pairIdx;
+    slotEl.dataset.placedType = tileType;
+
+    // Mark tile as used
+    tilesUsed.push(selectedTile);
+    tileEl.classList.add('used');
+
+    // Reset selection
+    selectedTile = null;
+    $('selectionMode').style.display = 'none';
+    var allTileEls = document.querySelectorAll('.answer-tile');
+    for (var i = 0; i < allTileEls.length; i++) {
+        allTileEls[i].classList.remove('selected');
+    }
+
+    // Check if pair is complete
+    var pSlot = $('pslot' + slotIdx);
+    var eSlot = $('eslot' + slotIdx);
+    if (pSlot.classList.contains('filled') && eSlot.classList.contains('filled')) {
+        checkPair(slotIdx, pSlot, eSlot);
+    }
+}
+
+function shakeElement(el) {
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = 'shakeNo 0.4s ease';
+}
+
+function checkPair(slotIdx, pSlot, eSlot) {
+    var q = window._currentQ;
+    var pPairIdx = parseInt(pSlot.dataset.placedPairIdx);
+    var ePairIdx = parseInt(eSlot.dataset.placedPairIdx);
+    var pType = pSlot.dataset.placedType;
+    var eType = eSlot.dataset.placedType;
+
+    var isCorrect = pType === 'point' && eType === 'expand' && pPairIdx === ePairIdx && pPairIdx >= 0;
+
+    if (isCorrect) {
+        pSlot.classList.add('correct-slot');
+        eSlot.classList.add('correct-slot');
+        round3Score += 2;
+        updateInvestment(8000);
+        showFloatCustom('💰 +£8,000', true);
+        placedPairs.push(pPairIdx);
+        updateAnswerScript();
+
+        // Check all done
+        if (placedPairs.length === q.pairs.length) {
+            setTimeout(function() {
+                showSugarReaction(true);
+                fireConfetti(50);
+                setTimeout(function() {
+                    var fb = $('boardroomFeedback');
+                    var btnText = round3Question < boardroomQuestions.length - 1 ? 'Next Question →' : 'See Final Results →';
+                    fb.innerHTML =
+                        '<div style="text-align:center;margin:20px 0;animation:fadeInUp 0.5s ease">' +
+                            '<button class="verdict-continue" onclick="nextBoardroomQ()">' + btnText + '</button>' +
+                        '</div>';
+                }, 1500);
+            }, 600);
+        }
+    } else {
+        pSlot.classList.add('wrong-slot');
+        eSlot.classList.add('wrong-slot');
+        updateInvestment(-4000);
+        showFloatCustom('🔥 -£4,000', false);
+        showSugarReaction(false);
+        round3Total += 2;
+
+        // Reset after delay
+        setTimeout(function() {
+            var pTileId = pSlot.dataset.placedTile;
+            var eTileId = eSlot.dataset.placedTile;
+            tilesUsed = tilesUsed.filter(function(id) { return id !== pTileId && id !== eTileId; });
+            var ptEl = $('tile_' + pTileId);
+            var etEl = $('tile_' + eTileId);
+            if (ptEl) ptEl.classList.remove('used');
+            if (etEl) etEl.classList.remove('used');
+
+            pSlot.textContent = 'Click a blue tile, then click here';
+            pSlot.className = 'slot point-slot';
+            delete pSlot.dataset.placedTile;
+            delete pSlot.dataset.placedPairIdx;
+            delete pSlot.dataset.placedType;
+
+            eSlot.textContent = 'Click a yellow tile, then click here';
+            eSlot.className = 'slot expand-slot';
+            delete eSlot.dataset.placedTile;
+            delete eSlot.dataset.placedPairIdx;
+            delete eSlot.dataset.placedType;
+        }, 1400);
+    }
+}
+
+function showSugarReaction(positive) {
+    var fb = $('boardroomFeedback');
+    if (positive) {
+        fb.innerHTML = '<div class="sugar-feedback hired">🤝 "You\'re HIRED!"</div>';
+    } else {
+        var phrases = [
+            '"You\'re making a TERRIBLE mistake!"',
+            '"That\'s RUBBISH! Try again!"',
+            '"I\'m NOT impressed. Think harder!"',
+            '"Absolutely DREADFUL pairing!"'
+        ];
+        var phrase = phrases[Math.floor(Math.random() * phrases.length)];
+        fb.innerHTML = '<div class="sugar-feedback fired">🧔 ' + phrase + '</div>';
+    }
+}
+
+function updateAnswerScript() {
+    var q = window._currentQ;
+    var lines = $('scriptLines');
+    if (placedPairs.length === 0) {
+        lines.innerHTML = '<span style="color:#6b7280">Select tiles and place them in slots to build your answer...</span>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < placedPairs.length; i++) {
+        var pair = q.pairs[placedPairs[i]];
+        html += '<div class="script-line">' + pair.point + ' — ' + pair.expansion + ' <span class="mark-tag">2 marks</span></div>';
+    }
+    lines.innerHTML = html;
+}
+
+function nextBoardroomQ() {
+    round3Question++;
+    showBoardroomQuestion();
+}
+
+// ═══════════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════════
+function showResults() {
+    $('gameContainer').style.display = 'none';
+    $('resultsScreen').style.display = 'block';
+
+    // Calculate round 3 total for correct pairs
+    var r3CorrectMarks = round3Score;
+    var r3PossibleMarks = 0;
+    for (var i = 0; i < boardroomQuestions.length; i++) {
+        r3PossibleMarks += boardroomQuestions[i].pairs.length * 2;
+    }
+    // Include wrong attempts in total
+    round3Total = Math.max(round3Total, r3PossibleMarks);
+    var r3Total = round3Total;
+
+    var totalCorrect = round1Score + round2Score + r3CorrectMarks;
+    var totalPossible = round1Total + round2Total + r3PossibleMarks;
+    var pct = totalPossible > 0 ? Math.round((totalCorrect / totalPossible) * 100) : 0;
+
+    var rank, rankEmoji, rankSub;
+    if (pct >= 90) { rank = 'Dragon'; rankEmoji = '🐉'; rankSub = 'Legendary investor — you know your digital business!'; }
+    else if (pct >= 70) { rank = 'Senior Investor'; rankEmoji = '💎'; rankSub = 'Sharp eye for value — nearly Dragon material!'; }
+    else if (pct >= 50) { rank = 'Investor'; rankEmoji = '📈'; rankSub = 'Solid instincts — keep studying the market!'; }
+    else { rank = 'Junior Investor'; rankEmoji = '🌱'; rankSub = 'Everyone starts somewhere — revise and retry!'; }
+
+    if (pct >= 85) fireConfetti(60);
+
+    var r1pct = round1Total > 0 ? Math.round((round1Score / round1Total) * 100) : 0;
+    var r2pct = round2Total > 0 ? Math.round((round2Score / round2Total) * 100) : 0;
+    var r3pct = r3PossibleMarks > 0 ? Math.round((r3CorrectMarks / r3PossibleMarks) * 100) : 0;
+
+    $('resultsInner').innerHTML =
+        '<h1 class="results-title">GAME OVER</h1>' +
+        '<p style="color:#9ca3af;animation:fadeInUp 0.5s ease 0.1s both">Final Investment: <strong style="color:#34d399">£' + investment.toLocaleString() + '</strong></p>' +
+
+        '<div class="results-rank">' +
+            '<div class="rank-badge">' +
+                '<div class="rank-emoji">' + rankEmoji + '</div>' +
+                '<div class="rank-title">' + rank + '</div>' +
+                '<div class="rank-subtitle">' + rankSub + '</div>' +
+            '</div>' +
+        '</div>' +
+
+        '<div class="score-breakdown">' +
+            '<div class="score-row">' +
+                '<span class="label">🎤 Investment Pitch</span>' +
+                '<div class="score-bar"><div class="score-bar-fill" style="--fill:' + r1pct + '%"></div></div>' +
+                '<span class="value">' + round1Score + '/' + round1Total + '</span>' +
+            '</div>' +
+            '<div class="score-row">' +
+                '<span class="label">🃏 Negotiation Table</span>' +
+                '<div class="score-bar"><div class="score-bar-fill" style="--fill:' + r2pct + '%"></div></div>' +
+                '<span class="value">' + round2Score + '/' + round2Total + '</span>' +
+            '</div>' +
+            '<div class="score-row">' +
+                '<span class="label">💼 The Boardroom</span>' +
+                '<div class="score-bar"><div class="score-bar-fill" style="--fill:' + r3pct + '%"></div></div>' +
+                '<span class="value">' + r3CorrectMarks + '/' + r3PossibleMarks + '</span>' +
+            '</div>' +
+            '<div class="score-row" style="border:2px solid rgba(16,185,129,0.3)">' +
+                '<span class="label" style="color:#10B981;font-weight:700">Overall</span>' +
+                '<div class="score-bar"><div class="score-bar-fill" style="--fill:' + pct + '%"></div></div>' +
+                '<span class="value" style="font-size:1.3rem">' + pct + '%</span>' +
+            '</div>' +
+        '</div>' +
+
+        '<div class="revision-summary">' +
+            '<h3>Revision Summary — Key Exam Points</h3>' +
+            '<div class="revision-point"><strong>Online Banking Advantages:</strong> 24/7 access from anywhere; transactions at home, work or on the move; fewer branches/staff reduces costs; e-statements save paper and postage</div>' +
+            '<div class="revision-point"><strong>Online Banking Disadvantages:</strong> Security risks (hacking, phishing, data theft); lack of face-to-face interaction; requires stable internet; not suitable for all users</div>' +
+            '<div class="revision-point"><strong>Online Training Advantages:</strong> Learn at own pace and convenient time; no travel saves time/money; employer progress tracking; multimedia and VR engagement</div>' +
+            '<div class="revision-point"><strong>Online Training Disadvantages:</strong> Does not suit all learning styles; lack of human contact/isolation; requires reliable internet; limited Q&A opportunities</div>' +
+            '<div class="revision-point"><strong>E-Commerce Advantages:</strong> Shop 24/7 from home; easy price comparison; no retail premises needed; wider product choice</div>' +
+            '<div class="revision-point"><strong>E-Commerce Disadvantages:</strong> Products may not meet expectations; delivery delays and charges; credit card fraud risks; difficult returns</div>' +
+            '<div class="revision-point"><strong>Exam Technique:</strong> For "describe" questions, always give a <strong>point + expansion</strong> for each mark pair. Use precise mark scheme wording.</div>' +
+        '</div>' +
+
+        '<div class="results-buttons">' +
+            '<button class="results-btn primary" onclick="restartGame()">Play Again</button>' +
+            '<a href="index.html" class="results-btn secondary" style="text-decoration:none;display:inline-block">Back to Hub</a>' +
+        '</div>';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restartGame() {
+    investment = 100000;
+    round1Score = 0; round1Total = 0;
+    round2Score = 0; round2Total = 0;
+    round3Score = 0; round3Total = 0;
+    currentPitch = 0;
+    placedPairs = [];
+    tilesUsed = [];
+    selectedTile = null;
+    $('resultsScreen').style.display = 'none';
+    $('investmentDisplay').textContent = '£100,000';
+    $('investmentDisplay').classList.remove('up', 'down');
+    $('gameContainer').style.display = 'block';
+    startRound1();
+}
+</script>
+</body>
+</html>

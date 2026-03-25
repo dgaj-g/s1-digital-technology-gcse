@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App Review Live - Digital Applications</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #8B5CF6, #6D28D9); min-height: 100vh; overflow-x: hidden; color: #fff; }
+
+/* LIVE BADGE */
+.live-badge { position: fixed; top: 15px; right: 15px; background: #e74c3c; color: #fff; padding: 6px 16px; border-radius: 6px; font-weight: 900; font-size: 0.9rem; z-index: 1000; letter-spacing: 2px; animation: livePulse 1s ease-in-out infinite; }
+@keyframes livePulse { 0%,100% { opacity: 1; box-shadow: 0 0 10px #e74c3c; } 50% { opacity: 0.7; box-shadow: 0 0 25px #e74c3c; } }
+
+/* SPOTLIGHT EFFECTS */
+.spotlight-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background: radial-gradient(ellipse 600px 400px at 50% 30%, rgba(255,255,255,0.06) 0%, transparent 70%), radial-gradient(ellipse 300px 300px at 20% 20%, rgba(139,92,246,0.15) 0%, transparent 70%), radial-gradient(ellipse 300px 300px at 80% 20%, rgba(109,40,217,0.15) 0%, transparent 70%); animation: spotlightSway 6s ease-in-out infinite; }
+@keyframes spotlightSway { 0%,100% { background-position: 0 0, 0 0, 0 0; } 50% { background-position: 0 0, 30px 10px, -30px 10px; } }
+
+/* STAGE FLOOR */
+.stage-floor { position: fixed; bottom: 0; left: 0; width: 100%; height: 120px; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); pointer-events: none; z-index: 1; }
+
+/* SCREENS */
+.screen { display: none; width: 100%; min-height: 100vh; position: relative; z-index: 2; }
+.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+/* WELCOME SCREEN */
+.welcome-container { text-align: center; max-width: 700px; padding: 30px 20px; }
+.show-logo { font-size: 4rem; margin-bottom: 10px; animation: logoSpin 2s ease-in-out; }
+@keyframes logoSpin { 0% { transform: scale(0) rotate(-360deg); opacity: 0; } 60% { transform: scale(1.2) rotate(10deg); } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+.show-title { font-size: 2.8rem; font-weight: 900; text-shadow: 0 4px 20px rgba(0,0,0,0.4); margin-bottom: 5px; animation: titleSlide 1s ease-out 0.3s both; }
+@keyframes titleSlide { from { transform: translateY(-40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.show-subtitle { font-size: 1.2rem; opacity: 0.85; margin-bottom: 30px; animation: titleSlide 1s ease-out 0.6s both; }
+.mission-card { background: rgba(255,255,255,0.12); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; text-align: left; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.15); animation: cardFade 1s ease-out 0.9s both; }
+@keyframes cardFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.mission-card h3 { font-size: 1.3rem; margin-bottom: 15px; }
+.mission-card .round-info { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.mission-card .round-info:last-child { border-bottom: none; }
+.mission-card .round-num { background: rgba(255,255,255,0.2); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.9rem; flex-shrink: 0; }
+.mission-card .round-desc h4 { font-size: 1rem; margin-bottom: 2px; }
+.mission-card .round-desc p { font-size: 0.85rem; opacity: 0.8; }
+.start-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; padding: 18px 50px; border-radius: 50px; font-size: 1.3rem; font-weight: 800; cursor: pointer; letter-spacing: 1px; animation: cardFade 1s ease-out 1.2s both; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 6px 25px rgba(245,158,11,0.4); }
+.start-btn:hover { transform: scale(1.05); box-shadow: 0 8px 35px rgba(245,158,11,0.6); }
+
+/* HOST */
+.host-area { position: fixed; bottom: 55px; left: 10px; z-index: 100; display: flex; align-items: flex-end; gap: 10px; pointer-events: none; }
+.host-emoji { font-size: 3rem; animation: hostBob 2s ease-in-out infinite; }
+@keyframes hostBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.host-bubble { background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); border-radius: 16px 16px 16px 4px; padding: 10px 16px; max-width: 280px; font-size: 0.85rem; line-height: 1.4; animation: bubblePop 0.4s ease-out; }
+@keyframes bubblePop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* AUDIENCE */
+.audience-bar { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 50; display: flex; justify-content: center; gap: 2px; padding: 5px 10px; background: rgba(0,0,0,0.35); overflow: hidden; height: 45px; }
+.audience-member { font-size: 1.3rem; animation: audienceIdle 3s ease-in-out infinite; }
+@keyframes audienceIdle { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes audienceCheer { 0% { transform: translateY(0) scale(1); } 25% { transform: translateY(-12px) scale(1.3); } 50% { transform: translateY(-8px) scale(1.1); } 75% { transform: translateY(-14px) scale(1.2); } 100% { transform: translateY(0) scale(1); } }
+@keyframes audienceBoo { 0% { transform: rotate(0); } 25% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } 75% { transform: rotate(-5deg); } 100% { transform: rotate(0); } }
+
+/* HUD */
+.hud { position: fixed; top: 10px; left: 10px; z-index: 100; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+.hud-item { background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); padding: 8px 14px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.prize-money { color: #f59e0b; font-size: 1.1rem; }
+.streak-fire { animation: firePulse 0.5s ease-in-out infinite; }
+@keyframes firePulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+.lives-display .star { transition: all 0.3s; }
+.lives-display .star.lost { opacity: 0.3; filter: grayscale(1); }
+
+/* ROUND INTRO */
+.round-intro { text-align: center; padding: 40px 20px; }
+.round-intro h2 { font-size: 2.5rem; font-weight: 900; text-shadow: 0 4px 20px rgba(0,0,0,0.5); animation: roundTitle 0.8s ease-out; }
+@keyframes roundTitle { from { transform: scale(3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.round-intro h3 { font-size: 1.5rem; opacity: 0.9; margin-top: 10px; animation: cardFade 0.8s ease-out 0.3s both; }
+.round-intro p { max-width: 550px; margin: 15px auto 25px; opacity: 0.8; animation: cardFade 0.8s ease-out 0.5s both; }
+.round-start-btn { background: linear-gradient(135deg, #2ecc71, #27ae60); color: #fff; border: none; padding: 14px 40px; border-radius: 40px; font-size: 1.1rem; font-weight: 700; cursor: pointer; animation: cardFade 0.8s ease-out 0.7s both; transition: transform 0.2s; }
+.round-start-btn:hover { transform: scale(1.05); }
+
+/* ===================== ROUND 1: THE CONVEYOR ===================== */
+.conveyor-game { width: 100%; padding: 20px; padding-top: 80px; padding-bottom: 120px; min-height: 100vh; display: flex; flex-direction: column; }
+
+/* Category bins */
+.bins-area { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 10px; margin-bottom: 20px; }
+.bin { background: rgba(255,255,255,0.1); border: 2px dashed rgba(255,255,255,0.3); border-radius: 16px; padding: 12px 16px; min-width: 100px; text-align: center; cursor: pointer; transition: all 0.3s; user-select: none; }
+.bin:hover, .bin.highlight { background: rgba(255,255,255,0.25); border-color: #f59e0b; transform: scale(1.05); box-shadow: 0 0 20px rgba(245,158,11,0.3); }
+.bin .bin-emoji { font-size: 1.8rem; display: block; margin-bottom: 4px; }
+.bin .bin-label { font-size: 0.75rem; font-weight: 700; }
+
+/* Correct bin flash */
+@keyframes binCorrect { 0% { box-shadow: 0 0 0 rgba(46,204,113,0); } 50% { box-shadow: 0 0 30px rgba(46,204,113,0.6); background: rgba(46,204,113,0.3); } 100% { box-shadow: 0 0 0 rgba(46,204,113,0); } }
+@keyframes binWrong { 0% { box-shadow: 0 0 0 rgba(231,76,60,0); } 50% { box-shadow: 0 0 30px rgba(231,76,60,0.6); background: rgba(231,76,60,0.3); } 100% { box-shadow: 0 0 0 rgba(231,76,60,0); } }
+
+/* Grabbed app floating */
+.grabbed-app { position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 200; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 16px; padding: 16px 24px; text-align: center; animation: grabbedBounce 0.5s ease-out; font-weight: 700; box-shadow: 0 8px 40px rgba(0,0,0,0.5); pointer-events: none; }
+@keyframes grabbedBounce { from { transform: translate(-50%, 100%) scale(0.5); } to { transform: translate(-50%, -50%) scale(1); } }
+.grabbed-app .grabbed-name { font-size: 1.1rem; }
+.grabbed-app .grabbed-icon { font-size: 2rem; display: block; margin-bottom: 4px; }
+.grab-instruction { text-align: center; font-size: 0.9rem; opacity: 0.8; margin-top: 5px; animation: blink 1s infinite; }
+@keyframes blink { 0%,100% { opacity: 0.8; } 50% { opacity: 0.4; } }
+
+/* Conveyor belt */
+.conveyor-section { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
+.conveyor-track { position: relative; width: 100%; height: 110px; background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.4)); border-top: 4px solid rgba(255,255,255,0.2); border-bottom: 4px solid rgba(255,255,255,0.2); overflow: hidden; margin-bottom: 60px; }
+.conveyor-rollers { position: absolute; bottom: 0; left: 0; width: 200%; height: 12px; background: repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0px, rgba(255,255,255,0.08) 20px, transparent 20px, transparent 40px); animation: rollersMove 1s linear infinite; }
+@keyframes rollersMove { to { transform: translateX(-40px); } }
+
+/* App on conveyor */
+.conveyor-app { position: absolute; top: 10px; height: 85px; width: 90px; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.25); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; user-select: none; padding: 5px; }
+.conveyor-app:hover { border-color: #f59e0b; box-shadow: 0 0 15px rgba(245,158,11,0.4); }
+.conveyor-app .app-icon { font-size: 1.8rem; }
+.conveyor-app .app-name { font-size: 0.6rem; font-weight: 700; text-align: center; margin-top: 3px; line-height: 1.1; }
+
+/* Progress indicator for conveyor */
+.conveyor-progress { text-align: center; font-size: 0.9rem; opacity: 0.7; margin-bottom: 10px; }
+
+/* ===================== ROUND 2: TRUTH DETECTOR ===================== */
+.truth-game { width: 100%; max-width: 700px; padding: 20px; padding-top: 80px; padding-bottom: 120px; text-align: center; }
+
+.lie-detector { width: 280px; height: 180px; margin: 20px auto; position: relative; }
+.detector-body { width: 100%; height: 100%; background: linear-gradient(145deg, #1a1a2e, #16213e); border-radius: 20px; border: 3px solid rgba(255,255,255,0.15); position: relative; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+.detector-gauge { position: absolute; bottom: 25px; left: 50%; width: 200px; height: 100px; transform: translateX(-50%); overflow: hidden; }
+.gauge-bg { width: 200px; height: 100px; border-radius: 100px 100px 0 0; background: linear-gradient(90deg, #e74c3c 0%, #e74c3c 35%, #f39c12 35%, #f39c12 65%, #2ecc71 65%, #2ecc71 100%); position: relative; }
+.gauge-labels { position: absolute; bottom: 5px; width: 100%; display: flex; justify-content: space-between; padding: 0 15px; font-size: 0.6rem; font-weight: 900; }
+.gauge-needle { position: absolute; bottom: 0; left: 50%; width: 4px; height: 80px; background: #fff; transform-origin: bottom center; transform: rotate(0deg); transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55); border-radius: 2px; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+.gauge-center { position: absolute; bottom: -6px; left: 50%; width: 16px; height: 16px; background: #fff; border-radius: 50%; transform: translateX(-50%); box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+.detector-label { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; font-weight: 900; letter-spacing: 3px; opacity: 0.7; text-transform: uppercase; white-space: nowrap; }
+.detector-lights { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+.d-light { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: all 0.3s; }
+.d-light.on-green { background: #2ecc71; box-shadow: 0 0 12px #2ecc71; }
+.d-light.on-red { background: #e74c3c; box-shadow: 0 0 12px #e74c3c; }
+
+.statement-card { background: rgba(255,255,255,0.1); border-radius: 16px; padding: 25px; margin: 20px 0; min-height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; line-height: 1.5; font-style: italic; border: 1px solid rgba(255,255,255,0.15); }
+.truth-buttons { display: flex; gap: 20px; justify-content: center; margin: 20px 0; }
+.truth-btn { padding: 16px 40px; border-radius: 16px; border: none; font-size: 1.2rem; font-weight: 900; cursor: pointer; transition: all 0.2s; letter-spacing: 1px; }
+.truth-btn.true-btn { background: linear-gradient(135deg, #2ecc71, #27ae60); color: #fff; box-shadow: 0 6px 20px rgba(46,204,113,0.3); }
+.truth-btn.false-btn { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; box-shadow: 0 6px 20px rgba(231,76,60,0.3); }
+.truth-btn:hover { transform: scale(1.08); }
+.truth-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Teleprompter */
+.teleprompter { background: rgba(0,0,0,0.6); border-left: 4px solid #f59e0b; border-radius: 0 12px 12px 0; padding: 15px 20px; margin: 15px 0; text-align: left; font-size: 0.9rem; line-height: 1.5; animation: teleSlide 0.5s ease-out; }
+@keyframes teleSlide { from { transform: translateX(-30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.teleprompter .tp-label { font-size: 0.7rem; font-weight: 900; color: #f59e0b; letter-spacing: 2px; margin-bottom: 6px; text-transform: uppercase; }
+
+/* ===================== ROUND 3: THE PITCH ===================== */
+.pitch-game { width: 100%; max-width: 750px; padding: 20px; padding-top: 80px; padding-bottom: 120px; }
+
+.dragons-panel { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
+.dragon { text-align: center; }
+.dragon .dragon-emoji { font-size: 2.5rem; transition: all 0.3s; }
+.dragon .dragon-label { font-size: 0.65rem; font-weight: 700; opacity: 0.7; margin-top: 2px; }
+@keyframes dragonNod { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes dragonShake { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
+
+.scenario-card { background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)); border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.15); text-align: center; }
+.scenario-card .scenario-business { font-size: 1.3rem; font-weight: 800; margin-bottom: 5px; }
+.scenario-card .scenario-brief { font-size: 0.95rem; opacity: 0.85; }
+.scenario-card .pick-instruction { font-size: 0.8rem; color: #f59e0b; margin-top: 8px; font-weight: 700; }
+
+.cards-table { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 15px; }
+.pitch-card { background: linear-gradient(135deg, #4a1d96, #3b0d7e); border-radius: 14px; padding: 16px 12px; min-height: 100px; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: all 0.3s; border: 2px solid rgba(255,255,255,0.15); font-size: 0.85rem; line-height: 1.3; font-weight: 600; position: relative; user-select: none; }
+.pitch-card.face-down { background: linear-gradient(135deg, #1a0a3e, #0f0525); }
+.pitch-card.face-down .card-content { display: none; }
+.pitch-card.face-down::after { content: '?'; font-size: 2rem; color: rgba(255,255,255,0.3); position: absolute; }
+.pitch-card:hover:not(.selected):not(.locked) { transform: scale(1.04); border-color: #f59e0b; }
+.pitch-card.selected { border-color: #2ecc71; background: linear-gradient(135deg, rgba(46,204,113,0.3), rgba(39,174,96,0.2)); box-shadow: 0 0 15px rgba(46,204,113,0.3); }
+.pitch-card.wrong-reveal { border-color: #e74c3c; background: linear-gradient(135deg, rgba(231,76,60,0.3), rgba(192,57,43,0.2)); }
+.pitch-card.correct-reveal { border-color: #2ecc71; background: linear-gradient(135deg, rgba(46,204,113,0.3), rgba(39,174,96,0.2)); }
+.pitch-card.locked { opacity: 0.6; cursor: not-allowed; }
+
+.submit-pitch-btn { display: block; margin: 15px auto; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; padding: 14px 40px; border-radius: 40px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.submit-pitch-btn:hover { transform: scale(1.05); }
+.submit-pitch-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ===================== CONFETTI ===================== */
+.confetti-piece { position: fixed; z-index: 9999; pointer-events: none; }
+@keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+/* BUZZER animation */
+@keyframes buzzerShake { 0%,100% { transform: translateX(0); } 10% { transform: translateX(-8px); } 20% { transform: translateX(8px); } 30% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 50% { transform: translateX(-4px); } 60% { transform: translateX(4px); } 70% { transform: translateX(-2px); } 80% { transform: translateX(2px); } }
+.buzzer-shake { animation: buzzerShake 0.5s ease-out; }
+
+/* FLOATING SCORE */
+.float-score { position: fixed; z-index: 9999; pointer-events: none; font-size: 1.5rem; font-weight: 900; text-shadow: 0 2px 10px rgba(0,0,0,0.5); animation: floatUp 1.5s ease-out forwards; }
+@keyframes floatUp { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { transform: translateY(-10px) scale(1.2); opacity: 1; } 100% { transform: translateY(-80px) scale(0.8); opacity: 0; } }
+
+/* ===================== RESULTS SCREEN ===================== */
+.results-container { text-align: center; max-width: 650px; padding: 30px 20px; }
+.results-badge { font-size: 5rem; animation: badgeDrop 0.8s ease-out; }
+@keyframes badgeDrop { 0% { transform: scale(0) rotate(-180deg); } 60% { transform: scale(1.2) rotate(10deg); } 100% { transform: scale(1) rotate(0); } }
+.results-rank { font-size: 2rem; font-weight: 900; margin: 10px 0; text-shadow: 0 3px 15px rgba(0,0,0,0.4); }
+.results-subtitle { font-size: 1rem; opacity: 0.8; margin-bottom: 25px; }
+.results-breakdown { background: rgba(255,255,255,0.1); border-radius: 16px; padding: 25px; margin-bottom: 25px; text-align: left; border: 1px solid rgba(255,255,255,0.1); }
+.results-breakdown h3 { text-align: center; margin-bottom: 15px; font-size: 1.1rem; }
+.rb-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08); align-items: center; }
+.rb-row:last-child { border-bottom: none; }
+.rb-label { font-size: 0.9rem; }
+.rb-value { font-weight: 800; font-size: 1rem; }
+.rb-value.green { color: #2ecc71; }
+.rb-value.amber { color: #f59e0b; }
+
+.revision-box { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 20px; margin-bottom: 25px; text-align: left; border: 1px solid rgba(255,255,255,0.1); }
+.revision-box h3 { text-align: center; margin-bottom: 12px; }
+.revision-point { padding: 6px 0; font-size: 0.85rem; line-height: 1.4; opacity: 0.9; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.revision-point:last-child { border-bottom: none; }
+
+.results-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+.results-btn { padding: 14px 30px; border-radius: 40px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.results-btn:hover { transform: scale(1.05); }
+.results-btn.retry { background: linear-gradient(135deg, #8B5CF6, #6D28D9); color: #fff; }
+.results-btn.home { background: rgba(255,255,255,0.15); color: #fff; border: 2px solid rgba(255,255,255,0.3); }
+
+.next-round-btn { display: block; margin: 20px auto; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; padding: 14px 40px; border-radius: 40px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.next-round-btn:hover { transform: scale(1.05); }
+
+/* QUESTION COUNTER */
+.question-counter { font-size: 0.85rem; opacity: 0.6; margin-bottom: 10px; }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .show-title { font-size: 2rem; }
+  .bins-area { gap: 6px; }
+  .bin { padding: 8px 10px; min-width: 60px; }
+  .bin .bin-emoji { font-size: 1.3rem; }
+  .bin .bin-label { font-size: 0.6rem; }
+  .conveyor-app { width: 75px; height: 75px; }
+  .conveyor-app .app-icon { font-size: 1.4rem; }
+  .conveyor-track { height: 95px; }
+  .cards-table { grid-template-columns: repeat(2, 1fr); }
+  .truth-btn { padding: 14px 28px; font-size: 1rem; }
+  .dragons-panel { gap: 8px; }
+  .dragon .dragon-emoji { font-size: 1.8rem; }
+  .hud { gap: 8px; }
+  .hud-item { padding: 5px 10px; font-size: 0.75rem; }
+  .host-bubble { max-width: 200px; font-size: 0.75rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="live-badge" id="liveBadge" style="display:none;">● LIVE</div>
+<div class="spotlight-overlay"></div>
+<div class="stage-floor"></div>
+
+<!-- HOST -->
+<div class="host-area" id="hostArea" style="display:none;">
+  <div class="host-emoji">🎙️</div>
+  <div class="host-bubble" id="hostBubble">Welcome to the show!</div>
+</div>
+
+<!-- AUDIENCE -->
+<div class="audience-bar" id="audienceBar" style="display:none;"></div>
+
+<!-- HUD -->
+<div class="hud" id="hud" style="display:none;">
+  <div class="hud-item">💰 <span class="prize-money" id="prizeMoney">£0</span></div>
+  <div class="hud-item">🔥 <span id="streakCount">0</span></div>
+  <div class="hud-item lives-display" id="livesDisplay">
+    <span class="star" id="star1">⭐</span>
+    <span class="star" id="star2">⭐</span>
+    <span class="star" id="star3">⭐</span>
+  </div>
+</div>
+
+<!-- ============ WELCOME SCREEN ============ -->
+<div class="screen active" id="welcomeScreen">
+  <div class="welcome-container">
+    <div class="show-logo">📱</div>
+    <h1 class="show-title">APP REVIEW LIVE</h1>
+    <p class="show-subtitle">The UK's #1 Mobile App Game Show</p>
+    <div class="mission-card">
+      <h3>🎬 Tonight's Episode</h3>
+      <p style="margin-bottom: 15px; font-size: 0.9rem; opacity: 0.8;">You've been selected as a contestant on App Review Live! Impress the studio audience across three rounds to win the title of <strong>App Store Director</strong>.</p>
+      <div class="round-info"><div class="round-num">1</div><div class="round-desc"><h4>The Conveyor</h4><p>Grab apps off the conveyor belt and sort them into the right category bins</p></div></div>
+      <div class="round-info"><div class="round-num">2</div><div class="round-desc"><h4>Truth Detector</h4><p>Spot true and false statements about mobile apps on the lie detector machine</p></div></div>
+      <div class="round-info"><div class="round-num">3</div><div class="round-desc"><h4>The Pitch</h4><p>Pick the real advantages of mobile apps to pitch to the Dragons</p></div></div>
+    </div>
+    <button class="start-btn" onclick="startShow()">GO LIVE 🔴</button>
+  </div>
+</div>
+
+<!-- ============ ROUND 1 INTRO ============ -->
+<div class="screen" id="round1Intro">
+  <div class="round-intro">
+    <h2>ROUND 1</h2>
+    <h3>🏭 The Conveyor</h3>
+    <p>Apps will scroll past on the conveyor belt. Click an app to grab it, then click the correct category bin to sort it. Be quick - they won't wait! Speed increases every 5 apps.</p>
+    <button class="round-start-btn" onclick="startRound1()">Start Round 🏭</button>
+  </div>
+</div>
+
+<!-- ============ ROUND 1 GAME ============ -->
+<div class="screen" id="round1Screen">
+  <div class="conveyor-game">
+    <div class="bins-area" id="binsArea">
+      <div class="bin" data-cat="Education" onclick="binClicked('Education')"><span class="bin-emoji">🎓</span><span class="bin-label">Education</span></div>
+      <div class="bin" data-cat="Social" onclick="binClicked('Social')"><span class="bin-emoji">💬</span><span class="bin-label">Social</span></div>
+      <div class="bin" data-cat="Gaming" onclick="binClicked('Gaming')"><span class="bin-emoji">🎮</span><span class="bin-label">Gaming</span></div>
+      <div class="bin" data-cat="Business" onclick="binClicked('Business')"><span class="bin-emoji">💼</span><span class="bin-label">Business</span></div>
+      <div class="bin" data-cat="Entertainment" onclick="binClicked('Entertainment')"><span class="bin-emoji">🎬</span><span class="bin-label">Entertainment</span></div>
+    </div>
+    <div id="grabInstruction" class="grab-instruction" style="display:none;">👆 Now click the correct bin above!</div>
+    <div class="conveyor-progress" id="conveyorProgress">Apps sorted: 0 / 15</div>
+    <div class="conveyor-section">
+      <div class="conveyor-track" id="conveyorTrack">
+        <div class="conveyor-rollers"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ROUND 1 END ============ -->
+<div class="screen" id="round1End">
+  <div class="round-intro">
+    <h2 id="r1EndTitle">Round 1 Complete!</h2>
+    <p id="r1EndSummary"></p>
+    <button class="next-round-btn" onclick="showRound2Intro()">Next Round →</button>
+  </div>
+</div>
+
+<!-- ============ ROUND 2 INTRO ============ -->
+<div class="screen" id="round2Intro">
+  <div class="round-intro">
+    <h2>ROUND 2</h2>
+    <h3>🔍 Truth Detector</h3>
+    <p>Our lie detector machine will test your knowledge. Read each statement about mobile apps and decide: is it TRUE or FALSE? Watch the needle swing...</p>
+    <button class="round-start-btn" onclick="startRound2()">Start Round 🔍</button>
+  </div>
+</div>
+
+<!-- ============ ROUND 2 GAME ============ -->
+<div class="screen" id="round2Screen">
+  <div class="truth-game">
+    <div class="question-counter" id="truthCounter">Statement 1 of 10</div>
+    <div class="lie-detector">
+      <div class="detector-body">
+        <div class="detector-label">TRUTH-O-MATIC 3000</div>
+        <div class="detector-lights">
+          <div class="d-light" id="dLight1"></div>
+          <div class="d-light" id="dLight2"></div>
+          <div class="d-light" id="dLight3"></div>
+          <div class="d-light" id="dLight4"></div>
+          <div class="d-light" id="dLight5"></div>
+        </div>
+        <div class="detector-gauge">
+          <div class="gauge-bg">
+            <div class="gauge-labels"><span>FALSE</span><span>???</span><span>TRUE</span></div>
+          </div>
+          <div class="gauge-needle" id="gaugeNeedle"></div>
+          <div class="gauge-center"></div>
+        </div>
+      </div>
+    </div>
+    <div class="statement-card" id="statementCard">"Loading statement..."</div>
+    <div class="truth-buttons" id="truthBtnsArea">
+      <button class="truth-btn true-btn" id="trueBtn" onclick="answerTruth(true)">✅ TRUE</button>
+      <button class="truth-btn false-btn" id="falseBtn" onclick="answerTruth(false)">❌ FALSE</button>
+    </div>
+    <div id="teleprompterArea"></div>
+    <div id="r2NextArea" style="display:none; text-align:center; margin-top:15px;">
+      <button class="round-start-btn" id="r2NextBtn" onclick="nextTruthQuestion()">Next Statement →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ROUND 2 END ============ -->
+<div class="screen" id="round2End">
+  <div class="round-intro">
+    <h2 id="r2EndTitle">Round 2 Complete!</h2>
+    <p id="r2EndSummary"></p>
+    <button class="next-round-btn" onclick="showRound3Intro()">Next Round →</button>
+  </div>
+</div>
+
+<!-- ============ ROUND 3 INTRO ============ -->
+<div class="screen" id="round3Intro">
+  <div class="round-intro">
+    <h2>ROUND 3</h2>
+    <h3>🐉 The Pitch</h3>
+    <p>You're now pitching to the Dragons! A business needs a mobile app. Flip the cards to reveal them, then select ONLY the genuine advantages. Pick wisely - the Dragons don't tolerate nonsense!</p>
+    <button class="round-start-btn" onclick="startRound3()">Start Round 🐉</button>
+  </div>
+</div>
+
+<!-- ============ ROUND 3 GAME ============ -->
+<div class="screen" id="round3Screen">
+  <div class="pitch-game">
+    <div class="dragons-panel" id="dragonsPanel">
+      <div class="dragon"><div class="dragon-emoji" id="dragon1">🧑‍💼</div><div class="dragon-label">Ms. Sterling</div></div>
+      <div class="dragon"><div class="dragon-emoji" id="dragon2">👩‍💼</div><div class="dragon-label">Mr. Kapoor</div></div>
+      <div class="dragon"><div class="dragon-emoji" id="dragon3">🧔</div><div class="dragon-label">Dr. Chen</div></div>
+      <div class="dragon"><div class="dragon-emoji" id="dragon4">👩‍🦰</div><div class="dragon-label">Lady Fox</div></div>
+    </div>
+    <div class="scenario-card" id="scenarioCard">
+      <div class="scenario-business" id="scenarioBusiness">Loading...</div>
+      <div class="scenario-brief" id="scenarioBrief"></div>
+      <div class="pick-instruction" id="pickInstruction"></div>
+    </div>
+    <div class="cards-table" id="cardsTable"></div>
+    <button class="submit-pitch-btn" id="submitPitchBtn" onclick="submitPitch()" disabled>Present Pitch to Dragons</button>
+    <div id="pitchFeedback"></div>
+    <div id="r3NextArea" style="display:none; text-align:center; margin-top:15px;">
+      <button class="round-start-btn" id="r3NextBtn" onclick="nextScenario()">Next Scenario →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ RESULTS SCREEN ============ -->
+<div class="screen" id="resultsScreen">
+  <div class="results-container">
+    <div class="results-badge" id="resultsBadge">🏆</div>
+    <div class="results-rank" id="resultsRank">App Store Director</div>
+    <div class="results-subtitle" id="resultsSubtitle">Outstanding performance!</div>
+    <div class="results-breakdown" id="resultsBreakdown"></div>
+    <div class="revision-box" id="revisionBox"></div>
+    <div class="results-buttons">
+      <button class="results-btn retry" onclick="location.reload()">Play Again 🔄</button>
+      <a href="index.html" style="text-decoration:none;"><button class="results-btn home">← Back to Hub</button></a>
+    </div>
+  </div>
+</div>
+
+<!-- GRABBED APP OVERLAY -->
+<div class="grabbed-app" id="grabbedApp" style="display:none;">
+  <span class="grabbed-icon" id="grabbedIcon"></span>
+  <span class="grabbed-name" id="grabbedName"></span>
+</div>
+
+<script>
+// ===================== GAME STATE =====================
+let totalScore = 0;
+let streak = 0;
+let lives = 3;
+let prizeMoney = 0;
+let round1Score = 0, round2Score = 0, round3Score = 0;
+let round2Total = 10;
+let round1Correct = 0, round2Correct = 0, round3Correct = 0;
+let round3TotalMarks = 0;
+let missedApps = [];
+let wrongTruth = [];
+
+// ===================== UTILITY =====================
+function fisherYatesShuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function setHost(msg) {
+  const b = document.getElementById('hostBubble');
+  b.style.animation = 'none';
+  void b.offsetHeight;
+  b.style.animation = 'bubblePop 0.4s ease-out';
+  b.textContent = msg;
+}
+
+function updateHUD() {
+  document.getElementById('prizeMoney').textContent = '£' + prizeMoney;
+  document.getElementById('streakCount').textContent = streak;
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById('star' + i).classList.toggle('lost', i > lives);
+  }
+}
+
+function addScore(pts) {
+  prizeMoney += pts;
+  totalScore += pts;
+  updateHUD();
+}
+
+function loseLife() {
+  lives = Math.max(0, lives - 1);
+  streak = 0;
+  updateHUD();
+}
+
+function incrementStreak() {
+  streak++;
+  updateHUD();
+}
+
+function buildAudience() {
+  const bar = document.getElementById('audienceBar');
+  const faces = ['😀','😃','😄','😆','😊','🙂','😎','🤩','😮','👏','🎉'];
+  let html = '';
+  for (let i = 0; i < 30; i++) {
+    const face = faces[Math.floor(Math.random() * faces.length)];
+    const delay = (Math.random() * 3).toFixed(1);
+    html += '<span class="audience-member" style="animation-delay:' + delay + 's;" data-idx="' + i + '">' + face + '</span>';
+  }
+  bar.innerHTML = html;
+}
+
+function audienceCheer() {
+  const cheerFaces = ['😄','🤩','👏','🎉','😆'];
+  document.querySelectorAll('.audience-member').forEach(function(m) {
+    m.style.animation = 'none';
+    void m.offsetHeight;
+    m.style.animation = 'audienceCheer 0.6s ease-out';
+    m.textContent = cheerFaces[Math.floor(Math.random() * cheerFaces.length)];
+    setTimeout(function() {
+      m.style.animation = 'audienceIdle 3s ease-in-out infinite ' + (Math.random() * 3).toFixed(1) + 's';
+    }, 700);
+  });
+}
+
+function audienceBoo() {
+  const booFaces = ['😬','😐','🤦','😕','😑'];
+  document.querySelectorAll('.audience-member').forEach(function(m) {
+    m.style.animation = 'none';
+    void m.offsetHeight;
+    m.style.animation = 'audienceBoo 0.5s ease-out';
+    m.textContent = booFaces[Math.floor(Math.random() * booFaces.length)];
+    setTimeout(function() {
+      m.style.animation = 'audienceIdle 3s ease-in-out infinite ' + (Math.random() * 3).toFixed(1) + 's';
+    }, 600);
+  });
+}
+
+function spawnConfetti() {
+  const colors = ['#f59e0b','#2ecc71','#8B5CF6','#e74c3c','#3498db','#e91e63','#fff'];
+  for (let i = 0; i < 40; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.top = '-20px';
+    c.style.width = (6 + Math.random() * 8) + 'px';
+    c.style.height = (6 + Math.random() * 8) + 'px';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    const dur = 1.5 + Math.random() * 2;
+    const del = Math.random() * 0.5;
+    c.style.animation = 'confettiFall ' + dur + 's ease-out ' + del + 's forwards';
+    document.body.appendChild(c);
+    setTimeout(function() { c.remove(); }, 4000);
+  }
+}
+
+function spawnSparks(x, y, color) {
+  for (let i = 0; i < 12; i++) {
+    const s = document.createElement('div');
+    s.style.position = 'fixed';
+    s.style.zIndex = '9999';
+    s.style.pointerEvents = 'none';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.width = '6px';
+    s.style.height = '6px';
+    s.style.borderRadius = '50%';
+    s.style.background = color;
+    const angle = (Math.PI * 2 / 12) * i;
+    const dist = 30 + Math.random() * 40;
+    const tx = Math.cos(angle) * dist;
+    const ty = Math.sin(angle) * dist;
+    s.animate([
+      { transform: 'translate(0,0) scale(1)', opacity: 1 },
+      { transform: 'translate(' + tx + 'px,' + ty + 'px) scale(0)', opacity: 0 }
+    ], { duration: 600, easing: 'ease-out', fill: 'forwards' });
+    document.body.appendChild(s);
+    setTimeout(function() { s.remove(); }, 700);
+  }
+}
+
+function floatScore(x, y, text, color) {
+  const f = document.createElement('div');
+  f.className = 'float-score';
+  f.style.left = x + 'px';
+  f.style.top = y + 'px';
+  f.style.color = color || '#2ecc71';
+  f.textContent = text;
+  document.body.appendChild(f);
+  setTimeout(function() { f.remove(); }, 1600);
+}
+
+// ===================== START SHOW =====================
+function startShow() {
+  buildAudience();
+  document.getElementById('liveBadge').style.display = 'block';
+  document.getElementById('hostArea').style.display = 'flex';
+  document.getElementById('audienceBar').style.display = 'flex';
+  document.getElementById('hud').style.display = 'flex';
+  updateHUD();
+  setHost("Welcome to App Review Live! Let's start with Round 1!");
+  showScreen('round1Intro');
+}
+
+// ===================== ROUND 1: THE CONVEYOR =====================
+const allApps = [
+  { name: 'Duolingo', icon: '🦉', cat: 'Education', desc: 'Language learning' },
+  { name: 'Spotify', icon: '🎵', cat: 'Entertainment', desc: 'Music streaming' },
+  { name: 'WhatsApp', icon: '💬', cat: 'Social', desc: 'Instant messaging' },
+  { name: 'Excel', icon: '📊', cat: 'Business', desc: 'Spreadsheets' },
+  { name: 'Minecraft', icon: '⛏️', cat: 'Gaming', desc: 'Block-building game' },
+  { name: 'TikTok', icon: '🎶', cat: 'Entertainment', desc: 'Short video app' },
+  { name: 'Teams', icon: '👥', cat: 'Business', desc: 'Work collaboration' },
+  { name: 'Khan Academy', icon: '🎓', cat: 'Education', desc: 'Free learning' },
+  { name: 'Candy Crush', icon: '🍬', cat: 'Gaming', desc: 'Puzzle game' },
+  { name: 'Instagram', icon: '📸', cat: 'Social', desc: 'Photo sharing' },
+  { name: 'Netflix', icon: '🎬', cat: 'Entertainment', desc: 'Video streaming' },
+  { name: 'Slack', icon: '💼', cat: 'Business', desc: 'Team messaging' },
+  { name: 'Quizlet', icon: '📝', cat: 'Education', desc: 'Flashcard learning' },
+  { name: 'PayPal', icon: '💳', cat: 'Business', desc: 'Online payments' },
+  { name: 'Fortnite', icon: '🎯', cat: 'Gaming', desc: 'Battle royale' },
+];
+
+let shuffledApps = [];
+let conveyorIndex = 0;
+let appSpeed = 8;
+let grabbedAppData = null;
+let appsProcessed = 0;
+let conveyorActive = false;
+let appSpawnTimer = null;
+let round1Finished = false;
+
+function startRound1() {
+  showScreen('round1Screen');
+  shuffledApps = fisherYatesShuffle(allApps);
+  conveyorIndex = 0;
+  appsProcessed = 0;
+  round1Correct = 0;
+  round1Score = 0;
+  grabbedAppData = null;
+  conveyorActive = true;
+  round1Finished = false;
+  appSpeed = 8;
+  missedApps = [];
+  setHost("Sort those apps! Quick, they won't wait!");
+  document.getElementById('conveyorProgress').textContent = 'Apps sorted: 0 / 15';
+
+  // Clear track
+  const track = document.getElementById('conveyorTrack');
+  track.querySelectorAll('.conveyor-app').forEach(function(a) { a.remove(); });
+
+  setTimeout(spawnNextApp, 500);
+}
+
+function spawnNextApp() {
+  if (conveyorIndex >= shuffledApps.length || !conveyorActive) return;
+
+  const app = shuffledApps[conveyorIndex];
+  const idx = conveyorIndex;
+  const el = document.createElement('div');
+  el.className = 'conveyor-app';
+  el.innerHTML = '<span class="app-icon">' + app.icon + '</span><span class="app-name">' + app.name + '</span>';
+  el.dataset.index = idx;
+
+  const track = document.getElementById('conveyorTrack');
+  el.style.left = (track.offsetWidth + 10) + 'px';
+
+  el.addEventListener('click', function() {
+    if (grabbedAppData) return;
+    grabApp(parseInt(this.dataset.index), this);
+  });
+
+  track.appendChild(el);
+  conveyorIndex++;
+
+  // Increase speed every 5 apps
+  if (conveyorIndex > 0 && conveyorIndex % 5 === 0 && appSpeed > 4) {
+    appSpeed = Math.max(4, appSpeed - 1.2);
+    setHost("Speeding up! Keep your eyes on the belt!");
+  }
+
+  animateConveyorApp(el, app, idx);
+
+  // Schedule next
+  const spawnDelay = Math.max(1500, appSpeed * 380);
+  if (conveyorIndex < shuffledApps.length) {
+    appSpawnTimer = setTimeout(spawnNextApp, spawnDelay);
+  }
+}
+
+function animateConveyorApp(el, appData, appIdx) {
+  const track = document.getElementById('conveyorTrack');
+  const startX = track.offsetWidth + 10;
+  const endX = -110;
+  const totalDist = startX - endX;
+  const duration = appSpeed * 1000;
+  const startTime = performance.now();
+
+  function frame(now) {
+    if (!el.parentNode || !conveyorActive) return;
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const currentX = startX - (totalDist * progress);
+    el.style.left = currentX + 'px';
+
+    if (progress >= 1) {
+      el.remove();
+      appsProcessed++;
+      missedApps.push(appData.name + ' (' + appData.cat + ')');
+      updateConveyorProgress();
+      checkRound1End();
+      return;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+function updateConveyorProgress() {
+  const remaining = shuffledApps.length - appsProcessed;
+  document.getElementById('conveyorProgress').textContent = 'Apps sorted: ' + round1Correct + ' / 15  |  ' + remaining + ' remaining';
+}
+
+function grabApp(index, el) {
+  const app = shuffledApps[index];
+  grabbedAppData = { app: app, element: el };
+  el.style.display = 'none';
+
+  document.getElementById('grabbedApp').style.display = 'block';
+  document.getElementById('grabbedApp').style.animation = 'none';
+  void document.getElementById('grabbedApp').offsetHeight;
+  document.getElementById('grabbedApp').style.animation = 'grabbedBounce 0.5s ease-out';
+  document.getElementById('grabbedIcon').textContent = app.icon;
+  document.getElementById('grabbedName').textContent = app.name;
+  document.getElementById('grabInstruction').style.display = 'block';
+
+  document.querySelectorAll('.bin').forEach(function(b) { b.classList.add('highlight'); });
+}
+
+function binClicked(category) {
+  if (!grabbedAppData) return;
+
+  const app = grabbedAppData.app;
+  const el = grabbedAppData.element;
+  const correct = app.cat === category;
+
+  document.getElementById('grabbedApp').style.display = 'none';
+  document.getElementById('grabInstruction').style.display = 'none';
+  document.querySelectorAll('.bin').forEach(function(b) { b.classList.remove('highlight'); });
+
+  // Remove the app from conveyor
+  if (el.parentNode) el.remove();
+
+  const binEl = document.querySelector('.bin[data-cat="' + category + '"]');
+  const rect = binEl.getBoundingClientRect();
+
+  appsProcessed++;
+
+  if (correct) {
+    round1Correct++;
+    round1Score += 100;
+    addScore(100);
+    incrementStreak();
+    binEl.style.animation = 'binCorrect 0.6s ease-out';
+    setTimeout(function() { binEl.style.animation = ''; }, 600);
+
+    if (streak >= 3) {
+      const bonus = streak * 20;
+      addScore(bonus);
+      floatScore(rect.left + rect.width / 2, rect.top, '+£' + (100 + bonus) + ' 🔥x' + streak, '#f59e0b');
+    } else {
+      floatScore(rect.left + rect.width / 2, rect.top, '+£100', '#2ecc71');
+    }
+    spawnConfetti();
+    audienceCheer();
+    spawnSparks(rect.left + rect.width / 2, rect.top + rect.height / 2, '#2ecc71');
+    setHost(getCorrectQuip());
+  } else {
+    loseLife();
+    missedApps.push(app.name + ' → should be ' + app.cat);
+    binEl.style.animation = 'binWrong 0.6s ease-out';
+    binEl.classList.add('buzzer-shake');
+    setTimeout(function() { binEl.classList.remove('buzzer-shake'); binEl.style.animation = ''; }, 600);
+    audienceBoo();
+    floatScore(rect.left + rect.width / 2, rect.top, '✗ ' + app.cat, '#e74c3c');
+    setHost('Ooh no! ' + app.name + ' was ' + app.cat + '!');
+  }
+
+  grabbedAppData = null;
+  updateConveyorProgress();
+  checkRound1End();
+}
+
+function checkRound1End() {
+  if (appsProcessed >= shuffledApps.length && !round1Finished) {
+    round1Finished = true;
+    setTimeout(endRound1, 800);
+  }
+}
+
+function getCorrectQuip() {
+  var quips = ["Brilliant!", "Spot on!", "The audience loves it!", "Perfect sorting!", "You know your apps!", "Incredible!", "That's the one!", "Nailed it!"];
+  return quips[Math.floor(Math.random() * quips.length)];
+}
+
+function endRound1() {
+  conveyorActive = false;
+  clearTimeout(appSpawnTimer);
+  document.getElementById('r1EndSummary').textContent = 'You correctly sorted ' + round1Correct + ' out of 15 apps and earned £' + round1Score + '!';
+  setHost('Round 1 done! ' + round1Correct + '/15 sorted. Let\'s move on!');
+  showScreen('round1End');
+}
+
+// ===================== ROUND 2: TRUTH DETECTOR =====================
+const truthStatements = [
+  { text: "Mobile apps are designed specifically for mobile devices", answer: true, explain: "Mobile apps are software applications that are designed specifically for use on mobile devices such as smartphones and tablets." },
+  { text: "Apps can be downloaded from app stores like Google Play", answer: true, explain: "Mobile apps can be downloaded and installed from app stores such as Google Play Store (Android) or Apple App Store (iOS)." },
+  { text: "Mobile apps can use phone features like GPS and camera", answer: true, explain: "Mobile apps can access and use hardware features of the device, including GPS for location services, the camera for taking photos/videos, and other sensors." },
+  { text: "Some mobile apps can work without an internet connection", answer: true, explain: "Some mobile apps can function offline without an internet connection, such as calculator apps, note-taking apps, and games with downloaded content." },
+  { text: "Smartphones come with preloaded apps already installed", answer: true, explain: "Smartphones come with preloaded/pre-installed apps (also called bloatware), such as a phone app, messaging app, camera app, and web browser." },
+  { text: "Apps provide teaching and learning opportunities", answer: true, explain: "Mobile apps provide teaching and learning opportunities, allowing users to access educational content anytime and anywhere (e.g. Duolingo, Khan Academy)." },
+  { text: "Schools use instant messaging apps to communicate with parents", answer: true, explain: "Schools and organisations use instant messaging/communication apps to send updates and communicate directly with parents and guardians." },
+  { text: "Mobile apps can only work when connected to the internet", answer: false, explain: "This is FALSE. Many mobile apps can work offline without an internet connection. Some apps download content for offline use, while others (like calculators or note apps) don't need internet at all." },
+  { text: "All mobile apps are free to download", answer: false, explain: "This is FALSE. While many apps are free, some require payment to download. Additionally, many free apps offer in-app purchases or premium subscriptions." },
+  { text: "Mobile apps can only be used on smartphones, not tablets", answer: false, explain: "This is FALSE. Mobile apps can be used on a range of mobile devices including smartphones, tablets, and smartwatches - not just smartphones." },
+  { text: "Apps must be updated manually by the user every time", answer: false, explain: "This is FALSE. Most app stores offer automatic updates. Users can enable auto-update so apps are updated automatically when a new version is available." },
+  { text: "Mobile apps cannot access hardware features of the phone", answer: false, explain: "This is FALSE. Mobile apps CAN access hardware features such as the camera, GPS, microphone, accelerometer, and other sensors built into the device." },
+];
+
+let shuffledTruth = [];
+let truthIndex = 0;
+let truthAnswered = false;
+
+function showRound2Intro() {
+  showScreen('round2Intro');
+  setHost("Time for the Truth Detector! Can you spot the lies?");
+}
+
+function startRound2() {
+  shuffledTruth = fisherYatesShuffle(truthStatements).slice(0, 10);
+  round2Total = shuffledTruth.length;
+  truthIndex = 0;
+  round2Correct = 0;
+  round2Score = 0;
+  wrongTruth = [];
+  showScreen('round2Screen');
+  setHost("True or false? The machine never lies...");
+  showTruthQuestion();
+}
+
+function showTruthQuestion() {
+  truthAnswered = false;
+  document.getElementById('trueBtn').disabled = false;
+  document.getElementById('falseBtn').disabled = false;
+  document.getElementById('teleprompterArea').innerHTML = '';
+  document.getElementById('r2NextArea').style.display = 'none';
+  document.getElementById('truthCounter').textContent = 'Statement ' + (truthIndex + 1) + ' of ' + round2Total;
+
+  // Reset needle to center
+  document.getElementById('gaugeNeedle').style.transform = 'rotate(0deg)';
+  // Reset lights
+  for (var i = 1; i <= 5; i++) {
+    document.getElementById('dLight' + i).className = 'd-light';
+  }
+
+  var q = shuffledTruth[truthIndex];
+  document.getElementById('statementCard').textContent = '"' + q.text + '"';
+  document.getElementById('statementCard').style.animation = 'none';
+  void document.getElementById('statementCard').offsetHeight;
+  document.getElementById('statementCard').style.animation = 'cardFade 0.5s ease-out';
+}
+
+function answerTruth(playerAnswer) {
+  if (truthAnswered) return;
+  truthAnswered = true;
+
+  document.getElementById('trueBtn').disabled = true;
+  document.getElementById('falseBtn').disabled = true;
+
+  var q = shuffledTruth[truthIndex];
+  var correct = playerAnswer === q.answer;
+  var needle = document.getElementById('gaugeNeedle');
+
+  // Swing needle: TRUE = right (+70deg), FALSE = left (-70deg)
+  if (q.answer === true) {
+    needle.style.transform = 'rotate(70deg)';
+  } else {
+    needle.style.transform = 'rotate(-70deg)';
+  }
+
+  // Light up detector lights
+  setTimeout(function() {
+    var lightClass = correct ? 'on-green' : 'on-red';
+    for (var i = 1; i <= 5; i++) {
+      (function(idx) {
+        setTimeout(function() {
+          document.getElementById('dLight' + idx).classList.add(lightClass);
+        }, idx * 100);
+      })(i);
+    }
+  }, 500);
+
+  setTimeout(function() {
+    if (correct) {
+      round2Correct++;
+      round2Score += 150;
+      addScore(150);
+      incrementStreak();
+      audienceCheer();
+      spawnSparks(window.innerWidth / 2, 200, '#2ecc71');
+      if (streak >= 3) {
+        var bonus = streak * 20;
+        addScore(bonus);
+        floatScore(window.innerWidth / 2, 150, '+£' + (150 + bonus) + ' 🔥x' + streak, '#f59e0b');
+      } else {
+        floatScore(window.innerWidth / 2, 150, '+£150', '#2ecc71');
+      }
+      setHost("The machine confirms! Correct!");
+    } else {
+      loseLife();
+      audienceBoo();
+      wrongTruth.push(q.text);
+      floatScore(window.innerWidth / 2, 150, '✗ Wrong!', '#e74c3c');
+      setHost("The machine says otherwise!");
+    }
+
+    // Show teleprompter
+    document.getElementById('teleprompterArea').innerHTML =
+      '<div class="teleprompter">' +
+        '<div class="tp-label">Mark Scheme Answer</div>' +
+        q.explain +
+      '</div>';
+
+    document.getElementById('r2NextArea').style.display = 'block';
+
+    if (truthIndex >= shuffledTruth.length - 1) {
+      document.getElementById('r2NextBtn').textContent = 'Finish Round →';
+      document.getElementById('r2NextBtn').onclick = endRound2;
+    }
+  }, 1200);
+}
+
+function nextTruthQuestion() {
+  truthIndex++;
+  if (truthIndex < shuffledTruth.length) {
+    showTruthQuestion();
+  }
+}
+
+function endRound2() {
+  document.getElementById('r2EndSummary').textContent = 'You got ' + round2Correct + ' out of ' + round2Total + ' correct and earned £' + round2Score + '!';
+  setHost(round2Correct + '/' + round2Total + ' on the Truth Detector! Final round coming up...');
+  showScreen('round2End');
+}
+
+// ===================== ROUND 3: THE PITCH =====================
+const pitchScenarios = [
+  {
+    business: '💪 GymFit',
+    brief: 'GymFit wants a mobile app to help gym members book classes, track workouts, and stay engaged.',
+    correct: [
+      'Direct communication with customers via push notifications',
+      'Push notifications to alert members about class times and offers',
+      'Available 24/7 so members can book anytime from anywhere',
+      'Can collect customer data to understand habits and preferences'
+    ],
+    fakes: [
+      'Makes the company look cool and trendy',
+      'Automatically generates profit for the gym'
+    ]
+  },
+  {
+    business: '📚 BookWorm Academy',
+    brief: 'BookWorm Academy wants a learning app so students can revise and learn outside the classroom.',
+    correct: [
+      'Teaching and learning opportunities accessible anytime/anywhere',
+      'Interactive multimedia content (videos, quizzes, animations)',
+      'Students can learn at their own pace and revisit content'
+    ],
+    fakes: [
+      'Reduces electricity bills at the school',
+      'Replaces all staff members automatically',
+      'Guarantees customer loyalty forever'
+    ]
+  },
+  {
+    business: '🏢 QuickChat Office',
+    brief: 'QuickChat Office Solutions wants a team collaboration app for employees working remotely.',
+    correct: [
+      'Employees can access work remotely from any location',
+      'Team collaboration tools for sharing files and projects',
+      'Instant communication between team members anywhere'
+    ],
+    fakes: [
+      'Replaces all staff members automatically',
+      'Reduces electricity bills at the office',
+      'Guarantees customer loyalty forever'
+    ]
+  }
+];
+
+let scenarioOrder = [];
+let currentScenario = 0;
+let pitchCards = [];
+let selectedCards = [];
+let pitchLocked = false;
+
+function showRound3Intro() {
+  showScreen('round3Intro');
+  setHost("Time to face the Dragons! Choose your advantages wisely...");
+}
+
+function startRound3() {
+  scenarioOrder = fisherYatesShuffle([0, 1, 2]);
+  currentScenario = 0;
+  round3Correct = 0;
+  round3Score = 0;
+  round3TotalMarks = 0;
+  showScreen('round3Screen');
+  loadScenario();
+}
+
+function loadScenario() {
+  var s = pitchScenarios[scenarioOrder[currentScenario]];
+  document.getElementById('scenarioBusiness').textContent = s.business;
+  document.getElementById('scenarioBrief').textContent = s.brief;
+  document.getElementById('pickInstruction').textContent = 'Select exactly ' + s.correct.length + ' genuine advantages for your pitch';
+
+  round3TotalMarks += s.correct.length;
+
+  // Build cards
+  var allCards = [];
+  s.correct.forEach(function(c) { allCards.push({ text: c, isReal: true }); });
+  s.fakes.forEach(function(f) { allCards.push({ text: f, isReal: false }); });
+  pitchCards = fisherYatesShuffle(allCards);
+  selectedCards = [];
+  pitchLocked = false;
+
+  var table = document.getElementById('cardsTable');
+  table.innerHTML = '';
+
+  pitchCards.forEach(function(card, i) {
+    var el = document.createElement('div');
+    el.className = 'pitch-card face-down';
+    el.innerHTML = '<span class="card-content">' + card.text + '</span>';
+    el.dataset.index = i;
+    el.addEventListener('click', function() { pitchCardClick(i, el); });
+    table.appendChild(el);
+  });
+
+  document.getElementById('submitPitchBtn').disabled = true;
+  document.getElementById('submitPitchBtn').style.display = 'block';
+  document.getElementById('pitchFeedback').innerHTML = '';
+  document.getElementById('r3NextArea').style.display = 'none';
+
+  setHost('The Dragons are ready. ' + s.business.replace(/[^\w\s]/g, '').trim() + ' needs your help!');
+
+  // Reset dragons
+  for (var i = 1; i <= 4; i++) {
+    document.getElementById('dragon' + i).style.animation = '';
+  }
+}
+
+function pitchCardClick(index, el) {
+  if (pitchLocked) return;
+
+  var s = pitchScenarios[scenarioOrder[currentScenario]];
+
+  // If face down, flip it
+  if (el.classList.contains('face-down')) {
+    el.classList.remove('face-down');
+    return;
+  }
+
+  // If already selected, deselect
+  if (el.classList.contains('selected')) {
+    el.classList.remove('selected');
+    selectedCards = selectedCards.filter(function(i) { return i !== index; });
+  } else if (selectedCards.length < s.correct.length) {
+    el.classList.add('selected');
+    selectedCards.push(index);
+  }
+
+  document.getElementById('submitPitchBtn').disabled = selectedCards.length !== s.correct.length;
+}
+
+function submitPitch() {
+  if (pitchLocked) return;
+  pitchLocked = true;
+
+  var s = pitchScenarios[scenarioOrder[currentScenario]];
+  var correctCount = 0;
+
+  // Reveal results
+  document.querySelectorAll('#cardsTable .pitch-card').forEach(function(el, i) {
+    el.classList.add('locked');
+    var card = pitchCards[i];
+
+    if (selectedCards.indexOf(i) !== -1) {
+      if (card.isReal) {
+        el.classList.remove('selected');
+        el.classList.add('correct-reveal');
+        correctCount++;
+      } else {
+        el.classList.remove('selected');
+        el.classList.add('wrong-reveal');
+      }
+    } else {
+      if (card.isReal) {
+        el.classList.remove('face-down');
+        el.classList.add('correct-reveal');
+        el.style.opacity = '0.5';
+        el.querySelector('.card-content').style.display = 'block';
+      }
+    }
+  });
+
+  round3Correct += correctCount;
+  var pts = correctCount * 200;
+  round3Score += pts;
+  addScore(pts);
+
+  var scenarioMax = s.correct.length;
+
+  // Dragon reactions
+  if (correctCount === scenarioMax) {
+    for (var i = 1; i <= 4; i++) {
+      document.getElementById('dragon' + i).style.animation = 'dragonNod 0.5s ease-in-out 3';
+    }
+    audienceCheer();
+    spawnConfetti();
+    incrementStreak();
+    setHost("All Dragons are impressed! Perfect pitch!");
+    floatScore(window.innerWidth / 2, 200, '+£' + pts + ' PERFECT!', '#f59e0b');
+  } else if (correctCount >= Math.ceil(scenarioMax / 2)) {
+    document.getElementById('dragon1').style.animation = 'dragonNod 0.5s ease-in-out 3';
+    document.getElementById('dragon2').style.animation = 'dragonNod 0.5s ease-in-out 3';
+    document.getElementById('dragon3').style.animation = 'dragonShake 0.4s ease-in-out 2';
+    document.getElementById('dragon4').style.animation = 'dragonNod 0.5s ease-in-out 3';
+    streak = 0;
+    updateHUD();
+    setHost('Decent pitch! ' + correctCount + '/' + scenarioMax + ' correct.');
+    floatScore(window.innerWidth / 2, 200, '+£' + pts, '#2ecc71');
+  } else {
+    for (var i = 1; i <= 4; i++) {
+      document.getElementById('dragon' + i).style.animation = 'dragonShake 0.4s ease-in-out 3';
+    }
+    loseLife();
+    audienceBoo();
+    setHost("The Dragons are not impressed...");
+    floatScore(window.innerWidth / 2, 200, '+£' + pts, '#e74c3c');
+  }
+
+  // Mark scheme feedback
+  var feedbackHTML =
+    '<div class="teleprompter" style="margin-top:15px;">' +
+      '<div class="tp-label">Mark Scheme - Advantages of a Mobile App</div>';
+  s.correct.forEach(function(c) {
+    feedbackHTML += '<div style="padding:4px 0;">✅ ' + c + ' [1 mark]</div>';
+  });
+  feedbackHTML += '</div>';
+  document.getElementById('pitchFeedback').innerHTML = feedbackHTML;
+
+  document.getElementById('submitPitchBtn').style.display = 'none';
+  document.getElementById('r3NextArea').style.display = 'block';
+
+  if (currentScenario >= scenarioOrder.length - 1) {
+    document.getElementById('r3NextBtn').textContent = 'See Results →';
+    document.getElementById('r3NextBtn').onclick = showResults;
+  }
+}
+
+function nextScenario() {
+  currentScenario++;
+  if (currentScenario < scenarioOrder.length) {
+    loadScenario();
+  }
+}
+
+// ===================== RESULTS =====================
+function showResults() {
+  // Calculate max possible score
+  var maxR1 = 15 * 100;
+  var maxR2 = 10 * 150;
+  var maxR3Total = 0;
+  pitchScenarios.forEach(function(s) { maxR3Total += s.correct.length; });
+  var maxR3 = maxR3Total * 200;
+  var maxScore = maxR1 + maxR2 + maxR3;
+  var percent = Math.round((totalScore / maxScore) * 100);
+
+  var rank, badge, subtitle;
+  if (percent >= 85) {
+    rank = 'App Store Director'; badge = '🏆'; subtitle = 'Outstanding! You run the show!';
+  } else if (percent >= 65) {
+    rank = 'Senior Reviewer'; badge = '🥇'; subtitle = 'Excellent app knowledge!';
+  } else if (percent >= 40) {
+    rank = 'App Reviewer'; badge = '🥈'; subtitle = 'Solid performance, keep learning!';
+  } else {
+    rank = 'App Intern'; badge = '🥉'; subtitle = 'Good start - revise and try again!';
+  }
+
+  document.getElementById('resultsBadge').textContent = badge;
+  document.getElementById('resultsRank').textContent = rank;
+  document.getElementById('resultsSubtitle').textContent = subtitle;
+
+  document.getElementById('resultsBreakdown').innerHTML =
+    '<h3>Score Breakdown</h3>' +
+    '<div class="rb-row"><span class="rb-label">💰 Total Prize Money</span><span class="rb-value green">£' + prizeMoney + '</span></div>' +
+    '<div class="rb-row"><span class="rb-label">🏭 Round 1: The Conveyor</span><span class="rb-value">' + round1Correct + '/15 apps (£' + round1Score + ')</span></div>' +
+    '<div class="rb-row"><span class="rb-label">🔍 Round 2: Truth Detector</span><span class="rb-value">' + round2Correct + '/' + round2Total + ' correct (£' + round2Score + ')</span></div>' +
+    '<div class="rb-row"><span class="rb-label">🐉 Round 3: The Pitch</span><span class="rb-value">' + round3Correct + '/' + round3TotalMarks + ' advantages (£' + round3Score + ')</span></div>' +
+    '<div class="rb-row"><span class="rb-label">⭐ Lives Remaining</span><span class="rb-value">' + lives + '/3</span></div>' +
+    '<div class="rb-row"><span class="rb-label">🎯 Overall Score</span><span class="rb-value amber">' + percent + '%</span></div>';
+
+  var revisionHTML = '<h3>Key Revision Points</h3>';
+  revisionHTML += '<div class="revision-point"><strong>Mobile Apps:</strong> Software applications designed specifically for mobile devices (smartphones, tablets)</div>';
+  revisionHTML += '<div class="revision-point"><strong>App Stores:</strong> Apps are downloaded from stores like Google Play and Apple App Store</div>';
+  revisionHTML += '<div class="revision-point"><strong>Hardware Access:</strong> Apps can use device features like GPS, camera, microphone, and sensors</div>';
+  revisionHTML += '<div class="revision-point"><strong>Offline Use:</strong> Some apps work without internet; others need a connection for full functionality</div>';
+  revisionHTML += '<div class="revision-point"><strong>Pre-installed Apps:</strong> Smartphones come with pre-loaded apps (phone, messages, browser, camera)</div>';
+  revisionHTML += '<div class="revision-point"><strong>Business Advantages:</strong> Direct communication, push notifications, 24/7 availability, data collection, remote access</div>';
+  revisionHTML += '<div class="revision-point"><strong>Education Benefits:</strong> Teaching & learning opportunities, multimedia content, self-paced learning, anytime access</div>';
+
+  if (missedApps.length > 0) {
+    revisionHTML += '<div class="revision-point" style="color:#f59e0b;"><strong>Apps to revise:</strong> ' + missedApps.slice(0, 6).join(', ') + '</div>';
+  }
+  if (wrongTruth.length > 0) {
+    revisionHTML += '<div class="revision-point" style="color:#f59e0b;"><strong>Statements to revise:</strong> ' + wrongTruth.join('; ') + '</div>';
+  }
+
+  document.getElementById('revisionBox').innerHTML = revisionHTML;
+
+  showScreen('resultsScreen');
+  setHost("That's a wrap on App Review Live! Check your scores!");
+
+  if (percent >= 65) {
+    spawnConfetti();
+    audienceCheer();
+  }
+}
+</script>
+</body>
+</html>
