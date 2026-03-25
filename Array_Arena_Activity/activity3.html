@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scenario Solver - Array Arena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#021a12,#03301e);color:#e0e0e0;min-height:100vh;overflow-x:hidden}
+.container{max-width:850px;margin:0 auto;padding:20px}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#94a3b8;text-decoration:none;font-size:0.9rem;margin-bottom:16px;padding:6px 12px;border-radius:8px;transition:all 0.3s}
+.back-link:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.header{text-align:center;margin-bottom:24px}
+.header h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#059669,#34D399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header p{color:#94a3b8;font-size:0.95rem;margin-top:4px}
+
+.welcome{background:rgba(5,150,105,0.08);border:2px solid rgba(5,150,105,0.25);border-radius:20px;padding:40px;text-align:center;animation:fadeIn 0.5s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.welcome h2{font-size:1.8rem;color:#34D399;margin-bottom:12px}
+.welcome p{color:#94a3b8;line-height:1.8;margin-bottom:8px}
+.mission{background:rgba(5,150,105,0.1);border-radius:12px;padding:16px;margin:16px 0;border-left:4px solid #059669}
+.mission p{color:#e0e0e0;font-size:0.95rem}
+.start-btn{background:linear-gradient(135deg,#059669,#34D399);color:#fff;border:none;padding:16px 48px;border-radius:14px;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all 0.3s;margin-top:16px}
+.start-btn:hover{transform:scale(1.05);filter:brightness(1.15)}
+
+/* HUD */
+.hud{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(255,255,255,0.04);border-radius:14px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.06)}
+.hud-item{text-align:center}
+.hud-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:#64748b}
+.hud-value{font-size:1.2rem;font-weight:700;color:#34D399}
+
+/* Scenario card */
+.scenario-card{background:rgba(5,150,105,0.08);border:2px solid rgba(5,150,105,0.2);border-radius:16px;padding:20px;margin-bottom:16px}
+.scenario-emoji{font-size:2.5rem;text-align:center;display:block;margin-bottom:8px}
+.scenario-title{font-size:1.2rem;font-weight:700;color:#34D399;text-align:center;margin-bottom:8px}
+.scenario-text{color:#e0e0e0;font-size:0.95rem;line-height:1.7;text-align:center}
+
+/* Stage */
+.stage-box{background:rgba(255,255,255,0.04);border-radius:16px;padding:24px;border:1px solid rgba(255,255,255,0.06);margin-bottom:16px}
+.stage-label{display:inline-block;padding:4px 16px;border-radius:50px;font-size:0.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.stage-validate{background:rgba(245,158,11,0.2);color:#F59E0B;border:1px solid rgba(245,158,11,0.3)}
+.stage-calculate{background:rgba(56,189,248,0.2);color:#38BDF8;border:1px solid rgba(56,189,248,0.3)}
+.stage-selection{background:rgba(168,85,247,0.2);color:#A78BFA;border:1px solid rgba(168,85,247,0.3)}
+.stage-output{background:rgba(52,211,153,0.2);color:#34D399;border:1px solid rgba(52,211,153,0.3)}
+.stage-question{font-size:1.05rem;color:#fff;margin-bottom:16px;line-height:1.6}
+
+/* MCQ options */
+.options{display:flex;flex-direction:column;gap:10px}
+.option-btn{background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 18px;font-size:0.95rem;color:#e0e0e0;cursor:pointer;transition:all 0.3s;text-align:left;font-family:'Courier New',monospace;line-height:1.5;white-space:pre-wrap}
+.option-btn:hover{background:rgba(5,150,105,0.15);border-color:rgba(5,150,105,0.4)}
+.option-btn.correct{background:rgba(46,204,113,0.2);border-color:#2ecc71;color:#2ecc71}
+.option-btn.wrong{background:rgba(231,76,60,0.2);border-color:#e74c3c;color:#e74c3c}
+
+.feedback{margin-top:12px;padding:12px 16px;border-radius:10px;font-size:0.9rem;line-height:1.6;display:none}
+.feedback.correct-fb{display:block;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);color:#2ecc71}
+.feedback.wrong-fb{display:block;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);color:#e74c3c}
+
+.next-stage-btn{background:linear-gradient(135deg,#059669,#34D399);color:#fff;border:none;padding:12px 36px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;display:none;margin:16px auto 0}
+.next-stage-btn:hover{transform:scale(1.05)}
+
+/* Progress steps */
+.stage-progress{display:flex;justify-content:center;gap:8px;margin-bottom:16px}
+.stage-dot{width:40px;height:8px;border-radius:4px;background:rgba(255,255,255,0.1);transition:all 0.3s}
+.stage-dot.active{background:#34D399}
+.stage-dot.completed{background:#059669}
+
+/* Score animation */
+.score-pop{position:fixed;font-size:1.8rem;font-weight:800;pointer-events:none;z-index:100;color:#2ecc71;animation:popUp 1s forwards}
+@keyframes popUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(1.3)}}
+
+/* Results */
+.results{display:none;text-align:center;animation:fadeIn 0.6s}
+.results h2{font-size:2.2rem;color:#34D399;margin-bottom:16px}
+.rank-badge{display:inline-block;padding:12px 32px;border-radius:50px;font-size:1.3rem;font-weight:800;margin:12px 0;letter-spacing:1px}
+.rank-trainee{background:rgba(148,163,184,0.2);color:#94a3b8;border:2px solid #94a3b8}
+.rank-analyst{background:rgba(56,189,248,0.2);color:#38BDF8;border:2px solid #38BDF8}
+.rank-architect{background:rgba(168,85,247,0.2);color:#A78BFA;border:2px solid #A78BFA}
+.rank-director{background:rgba(245,158,11,0.2);color:#F59E0B;border:2px solid #F59E0B;animation:glow 2s infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 10px rgba(245,158,11,0.3)}50%{box-shadow:0 0 30px rgba(245,158,11,0.6)}}
+.score-breakdown{background:rgba(255,255,255,0.04);border-radius:16px;padding:24px;margin:20px 0;border:1px solid rgba(255,255,255,0.06)}
+.score-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}.score-row:last-child{border-bottom:none}
+.revision-box{background:rgba(5,150,105,0.08);border:1px solid rgba(5,150,105,0.2);border-radius:12px;padding:16px;margin-top:16px;text-align:left}
+.revision-box h3{color:#34D399;margin-bottom:8px;font-size:1rem}
+.revision-box li{color:#94a3b8;font-size:0.9rem;line-height:1.7}
+.retry-btn{background:linear-gradient(135deg,#059669,#34D399);color:#fff;border:none;padding:14px 40px;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:20px;transition:all 0.3s}
+.retry-btn:hover{transform:scale(1.05)}
+.confetti{position:fixed;top:-10px;width:10px;height:10px;z-index:99;pointer-events:none;animation:confettiFall linear forwards}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+.hidden{display:none}
+@media(max-width:600px){.option-btn{font-size:0.85rem;padding:10px 14px}}
+</style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">&larr; Back to Array Arena</a>
+    <div class="header">
+        <h1>🧩 Scenario Solver</h1>
+        <p>Build complete algorithms stage by stage</p>
+    </div>
+
+    <div class="welcome" id="welcomeScreen">
+        <h2>🧩 Mission Briefing</h2>
+        <p>Real businesses need real algorithms!</p>
+        <div class="mission">
+            <p>You'll solve <strong>4 real-world scenarios</strong>, each broken into stages: <strong>Validation → Calculation → Selection → Output</strong>. At each stage, pick the correct code from multiple choices. Mark-scheme feedback tells you exactly what the examiner expects!</p>
+        </div>
+        <p>🏆 Ranks: Trainee → Analyst → Architect → Director</p>
+        <div style="background:rgba(5,150,105,0.06);border:1px solid rgba(5,150,105,0.15);border-radius:10px;padding:10px 16px;margin-top:16px;text-align:center">
+            <p style="font-size:0.78rem;color:#7a8fa3;line-height:1.5">&#x1F4DD; <strong style="color:#94a3b8">Syntax Note:</strong> These activities use C# syntax where arrays are declared with curly braces <code style="background:rgba(255,255,255,0.06);padding:2px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:0.78rem;color:#c0c8d4">{ }</code>. In CCEA pseudocode exams, parentheses <code style="background:rgba(255,255,255,0.06);padding:2px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:0.78rem;color:#c0c8d4">( )</code> are used instead.</p>
+        </div>
+        <button class="start-btn" onclick="startGame()">SOLVE SCENARIOS &rarr;</button>
+    </div>
+
+    <div id="gameScreen" class="hidden">
+        <div class="hud">
+            <div class="hud-item"><div class="hud-label">Scenario</div><div class="hud-value" id="scenNum">1/4</div></div>
+            <div class="hud-item"><div class="hud-label">Stage</div><div class="hud-value" id="stageNum">1/4</div></div>
+            <div class="hud-item"><div class="hud-label">Score</div><div class="hud-value" id="score">0</div></div>
+            <div class="hud-item"><div class="hud-label">Accuracy</div><div class="hud-value" id="accuracy">100%</div></div>
+        </div>
+        <div class="stage-progress" id="stageProgress"></div>
+        <div class="scenario-card" id="scenarioCard">
+            <span class="scenario-emoji" id="scenEmoji"></span>
+            <div class="scenario-title" id="scenTitle"></div>
+            <div class="scenario-text" id="scenText"></div>
+        </div>
+        <div class="stage-box" id="stageBox">
+            <span class="stage-label" id="stageLabel"></span>
+            <div class="stage-question" id="stageQuestion"></div>
+            <div class="options" id="options"></div>
+            <div class="feedback" id="feedback"></div>
+            <button class="next-stage-btn" id="nextBtn" onclick="nextStage()">NEXT STAGE →</button>
+        </div>
+    </div>
+
+    <div class="results" id="resultsScreen">
+        <h2>🧩 All Scenarios Solved!</h2>
+        <div id="rankBadge" class="rank-badge"></div>
+        <div class="score-breakdown" id="scoreBreakdown"></div>
+        <div class="revision-box">
+            <h3>📚 Scenario Algorithm Pattern</h3>
+            <ul>
+                <li><strong>Step 1 — Validate:</strong> DO WHILE loop ensures valid input (runs at least once)</li>
+                <li><strong>Step 2 — Calculate:</strong> totalCost = quantity × pricePerItem</li>
+                <li><strong>Step 3 — Selection:</strong> IF / ELSE IF to apply discount tiers (check highest first!)</li>
+                <li><strong>Step 4 — Output:</strong> totalCost = totalCost - discount, then OUTPUT the result</li>
+                <li>This pattern appears in <strong>every CCEA past paper</strong> from 2019-2025!</li>
+            </ul>
+        </div>
+        <button class="retry-btn" onclick="location.reload()">🔄 Try Again</button>
+        <br><br><a href="index.html" class="back-link">&larr; Back to Array Arena</a>
+    </div>
+</div>
+
+<script>
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+const scenarios = [
+    {
+        emoji:'🎬', title:'Cinema Tickets',
+        text:'StarScreen Cinema sells tickets at £8.50 each. Customers can buy 1-10 tickets. Groups of 6+ get 15% discount.',
+        stages:[
+            {
+                type:'validate', label:'Stage 1: Validation',
+                question:'Which code correctly validates the number of tickets (must be 1-10)?',
+                correct:'DO\n    OUTPUT "Enter tickets (1-10):"\n    INPUT numTickets\n    IF numTickets < 1 OR numTickets > 10 THEN\n        OUTPUT "Error - must be 1-10"\n    ENDIF\nWHILE numTickets < 1 OR numTickets > 10',
+                options:[
+                    'DO\n    OUTPUT "Enter tickets (1-10):"\n    INPUT numTickets\n    IF numTickets < 1 OR numTickets > 10 THEN\n        OUTPUT "Error - must be 1-10"\n    ENDIF\nWHILE numTickets < 1 OR numTickets > 10',
+                    'WHILE numTickets < 1 OR numTickets > 10\n    OUTPUT "Enter tickets (1-10):"\n    INPUT numTickets\nENDWHILE',
+                    'INPUT numTickets\nIF numTickets < 1 OR numTickets > 10 THEN\n    OUTPUT "Error"\nENDIF'
+                ],
+                feedback:'DO WHILE ensures the input happens at least once before checking. The error message tells the user what went wrong. [2 marks: 1 for DO WHILE structure, 1 for error message]'
+            },
+            {
+                type:'calculate', label:'Stage 2: Calculation',
+                question:'Which code correctly calculates the base cost?',
+                correct:'pricePerTicket = 8.50\ntotalCost = numTickets * pricePerTicket',
+                options:[
+                    'pricePerTicket = 8.50\ntotalCost = numTickets * pricePerTicket',
+                    'totalCost = numTickets * 8.50\npricePerTicket = 8.50',
+                    'pricePerTicket = 8.50\ntotalCost = numTickets + pricePerTicket'
+                ],
+                feedback:'Set the price constant FIRST, then multiply. Using a named variable (pricePerTicket) is better practice than a magic number. [2 marks: 1 for price variable, 1 for correct multiplication]'
+            },
+            {
+                type:'selection', label:'Stage 3: Discount Selection',
+                question:'Which code correctly applies the 15% group discount for 6+ tickets?',
+                correct:'IF numTickets >= 6 THEN\n    discount = totalCost * 0.15\nELSE\n    discount = 0\nENDIF',
+                options:[
+                    'IF numTickets >= 6 THEN\n    discount = totalCost * 0.15\nELSE\n    discount = 0\nENDIF',
+                    'IF numTickets > 6 THEN\n    discount = totalCost * 0.15\nENDIF',
+                    'IF numTickets >= 6 THEN\n    discount = 0.15\nELSE\n    discount = 0\nENDIF'
+                ],
+                feedback:'>= 6 (not > 6) because "6 or more" includes 6. Discount = totalCost * 0.15 (not just 0.15). ELSE sets discount to 0. [3 marks: 1 for >= condition, 1 for correct calculation, 1 for ELSE clause]'
+            },
+            {
+                type:'output', label:'Stage 4: Final Output',
+                question:'Which code correctly calculates the final total and outputs it?',
+                correct:'totalCost = totalCost - discount\nOUTPUT "Total: £" + totalCost',
+                options:[
+                    'totalCost = totalCost - discount\nOUTPUT "Total: £" + totalCost',
+                    'OUTPUT "Total: £" + totalCost - discount',
+                    'totalCost = totalCost - 0.15\nOUTPUT "Total: £" + totalCost'
+                ],
+                feedback:'Subtract the discount FROM totalCost first, THEN output. The output includes a formatted message with the £ sign. [2 marks: 1 for subtraction, 1 for OUTPUT with message]'
+            }
+        ]
+    },
+    {
+        emoji:'🍕', title:'Pizza Palace',
+        text:'Pizza Palace sells pizzas: Small £6.99, Medium £9.99, Large £12.99. Customers choose size (1-3) and number of toppings (0-5) at £1.50 each. Orders over £20 get 10% off.',
+        stages:[
+            {
+                type:'validate', label:'Stage 1: Validate Size',
+                question:'Which code validates the pizza size selection (1=Small, 2=Medium, 3=Large)?',
+                correct:'DO\n    OUTPUT "Choose size (1-Small, 2-Medium, 3-Large):"\n    INPUT size\n    IF size < 1 OR size > 3 THEN\n        OUTPUT "Error - enter 1, 2 or 3"\n    ENDIF\nWHILE size < 1 OR size > 3',
+                options:[
+                    'DO\n    OUTPUT "Choose size (1-Small, 2-Medium, 3-Large):"\n    INPUT size\n    IF size < 1 OR size > 3 THEN\n        OUTPUT "Error - enter 1, 2 or 3"\n    ENDIF\nWHILE size < 1 OR size > 3',
+                    'INPUT size\nWHILE size < 1 OR size > 3\n    OUTPUT "Error"\n    INPUT size\nENDWHILE',
+                    'DO\n    INPUT size\nWHILE size != 1 AND size != 2 AND size != 3'
+                ],
+                feedback:'DO WHILE for validation. Clear prompt tells user the options. Error message says what is expected. [2 marks]'
+            },
+            {
+                type:'calculate', label:'Stage 2: Calculate Base Cost',
+                question:'Which code correctly sets the pizza price based on size choice?',
+                correct:'IF size == 1 THEN\n    pizzaPrice = 6.99\nELSE IF size == 2 THEN\n    pizzaPrice = 9.99\nELSE\n    pizzaPrice = 12.99\nENDIF\ntotalCost = pizzaPrice + (numToppings * 1.50)',
+                options:[
+                    'IF size == 1 THEN\n    pizzaPrice = 6.99\nELSE IF size == 2 THEN\n    pizzaPrice = 9.99\nELSE\n    pizzaPrice = 12.99\nENDIF\ntotalCost = pizzaPrice + (numToppings * 1.50)',
+                    'pizzaPrice = size * 6.99\ntotalCost = pizzaPrice + numToppings',
+                    'IF size == 1 THEN\n    totalCost = 6.99\nELSE IF size == 2 THEN\n    totalCost = 9.99\nENDIF\ntotalCost = totalCost + numToppings * 1.50'
+                ],
+                feedback:'IF/ELSE IF maps size number to price. Total = base price + (toppings x topping price). [3 marks: 1 for IF structure, 1 for correct prices, 1 for total calculation]'
+            },
+            {
+                type:'selection', label:'Stage 3: Apply Discount',
+                question:'Which code applies 10% discount for orders over £20?',
+                correct:'IF totalCost > 20 THEN\n    discount = totalCost * 0.10\nELSE\n    discount = 0\nENDIF',
+                options:[
+                    'IF totalCost > 20 THEN\n    discount = totalCost * 0.10\nELSE\n    discount = 0\nENDIF',
+                    'IF totalCost >= 20 THEN\n    discount = totalCost * 0.10\nENDIF',
+                    'IF totalCost > 20 THEN\n    totalCost = totalCost * 0.90\nENDIF'
+                ],
+                feedback:'"Over £20" means > 20 (not >=). Calculate discount as a separate variable. Include ELSE to set discount = 0. [2 marks]'
+            },
+            {
+                type:'output', label:'Stage 4: Final Output',
+                question:'Which code produces the final output?',
+                correct:'totalCost = totalCost - discount\nOUTPUT "Your pizza costs: £" + totalCost',
+                options:[
+                    'totalCost = totalCost - discount\nOUTPUT "Your pizza costs: £" + totalCost',
+                    'OUTPUT "Your pizza costs: £" + totalCost - discount',
+                    'OUTPUT totalCost - discount'
+                ],
+                feedback:'Subtract discount first, then output with a descriptive message including the £ symbol. [2 marks]'
+            }
+        ]
+    },
+    {
+        emoji:'🚗', title:'QuickRent Car Rental',
+        text:'QuickRent charges £45 per day. Customers rent for 1-30 days. Optional insurance costs £12/day. Rentals of 7+ days get 20% off the car cost (not insurance).',
+        stages:[
+            {
+                type:'validate', label:'Stage 1: Validate Days',
+                question:'Which code validates the rental period (1-30 days)?',
+                correct:'DO\n    OUTPUT "Enter rental days (1-30):"\n    INPUT numDays\n    IF numDays < 1 OR numDays > 30 THEN\n        OUTPUT "Error - must be 1-30 days"\n    ENDIF\nWHILE numDays < 1 OR numDays > 30',
+                options:[
+                    'DO\n    OUTPUT "Enter rental days (1-30):"\n    INPUT numDays\n    IF numDays < 1 OR numDays > 30 THEN\n        OUTPUT "Error - must be 1-30 days"\n    ENDIF\nWHILE numDays < 1 OR numDays > 30',
+                    'INPUT numDays\nIF numDays < 1 OR numDays > 30 THEN\n    OUTPUT "Invalid"\nENDIF',
+                    'DO\n    INPUT numDays\nWHILE numDays >= 1 AND numDays <= 30'
+                ],
+                feedback:'DO WHILE loop with clear range in prompt. Condition checks BOTH boundaries with OR. Error message states the valid range. [2 marks]'
+            },
+            {
+                type:'calculate', label:'Stage 2: Calculate Costs',
+                question:'Which code correctly calculates car cost and asks about insurance?',
+                correct:'dailyRate = 45\ncarCost = numDays * dailyRate\nOUTPUT "Add insurance? (Y/N):"\nINPUT wantInsurance\nIF wantInsurance == "Y" THEN\n    insuranceCost = numDays * 12\nELSE\n    insuranceCost = 0\nENDIF',
+                options:[
+                    'dailyRate = 45\ncarCost = numDays * dailyRate\nOUTPUT "Add insurance? (Y/N):"\nINPUT wantInsurance\nIF wantInsurance == "Y" THEN\n    insuranceCost = numDays * 12\nELSE\n    insuranceCost = 0\nENDIF',
+                    'carCost = numDays * 45\ninsuranceCost = numDays * 12',
+                    'dailyRate = 45\ncarCost = numDays * dailyRate + 12'
+                ],
+                feedback:'Calculate car cost separately. Ask user about insurance with Y/N input. IF/ELSE to set insurance cost. [3 marks]'
+            },
+            {
+                type:'selection', label:'Stage 3: Apply Discount',
+                question:'Which code applies the 20% discount on CAR COST ONLY for 7+ days?',
+                correct:'IF numDays >= 7 THEN\n    discount = carCost * 0.20\nELSE\n    discount = 0\nENDIF',
+                options:[
+                    'IF numDays >= 7 THEN\n    discount = carCost * 0.20\nELSE\n    discount = 0\nENDIF',
+                    'IF numDays >= 7 THEN\n    discount = (carCost + insuranceCost) * 0.20\nELSE\n    discount = 0\nENDIF',
+                    'IF numDays > 7 THEN\n    discount = carCost * 0.20\nENDIF'
+                ],
+                feedback:'Discount applies to carCost ONLY (not insurance). "7 or more" = >= 7. Always include ELSE discount = 0. [2 marks]'
+            },
+            {
+                type:'output', label:'Stage 4: Final Output',
+                question:'Which code calculates and outputs the final total?',
+                correct:'totalCost = (carCost - discount) + insuranceCost\nOUTPUT "Total rental: £" + totalCost',
+                options:[
+                    'totalCost = (carCost - discount) + insuranceCost\nOUTPUT "Total rental: £" + totalCost',
+                    'totalCost = carCost + insuranceCost - discount\nOUTPUT totalCost',
+                    'OUTPUT "Total: £" + carCost - discount + insuranceCost'
+                ],
+                feedback:'Subtract discount from car cost, THEN add insurance. Brackets make the order clear. OUTPUT includes descriptive text. [2 marks]'
+            }
+        ]
+    },
+    {
+        emoji:'🏋️', title:'FitLife Gym',
+        text:'FitLife charges £35/month. Customers pay monthly or annually. Annual members get 2 months free (pay for 10, get 12). Students get an extra 15% off.',
+        stages:[
+            {
+                type:'validate', label:'Stage 1: Validate Payment Type',
+                question:'Which code validates the payment choice (M=monthly, A=annual)?',
+                correct:'DO\n    OUTPUT "Payment type (M/A):"\n    INPUT payType\n    IF payType != "M" AND payType != "A" THEN\n        OUTPUT "Error - enter M or A"\n    ENDIF\nWHILE payType != "M" AND payType != "A"',
+                options:[
+                    'DO\n    OUTPUT "Payment type (M/A):"\n    INPUT payType\n    IF payType != "M" AND payType != "A" THEN\n        OUTPUT "Error - enter M or A"\n    ENDIF\nWHILE payType != "M" AND payType != "A"',
+                    'INPUT payType\nIF payType == "M" OR payType == "A" THEN\n    OUTPUT "Valid"\nENDIF',
+                    'DO\n    INPUT payType\nWHILE payType == "M" OR payType == "A"'
+                ],
+                feedback:'For character validation, use != with AND: "not M AND not A" means invalid. The third option would loop WHILE valid (wrong way round!). [2 marks]'
+            },
+            {
+                type:'calculate', label:'Stage 2: Calculate Base Cost',
+                question:'Which code sets the correct price based on payment type?',
+                correct:'monthlyRate = 35\nIF payType == "M" THEN\n    totalCost = monthlyRate\nELSE\n    totalCost = monthlyRate * 10\nENDIF',
+                options:[
+                    'monthlyRate = 35\nIF payType == "M" THEN\n    totalCost = monthlyRate\nELSE\n    totalCost = monthlyRate * 10\nENDIF',
+                    'IF payType == "A" THEN\n    totalCost = 35 * 12\nELSE\n    totalCost = 35\nENDIF',
+                    'totalCost = 35\nIF payType == "A" THEN\n    totalCost = totalCost * 12\nENDIF'
+                ],
+                feedback:'Annual = pay for 10 months (not 12). Monthly = 1 month charge. The second option charges for 12 months (no free months!). [2 marks]'
+            },
+            {
+                type:'selection', label:'Stage 3: Student Discount',
+                question:'Which code asks about student status and applies 15% discount?',
+                correct:'OUTPUT "Are you a student? (Y/N):"\nINPUT isStudent\nIF isStudent == "Y" THEN\n    discount = totalCost * 0.15\nELSE\n    discount = 0\nENDIF',
+                options:[
+                    'OUTPUT "Are you a student? (Y/N):"\nINPUT isStudent\nIF isStudent == "Y" THEN\n    discount = totalCost * 0.15\nELSE\n    discount = 0\nENDIF',
+                    'INPUT isStudent\nIF isStudent THEN\n    discount = 0.15\nENDIF',
+                    'IF isStudent == "Y" THEN\n    totalCost = totalCost - 15\nENDIF'
+                ],
+                feedback:'Ask user with clear prompt. 15% of totalCost (not a flat £15). Compare string "Y". Include ELSE for no discount. [3 marks]'
+            },
+            {
+                type:'output', label:'Stage 4: Final Output',
+                question:'Which code outputs the final membership cost?',
+                correct:'totalCost = totalCost - discount\nOUTPUT "Membership cost: £" + totalCost',
+                options:[
+                    'totalCost = totalCost - discount\nOUTPUT "Membership cost: £" + totalCost',
+                    'OUTPUT "Cost: " + totalCost - discount',
+                    'OUTPUT "£" + totalCost\ntotalCost = totalCost - discount'
+                ],
+                feedback:'Calculate final total BEFORE outputting. Include descriptive label and £ symbol. [2 marks]'
+            }
+        ]
+    }
+];
+
+let currentScen=0, currentStage=0, totalScore=0, totalCorrect=0, totalQ=0, scenScores=[];
+
+function startGame(){
+    document.getElementById('welcomeScreen').classList.add('hidden');
+    document.getElementById('gameScreen').classList.remove('hidden');
+    currentScen=0; currentStage=0; totalScore=0; totalCorrect=0; totalQ=0; scenScores=[];
+    loadScenario();
+}
+
+function loadScenario(){
+    const s = scenarios[currentScen];
+    currentStage = 0;
+    document.getElementById('scenNum').textContent = `${currentScen+1}/${scenarios.length}`;
+    document.getElementById('scenEmoji').textContent = s.emoji;
+    document.getElementById('scenTitle').textContent = s.title;
+    document.getElementById('scenText').textContent = s.text;
+    // Build stage progress dots
+    const progDiv = document.getElementById('stageProgress');
+    progDiv.innerHTML = '';
+    s.stages.forEach((_,i)=>{
+        const dot = document.createElement('div');
+        dot.className = 'stage-dot' + (i===0?' active':'');
+        progDiv.appendChild(dot);
+    });
+    loadStage();
+}
+
+function loadStage(){
+    const s = scenarios[currentScen];
+    const st = s.stages[currentStage];
+    document.getElementById('stageNum').textContent = `${currentStage+1}/${s.stages.length}`;
+    const label = document.getElementById('stageLabel');
+    label.textContent = st.label;
+    label.className = 'stage-label stage-' + st.type;
+    document.getElementById('stageQuestion').textContent = st.question;
+    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('feedback').style.display = 'none';
+    document.getElementById('nextBtn').style.display = 'none';
+    // Options
+    const optsDiv = document.getElementById('options');
+    optsDiv.innerHTML = '';
+    const shuffled = shuffle([...st.options]);
+    shuffled.forEach(opt=>{
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = opt;
+        btn.onclick = ()=>handleAnswer(btn, opt, st);
+        optsDiv.appendChild(btn);
+    });
+}
+
+function handleAnswer(btn, selected, stage){
+    if(btn.classList.contains('correct')||btn.classList.contains('wrong')) return;
+    const allBtns = document.querySelectorAll('.option-btn');
+    allBtns.forEach(b=>b.style.pointerEvents='none');
+    totalQ++;
+    const fb = document.getElementById('feedback');
+    if(selected === stage.correct){
+        btn.classList.add('correct');
+        totalCorrect++;
+        totalScore += 10;
+        document.getElementById('score').textContent = totalScore;
+        fb.textContent = '✅ ' + stage.feedback;
+        fb.className = 'feedback correct-fb';
+        showScorePop(btn);
+    } else {
+        btn.classList.add('wrong');
+        allBtns.forEach(b=>{if(b.textContent===stage.correct) b.classList.add('correct')});
+        fb.textContent = '❌ ' + stage.feedback;
+        fb.className = 'feedback wrong-fb';
+    }
+    const pct = totalQ>0? Math.round((totalCorrect/totalQ)*100) : 100;
+    document.getElementById('accuracy').textContent = pct + '%';
+    document.getElementById('nextBtn').style.display = 'block';
+    // Update progress dots
+    const dots = document.querySelectorAll('.stage-dot');
+    if(dots[currentStage]) dots[currentStage].classList.add('completed');
+    if(dots[currentStage+1]) dots[currentStage+1].classList.add('active');
+}
+
+function showScorePop(btn){
+    const el = document.createElement('div');
+    el.className = 'score-pop';
+    el.textContent = '+10';
+    const rect = btn.getBoundingClientRect();
+    el.style.left = rect.left + rect.width/2 - 20 + 'px';
+    el.style.top = rect.top - 10 + 'px';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1000);
+}
+
+function nextStage(){
+    currentStage++;
+    const s = scenarios[currentScen];
+    if(currentStage >= s.stages.length){
+        currentScen++;
+        if(currentScen >= scenarios.length){showResults();return}
+        loadScenario();
+    } else {
+        loadStage();
+    }
+}
+
+function showResults(){
+    document.getElementById('gameScreen').classList.add('hidden');
+    document.getElementById('resultsScreen').style.display = 'block';
+    const pct = totalQ>0? Math.round((totalCorrect/totalQ)*100) : 0;
+    let rank, rankClass;
+    if(pct>=90){rank='🏆 DIRECTOR';rankClass='rank-director';spawnConfetti()}
+    else if(pct>=70){rank='⭐ Architect';rankClass='rank-architect'}
+    else if(pct>=50){rank='📊 Analyst';rankClass='rank-analyst'}
+    else{rank='🔰 Trainee';rankClass='rank-trainee'}
+    document.getElementById('rankBadge').textContent = rank;
+    document.getElementById('rankBadge').className = `rank-badge ${rankClass}`;
+    let html = '';
+    html += `<div class="score-row"><span>Correct Stages</span><span>${totalCorrect}/${totalQ}</span></div>`;
+    html += `<div class="score-row"><span>Accuracy</span><span>${pct}%</span></div>`;
+    html += `<div class="score-row"><span style="font-weight:700">Final Score</span><span style="font-weight:700;color:#34D399">${totalScore}</span></div>`;
+    document.getElementById('scoreBreakdown').innerHTML = html;
+}
+
+function spawnConfetti(){
+    const colours=['#059669','#34D399','#F59E0B','#2ecc71','#38BDF8','#FB7185'];
+    for(let i=0;i<50;i++){setTimeout(()=>{const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'vw';c.style.background=colours[Math.floor(Math.random()*colours.length)];c.style.borderRadius=Math.random()>0.5?'50%':'2px';c.style.width=(Math.random()*8+6)+'px';c.style.height=(Math.random()*8+6)+'px';c.style.animationDuration=(Math.random()*2+2)+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),4000)},i*40)}
+}
+</script>
+</body>
+</html>

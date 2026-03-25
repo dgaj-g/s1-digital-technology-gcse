@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Array Architect - Array Arena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#12082a,#1a1045);color:#e0e0e0;min-height:100vh;overflow-x:hidden}
+.container{max-width:850px;margin:0 auto;padding:20px}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#94a3b8;text-decoration:none;font-size:0.9rem;margin-bottom:16px;padding:6px 12px;border-radius:8px;transition:all 0.3s}
+.back-link:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.header{text-align:center;margin-bottom:24px}
+.header h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#4F46E5,#818CF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header p{color:#94a3b8;font-size:0.95rem;margin-top:4px}
+
+/* Welcome */
+.welcome{background:rgba(79,70,229,0.08);border:2px solid rgba(79,70,229,0.25);border-radius:20px;padding:40px;text-align:center;animation:fadeIn 0.5s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.welcome h2{font-size:1.8rem;color:#818CF8;margin-bottom:12px}
+.welcome p{color:#94a3b8;line-height:1.8;margin-bottom:8px}
+.mission{background:rgba(79,70,229,0.1);border-radius:12px;padding:16px;margin:16px 0;border-left:4px solid #4F46E5}
+.mission p{color:#e0e0e0;font-size:0.95rem}
+.start-btn{background:linear-gradient(135deg,#4F46E5,#818CF8);color:#fff;border:none;padding:16px 48px;border-radius:14px;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all 0.3s;margin-top:16px}
+.start-btn:hover{transform:scale(1.05);filter:brightness(1.15)}
+
+/* HUD */
+.hud{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(255,255,255,0.04);border-radius:14px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.06)}
+.hud-item{text-align:center}
+.hud-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:#64748b}
+.hud-value{font-size:1.3rem;font-weight:700;color:#818CF8}
+
+/* Stars */
+.stars-row{display:flex;justify-content:center;gap:12px;margin-bottom:16px}
+.star{font-size:2rem;opacity:0.2;transition:all 0.5s}
+.star.earned{opacity:1;animation:starPop 0.5s}
+@keyframes starPop{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* Challenge area */
+.challenge-box{background:rgba(255,255,255,0.04);border-radius:16px;padding:24px;border:1px solid rgba(255,255,255,0.06);margin-bottom:16px}
+.challenge-title{font-size:1.1rem;font-weight:700;color:#818CF8;margin-bottom:4px}
+.challenge-desc{font-size:1rem;color:#e0e0e0;margin-bottom:16px;line-height:1.6}
+
+/* Build zone */
+.build-zone{background:rgba(0,0,0,0.3);border:2px dashed rgba(129,140,248,0.3);border-radius:12px;min-height:180px;padding:12px;margin-bottom:16px;transition:border-color 0.3s}
+.build-zone.drag-over{border-color:#818CF8;background:rgba(79,70,229,0.1)}
+.build-zone .code-line{margin-bottom:6px}
+
+/* Toolbox */
+.toolbox-label{font-size:0.8rem;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.toolbox{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:rgba(255,255,255,0.02);border-radius:12px;border:1px solid rgba(255,255,255,0.04);min-height:60px}
+
+/* Code lines */
+.code-line{display:inline-flex;align-items:center;padding:8px 16px;background:rgba(79,70,229,0.15);border:2px solid rgba(79,70,229,0.3);border-radius:8px;font-family:'Courier New',monospace;font-size:0.9rem;color:#e0e0e0;cursor:grab;transition:all 0.2s;user-select:none}
+.code-line:hover{background:rgba(79,70,229,0.25);border-color:rgba(79,70,229,0.5);transform:translateY(-2px)}
+.code-line.dragging{opacity:0.4}
+.code-line.distractor{background:rgba(100,100,100,0.15);border-color:rgba(100,100,100,0.3)}
+.code-line.placed{cursor:pointer}
+.code-line.correct-line{background:rgba(46,204,113,0.2);border-color:#2ecc71}
+.code-line.wrong-line{background:rgba(231,76,60,0.2);border-color:#e74c3c}
+
+/* Check button */
+.check-btn{background:linear-gradient(135deg,#4F46E5,#818CF8);color:#fff;border:none;padding:12px 36px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;display:block;margin:0 auto}
+.check-btn:hover{transform:scale(1.05);filter:brightness(1.15)}
+.check-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;filter:none}
+
+.feedback{text-align:center;margin-top:12px;font-size:1rem;font-weight:600;min-height:24px}
+.feedback.correct-fb{color:#2ecc71}
+.feedback.wrong-fb{color:#e74c3c}
+
+.next-btn{background:linear-gradient(135deg,#059669,#34D399);color:#fff;border:none;padding:12px 36px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;display:none;margin:12px auto 0}
+.next-btn:hover{transform:scale(1.05)}
+
+/* Results */
+.results{display:none;text-align:center;animation:fadeIn 0.6s}
+.results h2{font-size:2.2rem;color:#818CF8;margin-bottom:16px}
+.total-stars{font-size:3rem;letter-spacing:8px;margin:16px 0}
+.score-breakdown{background:rgba(255,255,255,0.04);border-radius:16px;padding:24px;margin:20px 0;border:1px solid rgba(255,255,255,0.06)}
+.score-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.score-row:last-child{border-bottom:none}
+.revision-box{background:rgba(79,70,229,0.08);border:1px solid rgba(79,70,229,0.2);border-radius:12px;padding:16px;margin-top:16px;text-align:left}
+.revision-box h3{color:#818CF8;margin-bottom:8px;font-size:1rem}
+.revision-box li{color:#94a3b8;font-size:0.9rem;line-height:1.7}
+.retry-btn{background:linear-gradient(135deg,#4F46E5,#818CF8);color:#fff;border:none;padding:14px 40px;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:20px;transition:all 0.3s}
+.retry-btn:hover{transform:scale(1.05)}
+
+.confetti{position:fixed;top:-10px;width:10px;height:10px;z-index:99;pointer-events:none;animation:confettiFall linear forwards}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+.hidden{display:none}
+@media(max-width:600px){.code-line{font-size:0.8rem;padding:6px 12px}.container{padding:12px}}
+</style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">&larr; Back to Array Arena</a>
+    <div class="header">
+        <h1>🏗️ Array Architect</h1>
+        <p>Build algorithms that process arrays</p>
+    </div>
+
+    <div class="welcome" id="welcomeScreen">
+        <h2>🏗️ Mission Briefing</h2>
+        <p>Time to build!</p>
+        <div class="mission">
+            <p>You'll face <strong>5 coding challenges</strong>. For each one, drag the correct code lines from the toolbox into the build zone in the right order. Watch out for <strong>distractor lines</strong> that don't belong!</p>
+        </div>
+        <p>⭐ Earn up to 3 stars per challenge (first attempt = 3, second = 2, third = 1)</p>
+        <div style="background:rgba(79,70,229,0.06);border:1px solid rgba(79,70,229,0.15);border-radius:10px;padding:10px 16px;margin-top:16px;text-align:center">
+            <p style="font-size:0.78rem;color:#7a8fa3;line-height:1.5">&#x1F4DD; <strong style="color:#94a3b8">Syntax Note:</strong> These activities use C# syntax where arrays are declared with curly braces <code style="background:rgba(255,255,255,0.06);padding:2px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:0.78rem;color:#c0c8d4">{ }</code>. In CCEA pseudocode exams, parentheses <code style="background:rgba(255,255,255,0.06);padding:2px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:0.78rem;color:#c0c8d4">( )</code> are used instead.</p>
+        </div>
+        <button class="start-btn" onclick="startGame()">START BUILDING &rarr;</button>
+    </div>
+
+    <div id="gameScreen" class="hidden">
+        <div class="hud">
+            <div class="hud-item"><div class="hud-label">Challenge</div><div class="hud-value" id="challengeNum">1/5</div></div>
+            <div class="hud-item"><div class="hud-label">Stars</div><div class="hud-value" id="totalStars">⭐ 0</div></div>
+            <div class="hud-item"><div class="hud-label">Attempts</div><div class="hud-value" id="attempts">0</div></div>
+        </div>
+        <div class="stars-row" id="starsRow">
+            <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
+        </div>
+        <div class="challenge-box">
+            <div class="challenge-title" id="challengeTitle"></div>
+            <div class="challenge-desc" id="challengeDesc"></div>
+        </div>
+        <div class="toolbox-label">📦 Build Zone — drop code lines here in order:</div>
+        <div class="build-zone" id="buildZone"></div>
+        <div class="toolbox-label">🧰 Toolbox — drag lines from here:</div>
+        <div class="toolbox" id="toolbox"></div>
+        <br>
+        <button class="check-btn" id="checkBtn" onclick="checkAnswer()">CHECK ANSWER ✓</button>
+        <div class="feedback" id="feedback"></div>
+        <button class="next-btn" id="nextBtn" onclick="nextChallenge()">NEXT CHALLENGE →</button>
+    </div>
+
+    <div class="results" id="resultsScreen">
+        <h2>🏗️ Building Complete!</h2>
+        <div class="total-stars" id="finalStars"></div>
+        <div class="score-breakdown" id="scoreBreakdown"></div>
+        <div class="revision-box">
+            <h3>📚 Key Revision Points</h3>
+            <ul>
+                <li><strong>Accumulator pattern:</strong> set total = 0 BEFORE the loop, add inside</li>
+                <li><strong>Finding highest:</strong> set highest = array[0], loop from 1, compare with &gt;</li>
+                <li><strong>Counting matches:</strong> set count = 0, use IF inside loop, count = count + 1</li>
+                <li>Always use <strong>FOR i = 0 TO (size-1)</strong> to iterate through an array</li>
+                <li>The loop variable <strong>i</strong> acts as the index into the array</li>
+            </ul>
+        </div>
+        <button class="retry-btn" onclick="location.reload()">🔄 Try Again</button>
+        <br><br><a href="index.html" class="back-link">&larr; Back to Array Arena</a>
+    </div>
+</div>
+
+<script>
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+const challenges = [
+    {
+        title:'Challenge 1: Declare & Print',
+        desc:'Create an integer array called "marks" with values 78, 45, 92, 34 and print all elements using a FOR loop.',
+        correct:[
+            'int[] marks = {78, 45, 92, 34}',
+            'FOR i = 0 TO 3',
+            '    OUTPUT marks[i]',
+            'ENDFOR'
+        ],
+        distractors:['FOR i = 1 TO 4','OUTPUT marks','ENDWHILE','int marks = 78, 45, 92, 34'],
+        examFeedback:'Arrays store multiple values of the same data type under one identifier. A FOR loop is used to traverse an array when the number of elements is known. Array indices start at 0 — the last valid index is (length - 1).'
+    },
+    {
+        title:'Challenge 2: Calculate Total',
+        desc:'Calculate the total of all values in the marks array {78, 45, 92, 34, 67, 55}.',
+        correct:[
+            'total = 0',
+            'FOR i = 0 TO 5',
+            '    total = total + marks[i]',
+            'ENDFOR',
+            'OUTPUT "Total: " + total'
+        ],
+        distractors:['total = marks[0]','FOR i = 1 TO 6','total = marks[i]','ENDWHILE'],
+        examFeedback:'The accumulator pattern (total = total + array[i]) is used to sum array values. The accumulator must be initialised to 0 before the loop begins.'
+    },
+    {
+        title:'Challenge 3: Find Highest',
+        desc:'Find the highest value in the array temps = {14, 8, 22, 16, 25, 19}.',
+        correct:[
+            'highest = temps[0]',
+            'FOR i = 1 TO 5',
+            '    IF temps[i] > highest THEN',
+            '        highest = temps[i]',
+            '    ENDIF',
+            'ENDFOR',
+            'OUTPUT "Highest: " + highest'
+        ],
+        distractors:['highest = 0','FOR i = 0 TO 5','IF temps[i] < highest THEN','highest = temps[0] + temps[i]'],
+        examFeedback:'To find the highest value, initialise with the first element (not 0) and loop from index 1. A FOR loop is used to traverse an array when the number of elements is known.'
+    },
+    {
+        title:'Challenge 4: Count Matches',
+        desc:'Count how many values in scores = {90, 62, 78, 44, 85, 71, 53} are 70 or above.',
+        correct:[
+            'count = 0',
+            'FOR i = 0 TO 6',
+            '    IF scores[i] >= 70 THEN',
+            '        count = count + 1',
+            '    ENDIF',
+            'ENDFOR',
+            'OUTPUT count + " scored 70+"'
+        ],
+        distractors:['count = 1','IF scores[i] > 70 THEN','count = count + scores[i]','FOR i = 1 TO 7'],
+        examFeedback:'The counter variable counts how many elements meet a condition. It must be initialised to 0 before the loop. Array indices start at 0 — the last valid index is (length - 1).'
+    },
+    {
+        title:'Challenge 5: Average',
+        desc:'Calculate and output the average of all values in the array prices = {4.99, 8.50, 3.25, 7.00, 2.50, 6.75}.',
+        correct:[
+            'total = 0',
+            'FOR i = 0 TO 5',
+            '    total = total + prices[i]',
+            'ENDFOR',
+            'average = total / 6',
+            'OUTPUT "Average: " + average'
+        ],
+        distractors:['average = 0','average = total / 5','FOR i = 1 TO 6','total = prices[i]'],
+        examFeedback:'The accumulator pattern (total = total + array[i]) is used to sum array values. The average is calculated after the loop by dividing the total by the number of elements.'
+    }
+];
+
+let currentChallenge = 0, attemptCount = 0, starsEarned = [], totalStarsCount = 0;
+let draggedEl = null;
+
+function startGame(){
+    document.getElementById('welcomeScreen').classList.add('hidden');
+    document.getElementById('gameScreen').classList.remove('hidden');
+    starsEarned = [];
+    totalStarsCount = 0;
+    currentChallenge = 0;
+    loadChallenge();
+}
+
+function loadChallenge(){
+    const ch = challenges[currentChallenge];
+    attemptCount = 0;
+    document.getElementById('challengeNum').textContent = `${currentChallenge+1}/${challenges.length}`;
+    document.getElementById('challengeTitle').textContent = ch.title;
+    document.getElementById('challengeDesc').textContent = ch.desc;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('checkBtn').style.display = 'block';
+    document.getElementById('checkBtn').disabled = false;
+    document.getElementById('nextBtn').style.display = 'none';
+    document.getElementById('attempts').textContent = '0';
+    // Reset stars
+    const stars = document.querySelectorAll('#starsRow .star');
+    stars.forEach(s=>{s.classList.remove('earned')});
+    // Build toolbox
+    const allLines = shuffle([...ch.correct, ...ch.distractors]);
+    const toolbox = document.getElementById('toolbox');
+    toolbox.innerHTML = '';
+    allLines.forEach(line=>{
+        const el = createCodeLine(line, ch.distractors.includes(line));
+        toolbox.appendChild(el);
+    });
+    document.getElementById('buildZone').innerHTML = '';
+}
+
+function createCodeLine(text, isDistractor){
+    const el = document.createElement('div');
+    el.className = 'code-line' + (isDistractor ? ' distractor' : '');
+    el.textContent = text;
+    el.draggable = true;
+    el.addEventListener('dragstart', e=>{
+        draggedEl = el;
+        el.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+    });
+    el.addEventListener('dragend', ()=>{
+        el.classList.remove('dragging');
+        draggedEl = null;
+    });
+    // Click fallback
+    el.addEventListener('click', ()=>{
+        const parent = el.parentElement;
+        const buildZone = document.getElementById('buildZone');
+        const toolbox = document.getElementById('toolbox');
+        if(parent === toolbox){
+            buildZone.appendChild(el);
+            el.classList.add('placed');
+        } else if(parent === buildZone){
+            toolbox.appendChild(el);
+            el.classList.remove('placed');
+        }
+    });
+    return el;
+}
+
+// Drop zone setup
+document.addEventListener('DOMContentLoaded',()=>{
+    const zones = ['buildZone','toolbox'];
+    zones.forEach(id=>{
+        const zone = document.getElementById(id);
+        if(!zone) return;
+        zone.addEventListener('dragover', e=>{
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            if(id==='buildZone') zone.classList.add('drag-over');
+        });
+        zone.addEventListener('dragleave', ()=>{zone.classList.remove('drag-over')});
+        zone.addEventListener('drop', e=>{
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            if(draggedEl){
+                zone.appendChild(draggedEl);
+                draggedEl.classList.toggle('placed', id==='buildZone');
+            }
+        });
+    });
+});
+
+function checkAnswer(){
+    const buildZone = document.getElementById('buildZone');
+    const placed = Array.from(buildZone.querySelectorAll('.code-line'));
+    const ch = challenges[currentChallenge];
+    attemptCount++;
+    document.getElementById('attempts').textContent = attemptCount;
+    // Check
+    const placedTexts = placed.map(el=>el.textContent);
+    const isCorrect = placedTexts.length === ch.correct.length && placedTexts.every((t,i)=>t===ch.correct[i]);
+    if(isCorrect){
+        placed.forEach(el=>el.classList.add('correct-line'));
+        const stars = attemptCount === 1 ? 3 : attemptCount === 2 ? 2 : 1;
+        starsEarned.push(stars);
+        totalStarsCount += stars;
+        document.getElementById('totalStars').textContent = `⭐ ${totalStarsCount}`;
+        // Animate stars
+        const starEls = document.querySelectorAll('#starsRow .star');
+        for(let i=0;i<stars;i++){setTimeout(()=>starEls[i].classList.add('earned'), i*300)}
+        document.getElementById('feedback').innerHTML = `✅ Perfect! +${stars} star${stars>1?'s':''}<br><br><strong style="color:#818CF8">📝 Exam Note:</strong> ${ch.examFeedback}`;
+        document.getElementById('feedback').className = 'feedback correct-fb';
+        document.getElementById('checkBtn').style.display = 'none';
+        document.getElementById('nextBtn').style.display = 'block';
+    } else {
+        // Mark wrong lines
+        placed.forEach((el,i)=>{
+            if(i < ch.correct.length && el.textContent === ch.correct[i]){
+                el.classList.add('correct-line');
+            } else {
+                el.classList.add('wrong-line');
+            }
+        });
+        if(placed.length !== ch.correct.length){
+            document.getElementById('feedback').textContent = `❌ Expected ${ch.correct.length} lines, you placed ${placed.length}. Try again!`;
+        } else {
+            document.getElementById('feedback').textContent = `❌ Some lines are wrong or in the wrong order. Try again!`;
+        }
+        document.getElementById('feedback').className = 'feedback wrong-fb';
+        // Reset highlights after delay
+        setTimeout(()=>{placed.forEach(el=>{el.classList.remove('correct-line','wrong-line')})},1500);
+        // After 3 attempts, show answer
+        if(attemptCount >= 3){
+            starsEarned.push(0);
+            document.getElementById('feedback').innerHTML = `❌ The correct order was:<br><code style="font-size:0.85rem;color:#818CF8">${ch.correct.join('<br>')}</code><br><br><strong style="color:#818CF8">📝 Exam Note:</strong> ${ch.examFeedback}`;
+            document.getElementById('checkBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+        }
+    }
+}
+
+function nextChallenge(){
+    currentChallenge++;
+    if(currentChallenge >= challenges.length){showResults();return}
+    loadChallenge();
+}
+
+function showResults(){
+    document.getElementById('gameScreen').classList.add('hidden');
+    document.getElementById('resultsScreen').style.display = 'block';
+    const maxStars = challenges.length * 3;
+    document.getElementById('finalStars').textContent = '⭐'.repeat(totalStarsCount) + '☆'.repeat(maxStars - totalStarsCount);
+    let html = '';
+    challenges.forEach((ch,i)=>{
+        const s = starsEarned[i] || 0;
+        html += `<div class="score-row"><span>${ch.title}</span><span>${'⭐'.repeat(s)}${'☆'.repeat(3-s)}</span></div>`;
+    });
+    html += `<div class="score-row"><span style="font-weight:700">Total</span><span style="font-weight:700;color:#818CF8">${totalStarsCount}/${maxStars}</span></div>`;
+    document.getElementById('scoreBreakdown').innerHTML = html;
+    if(totalStarsCount >= 12) spawnConfetti();
+}
+
+function spawnConfetti(){
+    const colours=['#4F46E5','#818CF8','#F59E0B','#2ecc71','#38BDF8','#FB7185'];
+    for(let i=0;i<50;i++){
+        setTimeout(()=>{
+            const c=document.createElement('div');c.className='confetti';
+            c.style.left=Math.random()*100+'vw';c.style.background=colours[Math.floor(Math.random()*colours.length)];
+            c.style.borderRadius=Math.random()>0.5?'50%':'2px';c.style.width=(Math.random()*8+6)+'px';c.style.height=(Math.random()*8+6)+'px';
+            c.style.animationDuration=(Math.random()*2+2)+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),4000);
+        },i*40);
+    }
+}
+</script>
+</body>
+</html>

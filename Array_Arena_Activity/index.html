@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Array Arena - GCSE Digital Technology</title>
+<style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0a0a1a;color:#e0e0e0;min-height:100vh;overflow-x:hidden}
+
+    .bg-pattern{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;overflow:hidden;pointer-events:none}
+    .bg-circle{position:absolute;border-radius:50%;opacity:0.06;animation:floatBubble 20s infinite ease-in-out}
+    .bg-circle:nth-child(1){width:300px;height:300px;background:#0EA5E9;top:10%;left:5%;animation-delay:0s}
+    .bg-circle:nth-child(2){width:200px;height:200px;background:#4F46E5;top:60%;right:10%;animation-delay:5s}
+    .bg-circle:nth-child(3){width:250px;height:250px;background:#059669;bottom:10%;left:30%;animation-delay:10s}
+    .bg-circle:nth-child(4){width:180px;height:180px;background:#E11D48;top:30%;right:25%;animation-delay:15s}
+    @keyframes floatBubble{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-30px) scale(1.05)}}
+
+    .container{max-width:900px;margin:0 auto;padding:30px 20px;position:relative;z-index:1}
+
+    .back-link{display:inline-flex;align-items:center;gap:6px;color:#94a3b8;text-decoration:none;font-size:0.9rem;margin-bottom:24px;padding:6px 12px;border-radius:8px;transition:all 0.3s}
+    .back-link:hover{color:#fff;background:rgba(255,255,255,0.08)}
+
+    .header{text-align:center;margin-bottom:40px}
+    .header-emoji{font-size:3.5rem;display:block;margin-bottom:10px;animation:bounce 2s ease infinite}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+    .title{font-size:3rem;font-weight:800;background:linear-gradient(135deg,#0EA5E9,#38BDF8,#4F46E5,#818CF8);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 6s ease infinite;letter-spacing:-1px}
+    @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    .subtitle{font-size:1.15rem;color:#94a3b8;margin-top:8px;font-weight:400}
+
+    .pills{display:flex;justify-content:center;gap:10px;margin-top:20px;flex-wrap:wrap}
+    .pill{padding:8px 18px;border-radius:50px;font-size:0.8rem;font-weight:600;letter-spacing:0.5px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);backdrop-filter:blur(8px)}
+    .pill-idx{color:#0EA5E9;border-color:rgba(14,165,233,0.3)}
+    .pill-iter{color:#818CF8;border-color:rgba(129,140,248,0.3)}
+    .pill-scen{color:#34D399;border-color:rgba(52,211,153,0.3)}
+    .pill-exam{color:#FB7185;border-color:rgba(251,113,133,0.3)}
+
+    .arena-intro{text-align:center;margin:30px 0 40px;padding:24px;background:rgba(255,255,255,0.03);border-radius:16px;border:1px solid rgba(255,255,255,0.06)}
+    .arena-intro p{color:#94a3b8;font-size:0.95rem;line-height:1.7}
+    .arena-icons{font-size:1.8rem;margin-bottom:10px;letter-spacing:8px}
+
+    .activity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:24px;margin-bottom:40px}
+
+    .activity-card{position:relative;background:rgba(255,255,255,0.04);border-radius:20px;overflow:hidden;transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);cursor:default;border:2px solid transparent}
+    .activity-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:20px 20px 0 0}
+    .activity-card:hover{transform:translateY(-6px);background:rgba(255,255,255,0.07);box-shadow:0 20px 40px rgba(0,0,0,0.3)}
+
+    .card-sky::before{background:linear-gradient(90deg,#0EA5E9,#38BDF8)}
+    .card-sky{border-color:rgba(14,165,233,0.15)}.card-sky:hover{border-color:rgba(14,165,233,0.35)}
+    .card-indigo::before{background:linear-gradient(90deg,#4F46E5,#818CF8)}
+    .card-indigo{border-color:rgba(79,70,229,0.15)}.card-indigo:hover{border-color:rgba(79,70,229,0.35)}
+    .card-emerald::before{background:linear-gradient(90deg,#059669,#34D399)}
+    .card-emerald{border-color:rgba(5,150,105,0.15)}.card-emerald:hover{border-color:rgba(5,150,105,0.35)}
+    .card-rose::before{background:linear-gradient(90deg,#E11D48,#FB7185)}
+    .card-rose{border-color:rgba(225,29,72,0.15)}.card-rose:hover{border-color:rgba(225,29,72,0.35)}
+
+    .card-content{padding:28px}
+    .card-number{font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;opacity:0.5}
+    .card-emoji{font-size:2.6rem;margin-bottom:14px;display:block}
+    .card-title{font-size:1.35rem;font-weight:700;color:#fff;margin-bottom:8px}
+    .card-desc{font-size:0.9rem;color:#94a3b8;line-height:1.6;margin-bottom:20px;min-height:44px}
+
+    .play-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:12px;font-size:0.9rem;font-weight:700;text-decoration:none;color:#fff;transition:all 0.3s;border:none;cursor:pointer;letter-spacing:0.5px}
+    .play-btn:hover{transform:scale(1.05);filter:brightness(1.15)}
+
+    .btn-sky{background:linear-gradient(135deg,#0EA5E9,#38BDF8)}
+    .btn-indigo{background:linear-gradient(135deg,#4F46E5,#818CF8)}
+    .btn-emerald{background:linear-gradient(135deg,#059669,#34D399)}
+    .btn-rose{background:linear-gradient(135deg,#E11D48,#FB7185)}
+
+    .play-arrow{font-size:1.1rem;transition:transform 0.3s}
+    .play-btn:hover .play-arrow{transform:translateX(4px)}
+
+    .activity-card{opacity:0;transform:translateY(30px);animation:cardIn 0.6s forwards}
+    .activity-card:nth-child(1){animation-delay:0.1s}
+    .activity-card:nth-child(2){animation-delay:0.25s}
+    .activity-card:nth-child(3){animation-delay:0.4s}
+    .activity-card:nth-child(4){animation-delay:0.55s}
+    @keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+
+    .footer{text-align:center;padding:20px 0;color:#475569;font-size:0.8rem;border-top:1px solid rgba(255,255,255,0.06);margin-top:10px}
+
+    @media(max-width:480px){
+        .activity-grid{grid-template-columns:1fr}
+        .title{font-size:2.2rem}
+        .card-content{padding:22px}
+    }
+</style>
+</head>
+<body>
+<div class="bg-pattern">
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+</div>
+
+<div class="container">
+    <a href="../" class="back-link">&larr; Back to Activities</a>
+
+    <div class="header">
+        <span class="header-emoji">🏟️</span>
+        <h1 class="title">Array Arena</h1>
+        <p class="subtitle">Master arrays, indexing &amp; scenario-based algorithms</p>
+        <div class="pills">
+            <span class="pill pill-idx">📍 Indexing</span>
+            <span class="pill pill-iter">🔄 Iteration</span>
+            <span class="pill pill-scen">🏗️ Scenarios</span>
+            <span class="pill pill-exam">📝 Exam Practice</span>
+        </div>
+    </div>
+
+    <div class="arena-intro">
+        <div class="arena-icons">🏟️ 📊 🎯 🏆</div>
+        <p>Welcome to the Array Arena! Four challenges to take you from array rookie to exam champion. Work through each activity to build your skills with arrays and scenario algorithms.</p>
+    </div>
+
+    <div class="activity-grid">
+        <div class="activity-card card-sky">
+            <div class="card-content">
+                <div class="card-number">Activity 01</div>
+                <span class="card-emoji">📍</span>
+                <h2 class="card-title">Index Master</h2>
+                <p class="card-desc">Quick-fire array indexing drills. Read values, find positions, and master zero-indexing across multiple data types.</p>
+                <a href="activity1.html" class="play-btn btn-sky">PLAY <span class="play-arrow">&rarr;</span></a>
+            </div>
+        </div>
+
+        <div class="activity-card card-indigo">
+            <div class="card-content">
+                <div class="card-number">Activity 02</div>
+                <span class="card-emoji">🏗️</span>
+                <h2 class="card-title">Array Architect</h2>
+                <p class="card-desc">Build algorithms that process arrays. Drag code lines into the correct order to solve 5 coding challenges.</p>
+                <a href="activity2.html" class="play-btn btn-indigo">PLAY <span class="play-arrow">&rarr;</span></a>
+            </div>
+        </div>
+
+        <div class="activity-card card-emerald">
+            <div class="card-content">
+                <div class="card-number">Activity 03</div>
+                <span class="card-emoji">🧩</span>
+                <h2 class="card-title">Scenario Solver</h2>
+                <p class="card-desc">Classic exam scenarios broken into stages. Build complete algorithms for cinema tickets, pizza shops and more.</p>
+                <a href="activity3.html" class="play-btn btn-emerald">PLAY <span class="play-arrow">&rarr;</span></a>
+            </div>
+        </div>
+
+        <div class="activity-card card-rose">
+            <div class="card-content">
+                <div class="card-number">Activity 04</div>
+                <span class="card-emoji">⚡</span>
+                <h2 class="card-title">Exam Blitz</h2>
+                <p class="card-desc">Timed exam simulation with past-paper-style questions. Arrays, loops, scenarios &mdash; all under pressure!</p>
+                <a href="activity4.html" class="play-btn btn-rose">PLAY <span class="play-arrow">&rarr;</span></a>
+            </div>
+        </div>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 20px;margin-bottom:24px;text-align:center">
+        <p style="font-size:0.8rem;color:#94a3b8;line-height:1.6">&#x1F4DD; <strong style="color:#c0c8d4">Syntax Note:</strong> These activities use C# syntax where arrays are declared with curly braces <code style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;font-family:'Courier New',monospace;font-size:0.8rem;color:#e0e0e0">{ }</code>. In CCEA pseudocode exams, parentheses <code style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;font-family:'Courier New',monospace;font-size:0.8rem;color:#e0e0e0">( )</code> are used instead.</p>
+    </div>
+
+    <div class="footer">GCSE Digital Technology &mdash; Unit 4</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Index Master - Array Arena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#0c1929,#0a2540);color:#e0e0e0;min-height:100vh;overflow-x:hidden}
+.container{max-width:800px;margin:0 auto;padding:20px}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#94a3b8;text-decoration:none;font-size:0.9rem;margin-bottom:16px;padding:6px 12px;border-radius:8px;transition:all 0.3s}
+.back-link:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.header{text-align:center;margin-bottom:24px}
+.header h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#0EA5E9,#38BDF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header p{color:#94a3b8;font-size:0.95rem;margin-top:4px}
+
+/* Welcome screen */
+.welcome{background:rgba(14,165,233,0.08);border:2px solid rgba(14,165,233,0.25);border-radius:20px;padding:40px;text-align:center;animation:fadeIn 0.5s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.welcome h2{font-size:1.8rem;color:#38BDF8;margin-bottom:12px}
+.welcome p{color:#94a3b8;line-height:1.8;margin-bottom:8px;font-size:1rem}
+.welcome .mission{background:rgba(14,165,233,0.1);border-radius:12px;padding:16px;margin:16px 0;border-left:4px solid #0EA5E9}
+.welcome .mission p{color:#e0e0e0;font-size:0.95rem}
+.start-btn{background:linear-gradient(135deg,#0EA5E9,#38BDF8);color:#fff;border:none;padding:16px 48px;border-radius:14px;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all 0.3s;margin-top:16px;letter-spacing:0.5px}
+.start-btn:hover{transform:scale(1.05);filter:brightness(1.15)}
+
+/* HUD */
+.hud{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(255,255,255,0.04);border-radius:14px;margin-bottom:20px;border:1px solid rgba(255,255,255,0.06)}
+.hud-item{text-align:center}
+.hud-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:2px}
+.hud-value{font-size:1.3rem;font-weight:700;color:#38BDF8}
+.streak-fire{color:#F59E0B}
+.lives-heart{color:#EF4444}
+
+/* Progress bar */
+.progress-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;margin-bottom:20px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#0EA5E9,#38BDF8);border-radius:3px;transition:width 0.5s ease}
+
+/* Array visual */
+.array-display{display:flex;justify-content:center;gap:4px;margin:20px 0;flex-wrap:wrap}
+.array-cell{width:72px;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;background:rgba(14,165,233,0.15);border:2px solid rgba(14,165,233,0.3);transition:all 0.3s;position:relative}
+.array-cell .val{font-size:1.2rem;font-weight:700;color:#fff}
+.array-cell .idx{font-size:0.7rem;color:#64748b;font-family:'Courier New',monospace;margin-top:2px}
+.array-cell.highlight{background:rgba(14,165,233,0.4);border-color:#38BDF8;transform:scale(1.1);box-shadow:0 0 20px rgba(14,165,233,0.3)}
+.array-cell.error-cell{background:rgba(231,76,60,0.3);border-color:#e74c3c;box-shadow:0 0 15px rgba(231,76,60,0.3)}
+.array-label{text-align:center;font-family:'Courier New',monospace;color:#94a3b8;font-size:0.85rem;margin-bottom:8px}
+
+/* Question area */
+.question-area{background:rgba(255,255,255,0.04);border-radius:16px;padding:28px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;text-align:center}
+.question-text{font-size:1.3rem;font-weight:600;color:#fff;margin-bottom:20px;line-height:1.5}
+.question-text code{background:rgba(14,165,233,0.2);padding:3px 10px;border-radius:6px;font-family:'Courier New',monospace;color:#38BDF8;font-size:1.15rem}
+
+/* Code block for pseudocode questions */
+.code-block{background:rgba(0,0,0,0.4);border:1px solid rgba(14,165,233,0.25);border-radius:10px;padding:16px 20px;margin:12px auto 20px;max-width:440px;text-align:left;font-family:'Courier New',monospace;font-size:0.95rem;line-height:1.8;color:#e0e0e0;position:relative;overflow-x:auto}
+.code-block .kw{color:#38BDF8;font-weight:700}
+.code-block .str{color:#2ecc71}
+.code-block .num{color:#F59E0B}
+.code-block .cmt{color:#64748b;font-style:italic}
+.code-block .ln{color:#475569;user-select:none;display:inline-block;width:24px;text-align:right;margin-right:12px}
+.code-tag{position:absolute;top:8px;right:12px;font-size:0.65rem;color:#64748b;text-transform:uppercase;letter-spacing:1px;font-family:'Segoe UI',system-ui,sans-serif}
+
+/* Error code block with line highlighting */
+.code-block .error-line{background:rgba(231,76,60,0.15);display:block;margin:0 -20px;padding:0 20px;border-left:3px solid transparent}
+.code-block .error-line.revealed{border-left-color:#e74c3c;background:rgba(231,76,60,0.25)}
+
+/* Options */
+.options{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:500px;margin:0 auto}
+.option-btn{background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 20px;font-size:1.05rem;font-weight:600;color:#e0e0e0;cursor:pointer;transition:all 0.3s;font-family:'Segoe UI',system-ui,sans-serif}
+.option-btn:hover{background:rgba(14,165,233,0.15);border-color:rgba(14,165,233,0.4);transform:translateY(-2px)}
+.option-btn.correct{background:rgba(46,204,113,0.2);border-color:#2ecc71;color:#2ecc71;animation:pulse 0.5s}
+.option-btn.wrong{background:rgba(231,76,60,0.2);border-color:#e74c3c;color:#e74c3c;animation:shake 0.4s}
+.option-btn code{background:rgba(14,165,233,0.15);padding:2px 6px;border-radius:4px;font-family:'Courier New',monospace;font-size:0.95rem}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* Feedback */
+.feedback{text-align:center;margin-top:16px;font-size:0.95rem;font-weight:600;min-height:28px;transition:opacity 0.3s;line-height:1.5}
+.feedback.correct-fb{color:#2ecc71}
+.feedback.wrong-fb{color:#e74c3c}
+
+/* Floating score */
+.float-score{position:fixed;font-size:2rem;font-weight:800;pointer-events:none;z-index:100;animation:floatUp 1.2s forwards}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-100px) scale(1.5)}}
+
+/* Combo flash */
+.combo-flash{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:3rem;font-weight:900;color:#F59E0B;pointer-events:none;z-index:100;animation:comboIn 1s forwards;text-shadow:0 0 30px rgba(245,158,11,0.5)}
+@keyframes comboIn{0%{opacity:0;transform:translate(-50%,-50%) scale(0.5)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}40%{transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1) translateY(-40px)}}
+
+/* Results screen */
+.results{display:none;text-align:center;animation:fadeIn 0.6s}
+.results h2{font-size:2.2rem;color:#38BDF8;margin-bottom:8px}
+.results .rank-badge{display:inline-block;padding:12px 32px;border-radius:50px;font-size:1.4rem;font-weight:800;margin:16px 0;letter-spacing:1px}
+.rank-rookie{background:rgba(148,163,184,0.2);color:#94a3b8;border:2px solid #94a3b8}
+.rank-indexer{background:rgba(14,165,233,0.2);color:#38BDF8;border:2px solid #38BDF8}
+.rank-pro{background:rgba(139,92,246,0.2);color:#A78BFA;border:2px solid #A78BFA}
+.rank-master{background:rgba(245,158,11,0.2);color:#F59E0B;border:2px solid #F59E0B;animation:glow 2s infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 10px rgba(245,158,11,0.3)}50%{box-shadow:0 0 30px rgba(245,158,11,0.6)}}
+.score-breakdown{background:rgba(255,255,255,0.04);border-radius:16px;padding:24px;margin:20px 0;border:1px solid rgba(255,255,255,0.06)}
+.score-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.score-row:last-child{border-bottom:none}
+.revision-box{background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.2);border-radius:12px;padding:16px;margin-top:16px;text-align:left}
+.revision-box h3{color:#38BDF8;margin-bottom:8px;font-size:1rem}
+.revision-box li{color:#94a3b8;font-size:0.9rem;line-height:1.7}
+.retry-btn{background:linear-gradient(135deg,#0EA5E9,#38BDF8);color:#fff;border:none;padding:14px 40px;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:20px;transition:all 0.3s}
+.retry-btn:hover{transform:scale(1.05);filter:brightness(1.15)}
+
+/* Confetti */
+.confetti{position:fixed;top:-10px;width:10px;height:10px;z-index:99;pointer-events:none;animation:confettiFall linear forwards}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+/* Question type badge */
+.q-type-badge{display:inline-block;font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;padding:3px 10px;border-radius:20px;margin-bottom:12px;font-weight:700}
+.badge-basic{background:rgba(14,165,233,0.15);color:#38BDF8}
+.badge-reverse{background:rgba(139,92,246,0.15);color:#A78BFA}
+.badge-expression{background:rgba(245,158,11,0.15);color:#F59E0B}
+.badge-trace{background:rgba(46,204,113,0.15);color:#2ecc71}
+.badge-error{background:rgba(231,76,60,0.15);color:#e74c3c}
+.badge-concept{background:rgba(148,163,184,0.15);color:#94a3b8}
+
+.hidden{display:none}
+@media(max-width:600px){
+    .options{grid-template-columns:1fr}
+    .array-cell{width:56px;height:48px}
+    .array-cell .val{font-size:1rem}
+    .question-text{font-size:1.1rem}
+    .code-block{font-size:0.82rem;padding:12px 14px}
+    .code-block .ln{width:18px;margin-right:8px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">&larr; Back to Array Arena</a>
+    <div class="header">
+        <h1>&#x1F4CD; Index Master</h1>
+        <p>Quick-fire array indexing drills</p>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div class="welcome" id="welcomeScreen">
+        <h2>&#x1F4CD; Mission Briefing</h2>
+        <p>Welcome, recruit!</p>
+        <div class="mission">
+            <p>Your mission: prove you <em>really</em> understand arrays. You'll face <strong>15 questions</strong> that go beyond simple lookups &mdash; expression evaluation, code tracing, and error spotting. Each correct answer earns points &mdash; build a streak for bonus multipliers!</p>
+        </div>
+        <p>&#x1F3AF; Accuracy matters &mdash; you have <strong>3 lives</strong></p>
+        <p>&#x1F525; Streak bonus: 3+ in a row = double points!</p>
+        <div style="background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.15);border-radius:10px;padding:10px 16px;margin-top:16px;text-align:center">
+            <p style="font-size:0.78rem;color:#7a8fa3;line-height:1.5">&#x1F4DD; <strong style="color:#94a3b8">Syntax Note:</strong> These activities use C# syntax where arrays are declared with curly braces <code style="background:rgba(255,255,255,0.06);padding:2px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:0.78rem;color:#c0c8d4">{ }</code>. In CCEA pseudocode exams, parentheses <code style="background:rgba(255,255,255,0.06);padding:2px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:0.78rem;color:#c0c8d4">( )</code> are used instead.</p>
+        </div>
+        <button class="start-btn" onclick="startGame()">BEGIN CHALLENGE &rarr;</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="hidden">
+        <div class="hud">
+            <div class="hud-item"><div class="hud-label">Score</div><div class="hud-value" id="score">0</div></div>
+            <div class="hud-item"><div class="hud-label">Question</div><div class="hud-value" id="qNum">1/15</div></div>
+            <div class="hud-item"><div class="hud-label">Streak</div><div class="hud-value streak-fire" id="streak">&#x1F525; 0</div></div>
+            <div class="hud-item"><div class="hud-label">Lives</div><div class="hud-value lives-heart" id="lives">&#x2764;&#xFE0F;&#x2764;&#xFE0F;&#x2764;&#xFE0F;</div></div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="array-label" id="arrayLabel"></div>
+        <div class="array-display" id="arrayDisplay"></div>
+        <div class="question-area">
+            <div id="qTypeBadge"></div>
+            <div class="question-text" id="questionText"></div>
+            <div id="codeBlockArea"></div>
+            <div class="options" id="options"></div>
+            <div class="feedback" id="feedback"></div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div class="results" id="resultsScreen">
+        <h2>&#x1F3C1; Challenge Complete!</h2>
+        <div id="rankBadge" class="rank-badge"></div>
+        <div class="score-breakdown">
+            <div class="score-row"><span>Correct Answers</span><span id="resCorrect">0</span></div>
+            <div class="score-row"><span>Total Questions</span><span id="resTotal">0</span></div>
+            <div class="score-row"><span>Best Streak</span><span id="resStreak">0</span></div>
+            <div class="score-row"><span style="font-weight:700">Final Score</span><span id="resScore" style="font-weight:700;color:#38BDF8">0</span></div>
+        </div>
+        <div class="revision-box">
+            <h3>&#x1F4DA; Key Revision Points</h3>
+            <ul>
+                <li>Arrays are <strong>zero-indexed</strong> &mdash; the first element is at index 0</li>
+                <li>The last valid index is always <strong>(length - 1)</strong></li>
+                <li>Accessing an index outside the array causes an <strong>index out of bounds error</strong></li>
+                <li>When iterating through an array, the <strong>loop counter acts as the index</strong></li>
+                <li>Expressions like <code>arr[2] + arr[4]</code> evaluate by looking up each value first, then performing the operation</li>
+                <li>Arrays can store integers, strings, reals &mdash; but all elements must be the <strong>same data type</strong></li>
+            </ul>
+        </div>
+        <button class="retry-btn" onclick="location.reload()">&#x1F504; Try Again</button>
+        <br><br>
+        <a href="index.html" class="back-link">&larr; Back to Array Arena</a>
+    </div>
+</div>
+
+<script>
+// Fisher-Yates shuffle
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+
+// Arrays used in questions
+const arrays = [
+    {name:'marks', type:'int[]', values:[78,45,92,34,67,55], display:'int[] marks = {78, 45, 92, 34, 67, 55}'},
+    {name:'names', type:'string[]', values:['"Tom"','"Sara"','"Jack"','"Emma"','"Ryan"'], display:'string[] names = {"Tom", "Sara", "Jack", "Emma", "Ryan"}'},
+    {name:'scores', type:'int[]', values:[90,62,78,44,85,71,53], display:'int[] scores = {90, 62, 78, 44, 85, 71, 53}'},
+    {name:'prices', type:'real[]', values:['4.99','8.50','3.25','7.00','2.50','6.75'], display:'real[] prices = {4.99, 8.50, 3.25, 7.00, 2.50, 6.75}'},
+    {name:'temps', type:'int[]', values:[14,8,22,16,25,19], display:'int[] temps = {14, 8, 22, 16, 25, 19}'},
+];
+
+// Helper to get numeric value from array
+function numVal(arr, idx){ return parseFloat(arr.values[idx]); }
+
+// Generate unique distractors for numeric answers
+function numDistractors(correct, count, min, max){
+    const opts = [String(correct)];
+    let attempts = 0;
+    while(opts.length < count && attempts < 50){
+        attempts++;
+        let d = correct + (Math.floor(Math.random()*40)-20);
+        if(d < min) d = min + Math.floor(Math.random()*(max-min));
+        if(d > max) d = max - Math.floor(Math.random()*(max-min));
+        if(d !== correct && !opts.includes(String(d))) opts.push(String(d));
+    }
+    while(opts.length < count) opts.push(String(correct + opts.length * 7));
+    return opts;
+}
+
+function generateQuestions(){
+    let qs = [];
+    const marks = arrays[0]; // marks [78,45,92,34,67,55]
+    const names = arrays[1]; // names ["Tom","Sara","Jack","Emma","Ryan"]
+    const scores = arrays[2]; // scores [90,62,78,44,85,71,53]
+    const prices = arrays[3]; // prices [4.99,8.50,3.25,7.00,2.50,6.75]
+    const temps = arrays[4];  // temps [14,8,22,16,25,19]
+
+    // =========================================
+    // TYPE 1: Basic indexing (3 questions)
+    // =========================================
+    // Q1: marks[3]
+    qs.push({
+        type:'basic', badge:'Indexing', badgeClass:'badge-basic',
+        array: marks,
+        question: 'What is the value of <code>marks[3]</code>?',
+        correct: '34',
+        options: shuffle(['34','92','67','45']),
+        highlightIdx: 3,
+        feedback_correct: 'Arrays are zero-indexed \u2014 counting 0, 1, 2, 3 gives us the 4th element: 34.',
+        feedback_wrong: 'Arrays are zero-indexed. Index 0=78, 1=45, 2=92, 3=34. The answer is 34.'
+    });
+    // Q2: names[0]
+    qs.push({
+        type:'basic', badge:'Indexing', badgeClass:'badge-basic',
+        array: names,
+        question: 'What is the value of <code>names[0]</code>?',
+        correct: '"Tom"',
+        options: shuffle(['"Tom"','"Sara"','"Ryan"','"Jack"']),
+        highlightIdx: 0,
+        feedback_correct: 'The first element is always at index 0. names[0] = "Tom".',
+        feedback_wrong: 'Arrays are zero-indexed \u2014 the first element is at position 0, which is "Tom".'
+    });
+    // Q3: scores[6]
+    qs.push({
+        type:'basic', badge:'Indexing', badgeClass:'badge-basic',
+        array: scores,
+        question: 'What is the value of <code>scores[6]</code>?',
+        correct: '53',
+        options: shuffle(['53','71','90','85']),
+        highlightIdx: 6,
+        feedback_correct: 'scores has 7 elements (indices 0\u20136). scores[6] is the last element: 53.',
+        feedback_wrong: 'Count from index 0: scores[6] = 53. It is the 7th element (the last one).'
+    });
+
+    // =========================================
+    // TYPE 2: Reverse lookup (3 questions)
+    // =========================================
+    // Q4: Where is 92 in marks?
+    qs.push({
+        type:'reverse', badge:'Reverse Lookup', badgeClass:'badge-reverse',
+        array: marks,
+        question: 'At which index is the value <code>92</code> stored in the marks array?',
+        correct: '2',
+        options: shuffle(['2','3','0','5']),
+        highlightIdx: 2,
+        feedback_correct: 'marks[2] = 92. Remember to count from zero: 78(0), 45(1), 92(2).',
+        feedback_wrong: 'Counting from index 0: marks[0]=78, marks[1]=45, marks[2]=92. The answer is index 2.'
+    });
+    // Q5: Where is "Emma" in names?
+    qs.push({
+        type:'reverse', badge:'Reverse Lookup', badgeClass:'badge-reverse',
+        array: names,
+        question: 'At which index is <code>"Emma"</code> stored?',
+        correct: '3',
+        options: shuffle(['3','4','2','1']),
+        highlightIdx: 3,
+        feedback_correct: 'names[3] = "Emma". Index 0=Tom, 1=Sara, 2=Jack, 3=Emma.',
+        feedback_wrong: 'Count from 0: Tom(0), Sara(1), Jack(2), Emma(3). The answer is index 3.'
+    });
+    // Q6: Where is 25 in temps?
+    qs.push({
+        type:'reverse', badge:'Reverse Lookup', badgeClass:'badge-reverse',
+        array: temps,
+        question: 'At which index is the value <code>25</code> in the temps array?',
+        correct: '4',
+        options: shuffle(['4','5','3','2']),
+        highlightIdx: 4,
+        feedback_correct: 'temps[4] = 25. Counting: 14(0), 8(1), 22(2), 16(3), 25(4).',
+        feedback_wrong: 'Count from index 0: temps[0]=14, temps[1]=8, temps[2]=22, temps[3]=16, temps[4]=25.'
+    });
+
+    // =========================================
+    // TYPE 3: Expression evaluation (3 questions)
+    // =========================================
+    // Q7: marks[0] + marks[2]
+    qs.push({
+        type:'expression', badge:'Expression', badgeClass:'badge-expression',
+        array: marks,
+        question: 'What is the result of <code>marks[0] + marks[2]</code>?',
+        correct: '170',
+        options: shuffle(numDistractors(170, 4, 100, 200)),
+        highlightIdx: -1, highlightMulti: [0,2],
+        feedback_correct: 'marks[0]=78 and marks[2]=92. So 78 + 92 = 170.',
+        feedback_wrong: 'Look up each value first: marks[0]=78, marks[2]=92. Then add: 78 + 92 = 170.'
+    });
+    // Q8: scores[scores.length - 1]
+    qs.push({
+        type:'expression', badge:'Expression', badgeClass:'badge-expression',
+        array: scores,
+        question: 'What is the value of <code>scores[scores.LENGTH - 1]</code>?',
+        correct: '53',
+        options: shuffle(['53','90','71','7']),
+        highlightIdx: 6,
+        feedback_correct: 'scores has 7 elements, so LENGTH=7. scores[7-1] = scores[6] = 53. The last valid index is always (length - 1).',
+        feedback_wrong: 'scores.LENGTH = 7 (there are 7 elements). 7 - 1 = 6. scores[6] = 53. The last valid index is always (length - 1).'
+    });
+    // Q9: temps[1] + temps[4] - temps[0]
+    qs.push({
+        type:'expression', badge:'Expression', badgeClass:'badge-expression',
+        array: temps,
+        question: 'What is <code>temps[1] + temps[4] - temps[0]</code>?',
+        correct: '19',
+        options: shuffle(numDistractors(19, 4, 5, 40)),
+        highlightIdx: -1, highlightMulti: [1,4,0],
+        feedback_correct: 'temps[1]=8, temps[4]=25, temps[0]=14. So 8 + 25 - 14 = 19.',
+        feedback_wrong: 'Look up each: temps[1]=8, temps[4]=25, temps[0]=14. Calculate: 8 + 25 - 14 = 19.'
+    });
+
+    // =========================================
+    // TYPE 4: Code output prediction (3 questions)
+    // =========================================
+    // Q10: Sum loop on marks[0..2]
+    qs.push({
+        type:'trace', badge:'Code Trace', badgeClass:'badge-trace',
+        array: marks,
+        question: 'What does this code output?',
+        code: [
+            {text:'total = 0', kw:false},
+            {text:'FOR', kw:true, rest:' i = 0 TO 2'},
+            {text:'    total = total + marks[i]', kw:false},
+            {text:'ENDFOR', kw:true},
+            {text:'OUTPUT', kw:true, rest:' total'},
+        ],
+        correct: '215',
+        options: shuffle(numDistractors(215, 4, 100, 300)),
+        highlightIdx: -1, highlightMulti: [0,1,2],
+        feedback_correct: 'The loop runs for i=0,1,2. total = marks[0]+marks[1]+marks[2] = 78+45+92 = 215. When iterating through an array, the loop counter acts as the index.',
+        feedback_wrong: 'Trace through: i=0 \u2192 total=0+78=78. i=1 \u2192 total=78+45=123. i=2 \u2192 total=123+92=215. OUTPUT 215.'
+    });
+    // Q11: Count loop on scores > 70
+    qs.push({
+        type:'trace', badge:'Code Trace', badgeClass:'badge-trace',
+        array: scores,
+        question: 'What does this code output?',
+        code: [
+            {text:'count = 0', kw:false},
+            {text:'FOR', kw:true, rest:' i = 0 TO 6'},
+            {text:'    IF', kw:true, rest:' scores[i] > 70 THEN'},
+            {text:'        count = count + 1', kw:false},
+            {text:'    ENDIF', kw:true},
+            {text:'ENDFOR', kw:true},
+            {text:'OUTPUT', kw:true, rest:' count'},
+        ],
+        correct: '4',
+        options: shuffle(['4','3','5','2']),
+        highlightIdx: -1,
+        feedback_correct: 'Check each: 90>70\u2713, 62>70\u2717, 78>70\u2713, 44>70\u2717, 85>70\u2713, 71>70\u2713, 53>70\u2717. Count = 4.',
+        feedback_wrong: 'Go through each element: 90\u2713, 62\u2717, 78\u2713, 44\u2717, 85\u2713, 71\u2713, 53\u2717. Four values are greater than 70.'
+    });
+    // Q12: Find max in temps
+    qs.push({
+        type:'trace', badge:'Code Trace', badgeClass:'badge-trace',
+        array: temps,
+        question: 'What does this code output?',
+        code: [
+            {text:'biggest = temps[0]', kw:false},
+            {text:'FOR', kw:true, rest:' i = 1 TO 5'},
+            {text:'    IF', kw:true, rest:' temps[i] > biggest THEN'},
+            {text:'        biggest = temps[i]', kw:false},
+            {text:'    ENDIF', kw:true},
+            {text:'ENDFOR', kw:true},
+            {text:'OUTPUT', kw:true, rest:' biggest'},
+        ],
+        correct: '25',
+        options: shuffle(['25','22','19','14']),
+        highlightIdx: -1,
+        feedback_correct: 'This is a classic "find the maximum" algorithm. It starts with temps[0]=14, then compares each element. 25 is the largest value.',
+        feedback_wrong: 'Trace: biggest=14, then 8<14 (no change), 22>14 \u2192 biggest=22, 16<22, 25>22 \u2192 biggest=25, 19<25. Output: 25.'
+    });
+
+    // =========================================
+    // TYPE 5: Error identification (2 questions)
+    // =========================================
+    // Q13: Out of bounds on names
+    qs.push({
+        type:'error', badge:'Bug Hunt', badgeClass:'badge-error',
+        array: names,
+        question: 'Which line would cause an <strong>error</strong> at runtime?',
+        code: [
+            {text:'OUTPUT', kw:true, rest:' names[0]', lineLabel:'Line 1'},
+            {text:'OUTPUT', kw:true, rest:' names[3]', lineLabel:'Line 2'},
+            {text:'OUTPUT', kw:true, rest:' names[5]', lineLabel:'Line 3'},
+        ],
+        correct: 'Line 3',
+        options: shuffle(['Line 1','Line 2','Line 3','No error']),
+        highlightIdx: -1,
+        errorLineIdx: 2,
+        feedback_correct: 'names has 5 elements (indices 0\u20134). names[5] is out of bounds \u2014 accessing an index outside the array causes an index out of bounds error.',
+        feedback_wrong: 'names has indices 0 to 4 (5 elements). names[5] does not exist \u2014 this causes an index out of bounds error. The last valid index is always (length - 1).'
+    });
+    // Q14: Loop bounds error on prices
+    qs.push({
+        type:'error', badge:'Bug Hunt', badgeClass:'badge-error',
+        array: prices,
+        question: 'This code has a bug. Which line causes the error?',
+        code: [
+            {text:'total = 0', kw:false, lineLabel:'Line 1'},
+            {text:'FOR', kw:true, rest:' i = 0 TO 6', lineLabel:'Line 2'},
+            {text:'    total = total + prices[i]', kw:false, lineLabel:'Line 3'},
+            {text:'ENDFOR', kw:true, lineLabel:'Line 4'},
+        ],
+        correct: 'Line 2',
+        options: shuffle(['Line 1','Line 2','Line 3','Line 4']),
+        highlightIdx: -1,
+        errorLineIdx: 1,
+        feedback_correct: 'prices has 6 elements (indices 0\u20135). The loop goes TO 6, so when i=6 it tries to access prices[6] which is out of bounds. The loop should be FOR i = 0 TO 5.',
+        feedback_wrong: 'prices has 6 elements (indices 0\u20135). "FOR i = 0 TO 6" means the loop runs with i=6, accessing prices[6] which doesn\'t exist \u2014 index out of bounds error.'
+    });
+
+    // =========================================
+    // TYPE 6: Conceptual (1 question)
+    // =========================================
+    // Q15: Last valid index concept
+    qs.push({
+        type:'concept', badge:'Conceptual', badgeClass:'badge-concept',
+        array: scores,
+        question: 'An array has <code>n</code> elements. What is the index of the <strong>last</strong> element?',
+        correct: 'n - 1',
+        options: shuffle(['n - 1','n','n + 1','1']),
+        highlightIdx: -1,
+        feedback_correct: 'Because arrays are zero-indexed, the last valid index is always (length - 1). For scores with 7 elements, the last index is 6.',
+        feedback_wrong: 'Arrays start at index 0, so the last element is at index (n - 1). For example, 7 elements use indices 0\u20136.'
+    });
+
+    return shuffle(qs).slice(0,15);
+}
+
+// Build styled pseudocode HTML
+function buildCodeBlock(codeLines){
+    let html = '<div class="code-block"><span class="code-tag">Pseudocode</span>';
+    codeLines.forEach((line, i) => {
+        const ln = line.lineLabel ? line.lineLabel.replace('Line ','') : String(i+1);
+        let content = '';
+        if(line.kw){
+            content += '<span class="kw">' + line.text + '</span>';
+            if(line.rest) content += line.rest;
+        } else {
+            content += line.text;
+        }
+        html += '<div><span class="ln">' + ln + '</span>' + content + '</div>';
+    });
+    html += '</div>';
+    return html;
+}
+
+let questions, currentQ, score, streak, bestStreak, lives, correctCount, totalAnswered;
+
+function startGame(){
+    document.getElementById('welcomeScreen').classList.add('hidden');
+    document.getElementById('gameScreen').classList.remove('hidden');
+    questions = generateQuestions();
+    currentQ = 0; score = 0; streak = 0; bestStreak = 0; lives = 3; correctCount = 0; totalAnswered = 0;
+    showQuestion();
+}
+
+function showQuestion(){
+    if(currentQ >= questions.length || lives <= 0){showResults();return}
+    const q = questions[currentQ];
+    document.getElementById('qNum').textContent = (currentQ+1) + '/' + questions.length;
+    document.getElementById('progressFill').style.width = ((currentQ/questions.length)*100) + '%';
+    document.getElementById('arrayLabel').textContent = q.array.display;
+
+    // Build array visual
+    const arrDiv = document.getElementById('arrayDisplay');
+    arrDiv.innerHTML = '';
+    q.array.values.forEach((v,i)=>{
+        const cell = document.createElement('div');
+        let cls = 'array-cell';
+        if(q.highlightMulti && q.highlightMulti.includes(i)) cls += ' highlight';
+        else if(i === q.highlightIdx) cls += ' highlight';
+        cell.className = cls;
+        cell.innerHTML = '<span class="val">' + v + '</span><span class="idx">[' + i + ']</span>';
+        arrDiv.appendChild(cell);
+    });
+
+    // Type badge
+    document.getElementById('qTypeBadge').innerHTML = '<span class="q-type-badge ' + q.badgeClass + '">' + q.badge + '</span>';
+
+    // Code block (for trace and error types)
+    const codeArea = document.getElementById('codeBlockArea');
+    if(q.code){
+        codeArea.innerHTML = buildCodeBlock(q.code);
+    } else {
+        codeArea.innerHTML = '';
+    }
+
+    document.getElementById('questionText').innerHTML = q.question;
+    const optsDiv = document.getElementById('options');
+    optsDiv.innerHTML = '';
+    q.options.forEach(opt=>{
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = opt;
+        btn.onclick = ()=>handleAnswer(btn, opt, q);
+        optsDiv.appendChild(btn);
+    });
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('feedback').className = 'feedback';
+}
+
+function handleAnswer(btn, selected, q){
+    if(btn.dataset.answered) return;
+    document.querySelectorAll('.option-btn').forEach(b=>b.dataset.answered='1');
+    totalAnswered++;
+    const allBtns = document.querySelectorAll('.option-btn');
+    allBtns.forEach(b=>{b.style.pointerEvents='none'});
+
+    if(selected === q.correct){
+        btn.classList.add('correct');
+        streak++;
+        if(streak > bestStreak) bestStreak = streak;
+        correctCount++;
+        const pts = streak >= 3 ? 20 : 10;
+        score += pts;
+        document.getElementById('score').textContent = score;
+        document.getElementById('streak').textContent = '\uD83D\uDD25 ' + streak;
+        document.getElementById('feedback').innerHTML = '\u2705 Correct! +' + pts + ' pts \u2014 ' + q.feedback_correct;
+        document.getElementById('feedback').className = 'feedback correct-fb';
+        floatScore(pts, btn);
+        if(streak === 3) showCombo('\uD83D\uDD25 3x STREAK!');
+        if(streak === 5) showCombo('\u26A1 5x COMBO!');
+        if(streak === 8) showCombo('\uD83D\uDCA5 8x UNSTOPPABLE!');
+    } else {
+        btn.classList.add('wrong');
+        streak = 0;
+        lives--;
+        document.getElementById('streak').textContent = '\uD83D\uDD25 ' + streak;
+        document.getElementById('lives').textContent = '\u2764\uFE0F'.repeat(lives) + '\uD83D\uDDA4'.repeat(3-lives);
+        allBtns.forEach(b=>{if(b.textContent===q.correct) b.classList.add('correct')});
+        document.getElementById('feedback').innerHTML = '\u274C ' + q.feedback_wrong;
+        document.getElementById('feedback').className = 'feedback wrong-fb';
+
+        // Highlight error line for error-type questions
+        if(q.type === 'error' && q.errorLineIdx !== undefined){
+            const codeLines = document.querySelectorAll('.code-block div');
+            if(codeLines[q.errorLineIdx]){
+                codeLines[q.errorLineIdx].style.background = 'rgba(231,76,60,0.25)';
+                codeLines[q.errorLineIdx].style.borderLeft = '3px solid #e74c3c';
+                codeLines[q.errorLineIdx].style.paddingLeft = '4px';
+            }
+        }
+    }
+    setTimeout(()=>{currentQ++;showQuestion()},2800);
+}
+
+function floatScore(pts, btn){
+    const el = document.createElement('div');
+    el.className = 'float-score';
+    el.textContent = '+' + pts;
+    el.style.color = '#2ecc71';
+    const rect = btn.getBoundingClientRect();
+    el.style.left = rect.left + rect.width/2 - 20 + 'px';
+    el.style.top = rect.top - 10 + 'px';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1200);
+}
+
+function showCombo(text){
+    const el = document.createElement('div');
+    el.className = 'combo-flash';
+    el.textContent = text;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1200);
+}
+
+function showResults(){
+    document.getElementById('gameScreen').classList.add('hidden');
+    document.getElementById('resultsScreen').style.display = 'block';
+    const pct = totalAnswered > 0 ? Math.round((correctCount/totalAnswered)*100) : 0;
+    let rank, rankClass;
+    if(pct >= 90){rank='\uD83C\uDFC6 INDEX MASTER';rankClass='rank-master';spawnConfetti()}
+    else if(pct >= 70){rank='\u2B50 Array Pro';rankClass='rank-pro'}
+    else if(pct >= 50){rank='\uD83D\uDCCA Indexer';rankClass='rank-indexer'}
+    else{rank='\uD83D\uDD30 Rookie';rankClass='rank-rookie'}
+    document.getElementById('rankBadge').textContent = rank;
+    document.getElementById('rankBadge').className = 'rank-badge ' + rankClass;
+    document.getElementById('resCorrect').textContent = correctCount;
+    document.getElementById('resTotal').textContent = totalAnswered;
+    document.getElementById('resStreak').textContent = bestStreak;
+    document.getElementById('resScore').textContent = score;
+    document.getElementById('progressFill').style.width = '100%';
+}
+
+function spawnConfetti(){
+    const colours = ['#0EA5E9','#38BDF8','#F59E0B','#2ecc71','#A78BFA','#FB7185'];
+    for(let i=0;i<60;i++){
+        setTimeout(()=>{
+            const c = document.createElement('div');
+            c.className = 'confetti';
+            c.style.left = Math.random()*100+'vw';
+            c.style.background = colours[Math.floor(Math.random()*colours.length)];
+            c.style.borderRadius = Math.random()>0.5?'50%':'2px';
+            c.style.width = (Math.random()*8+6)+'px';
+            c.style.height = (Math.random()*8+6)+'px';
+            c.style.animationDuration = (Math.random()*2+2)+'s';
+            document.body.appendChild(c);
+            setTimeout(()=>c.remove(),4000);
+        },i*40);
+    }
+}
+</script>
+</body>
+</html>

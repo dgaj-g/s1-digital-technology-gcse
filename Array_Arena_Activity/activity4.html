@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam Blitz - Array Arena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#1a0a1e,#2d0a1e);color:#e0e0e0;min-height:100vh;overflow-x:hidden}
+.container{max-width:800px;margin:0 auto;padding:20px}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#94a3b8;text-decoration:none;font-size:0.9rem;margin-bottom:16px;padding:6px 12px;border-radius:8px;transition:all 0.3s}
+.back-link:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.header{text-align:center;margin-bottom:24px}
+.header h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#E11D48,#FB7185);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header p{color:#94a3b8;font-size:0.95rem;margin-top:4px}
+
+.welcome{background:rgba(225,29,72,0.08);border:2px solid rgba(225,29,72,0.25);border-radius:20px;padding:40px;text-align:center;animation:fadeIn 0.5s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.welcome h2{font-size:1.8rem;color:#FB7185;margin-bottom:12px}
+.welcome p{color:#94a3b8;line-height:1.8;margin-bottom:8px}
+.mission{background:rgba(225,29,72,0.1);border-radius:12px;padding:16px;margin:16px 0;border-left:4px solid #E11D48}
+.mission p{color:#e0e0e0;font-size:0.95rem}
+.timer-toggle{display:flex;align-items:center;justify-content:center;gap:12px;margin:16px 0}
+.timer-toggle label{color:#94a3b8;font-size:1rem;cursor:pointer}
+.toggle-switch{position:relative;width:50px;height:26px;cursor:pointer}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;top:0;left:0;right:0;bottom:0;background:#334155;border-radius:26px;transition:0.3s}
+.toggle-slider::before{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;bottom:3px;left:3px;transition:0.3s}
+.toggle-switch input:checked+.toggle-slider{background:#E11D48}
+.toggle-switch input:checked+.toggle-slider::before{transform:translateX(24px)}
+.start-btn{background:linear-gradient(135deg,#E11D48,#FB7185);color:#fff;border:none;padding:16px 48px;border-radius:14px;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all 0.3s;margin-top:16px}
+.start-btn:hover{transform:scale(1.05);filter:brightness(1.15)}
+
+/* HUD */
+.hud{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(255,255,255,0.04);border-radius:14px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.06)}
+.hud-item{text-align:center}
+.hud-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:#64748b}
+.hud-value{font-size:1.3rem;font-weight:700;color:#FB7185}
+.timer-warning{color:#F59E0B!important;animation:pulse 0.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.timer-danger{color:#EF4444!important;animation:pulse 0.3s infinite}
+
+.progress-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;margin-bottom:20px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#E11D48,#FB7185);border-radius:3px;transition:width 0.5s ease}
+
+/* Question card */
+.question-card{background:rgba(255,255,255,0.04);border-radius:16px;padding:28px;border:1px solid rgba(255,255,255,0.06);margin-bottom:16px;animation:slideIn 0.4s}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+.q-type{display:inline-block;padding:4px 14px;border-radius:50px;font-size:0.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.q-type-index{background:rgba(14,165,233,0.2);color:#38BDF8;border:1px solid rgba(14,165,233,0.3)}
+.q-type-loop{background:rgba(168,85,247,0.2);color:#A78BFA;border:1px solid rgba(168,85,247,0.3)}
+.q-type-scenario{background:rgba(52,211,153,0.2);color:#34D399;border:1px solid rgba(52,211,153,0.3)}
+.q-marks{float:right;background:rgba(225,29,72,0.15);color:#FB7185;padding:4px 12px;border-radius:50px;font-size:0.8rem;font-weight:700}
+
+.question-text{font-size:1.15rem;color:#fff;margin-bottom:8px;line-height:1.6}
+.code-context{background:rgba(0,0,0,0.3);border-radius:10px;padding:14px;margin:12px 0;font-family:'Courier New',monospace;font-size:0.9rem;color:#e0e0e0;line-height:1.6;white-space:pre-wrap;border:1px solid rgba(255,255,255,0.06)}
+
+.options{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.option-btn{background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 20px;font-size:1rem;color:#e0e0e0;cursor:pointer;transition:all 0.3s;text-align:left;font-family:'Segoe UI',system-ui,sans-serif;line-height:1.5}
+.option-btn:hover{background:rgba(225,29,72,0.12);border-color:rgba(225,29,72,0.4)}
+.option-btn code{font-family:'Courier New',monospace;background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;font-size:0.9rem}
+.option-btn.correct{background:rgba(46,204,113,0.2);border-color:#2ecc71;color:#2ecc71}
+.option-btn.wrong{background:rgba(231,76,60,0.2);border-color:#e74c3c;color:#e74c3c}
+
+.feedback-box{margin-top:14px;padding:14px 18px;border-radius:12px;font-size:0.9rem;line-height:1.6;display:none}
+.feedback-box.show{display:block}
+.feedback-box.correct-fb{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);color:#2ecc71}
+.feedback-box.wrong-fb{background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);color:#e74c3c}
+
+.next-btn{background:linear-gradient(135deg,#E11D48,#FB7185);color:#fff;border:none;padding:12px 36px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;display:none;margin:14px auto 0}
+.next-btn:hover{transform:scale(1.05)}
+
+/* Results */
+.results{display:none;text-align:center;animation:fadeIn 0.6s}
+.results h2{font-size:2.2rem;color:#FB7185;margin-bottom:8px}
+.rank-badge{display:inline-block;padding:12px 32px;border-radius:50px;font-size:1.3rem;font-weight:800;margin:12px 0;letter-spacing:1px}
+.rank-d{background:rgba(148,163,184,0.2);color:#94a3b8;border:2px solid #94a3b8}
+.rank-c{background:rgba(56,189,248,0.2);color:#38BDF8;border:2px solid #38BDF8}
+.rank-b{background:rgba(168,85,247,0.2);color:#A78BFA;border:2px solid #A78BFA}
+.rank-a{background:rgba(52,211,153,0.2);color:#34D399;border:2px solid #34D399}
+.rank-astar{background:rgba(245,158,11,0.2);color:#F59E0B;border:2px solid #F59E0B;animation:glow 2s infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 10px rgba(245,158,11,0.3)}50%{box-shadow:0 0 30px rgba(245,158,11,0.6)}}
+.score-breakdown{background:rgba(255,255,255,0.04);border-radius:16px;padding:24px;margin:20px 0;border:1px solid rgba(255,255,255,0.06)}
+.score-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}.score-row:last-child{border-bottom:none}
+.q-review{margin-top:20px;text-align:left}
+.q-review-item{background:rgba(255,255,255,0.03);border-radius:12px;padding:14px;margin-bottom:10px;border-left:4px solid}
+.q-review-item.was-correct{border-left-color:#2ecc71}
+.q-review-item.was-wrong{border-left-color:#e74c3c}
+.q-review-item .q-r-label{font-size:0.8rem;color:#64748b;margin-bottom:4px}
+.q-review-item .q-r-q{font-size:0.95rem;color:#e0e0e0;margin-bottom:4px}
+.q-review-item .q-r-ans{font-size:0.85rem}
+.revision-box{background:rgba(225,29,72,0.08);border:1px solid rgba(225,29,72,0.2);border-radius:12px;padding:16px;margin-top:16px;text-align:left}
+.revision-box h3{color:#FB7185;margin-bottom:8px;font-size:1rem}
+.revision-box li{color:#94a3b8;font-size:0.9rem;line-height:1.7}
+.retry-btn{background:linear-gradient(135deg,#E11D48,#FB7185);color:#fff;border:none;padding:14px 40px;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:20px;transition:all 0.3s}
+.retry-btn:hover{transform:scale(1.05)}
+.confetti{position:fixed;top:-10px;width:10px;height:10px;z-index:99;pointer-events:none;animation:confettiFall linear forwards}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+.hidden{display:none}
+@media(max-width:600px){.option-btn{font-size:0.9rem;padding:10px 14px}}
+</style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">&larr; Back to Array Arena</a>
+    <div class="header">
+        <h1>⚡ Exam Blitz</h1>
+        <p>Timed exam simulation &mdash; past paper style</p>
+    </div>
+
+    <div class="welcome" id="welcomeScreen">
+        <h2>⚡ Exam Mode</h2>
+        <p>This is the real deal!</p>
+        <div class="mission">
+            <p><strong>8 past-paper-style questions</strong> covering arrays, loops, and scenario algorithms. Each question shows marks available and mark-scheme feedback. Can you score top marks?</p>
+        </div>
+        <div class="timer-toggle">
+            <label for="timerToggle">Enable Timer (90 seconds per question)</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="timerToggle" checked>
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        <div style="background:rgba(225,29,72,0.06);border:1px solid rgba(225,29,72,0.15);border-radius:10px;padding:10px 16px;margin-top:16px;text-align:center">
+            <p style="font-size:0.78rem;color:#7a8fa3;line-height:1.5">&#x1F4DD; <strong style="color:#94a3b8">Syntax Note:</strong> These activities use C# syntax where arrays are declared with curly braces <code style="background:rgba(255,255,255,0.06);padding:2px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:0.78rem;color:#c0c8d4">{ }</code>. In CCEA pseudocode exams, parentheses <code style="background:rgba(255,255,255,0.06);padding:2px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:0.78rem;color:#c0c8d4">( )</code> are used instead.</p>
+        </div>
+        <button class="start-btn" onclick="startGame()">START EXAM ⚡</button>
+    </div>
+
+    <div id="gameScreen" class="hidden">
+        <div class="hud">
+            <div class="hud-item"><div class="hud-label">Question</div><div class="hud-value" id="qNum">1/8</div></div>
+            <div class="hud-item"><div class="hud-label">Marks</div><div class="hud-value" id="marksEarned">0</div></div>
+            <div class="hud-item"><div class="hud-label">Timer</div><div class="hud-value" id="timer">1:30</div></div>
+            <div class="hud-item"><div class="hud-label">Streak</div><div class="hud-value" id="streak">🔥 0</div></div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="question-card" id="questionCard"></div>
+    </div>
+
+    <div class="results" id="resultsScreen">
+        <h2>⚡ Exam Complete!</h2>
+        <div id="rankBadge" class="rank-badge"></div>
+        <div class="score-breakdown" id="scoreBreakdown"></div>
+        <div class="q-review" id="qReview"></div>
+        <div class="revision-box">
+            <h3>📚 Exam Revision Checklist</h3>
+            <ul>
+                <li>Arrays are zero-indexed &mdash; first element at [0], last at [size-1]</li>
+                <li>Accumulator: total = 0 before loop, total = total + array[i] inside</li>
+                <li>Finding highest: highest = array[0], loop from 1, IF > highest THEN update</li>
+                <li>DO WHILE for input validation &mdash; runs at least once</li>
+                <li>Discount tiers: check HIGHEST discount first in IF / ELSE IF chain</li>
+                <li>Always subtract discount from total BEFORE outputting</li>
+            </ul>
+        </div>
+        <button class="retry-btn" onclick="location.reload()">🔄 Try Again</button>
+        <br><br><a href="index.html" class="back-link">&larr; Back to Array Arena</a>
+    </div>
+</div>
+
+<script>
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+const allQuestions = [
+    {
+        type:'index', typeLabel:'Array Indexing', marks:2,
+        text:'Given the array:',
+        code:'int[] data = {15, 42, 8, 73, 29, 56, 91}',
+        question:'What are the values of data[2] and data[5]?',
+        correct:'data[2] = 8, data[5] = 56',
+        options:['data[2] = 8, data[5] = 56','data[2] = 42, data[5] = 29','data[2] = 8, data[5] = 91','data[2] = 73, data[5] = 56'],
+        feedback:'Arrays are zero-indexed. data[0]=15, data[1]=42, data[2]=8, data[3]=73, data[4]=29, data[5]=56. [1 mark for each correct value]'
+    },
+    {
+        type:'index', typeLabel:'Array Indexing', marks:2,
+        text:'Given the array:',
+        code:'string[] colours = {"Red", "Blue", "Green", "Yellow", "Purple"}',
+        question:'(a) What is colours[4]? (b) At what index is "Green"?',
+        correct:'(a) Purple (b) Index 2',
+        options:['(a) Purple (b) Index 2','(a) Yellow (b) Index 3','(a) Purple (b) Index 3','(a) Yellow (b) Index 2'],
+        feedback:'colours[4] = "Purple" (5th element, index 4). "Green" is at index 2 (third element). [1 mark each]'
+    },
+    {
+        type:'loop', typeLabel:'Loop Completion', marks:3,
+        text:'Complete the missing line in this algorithm that calculates the total of all values in the array:',
+        code:'int[] sales = {120, 85, 200, 150, 95}\ntotal = 0\nFOR i = 0 TO 4\n    _____________\nENDFOR\nOUTPUT "Total: " + total',
+        question:'What is the missing line?',
+        correct:'total = total + sales[i]',
+        options:['total = total + sales[i]','total = total + sales','total = sales[i]','total + sales[i]'],
+        feedback:'The accumulator pattern: total = total + sales[i] adds each element to the running total. [1 mark for total =, 1 mark for + sales[i], 1 mark for using i as index]'
+    },
+    {
+        type:'loop', typeLabel:'Loop Completion', marks:3,
+        text:'This algorithm should find the LOWEST temperature. Fill in the two missing lines:',
+        code:'int[] temps = {14, 8, 22, 3, 19, 11}\nlowest = temps[0]\nFOR i = 1 TO 5\n    IF _____________ THEN\n        _____________\n    ENDIF\nENDFOR\nOUTPUT "Lowest: " + lowest',
+        question:'What are the two missing lines?',
+        correct:'temps[i] < lowest  /  lowest = temps[i]',
+        options:['temps[i] < lowest  /  lowest = temps[i]','temps[i] > lowest  /  lowest = temps[i]','temps[i] < lowest  /  lowest = temps[0]','temps[i] <= lowest  /  lowest = i'],
+        feedback:'Compare current element to lowest using < (not >). If smaller, update lowest to that element. [1 mark for < condition, 1 mark for correct update, 1 mark for using temps[i] not temps[0] or i]'
+    },
+    {
+        type:'loop', typeLabel:'Loop Analysis', marks:2,
+        text:'What does this algorithm output?',
+        code:'int[] nums = {5, 12, 3, 8, 15, 1}\ncount = 0\nFOR i = 0 TO 5\n    IF nums[i] > 7 THEN\n        count = count + 1\n    ENDIF\nENDFOR\nOUTPUT count',
+        question:'What value is output?',
+        correct:'3',
+        options:['3','4','2','44'],
+        feedback:'Count elements > 7: 12 (yes), 3 (no), 8 (yes), 15 (yes), 1 (no), 5 (no). Three values are greater than 7. [1 mark for correct count, 1 mark for reasoning]'
+    },
+    {
+        type:'scenario', typeLabel:'Scenario Algorithm', marks:4,
+        text:'A bakery sells cakes at £15 each. Customers order 1-20 cakes. Orders of 10+ get 20% discount, orders of 5-9 get 10% discount.',
+        code:'',
+        question:'Which validation code is correct for this scenario?',
+        correct:'DO\n    OUTPUT "Enter cakes (1-20):"\n    INPUT numCakes\n    IF numCakes < 1 OR numCakes > 20 THEN\n        OUTPUT "Error - must be 1-20"\n    ENDIF\nWHILE numCakes < 1 OR numCakes > 20',
+        options:[
+            'DO\n    OUTPUT "Enter cakes (1-20):"\n    INPUT numCakes\n    IF numCakes < 1 OR numCakes > 20 THEN\n        OUTPUT "Error - must be 1-20"\n    ENDIF\nWHILE numCakes < 1 OR numCakes > 20',
+            'WHILE numCakes < 1 OR numCakes > 20\n    INPUT numCakes\nENDWHILE',
+            'INPUT numCakes\nIF numCakes < 1 OR numCakes > 20 THEN\n    OUTPUT "Error"\nENDIF',
+            'DO\n    INPUT numCakes\nWHILE numCakes >= 1 AND numCakes <= 20'
+        ],
+        feedback:'DO WHILE validation: prompt + input + error message inside loop. Condition checks BOTH bounds with OR. [1 mark DO WHILE, 1 mark prompt, 1 mark condition, 1 mark error message]'
+    },
+    {
+        type:'scenario', typeLabel:'Scenario Algorithm', marks:3,
+        text:'Following from the bakery scenario (cakes at £15, 10+ = 20% off, 5-9 = 10% off):',
+        code:'totalCost = numCakes * 15',
+        question:'Which discount code correctly applies the tiered pricing?',
+        correct:'IF numCakes >= 10 THEN\n    discount = totalCost * 0.20\nELSE IF numCakes >= 5 THEN\n    discount = totalCost * 0.10\nELSE\n    discount = 0\nENDIF',
+        options:[
+            'IF numCakes >= 10 THEN\n    discount = totalCost * 0.20\nELSE IF numCakes >= 5 THEN\n    discount = totalCost * 0.10\nELSE\n    discount = 0\nENDIF',
+            'IF numCakes >= 5 THEN\n    discount = totalCost * 0.10\nELSE IF numCakes >= 10 THEN\n    discount = totalCost * 0.20\nELSE\n    discount = 0\nENDIF',
+            'IF numCakes >= 10 THEN\n    discount = 0.20\nELSE IF numCakes >= 5 THEN\n    discount = 0.10\nENDIF',
+            'IF numCakes > 10 THEN\n    discount = totalCost * 0.20\nELSE IF numCakes > 5 THEN\n    discount = totalCost * 0.10\nENDIF'
+        ],
+        feedback:'Check HIGHEST discount first (>= 10 before >= 5). Calculate discount as totalCost * percentage (not just the decimal). Include ELSE for zero discount. Use >= not > for "or more". [1 mark per tier + 1 for ELSE]'
+    },
+    {
+        type:'scenario', typeLabel:'Scenario Algorithm', marks:3,
+        text:'A pet shop sells fish at £3.50 each. Buying 20+ fish gives a 25% discount. The customer buys 24 fish.',
+        code:'pricePerFish = 3.50\nnumFish = 24\ntotalCost = numFish * pricePerFish\nIF numFish >= 20 THEN\n    discount = totalCost * 0.25\nELSE\n    discount = 0\nENDIF\ntotalCost = totalCost - discount',
+        question:'What is the final value of totalCost?',
+        correct:'£63.00',
+        options:['£63.00','£84.00','£21.00','£60.50'],
+        feedback:'24 x £3.50 = £84.00. 24 >= 20, so discount = £84.00 x 0.25 = £21.00. Total = £84.00 - £21.00 = £63.00. [1 mark base cost, 1 mark discount, 1 mark final total]'
+    }
+];
+
+let questions, currentQ, marksEarned, totalMarks, streakCount, bestStreak, timerEnabled, timerInterval, timeLeft;
+let answers = [];
+
+function startGame(){
+    timerEnabled = document.getElementById('timerToggle').checked;
+    document.getElementById('welcomeScreen').classList.add('hidden');
+    document.getElementById('gameScreen').classList.remove('hidden');
+    questions = shuffle([...allQuestions]).slice(0,8);
+    totalMarks = questions.reduce((s,q)=>s+q.marks,0);
+    currentQ = 0; marksEarned = 0; streakCount = 0; bestStreak = 0; answers = [];
+    showQuestion();
+}
+
+function showQuestion(){
+    if(currentQ >= questions.length){showResults();return}
+    const q = questions[currentQ];
+    document.getElementById('qNum').textContent = `${currentQ+1}/${questions.length}`;
+    document.getElementById('progressFill').style.width = `${(currentQ/questions.length)*100}%`;
+    // Build question card
+    const card = document.getElementById('questionCard');
+    let typeClass = q.type==='index'?'q-type-index':q.type==='loop'?'q-type-loop':'q-type-scenario';
+    let html = `<span class="q-type ${typeClass}">${q.typeLabel}</span>`;
+    html += `<span class="q-marks">${q.marks} mark${q.marks>1?'s':''}</span>`;
+    html += `<div style="clear:both"></div>`;
+    html += `<div class="question-text">${q.text}</div>`;
+    if(q.code) html += `<div class="code-context">${escapeHtml(q.code)}</div>`;
+    html += `<div class="question-text" style="font-size:1.1rem;margin-top:8px">${q.question}</div>`;
+    html += `<div class="options" id="options"></div>`;
+    html += `<div class="feedback-box" id="feedback"></div>`;
+    html += `<button class="next-btn" id="nextBtn" onclick="nextQuestion()">NEXT →</button>`;
+    card.innerHTML = html;
+    // Add options
+    const optsDiv = document.getElementById('options');
+    const shuffledOpts = shuffle([...q.options]);
+    shuffledOpts.forEach(opt=>{
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = escapeHtml(opt).replace(/\n/g,'<br>');
+        btn.dataset.value = opt;
+        btn.onclick = ()=>handleAnswer(btn, opt, q);
+        optsDiv.appendChild(btn);
+    });
+    // Timer
+    if(timerEnabled){
+        timeLeft = 90;
+        updateTimerDisplay();
+        clearInterval(timerInterval);
+        timerInterval = setInterval(()=>{
+            timeLeft--;
+            updateTimerDisplay();
+            if(timeLeft <= 0){
+                clearInterval(timerInterval);
+                autoTimeout();
+            }
+        },1000);
+    } else {
+        document.getElementById('timer').textContent = '--';
+    }
+}
+
+function escapeHtml(text){return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function updateTimerDisplay(){
+    const m = Math.floor(timeLeft/60);
+    const s = timeLeft%60;
+    const el = document.getElementById('timer');
+    el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    el.className = 'hud-value' + (timeLeft<=15?' timer-danger':timeLeft<=30?' timer-warning':'');
+}
+
+function autoTimeout(){
+    const q = questions[currentQ];
+    const allBtns = document.querySelectorAll('.option-btn');
+    allBtns.forEach(b=>{b.style.pointerEvents='none';if(b.dataset.value===q.correct) b.classList.add('correct')});
+    streakCount = 0;
+    document.getElementById('streak').textContent = `🔥 ${streakCount}`;
+    const fb = document.getElementById('feedback');
+    fb.textContent = '⏰ Time\'s up! ' + q.feedback;
+    fb.className = 'feedback-box show wrong-fb';
+    document.getElementById('nextBtn').style.display = 'block';
+    answers.push({q:q.question, correct:false, correctAns:q.correct});
+}
+
+function handleAnswer(btn, selected, q){
+    const allBtns = document.querySelectorAll('.option-btn');
+    if(btn.classList.contains('correct')||btn.classList.contains('wrong')) return;
+    allBtns.forEach(b=>b.style.pointerEvents='none');
+    clearInterval(timerInterval);
+    const fb = document.getElementById('feedback');
+    if(selected === q.correct){
+        btn.classList.add('correct');
+        marksEarned += q.marks;
+        streakCount++;
+        if(streakCount > bestStreak) bestStreak = streakCount;
+        document.getElementById('marksEarned').textContent = marksEarned;
+        document.getElementById('streak').textContent = `🔥 ${streakCount}`;
+        fb.innerHTML = `✅ Correct! +${q.marks} marks<br>${q.feedback}`;
+        fb.className = 'feedback-box show correct-fb';
+        answers.push({q:q.question, correct:true, correctAns:q.correct});
+    } else {
+        btn.classList.add('wrong');
+        allBtns.forEach(b=>{if(b.dataset.value===q.correct) b.classList.add('correct')});
+        streakCount = 0;
+        document.getElementById('streak').textContent = `🔥 ${streakCount}`;
+        fb.innerHTML = `❌ Incorrect.<br>${q.feedback}`;
+        fb.className = 'feedback-box show wrong-fb';
+        answers.push({q:q.question, correct:false, correctAns:q.correct});
+    }
+    document.getElementById('nextBtn').style.display = 'block';
+}
+
+function nextQuestion(){
+    currentQ++;
+    showQuestion();
+}
+
+function showResults(){
+    clearInterval(timerInterval);
+    document.getElementById('gameScreen').classList.add('hidden');
+    document.getElementById('resultsScreen').style.display = 'block';
+    const pct = totalMarks>0? Math.round((marksEarned/totalMarks)*100) : 0;
+    let rank,rankClass;
+    if(pct>=90){rank='🏆 A*';rankClass='rank-astar';spawnConfetti()}
+    else if(pct>=75){rank='⭐ Grade A';rankClass='rank-a'}
+    else if(pct>=60){rank='📊 Grade B';rankClass='rank-b'}
+    else if(pct>=45){rank='📝 Grade C';rankClass='rank-c'}
+    else{rank='📖 Grade D';rankClass='rank-d'}
+    document.getElementById('rankBadge').textContent = rank;
+    document.getElementById('rankBadge').className = `rank-badge ${rankClass}`;
+    let html = '';
+    html += `<div class="score-row"><span>Marks Earned</span><span>${marksEarned} / ${totalMarks}</span></div>`;
+    html += `<div class="score-row"><span>Percentage</span><span>${pct}%</span></div>`;
+    html += `<div class="score-row"><span>Best Streak</span><span>🔥 ${bestStreak}</span></div>`;
+    const correctCount = answers.filter(a=>a.correct).length;
+    html += `<div class="score-row"><span>Correct Answers</span><span>${correctCount} / ${questions.length}</span></div>`;
+    document.getElementById('scoreBreakdown').innerHTML = html;
+    // Question review
+    let reviewHtml = '<h3 style="color:#FB7185;margin-bottom:12px">Question Review</h3>';
+    answers.forEach((a,i)=>{
+        reviewHtml += `<div class="q-review-item ${a.correct?'was-correct':'was-wrong'}">`;
+        reviewHtml += `<div class="q-r-label">Q${i+1}</div>`;
+        reviewHtml += `<div class="q-r-q">${escapeHtml(a.q)}</div>`;
+        reviewHtml += `<div class="q-r-ans" style="color:${a.correct?'#2ecc71':'#e74c3c'}">${a.correct?'✅ Correct':'❌ Incorrect — Answer: '+escapeHtml(a.correctAns)}</div>`;
+        reviewHtml += `</div>`;
+    });
+    document.getElementById('qReview').innerHTML = reviewHtml;
+}
+
+function spawnConfetti(){
+    const colours=['#E11D48','#FB7185','#F59E0B','#2ecc71','#38BDF8','#818CF8'];
+    for(let i=0;i<60;i++){setTimeout(()=>{const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'vw';c.style.background=colours[Math.floor(Math.random()*colours.length)];c.style.borderRadius=Math.random()>0.5?'50%':'2px';c.style.width=(Math.random()*8+6)+'px';c.style.height=(Math.random()*8+6)+'px';c.style.animationDuration=(Math.random()*2+2)+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),4000)},i*40)}
+}
+</script>
+</body>
+</html>
