@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Search Mission — Search Squad</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#0a1628;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
+.container{max-width:850px;margin:0 auto;padding:24px 20px;position:relative;z-index:1}
+.stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:twinkle 3s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:1}}
+.back-link{display:inline-block;color:#94a3b8;text-decoration:none;font-size:.9rem;margin-bottom:16px;transition:color .3s}
+.back-link:hover{color:#60a5fa}
+.header-bar{text-align:center;padding:12px 0 16px;border-bottom:1px solid rgba(96,165,250,.15);margin-bottom:20px}
+.header-bar h1{font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,#1e3a5f,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.screen{display:none}.screen.active{display:block}
+.welcome{text-align:center;padding:60px 20px}
+.welcome-emoji{font-size:5rem;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.welcome h2{font-size:2rem;margin:20px 0 10px;color:#60a5fa}
+.welcome p{font-size:1.05rem;color:#94a3b8;max-width:520px;margin:0 auto 30px;line-height:1.6}
+.btn{padding:14px 36px;border:none;border-radius:30px;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,#1e3a5f,#3b82f6);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(59,130,246,.3)}
+.btn-sm{padding:10px 24px;font-size:.9rem}
+
+.game-hud{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.hud-item{background:rgba(255,255,255,.05);padding:8px 16px;border-radius:12px;font-size:.85rem;font-weight:600}
+.hud-item span{color:#60a5fa}
+.mission-title{text-align:center;font-size:1.05rem;color:#94a3b8;margin-bottom:8px}
+.target-display{text-align:center;margin:14px 0;padding:14px;background:rgba(59,130,246,.08);border:2px solid rgba(59,130,246,.25);border-radius:14px}
+.target-display .label{font-size:.85rem;color:#94a3b8;margin-bottom:4px}
+.target-display .value{font-size:2rem;font-weight:800;color:#60a5fa}
+.range-info{text-align:center;font-size:.9rem;color:#94a3b8;margin:6px 0}
+.range-info strong{color:#60a5fa}
+
+/* ARRAY VIS */
+.array-wrap{position:relative;margin:20px 0;padding:20px 10px}
+.array-row{display:flex;justify-content:center;flex-wrap:wrap;gap:4px}
+.arr-el{width:64px;height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.1);transition:all .5s;position:relative;font-weight:700;font-size:1.05rem}
+.arr-el .idx{position:absolute;bottom:-18px;font-size:.68rem;color:#475569;font-weight:600}
+.arr-el.in-range{border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.08)}
+.arr-el.eliminated{opacity:.15;border-color:transparent;transform:scale(.9)}
+.arr-el.midpoint{border-color:#f59e0b;background:rgba(245,158,11,.15);box-shadow:0 0 20px rgba(245,158,11,.25);animation:midGlow .8s ease-in-out infinite alternate}
+@keyframes midGlow{from{box-shadow:0 0 10px rgba(245,158,11,.2)}to{box-shadow:0 0 25px rgba(245,158,11,.4)}}
+.arr-el.found{border-color:#2ecc71;background:rgba(46,204,113,.2);box-shadow:0 0 25px rgba(46,204,113,.3)}
+.bracket{position:absolute;bottom:-30px;font-size:.75rem;font-weight:700;color:#60a5fa}
+.bracket-start{left:0}.bracket-end{right:0}
+
+/* STEP AREA */
+.step-area{text-align:center;margin:24px 0;padding:20px;background:rgba(255,255,255,.03);border-radius:14px}
+.step-area p{font-size:1rem;margin-bottom:12px;line-height:1.5}
+.mid-input{display:flex;justify-content:center;align-items:center;gap:8px;margin:10px 0;flex-wrap:wrap}
+.mid-input label{font-size:.95rem;color:#94a3b8}
+.mid-input input{width:60px;padding:8px;border-radius:8px;border:2px solid rgba(59,130,246,.3);background:rgba(255,255,255,.05);color:#fff;font-size:1rem;text-align:center;font-weight:700}
+.dir-btns{display:flex;justify-content:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+.dir-btn{padding:10px 24px;border:2px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#e2e8f0;border-radius:12px;font-size:.92rem;font-weight:600;cursor:pointer;transition:all .3s}
+.dir-btn:hover{border-color:#60a5fa;background:rgba(59,130,246,.1)}
+.dir-btn.correct{border-color:#2ecc71;background:rgba(46,204,113,.15);color:#2ecc71}
+.dir-btn.wrong{border-color:#e74c3c;background:rgba(231,76,60,.15);color:#e74c3c}
+.dir-btn:disabled{cursor:default;opacity:.7}
+.feedback-msg{margin-top:14px;padding:12px 18px;border-radius:10px;font-size:.92rem;line-height:1.5;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.feedback-msg.correct{background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25);color:#2ecc71}
+.feedback-msg.wrong{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.25);color:#e74c3c}
+.feedback-msg.info{background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.25);color:#60a5fa}
+.step-counter{text-align:center;font-size:.95rem;color:#94a3b8;margin:8px 0}
+.step-counter span{color:#60a5fa;font-weight:700;font-size:1.2rem}
+.elim-bar{margin:8px auto;max-width:300px;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.elim-fill{height:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa);border-radius:4px;transition:width .5s}
+
+/* RESULTS */
+.results{text-align:center;padding:50px 20px}
+.results-emoji{font-size:4.5rem;animation:bounce 1s ease infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+.results h2{font-size:2rem;margin:16px 0 6px;color:#60a5fa}
+.results .rank{font-size:1.3rem;color:#fbbf24;font-weight:700;margin-bottom:20px}
+.score-card{background:rgba(255,255,255,.04);border-radius:16px;padding:24px;max-width:400px;margin:0 auto 24px;border:1px solid rgba(255,255,255,.06)}
+.score-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.95rem}
+.score-row:last-child{border-bottom:none}
+.score-row .label{color:#94a3b8}.score-row .val{font-weight:700;color:#60a5fa}
+.revision-box{background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:14px;padding:20px;max-width:520px;margin:0 auto 24px;text-align:left}
+.revision-box h3{color:#60a5fa;margin-bottom:10px;font-size:1rem}
+.revision-box ul{padding-left:20px;color:#94a3b8;font-size:.9rem;line-height:1.7}
+.btn-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;animation:confettiFall 3s ease forwards;z-index:100;pointer-events:none}
+@keyframes confettiFall{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+.float-score{position:fixed;font-size:1.5rem;font-weight:800;color:#60a5fa;animation:floatUp 1.5s ease forwards;pointer-events:none;z-index:100}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-80px)}}
+
+@media(max-width:600px){.arr-el{width:48px;height:54px;font-size:.85rem}.welcome h2{font-size:1.5rem}.results h2{font-size:1.5rem}}
+</style>
+</head>
+<body>
+<div class="stars" id="starsContainer"></div>
+<div class="container">
+<a href="index.html" class="back-link">← Back to Hub</a>
+<div class="header-bar"><h1>🎯 Binary Search Mission</h1></div>
+
+<div id="welcomeScreen" class="screen active">
+<div class="welcome">
+<div class="welcome-emoji">🎯</div>
+<h2>Binary Search Mission</h2>
+<p>Divide and conquer! Calculate midpoints, eliminate halves, and zero in on your target. Remember: the data MUST be sorted!</p>
+<button class="btn btn-primary" onclick="startGame()">Begin Mission →</button>
+</div>
+</div>
+
+<div id="gameScreen" class="screen">
+<div class="game-hud">
+<div class="hud-item">Mission: <span id="missionNum">1</span>/6</div>
+<div class="hud-item">Score: <span id="scoreDisplay">0</span></div>
+<div class="hud-item">Perfect: <span id="perfectDisplay">0</span>⭐</div>
+</div>
+<div class="mission-title" id="missionTitle"></div>
+<div class="target-display">
+<div class="label">🎯 Target</div>
+<div class="value" id="targetValue"></div>
+</div>
+<div class="range-info" id="rangeInfo"></div>
+<div class="array-wrap"><div class="array-row" id="arrayRow"></div></div>
+<div class="step-counter">Steps taken: <span id="stepCount">0</span></div>
+<div class="elim-bar"><div class="elim-fill" id="elimFill" style="width:0%"></div></div>
+<div class="step-area" id="stepArea"></div>
+</div>
+
+<div id="resultsScreen" class="screen"></div>
+</div>
+
+<script>
+// Generate stars
+(function(){const c=document.getElementById('starsContainer');for(let i=0;i<80;i++){const s=document.createElement('div');s.className='star';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDelay=Math.random()*3+'s';c.appendChild(s);}})();
+
+const missions=[
+{arr:[12,25,34,39,47,56,69],target:47},
+{arr:[5,12,18,24,31,38,44,51],target:31},
+{arr:[10,20,30,40,50,60,70,80,90,100],target:70},
+{arr:[3,7,11,15,19,23,27],target:20},
+{arr:[100,200,300,400,500,600,700,800],target:200},
+{arr:[2,4,6,8,10,12,14,16,18,20],target:2}
+];
+
+let curMission=0,score=0,perfectCount=0,steps=0,mistakes=0;
+let start,end,missionResults=[];
+
+function startGame(){
+showScreen('gameScreen');curMission=0;score=0;perfectCount=0;missionResults=[];
+loadMission();
+}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function loadMission(){
+const m=missions[curMission];
+start=0;end=m.arr.length-1;steps=0;mistakes=0;
+document.getElementById('missionNum').textContent=curMission+1;
+document.getElementById('scoreDisplay').textContent=score;
+document.getElementById('perfectDisplay').textContent=perfectCount;
+document.getElementById('missionTitle').textContent=`Mission ${curMission+1}: Locate the target using binary search`;
+document.getElementById('targetValue').textContent=m.target;
+document.getElementById('stepCount').textContent='0';
+document.getElementById('elimFill').style.width='0%';
+buildArray();
+showMidpointQuestion();
+}
+
+function buildArray(){
+const m=missions[curMission];
+const row=document.getElementById('arrayRow');
+row.innerHTML='';
+m.arr.forEach((v,i)=>{
+const el=document.createElement('div');
+el.className='arr-el';
+el.id='ael-'+i;
+el.innerHTML=`<span>${v}</span><span class="idx">[${i}]</span>`;
+row.appendChild(el);
+});
+updateArrayVis();
+}
+
+function updateArrayVis(){
+const m=missions[curMission];
+m.arr.forEach((_,i)=>{
+const el=document.getElementById('ael-'+i);
+el.classList.remove('in-range','eliminated','midpoint','found');
+if(i>=start&&i<=end)el.classList.add('in-range');
+else el.classList.add('eliminated');
+});
+const elimPct=Math.round(((m.arr.length-(end-start+1))/m.arr.length)*100);
+document.getElementById('elimFill').style.width=elimPct+'%';
+document.getElementById('rangeInfo').innerHTML=`Searching: index <strong>${start}</strong> to <strong>${end}</strong> (${end-start+1} elements remaining)`;
+}
+
+function showMidpointQuestion(){
+if(start>end){
+finishMission(false);return;
+}
+const correctMid=Math.floor((start+end)/2);
+const sa=document.getElementById('stepArea');
+sa.innerHTML=`
+<p>Start = ${start}, End = ${end}<br>Calculate the midpoint: (${start} + ${end}) / 2 = ?</p>
+<div class="mid-input">
+<label>Midpoint index:</label>
+<input type="number" id="midInput" min="0" max="99">
+<button class="btn btn-primary btn-sm" onclick="checkMidpoint(${correctMid})">Check</button>
+</div>
+`;
+}
+
+function checkMidpoint(correctMid){
+const userMid=parseInt(document.getElementById('midInput').value);
+const sa=document.getElementById('stepArea');
+const m=missions[curMission];
+if(isNaN(userMid)){return;}
+
+if(userMid===correctMid){
+score+=15;floatScore('+15');
+document.getElementById('scoreDisplay').textContent=score;
+// Highlight midpoint
+document.getElementById('ael-'+correctMid).classList.add('midpoint');
+steps++;
+document.getElementById('stepCount').textContent=steps;
+sa.innerHTML=`
+<div class="feedback-msg correct">✅ Correct! Midpoint index is ${correctMid}, value is ${m.arr[correctMid]}.</div>
+<p style="margin-top:14px">The target is <strong>${m.target}</strong>. The midpoint value is <strong>${m.arr[correctMid]}</strong>.<br>What should we do?</p>
+<div class="dir-btns">
+<button class="dir-btn" onclick="checkDirection('left',${correctMid})">◀ Search LEFT</button>
+<button class="dir-btn" onclick="checkDirection('found',${correctMid})">✅ FOUND</button>
+<button class="dir-btn" onclick="checkDirection('right',${correctMid})">Search RIGHT ▶</button>
+</div>
+`;
+}else{
+mistakes++;
+sa.innerHTML=`
+<div class="feedback-msg wrong">✗ Not quite. The midpoint is calculated as (${start} + ${end}) / 2 = ${(start+end)/2}${(start+end)%2!==0?' → round down to '+correctMid:''}. The midpoint index is <strong>${correctMid}</strong>.</div>
+<button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="retryMidpoint(${correctMid})">Continue →</button>
+`;
+}
+}
+
+function retryMidpoint(correctMid){
+const m=missions[curMission];
+document.getElementById('ael-'+correctMid).classList.add('midpoint');
+steps++;document.getElementById('stepCount').textContent=steps;
+const sa=document.getElementById('stepArea');
+sa.innerHTML=`
+<p>The midpoint value is <strong>${m.arr[correctMid]}</strong> at index [${correctMid}].<br>The target is <strong>${m.target}</strong>. What should we do?</p>
+<div class="dir-btns">
+<button class="dir-btn" onclick="checkDirection('left',${correctMid})">◀ Search LEFT</button>
+<button class="dir-btn" onclick="checkDirection('found',${correctMid})">✅ FOUND</button>
+<button class="dir-btn" onclick="checkDirection('right',${correctMid})">Search RIGHT ▶</button>
+</div>
+`;
+}
+
+function checkDirection(choice,mid){
+const m=missions[curMission];
+const midVal=m.arr[mid];
+let correctChoice;
+if(midVal===m.target)correctChoice='found';
+else if(m.target<midVal)correctChoice='left';
+else correctChoice='right';
+
+const btns=document.querySelectorAll('.dir-btn');
+btns.forEach(b=>b.disabled=true);
+const sa=document.getElementById('stepArea');
+
+if(choice===correctChoice){
+score+=15;floatScore('+15');
+document.getElementById('scoreDisplay').textContent=score;
+if(choice==='found'){
+document.getElementById('ael-'+mid).classList.remove('midpoint');
+document.getElementById('ael-'+mid).classList.add('found');
+btns.forEach(b=>{if(b.textContent.includes('FOUND'))b.classList.add('correct');});
+sa.innerHTML+=`<div class="feedback-msg correct">✅ Target found at index [${mid}] in ${steps} step${steps>1?'s':''}! Binary search eliminated halves each time.</div>`;
+sa.innerHTML+=`<button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="finishMission(true)">Continue →</button>`;
+}else{
+btns.forEach(b=>{
+if(choice==='left'&&b.textContent.includes('LEFT'))b.classList.add('correct');
+if(choice==='right'&&b.textContent.includes('RIGHT'))b.classList.add('correct');
+});
+let explanation=choice==='left'?
+`${m.target} < ${midVal}, so the target must be in the LEFT half. Set end = mid - 1 = ${mid-1}.`:
+`${m.target} > ${midVal}, so the target must be in the RIGHT half. Set start = mid + 1 = ${mid+1}.`;
+sa.innerHTML+=`<div class="feedback-msg correct">✅ Correct! ${explanation}</div>`;
+if(choice==='left')end=mid-1;else start=mid+1;
+sa.innerHTML+=`<button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="continueSearch()">Next Step →</button>`;
+}
+}else{
+mistakes++;
+btns.forEach(b=>{
+if(correctChoice==='found'&&b.textContent.includes('FOUND'))b.classList.add('correct');
+if(correctChoice==='left'&&b.textContent.includes('LEFT'))b.classList.add('correct');
+if(correctChoice==='right'&&b.textContent.includes('RIGHT'))b.classList.add('correct');
+if(choice==='left'&&b.textContent.includes('LEFT'))b.classList.add('wrong');
+if(choice==='right'&&b.textContent.includes('RIGHT'))b.classList.add('wrong');
+if(choice==='found'&&b.textContent.includes('FOUND'))b.classList.add('wrong');
+});
+let explanation;
+if(correctChoice==='found')explanation=`The midpoint value ${midVal} equals the target ${m.target} — it's FOUND!`;
+else if(correctChoice==='left')explanation=`${m.target} < ${midVal}, so we need to search LEFT (set end = ${mid-1}).`;
+else explanation=`${m.target} > ${midVal}, so we need to search RIGHT (set start = ${mid+1}).`;
+sa.innerHTML+=`<div class="feedback-msg wrong">✗ ${explanation}</div>`;
+
+if(correctChoice==='found'){
+document.getElementById('ael-'+mid).classList.remove('midpoint');
+document.getElementById('ael-'+mid).classList.add('found');
+sa.innerHTML+=`<button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="finishMission(true)">Continue →</button>`;
+}else{
+if(correctChoice==='left')end=mid-1;else start=mid+1;
+sa.innerHTML+=`<button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="continueSearch()">Next Step →</button>`;
+}
+}
+}
+
+function continueSearch(){
+updateArrayVis();
+showMidpointQuestion();
+}
+
+function finishMission(found){
+const m=missions[curMission];
+const sa=document.getElementById('stepArea');
+if(!found){
+sa.innerHTML=`<div class="feedback-msg info">🔍 Start (${start}) > End (${end}). The search range is empty — the target ${m.target} is NOT in the array. Binary search determines this efficiently without checking every element.</div>`;
+}
+if(mistakes===0){perfectCount++;document.getElementById('perfectDisplay').textContent=perfectCount;}
+missionResults.push({found,steps,mistakes});
+
+if(curMission<missions.length-1){
+sa.innerHTML+=`<button class="btn btn-primary btn-sm" style="margin-top:16px" onclick="nextMission()">Next Mission →</button>`;
+}else{
+sa.innerHTML+=`<button class="btn btn-primary btn-sm" style="margin-top:16px" onclick="showResults()">See Results →</button>`;
+}
+}
+
+function nextMission(){curMission++;loadMission();}
+
+function showResults(){
+// Max possible: 6 missions, each ~3-4 steps of 15+15 = ~30 per step. Approximate.
+const maxPossible=6*60+6*15; // rough estimate
+const pct=Math.min(100,Math.round((score/maxPossible)*100));
+let rank,emoji;
+if(pct>=81){rank='Commander';emoji='🎖️';}
+else if(pct>=61){rank='Special Agent';emoji='🕵️';}
+else if(pct>=41){rank='Agent';emoji='🔫';}
+else{rank='Cadet';emoji='📋';}
+
+spawnConfetti();
+document.getElementById('resultsScreen').innerHTML=`
+<div class="results">
+<div class="results-emoji">${emoji}</div>
+<h2>Mission Debrief</h2>
+<div class="rank">${rank}</div>
+<div class="score-card">
+<div class="score-row"><span class="label">Total Score</span><span class="val">${score}</span></div>
+<div class="score-row"><span class="label">Performance</span><span class="val">${pct}%</span></div>
+<div class="score-row"><span class="label">Perfect Missions</span><span class="val">${perfectCount}/6 ⭐</span></div>
+</div>
+<div class="revision-box">
+<h3>📝 Key Revision Points — Binary Search</h3>
+<ul>
+<li>Binary search <strong>requires sorted data</strong> — it will NOT work on unsorted arrays.</li>
+<li>It works by repeatedly <strong>dividing the search area in half</strong>.</li>
+<li>Midpoint is calculated as: <strong>(start + end) / 2</strong> (rounded down).</li>
+<li>If the target &lt; midpoint value → search the <strong>left half</strong> (end = mid - 1).</li>
+<li>If the target &gt; midpoint value → search the <strong>right half</strong> (start = mid + 1).</li>
+<li>If start &gt; end, the target is <strong>not in the array</strong>.</li>
+<li>Binary search is much faster than linear for large sorted datasets — it uses at most <strong>log₂(n)</strong> comparisons.</li>
+</ul>
+</div>
+<div class="btn-row">
+<button class="btn btn-primary" onclick="startGame()">Play Again</button>
+<a href="index.html" class="btn btn-primary" style="text-decoration:none">Back to Hub</a>
+</div>
+</div>`;
+showScreen('resultsScreen');
+}
+
+function floatScore(text){const el=document.createElement('div');el.className='float-score';el.textContent=text;el.style.left=Math.random()*60+20+'%';el.style.top='40%';document.body.appendChild(el);setTimeout(()=>el.remove(),1500);}
+function spawnConfetti(){const colors=['#3b82f6','#60a5fa','#93c5fd','#f59e0b','#2ecc71','#c084fc'];for(let i=0;i<50;i++){const c=document.createElement('div');c.className='confetti-piece';c.style.left=Math.random()*100+'vw';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.animationDelay=Math.random()*2+'s';c.style.width=Math.random()*8+6+'px';c.style.height=Math.random()*8+6+'px';document.body.appendChild(c);setTimeout(()=>c.remove(),5000);}}
+</script>
+</body>
+</html>

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Code Challenge — Search Squad</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#110a24;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
+.container{max-width:850px;margin:0 auto;padding:24px 20px;position:relative;z-index:1}
+.bg-glow{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 50% 0%,rgba(109,40,217,.1),transparent 60%),radial-gradient(ellipse at 50% 100%,rgba(196,181,253,.05),transparent 50%);pointer-events:none;z-index:0}
+.back-link{display:inline-block;color:#94a3b8;text-decoration:none;font-size:.9rem;margin-bottom:16px;transition:color .3s}
+.back-link:hover{color:#c4b5fd}
+.header-bar{text-align:center;padding:12px 0 16px;border-bottom:1px solid rgba(196,181,253,.15);margin-bottom:20px}
+.header-bar h1{font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,#6d28d9,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.screen{display:none}.screen.active{display:block}
+.welcome{text-align:center;padding:60px 20px}
+.welcome-emoji{font-size:5rem;animation:codeFloat 2.5s ease-in-out infinite}
+@keyframes codeFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+.welcome h2{font-size:2rem;margin:20px 0 10px;color:#c4b5fd}
+.welcome p{font-size:1.05rem;color:#94a3b8;max-width:520px;margin:0 auto 30px;line-height:1.6}
+.btn{padding:14px 36px;border:none;border-radius:30px;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(139,92,246,.3)}
+.btn-sm{padding:10px 24px;font-size:.9rem}
+
+.game-hud{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.hud-item{background:rgba(255,255,255,.05);padding:8px 16px;border-radius:12px;font-size:.85rem;font-weight:600}
+.hud-item span{color:#c4b5fd}
+.progress-bar{height:6px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:20px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#6d28d9,#c4b5fd);border-radius:3px;transition:width .4s}
+
+.challenge-card{background:rgba(255,255,255,.03);border:1px solid rgba(196,181,253,.1);border-radius:18px;padding:24px;margin-bottom:20px;animation:slideIn .4s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.challenge-label{font-size:.8rem;text-transform:uppercase;letter-spacing:1px;color:#8b5cf6;margin-bottom:6px;font-weight:700}
+.challenge-title{font-size:1.15rem;font-weight:700;color:#c4b5fd;margin-bottom:14px}
+
+/* CODE BLOCK */
+.code-block{background:#1a1136;border:1px solid rgba(139,92,246,.15);border-radius:12px;padding:18px;font-family:'Courier New',Courier,monospace;font-size:.9rem;line-height:1.8;overflow-x:auto;margin:12px 0}
+.code-line{display:flex;align-items:center;gap:4px;flex-wrap:wrap;min-height:28px}
+.code-text{color:#a78bfa}
+.code-keyword{color:#f472b6}
+.code-string{color:#fbbf24}
+.code-comment{color:#64748b;font-style:italic}
+.code-gap{display:inline-block;min-width:80px;padding:4px 10px;margin:2px 4px;border:2px dashed rgba(139,92,246,.4);border-radius:6px;background:rgba(139,92,246,.05);text-align:center;cursor:pointer;transition:all .3s;color:#c4b5fd;font-weight:700;font-family:'Courier New',monospace;font-size:.9rem}
+.code-gap:hover{border-color:#8b5cf6;background:rgba(139,92,246,.1)}
+.code-gap.filled{border-style:solid;border-color:#8b5cf6;background:rgba(139,92,246,.15)}
+.code-gap.correct{border-color:#2ecc71;background:rgba(46,204,113,.1);color:#2ecc71}
+.code-gap.wrong{border-color:#e74c3c;background:rgba(231,76,60,.1);color:#e74c3c}
+
+/* OPTIONS */
+.options-bar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0;padding:12px;background:rgba(255,255,255,.02);border-radius:12px}
+.option-chip{padding:8px 16px;border:2px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.04);color:#e2e8f0;font-family:'Courier New',monospace;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .3s;user-select:none}
+.option-chip:hover{border-color:#8b5cf6;background:rgba(139,92,246,.08)}
+.option-chip.used{opacity:.3;pointer-events:none}
+.option-chip.selected{border-color:#c4b5fd;background:rgba(196,181,253,.15)}
+
+/* TOOLBOX BUILD */
+.toolbox{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0;padding:14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:12px}
+.toolbox-piece{padding:8px 14px;border:2px solid rgba(139,92,246,.2);border-radius:8px;background:rgba(139,92,246,.05);color:#c4b5fd;font-family:'Courier New',monospace;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .3s;user-select:none}
+.toolbox-piece:hover{border-color:#8b5cf6;background:rgba(139,92,246,.12)}
+.toolbox-piece.used{opacity:.25;pointer-events:none}
+.toolbox-piece.distractor{color:#e2e8f0}
+.build-zone{min-height:120px;border:2px dashed rgba(139,92,246,.2);border-radius:12px;padding:12px;margin:12px 0;display:flex;flex-direction:column;gap:4px}
+.build-zone.active{border-color:rgba(139,92,246,.4);background:rgba(139,92,246,.02)}
+.build-line{padding:6px 12px;background:rgba(139,92,246,.06);border-radius:6px;font-family:'Courier New',monospace;font-size:.85rem;color:#c4b5fd;display:flex;align-items:center;gap:8px;animation:fadeIn .2s ease}
+.build-line .remove-btn{cursor:pointer;color:#e74c3c;font-weight:700;font-size:.8rem;opacity:.6;transition:opacity .2s}
+.build-line .remove-btn:hover{opacity:1}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* TRACE */
+.trace-question{font-size:1rem;line-height:1.6;margin:12px 0}
+.trace-input{display:flex;align-items:center;gap:8px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+.trace-input label{font-size:.9rem;color:#94a3b8}
+.trace-input input{padding:8px 12px;border:2px solid rgba(139,92,246,.3);border-radius:8px;background:rgba(255,255,255,.05);color:#fff;font-size:1rem;font-weight:700;font-family:'Courier New',monospace;width:200px;text-align:center}
+
+.feedback-msg{margin-top:14px;padding:14px 18px;border-radius:12px;font-size:.92rem;line-height:1.6;animation:fadeIn .3s ease}
+.feedback-msg.correct{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.2);color:#2ecc71}
+.feedback-msg.wrong{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);color:#e74c3c}
+.feedback-msg.info{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);color:#c4b5fd}
+.next-wrap{text-align:center;margin-top:16px}
+
+/* RESULTS */
+.results{text-align:center;padding:50px 20px}
+.results-emoji{font-size:4.5rem;animation:bounce 1s ease infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+.results h2{font-size:2rem;margin:16px 0 6px;color:#c4b5fd}
+.results .rank{font-size:1.3rem;color:#fbbf24;font-weight:700;margin-bottom:20px}
+.score-card{background:rgba(255,255,255,.04);border-radius:16px;padding:24px;max-width:400px;margin:0 auto 24px;border:1px solid rgba(255,255,255,.06)}
+.score-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.95rem}
+.score-row:last-child{border-bottom:none}
+.score-row .label{color:#94a3b8}.score-row .val{font-weight:700;color:#c4b5fd}
+.revision-box{background:rgba(109,40,217,.08);border:1px solid rgba(109,40,217,.2);border-radius:14px;padding:20px;max-width:520px;margin:0 auto 24px;text-align:left}
+.revision-box h3{color:#c4b5fd;margin-bottom:10px;font-size:1rem}
+.revision-box ul{padding-left:20px;color:#94a3b8;font-size:.9rem;line-height:1.7}
+.btn-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;animation:confettiFall 3s ease forwards;z-index:100;pointer-events:none}
+@keyframes confettiFall{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+.float-score{position:fixed;font-size:1.5rem;font-weight:800;color:#c4b5fd;animation:floatUp 1.5s ease forwards;pointer-events:none;z-index:100}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-80px)}}
+
+@media(max-width:600px){.welcome h2{font-size:1.5rem}.code-block{font-size:.78rem;padding:12px}.results h2{font-size:1.5rem}.option-chip,.toolbox-piece{font-size:.75rem;padding:6px 10px}}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="container">
+<a href="index.html" class="back-link">← Back to Hub</a>
+<div class="header-bar"><h1>💻 Search Code Challenge</h1></div>
+
+<div id="welcomeScreen" class="screen active">
+<div class="welcome">
+<div class="welcome-emoji">💻</div>
+<h2>Search Code Challenge</h2>
+<p>Can you complete and build search algorithm pseudocode? Fill in the gaps and construct working searches!</p>
+<button class="btn btn-primary" onclick="startGame()">Start Coding →</button>
+</div>
+</div>
+
+<div id="gameScreen" class="screen">
+<div class="game-hud">
+<div class="hud-item">Challenge: <span id="chNum">1</span>/6</div>
+<div class="hud-item">Score: <span id="scoreDisplay">0</span></div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+<div id="challengeContainer"></div>
+</div>
+
+<div id="resultsScreen" class="screen"></div>
+</div>
+
+<script>
+let curChallenge=0,score=0,maxScore=0;
+
+function startGame(){showScreen('gameScreen');curChallenge=0;score=0;loadChallenge();}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function updateHUD(){
+document.getElementById('chNum').textContent=curChallenge+1;
+document.getElementById('scoreDisplay').textContent=score;
+document.getElementById('progressFill').style.width=(curChallenge/6*100)+'%';
+}
+
+// ---- CHALLENGE DATA ----
+
+function loadChallenge(){
+updateHUD();
+const loaders=[loadCh1,loadCh2,loadCh3,loadCh4,loadCh5,loadCh6];
+loaders[curChallenge]();
+}
+
+// CH1: Linear search gap-fill
+function loadCh1(){
+const gaps={g1:'false',g2:'AND',g3:'target',g4:'1'};
+const options=['false','AND','target','1','true','OR','position','0'];
+const cc=document.getElementById('challengeContainer');
+cc.innerHTML=`
+<div class="challenge-card">
+<div class="challenge-label">Challenge 1 — Gap Fill</div>
+<div class="challenge-title">Complete the Linear Search Pseudocode</div>
+<p style="color:#94a3b8;font-size:.9rem;margin-bottom:12px">Click a gap, then click the correct option to fill it in.</p>
+<div class="code-block">
+<div class="code-line"><span class="code-text">found = </span><span class="code-gap" id="gap-g1" data-gap="g1" onclick="selectGap('g1')">???</span></div>
+<div class="code-line"><span class="code-text">position = 0</span></div>
+<div class="code-line"><span class="code-keyword">WHILE </span><span class="code-text">found == false </span><span class="code-gap" id="gap-g2" data-gap="g2" onclick="selectGap('g2')">???</span><span class="code-text"> position &lt; n</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">IF </span><span class="code-text">myArray[position] == </span><span class="code-gap" id="gap-g3" data-gap="g3" onclick="selectGap('g3')">???</span><span class="code-keyword"> THEN</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;found = true</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">ELSE</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;position = position + </span><span class="code-gap" id="gap-g4" data-gap="g4" onclick="selectGap('g4')">???</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">ENDIF</span></div>
+<div class="code-line"><span class="code-keyword">ENDWHILE</span></div>
+</div>
+<div class="options-bar" id="optionsBar"></div>
+<div id="feedbackArea"></div>
+<div class="next-wrap" id="nextWrap" style="display:none"><button class="btn btn-primary btn-sm" onclick="nextChallenge()">Next Challenge →</button></div>
+</div>`;
+window._gapAnswers=gaps;
+window._selectedGap=null;
+window._filledGaps={};
+renderOptions(options);
+}
+
+let _selectedGap=null,_gapAnswers={},_filledGaps={};
+
+function renderOptions(options){
+const bar=document.getElementById('optionsBar');
+bar.innerHTML='';
+options.forEach(o=>{
+const chip=document.createElement('span');
+chip.className='option-chip';
+chip.textContent=o;
+chip.dataset.val=o;
+chip.onclick=()=>fillGap(o,chip);
+bar.appendChild(chip);
+});
+}
+
+function selectGap(gapId){
+document.querySelectorAll('.code-gap').forEach(g=>g.style.boxShadow='');
+const el=document.getElementById('gap-'+gapId);
+if(!el.classList.contains('correct')&&!el.classList.contains('wrong')){
+el.style.boxShadow='0 0 0 3px rgba(139,92,246,.5)';
+window._selectedGap=gapId;
+}
+}
+
+function fillGap(val,chip){
+if(!window._selectedGap)return;
+const gapEl=document.getElementById('gap-'+window._selectedGap);
+if(gapEl.classList.contains('correct'))return;
+gapEl.textContent=val;
+gapEl.classList.add('filled');
+window._filledGaps[window._selectedGap]=val;
+gapEl.style.boxShadow='';
+// Check if all filled
+const answers=window._gapAnswers;
+const allFilled=Object.keys(answers).every(k=>window._filledGaps[k]);
+if(allFilled)checkGapFill();
+}
+
+function checkGapFill(){
+const answers=window._gapAnswers;
+let correct=0,total=Object.keys(answers).length;
+Object.keys(answers).forEach(k=>{
+const el=document.getElementById('gap-'+k);
+if(window._filledGaps[k]===answers[k]){
+el.classList.add('correct');correct++;
+}else{
+el.classList.add('wrong');
+setTimeout(()=>{el.textContent=answers[k];el.classList.remove('wrong');el.classList.add('correct');},1500);
+}
+});
+const pts=correct*10;score+=pts;maxScore+=total*10;
+updateHUD();
+const fa=document.getElementById('feedbackArea');
+if(correct===total){
+floatScore(`+${pts}`);
+fa.innerHTML=`<div class="feedback-msg correct">✅ Perfect! All ${total} gaps filled correctly. The WHILE loop continues as long as the item hasn't been found AND there are still elements to check.</div>`;
+}else{
+fa.innerHTML=`<div class="feedback-msg wrong">You got ${correct}/${total} correct. The corrected answers are now shown in the code above. Note: the loop needs both conditions (found == false AND position < n) joined with AND.</div>`;
+}
+document.getElementById('nextWrap').style.display='block';
+}
+
+// CH2: Binary search gap-fill
+function loadCh2(){
+const gaps={g1:'<=',g2:'end',g3:'mid',g4:'mid',g5:'1'};
+const options=['<=','end','mid','mid','1','>=','start','n','0','<'];
+window._gapAnswers=gaps;window._selectedGap=null;window._filledGaps={};
+const cc=document.getElementById('challengeContainer');
+cc.innerHTML=`
+<div class="challenge-card">
+<div class="challenge-label">Challenge 2 — Gap Fill</div>
+<div class="challenge-title">Complete the Binary Search Pseudocode</div>
+<p style="color:#94a3b8;font-size:.9rem;margin-bottom:12px">Click a gap, then click the correct option.</p>
+<div class="code-block">
+<div class="code-line"><span class="code-text">start = 0</span></div>
+<div class="code-line"><span class="code-text">end = n - 1</span></div>
+<div class="code-line"><span class="code-keyword">WHILE </span><span class="code-text">start </span><span class="code-gap" id="gap-g1" data-gap="g1" onclick="selectGap('g1')">???</span><span class="code-text"> end</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;mid = (start + </span><span class="code-gap" id="gap-g2" data-gap="g2" onclick="selectGap('g2')">???</span><span class="code-text">) / 2</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">IF </span><span class="code-text">myArray[mid] == target </span><span class="code-keyword">THEN</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">OUTPUT </span><span class="code-string">"Found at " + </span><span class="code-gap" id="gap-g3" data-gap="g3" onclick="selectGap('g3')">???</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">ELSE IF </span><span class="code-text">target &lt; myArray[mid] </span><span class="code-keyword">THEN</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end = </span><span class="code-gap" id="gap-g4" data-gap="g4" onclick="selectGap('g4')">???</span><span class="code-text"> - 1</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">ELSE</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start = mid + </span><span class="code-gap" id="gap-g5" data-gap="g5" onclick="selectGap('g5')">???</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">ENDIF</span></div>
+<div class="code-line"><span class="code-keyword">ENDWHILE</span></div>
+</div>
+<div class="options-bar" id="optionsBar"></div>
+<div id="feedbackArea"></div>
+<div class="next-wrap" id="nextWrap" style="display:none"><button class="btn btn-primary btn-sm" onclick="nextChallenge()">Next Challenge →</button></div>
+</div>`;
+renderOptions(options);
+}
+
+// CH3: Build linear search from fragments
+function loadCh3(){
+const correctOrder=[
+'found = false',
+'position = 0',
+'WHILE found == false AND position < n',
+'    IF myArray[position] == target THEN',
+'        found = true',
+'    ELSE',
+'        position = position + 1',
+'    ENDIF',
+'ENDWHILE'
+];
+const distractors=['position = position - 1','WHILE position > n','IF myArray[position] != target THEN'];
+loadBuildChallenge(3,'Build the Linear Search Algorithm','Drag the correct lines into the build zone in the right order. Watch out for distractors!',correctOrder,distractors,'This is the standard linear search algorithm. The WHILE loop checks TWO conditions with AND: the item has not been found, and there are still elements left to check. Inside the loop, each element is compared to the target.');
+}
+
+// CH4: Build binary search from fragments
+function loadCh4(){
+const correctOrder=[
+'start = 0',
+'end = n - 1',
+'WHILE start <= end',
+'    mid = (start + end) / 2',
+'    IF myArray[mid] == target THEN',
+'        OUTPUT "Found at " + mid',
+'    ELSE IF target < myArray[mid] THEN',
+'        end = mid - 1',
+'    ELSE',
+'        start = mid + 1',
+'    ENDIF',
+'ENDWHILE'
+];
+const distractors=['mid = (start - end) / 2','WHILE start >= end','start = mid - 1'];
+loadBuildChallenge(4,'Build the Binary Search Algorithm','Place the code lines in the correct order. Avoid the distractors!',correctOrder,distractors,'This is the standard binary search. Note: the midpoint uses (start + end) / 2. When the target is LESS than the midpoint value, we search LEFT by setting end = mid - 1. When GREATER, we search RIGHT by setting start = mid + 1.');
+}
+
+function loadBuildChallenge(num,title,desc,correctOrder,distractors,explanation){
+const allPieces=shuffle([...correctOrder,...distractors]);
+const cc=document.getElementById('challengeContainer');
+cc.innerHTML=`
+<div class="challenge-card">
+<div class="challenge-label">Challenge ${num} — Code Builder</div>
+<div class="challenge-title">${title}</div>
+<p style="color:#94a3b8;font-size:.9rem;margin-bottom:12px">${desc}</p>
+<div class="toolbox" id="toolbox"></div>
+<div style="text-align:center;font-size:.8rem;color:#64748b;margin:4px 0">👇 Click lines to add them to the build zone below</div>
+<div class="build-zone" id="buildZone"></div>
+<div style="text-align:center;margin-top:12px">
+<button class="btn btn-primary btn-sm" id="checkBuildBtn" onclick="checkBuild()">Check My Code ✓</button>
+</div>
+<div id="feedbackArea"></div>
+<div class="next-wrap" id="nextWrap" style="display:none"><button class="btn btn-primary btn-sm" onclick="nextChallenge()">Next Challenge →</button></div>
+</div>`;
+window._correctOrder=correctOrder;
+window._buildLines=[];
+window._buildExplanation=explanation;
+window._buildMax=correctOrder.length*10;
+const tb=document.getElementById('toolbox');
+allPieces.forEach((p,i)=>{
+const piece=document.createElement('span');
+piece.className='toolbox-piece';
+if(distractors.includes(p))piece.classList.add('distractor');
+piece.textContent=p;
+piece.dataset.idx=i;
+piece.onclick=()=>addToBuild(p,piece);
+tb.appendChild(piece);
+});
+}
+
+function addToBuild(text,chip){
+chip.classList.add('used');
+window._buildLines.push(text);
+const bz=document.getElementById('buildZone');
+const line=document.createElement('div');
+line.className='build-line';
+const lineIdx=window._buildLines.length-1;
+line.innerHTML=`<span class="remove-btn" onclick="removeFromBuild(${lineIdx},this)" title="Remove">✕</span><span>${text}</span>`;
+bz.appendChild(line);
+}
+
+function removeFromBuild(idx,btn){
+const text=window._buildLines[idx];
+if(!text)return;
+window._buildLines[idx]=null;
+btn.parentElement.remove();
+// Re-enable chip
+document.querySelectorAll('.toolbox-piece').forEach(p=>{
+if(p.textContent===text&&p.classList.contains('used')){
+p.classList.remove('used');
+}
+});
+}
+
+function checkBuild(){
+const correct=window._correctOrder;
+const built=window._buildLines.filter(l=>l!==null);
+let pts=0;
+// Check line-by-line match
+const maxLines=correct.length;
+for(let i=0;i<maxLines;i++){
+if(built[i]&&built[i].trim()===correct[i].trim())pts+=10;
+}
+score+=pts;maxScore+=window._buildMax;
+updateHUD();
+const fa=document.getElementById('feedbackArea');
+document.getElementById('checkBuildBtn').disabled=true;
+if(pts===window._buildMax){
+floatScore(`+${pts}`);
+fa.innerHTML=`<div class="feedback-msg correct">✅ Perfect build! All ${maxLines} lines in the correct order.<br><br>${window._buildExplanation}</div>`;
+}else{
+const correctLines=pts/10;
+fa.innerHTML=`<div class="feedback-msg wrong">You placed ${correctLines}/${maxLines} lines correctly.<br><br>The correct order is:</div>`;
+const showBlock=document.createElement('div');
+showBlock.className='code-block';
+showBlock.style.marginTop='8px';
+correct.forEach(l=>{
+const div=document.createElement('div');
+div.className='code-line';
+div.innerHTML=`<span class="code-text">${l}</span>`;
+showBlock.appendChild(div);
+});
+fa.appendChild(showBlock);
+fa.innerHTML+=`<div class="feedback-msg info" style="margin-top:8px">${window._buildExplanation}</div>`;
+}
+document.getElementById('nextWrap').style.display='block';
+}
+
+// CH5: Trace linear search
+function loadCh5(){
+const cc=document.getElementById('challengeContainer');
+cc.innerHTML=`
+<div class="challenge-card">
+<div class="challenge-label">Challenge 5 — Code Trace</div>
+<div class="challenge-title">What Does This Linear Search Output?</div>
+<div class="code-block">
+<div class="code-line"><span class="code-text">myArray = [15, 42, 8, 23, 36]</span></div>
+<div class="code-line"><span class="code-text">target = 23</span></div>
+<div class="code-line"><span class="code-text">found = false</span></div>
+<div class="code-line"><span class="code-text">position = 0</span></div>
+<div class="code-line"><span class="code-keyword">WHILE </span><span class="code-text">found == false AND position &lt; 5</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">IF </span><span class="code-text">myArray[position] == 23 </span><span class="code-keyword">THEN</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;found = true</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">OUTPUT </span><span class="code-string">"Found at position " + position</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">ELSE</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;position = position + 1</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">ENDIF</span></div>
+<div class="code-line"><span class="code-keyword">ENDWHILE</span></div>
+</div>
+<div class="trace-question">
+<p>Trace through the code. How many comparisons are made, and what is the output?</p>
+</div>
+<div class="trace-input">
+<label>Number of comparisons:</label>
+<input type="number" id="traceComps" min="1" max="10" placeholder="?">
+</div>
+<div class="trace-input">
+<label>Position where found:</label>
+<input type="number" id="tracePos" min="0" max="10" placeholder="?">
+</div>
+<div style="text-align:center;margin-top:12px">
+<button class="btn btn-primary btn-sm" onclick="checkTrace5()">Check Answer ✓</button>
+</div>
+<div id="feedbackArea"></div>
+<div class="next-wrap" id="nextWrap" style="display:none"><button class="btn btn-primary btn-sm" onclick="nextChallenge()">Next Challenge →</button></div>
+</div>`;
+maxScore+=20;
+}
+
+function checkTrace5(){
+const comps=parseInt(document.getElementById('traceComps').value);
+const pos=parseInt(document.getElementById('tracePos').value);
+let pts=0;
+if(comps===4)pts+=10;
+if(pos===3)pts+=10;
+score+=pts;updateHUD();
+const fa=document.getElementById('feedbackArea');
+if(pts===20){
+floatScore('+20');
+fa.innerHTML=`<div class="feedback-msg correct">✅ Perfect! The search checks positions 0, 1, 2, 3 — that's 4 comparisons. It finds 23 at position 3 and outputs: "Found at position 3".</div>`;
+}else{
+fa.innerHTML=`<div class="feedback-msg wrong">Not quite. Let's trace it:<br>• Position 0: myArray[0]=15 ≠ 23 → position becomes 1<br>• Position 1: myArray[1]=42 ≠ 23 → position becomes 2<br>• Position 2: myArray[2]=8 ≠ 23 → position becomes 3<br>• Position 3: myArray[3]=23 == 23 → found!<br><br>4 comparisons, found at position 3. Output: "Found at position 3"</div>`;
+}
+document.getElementById('nextWrap').style.display='block';
+document.querySelector('#challengeContainer button[onclick="checkTrace5()"]').disabled=true;
+}
+
+// CH6: Trace binary search
+function loadCh6(){
+const cc=document.getElementById('challengeContainer');
+cc.innerHTML=`
+<div class="challenge-card">
+<div class="challenge-label">Challenge 6 — Code Trace</div>
+<div class="challenge-title">What Midpoints Does This Binary Search Check?</div>
+<div class="code-block">
+<div class="code-line"><span class="code-text">myArray = [5, 10, 15, 20, 25, 30, 35]</span></div>
+<div class="code-line"><span class="code-text">target = 10</span></div>
+<div class="code-line"><span class="code-text">start = 0, end = 6</span></div>
+<div class="code-line"><span class="code-keyword">WHILE </span><span class="code-text">start &lt;= end</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;mid = (start + end) / 2</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">IF </span><span class="code-text">myArray[mid] == target </span><span class="code-keyword">THEN</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">OUTPUT </span><span class="code-string">"Found"</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">ELSE IF </span><span class="code-text">target &lt; myArray[mid] </span><span class="code-keyword">THEN</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end = mid - 1</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">ELSE</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start = mid + 1</span></div>
+<div class="code-line"><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="code-keyword">ENDIF</span></div>
+<div class="code-line"><span class="code-keyword">ENDWHILE</span></div>
+</div>
+<div class="trace-question">
+<p>List the <strong>midpoint indices</strong> checked in order (comma-separated) and the <strong>midpoint values</strong> at each step.</p>
+</div>
+<div class="trace-input">
+<label>Midpoint indices (e.g. 3,1,2):</label>
+<input type="text" id="traceMids" placeholder="?,?,?" style="width:160px">
+</div>
+<div class="trace-input">
+<label>Midpoint values (e.g. 20,10,15):</label>
+<input type="text" id="traceMidVals" placeholder="?,?,?" style="width:160px">
+</div>
+<div style="text-align:center;margin-top:12px">
+<button class="btn btn-primary btn-sm" onclick="checkTrace6()">Check Answer ✓</button>
+</div>
+<div id="feedbackArea"></div>
+<div class="next-wrap" id="nextWrap" style="display:none"><button class="btn btn-primary btn-sm" onclick="showResults()">See Results →</button></div>
+</div>`;
+maxScore+=20;
+}
+
+function checkTrace6(){
+const midsRaw=document.getElementById('traceMids').value.replace(/\s/g,'');
+const valsRaw=document.getElementById('traceMidVals').value.replace(/\s/g,'');
+let pts=0;
+if(midsRaw==='3,1')pts+=10;
+if(valsRaw==='20,10')pts+=10;
+score+=pts;updateHUD();
+const fa=document.getElementById('feedbackArea');
+if(pts===20){
+floatScore('+20');
+fa.innerHTML=`<div class="feedback-msg correct">✅ Perfect trace!<br>• Step 1: mid = (0+6)/2 = 3, myArray[3] = 20. Target 10 < 20 → search left, end = 2<br>• Step 2: mid = (0+2)/2 = 1, myArray[1] = 10. Found!<br><br>Midpoint indices: 3, 1. Midpoint values: 20, 10. Only 2 steps to find it!</div>`;
+}else{
+fa.innerHTML=`<div class="feedback-msg wrong">Let's trace carefully:<br>• Step 1: start=0, end=6, mid=(0+6)/2=3. myArray[3]=20. Target 10 &lt; 20 → end = 3-1 = 2<br>• Step 2: start=0, end=2, mid=(0+2)/2=1. myArray[1]=10. 10 == 10 → Found!<br><br>Midpoint indices: <strong>3, 1</strong>. Midpoint values: <strong>20, 10</strong>.</div>`;
+}
+document.getElementById('nextWrap').style.display='block';
+document.querySelector('#challengeContainer button[onclick="checkTrace6()"]').disabled=true;
+}
+
+function nextChallenge(){curChallenge++;if(curChallenge>=6)showResults();else loadChallenge();}
+
+function showResults(){
+const pct=maxScore>0?Math.round((score/maxScore)*100):0;
+let rank,emoji;
+if(pct>=81){rank='Code Legend';emoji='🏆';}
+else if(pct>=61){rank='Architect';emoji='🏗️';}
+else if(pct>=41){rank='Developer';emoji='⚙️';}
+else{rank='Novice Coder';emoji='📝';}
+
+spawnConfetti();
+document.getElementById('resultsScreen').innerHTML=`
+<div class="results">
+<div class="results-emoji">${emoji}</div>
+<h2>Challenge Complete!</h2>
+<div class="rank">${rank}</div>
+<div class="score-card">
+<div class="score-row"><span class="label">Total Score</span><span class="val">${score}/${maxScore}</span></div>
+<div class="score-row"><span class="label">Accuracy</span><span class="val">${pct}%</span></div>
+</div>
+<div class="revision-box">
+<h3>📝 Key Pseudocode Points</h3>
+<ul>
+<li><strong>Linear search</strong> uses a WHILE loop with TWO conditions: found == false AND position &lt; n.</li>
+<li>The loop variable (<code>position</code>) is incremented by 1 each iteration.</li>
+<li><strong>Binary search</strong> loops WHILE start &lt;= end.</li>
+<li>Midpoint = <strong>(start + end) / 2</strong> — always use integer division (round down).</li>
+<li>If target &lt; midpoint value → <strong>end = mid - 1</strong> (search left half).</li>
+<li>If target &gt; midpoint value → <strong>start = mid + 1</strong> (search right half).</li>
+<li>When tracing code, work through each iteration <strong>line by line</strong> and track all variable values.</li>
+</ul>
+</div>
+<div class="btn-row">
+<button class="btn btn-primary" onclick="startGame()">Play Again</button>
+<a href="index.html" class="btn btn-primary" style="text-decoration:none">Back to Hub</a>
+</div>
+</div>`;
+showScreen('resultsScreen');
+}
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function floatScore(text){const el=document.createElement('div');el.className='float-score';el.textContent=text;el.style.left=Math.random()*60+20+'%';el.style.top='40%';document.body.appendChild(el);setTimeout(()=>el.remove(),1500);}
+function spawnConfetti(){const colors=['#6d28d9','#8b5cf6','#c4b5fd','#f59e0b','#2ecc71','#60a5fa'];for(let i=0;i<50;i++){const c=document.createElement('div');c.className='confetti-piece';c.style.left=Math.random()*100+'vw';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.animationDelay=Math.random()*2+'s';c.style.width=Math.random()*8+6+'px';c.style.height=Math.random()*8+6+'px';document.body.appendChild(c);setTimeout(()=>c.remove(),5000);}}
+</script>
+</body>
+</html>

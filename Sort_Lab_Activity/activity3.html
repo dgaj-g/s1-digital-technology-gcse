@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sort Showdown - Sort Lab</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0a1628;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
+.container{max-width:850px;margin:0 auto;padding:20px;position:relative;z-index:1}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#FCD34D;text-decoration:none;font-size:0.9rem;margin-bottom:15px;transition:all 0.3s;padding:5px 10px;border-radius:8px}
+.back-link:hover{background:rgba(252,211,77,0.1);transform:translateX(-3px)}
+
+/* Welcome */
+.welcome{text-align:center;padding:60px 20px;animation:fadeUp 0.6s ease}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+.welcome-emoji{font-size:5rem;display:block;margin-bottom:15px;animation:swordClash 2s ease-in-out infinite}
+@keyframes swordClash{0%,100%{transform:rotate(0deg) scale(1)}25%{transform:rotate(-10deg) scale(1.1)}50%{transform:rotate(0deg) scale(1)}75%{transform:rotate(10deg) scale(1.1)}}
+.welcome h1{font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,#D97706,#FCD34D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:15px}
+.welcome p{font-size:1.1rem;color:#94a3b8;max-width:550px;margin:0 auto 12px;line-height:1.6}
+.mission{background:rgba(217,119,6,0.1);border:1px solid rgba(252,211,77,0.2);border-radius:16px;padding:20px;margin:20px auto;max-width:520px}
+.mission p{font-size:1rem;color:#cbd5e1}
+.start-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#D97706,#FCD34D);color:#1a1a2e;border:none;padding:16px 36px;border-radius:14px;font-size:1.15rem;font-weight:700;cursor:pointer;transition:all 0.3s;margin-top:20px}
+.start-btn:hover{transform:scale(1.05);box-shadow:0 10px 40px rgba(217,119,6,0.4)}
+
+/* Game */
+.game{display:none;animation:fadeUp 0.5s ease}
+.game-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px;padding:14px 20px;background:rgba(255,255,255,0.03);border-radius:14px;border:1px solid rgba(255,255,255,0.06)}
+.stat{text-align:center}
+.stat-label{font-size:0.75rem;color:#64748b;text-transform:uppercase;letter-spacing:1px}
+.stat-value{font-size:1.3rem;font-weight:700;color:#FCD34D}
+.progress-bar{width:100%;height:6px;background:rgba(255,255,255,0.05);border-radius:3px;margin-bottom:20px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#D97706,#FCD34D);border-radius:3px;transition:width 0.5s ease}
+
+/* Question area */
+.question-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px;margin-bottom:20px;animation:fadeUp 0.4s ease}
+.q-number{font-size:0.8rem;color:#D97706;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.q-text{font-size:1.15rem;font-weight:600;color:#e2e8f0;line-height:1.6;margin-bottom:20px}
+
+/* Visualisation area for comparison questions */
+.vis-area{display:flex;gap:20px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+.vis-panel{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:16px;flex:1;min-width:200px;max-width:350px}
+.vis-panel h4{font-size:0.85rem;font-weight:700;margin-bottom:8px;text-align:center}
+.vis-panel.bubble-panel h4{color:#2DD4BF}
+.vis-panel.insert-panel h4{color:#818CF8}
+.mini-array{display:flex;gap:4px;justify-content:center;align-items:flex-end;min-height:80px}
+.mini-bar{border-radius:4px 4px 2px 2px;min-width:24px;display:flex;align-items:flex-end;justify-content:center;transition:all 0.3s}
+.mini-bar span{font-size:0.7rem;font-weight:700;color:#fff;padding:3px 0}
+.mini-bar.b-default{background:#334155;border:1px solid #475569}
+.mini-bar.b-highlight{background:#fbbf24;border:1px solid #fbbf24}
+.mini-bar.b-sorted{background:#2ecc71;border:1px solid #2ecc71}
+.vis-stat{text-align:center;margin-top:8px;font-size:0.85rem;color:#94a3b8}
+.vis-stat strong{color:#FCD34D}
+
+/* Answer options */
+.options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.option{padding:14px 18px;border-radius:14px;font-size:1rem;font-weight:600;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);color:#e2e8f0;cursor:pointer;transition:all 0.3s;text-align:left}
+.option:hover{border-color:rgba(252,211,77,0.4);background:rgba(217,119,6,0.1);transform:scale(1.02)}
+.option.selected{border-color:#FCD34D;background:rgba(217,119,6,0.15)}
+.option.correct{border-color:#2ecc71;background:rgba(46,204,113,0.15);color:#2ecc71}
+.option.wrong{border-color:#e74c3c;background:rgba(231,76,60,0.15);color:#e74c3c}
+.option:disabled{cursor:default;transform:none}
+.option .opt-letter{display:inline-block;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);text-align:center;line-height:28px;font-size:0.85rem;margin-right:10px;font-weight:700}
+
+/* Feedback */
+.feedback{min-height:80px;margin-bottom:15px}
+.feedback-box{padding:16px 20px;border-radius:14px;font-size:0.95rem;line-height:1.6;animation:fadeUp 0.3s ease}
+.feedback-box.correct{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.25);color:#2ecc71}
+.feedback-box.wrong{background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.25);color:#e74c3c}
+.feedback-box strong{display:block;margin-bottom:4px;font-size:1rem}
+.next-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#D97706,#FCD34D);color:#1a1a2e;border:none;padding:12px 28px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;margin-top:8px}
+.next-btn:hover{transform:scale(1.05);box-shadow:0 8px 30px rgba(217,119,6,0.3)}
+
+/* Results */
+.results{display:none;text-align:center;padding:40px 20px;animation:fadeUp 0.6s ease}
+.results-emoji{font-size:4.5rem;display:block;margin-bottom:10px}
+.results h1{font-size:2.2rem;font-weight:800;margin-bottom:5px}
+.results .rank{font-size:1.3rem;color:#FCD34D;font-weight:700;margin-bottom:20px}
+.score-circle{width:140px;height:140px;border-radius:50%;background:conic-gradient(#FCD34D var(--pct),rgba(255,255,255,0.05) 0);display:flex;align-items:center;justify-content:center;margin:0 auto 25px;position:relative}
+.score-circle::after{content:'';position:absolute;width:110px;height:110px;border-radius:50%;background:#0a1628}
+.score-circle .score-text{position:relative;z-index:1;font-size:1.8rem;font-weight:800;color:#FCD34D}
+
+.comparison-table{width:100%;border-collapse:collapse;margin-bottom:25px;font-size:0.9rem}
+.comparison-table th{background:rgba(255,255,255,0.05);padding:12px;text-align:left;font-weight:700;color:#FCD34D;border-bottom:2px solid rgba(255,255,255,0.1)}
+.comparison-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.comparison-table tr:hover td{background:rgba(255,255,255,0.02)}
+
+.key-fact{background:rgba(217,119,6,0.1);border:1px solid rgba(252,211,77,0.2);border-radius:14px;padding:18px;margin-bottom:25px;text-align:left}
+.key-fact h3{color:#FCD34D;font-size:0.95rem;margin-bottom:6px}
+.key-fact p{color:#94a3b8;font-size:0.9rem;line-height:1.6}
+.key-fact ul{color:#94a3b8;font-size:0.9rem;line-height:1.8;padding-left:20px}
+.results-btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.results-btn{padding:13px 28px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;border:2px solid}
+.results-btn:hover{transform:scale(1.05)}
+.results-btn.primary{background:linear-gradient(135deg,#D97706,#FCD34D);color:#1a1a2e;border-color:transparent}
+.results-btn.secondary{background:transparent;color:#FCD34D;border-color:rgba(252,211,77,0.3)}
+
+.confetti-piece{position:fixed;width:10px;height:10px;z-index:100;animation:confettiFall 3s ease-out forwards;pointer-events:none}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+@media(max-width:600px){
+.options{grid-template-columns:1fr}
+.vis-area{flex-direction:column;align-items:center}
+.vis-panel{max-width:100%}
+.welcome h1{font-size:1.8rem}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="index.html" class="back-link">&#8592; Back to Sort Lab</a>
+
+<div class="welcome" id="welcomeScreen">
+<span class="welcome-emoji">&#9876;&#65039;</span>
+<h1>Sort Showdown</h1>
+<p>Bubble Sort vs Insertion Sort &mdash; which is more efficient? Compare both algorithms head-to-head and answer questions about their performance.</p>
+<div class="mission">
+<p>&#x1F3AF; <strong>Your Mission:</strong> Answer 8 comparison questions testing your understanding of both sorting algorithms. Use mark-scheme terminology to score maximum points!</p>
+</div>
+<button class="start-btn" onclick="startGame()">Start Showdown &#8594;</button>
+</div>
+
+<div class="game" id="gameScreen">
+<div class="game-header">
+<div class="stat"><div class="stat-label">Question</div><div class="stat-value" id="qNumDisplay">1 / 8</div></div>
+<div class="stat"><div class="stat-label">Score</div><div class="stat-value" id="scoreDisplay">0</div></div>
+<div class="stat"><div class="stat-label">Streak</div><div class="stat-value" id="streakDisplay">0 &#x1F525;</div></div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+<div class="question-card" id="questionCard">
+<div class="q-number" id="qNumber">Question 1 of 8</div>
+<div class="q-text" id="qText"></div>
+<div class="vis-area" id="visArea"></div>
+<div class="options" id="optionsArea"></div>
+</div>
+<div class="feedback" id="feedback"></div>
+<div style="text-align:center;display:none" id="nextArea">
+<button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question &#8594;</button>
+</div>
+</div>
+
+<div class="results" id="resultsScreen">
+<span class="results-emoji" id="resultsEmoji">&#9876;&#65039;</span>
+<h1>Showdown Complete!</h1>
+<div class="rank" id="resultsRank"></div>
+<div class="score-circle" id="scoreCircle"><span class="score-text" id="scorePct"></span></div>
+<table class="comparison-table">
+<tr><th>Feature</th><th>Bubble Sort</th><th>Insertion Sort</th></tr>
+<tr><td>Technique</td><td>Compares <strong>adjacent</strong> elements</td><td>Inserts into <strong>sorted sublist</strong></td></tr>
+<tr><td>After first pass</td><td>Largest value at correct end</td><td>First 2 elements sorted</td></tr>
+<tr><td>Loops</td><td>Nested (outer = passes, inner = comparisons)</td><td>FOR loop + WHILE loop</td></tr>
+<tr><td>Nearly sorted data</td><td>Still does full passes</td><td>Very efficient &mdash; fewer comparisons needed</td></tr>
+<tr><td>Swap mechanism</td><td>Uses <strong>temp variable</strong> (3-line swap)</td><td>Shifts elements right, then inserts</td></tr>
+</table>
+<div class="key-fact">
+<h3>&#x1F4DD; Key Exam Points</h3>
+<ul>
+<li><strong>Bubble sort</strong> compares adjacent elements and swaps if out of order</li>
+<li>After each pass, the largest unsorted value &ldquo;bubbles&rdquo; to its correct position</li>
+<li><strong>Insertion sort</strong> divides the array into a sorted sublist and an unsorted section</li>
+<li>Insertion sort is efficient for processing <strong>partially sorted lists</strong></li>
+<li>Both sorts use nested loops and have the same time complexity</li>
+<li>A <strong>temp variable</strong> is needed for swapping in bubble sort</li>
+</ul>
+</div>
+<div class="results-btns">
+<button class="results-btn primary" onclick="restartGame()">Rematch &#9876;&#65039;</button>
+<button class="results-btn secondary" onclick="location.href='index.html'">Back to Lab &#x1F52C;</button>
+</div>
+</div>
+</div>
+
+<script>
+const QUESTIONS=[
+{
+q:'Both sorting algorithms are run on the array [5, 3, 1, 4, 2]. Which sort typically uses fewer comparisons on this data?',
+vis:'comparison',
+visData:[5,3,1,4,2],
+options:['Bubble Sort','Insertion Sort','They use exactly the same number','It depends on whether the data is sorted ascending or descending'],
+correct:1,
+feedback:{
+correct:'\u2714 Correct! Insertion sort typically uses fewer comparisons because it only compares until it finds the correct position, whereas bubble sort compares every adjacent pair in each pass.',
+wrong:'\u2718 Incorrect. Insertion sort typically uses fewer comparisons because it stops comparing once it finds the correct insertion position. Bubble sort compares every adjacent pair in each pass.'
+}
+},
+{
+q:'Which sorting algorithm compares ADJACENT elements and swaps them if they are in the wrong order?',
+options:['Insertion Sort','Merge Sort','Bubble Sort','Selection Sort'],
+correct:2,
+feedback:{
+correct:'\u2714 Correct! Bubble sort compares adjacent elements (elements next to each other) and swaps them if they are out of order.',
+wrong:'\u2718 Incorrect. Bubble sort is the algorithm that compares adjacent elements (elements next to each other) and swaps them if out of order.'
+}
+},
+{
+q:'The array [1, 2, 4, 3, 5] is nearly sorted. Which sort is more efficient here and WHY?',
+vis:'nearlySorted',
+visData:[1,2,4,3,5],
+options:['Bubble Sort \u2014 it only needs one pass','Insertion Sort \u2014 efficient for processing partially sorted lists','They are equally efficient on this data','Bubble Sort \u2014 fewer swaps needed'],
+correct:1,
+feedback:{
+correct:'\u2714 Correct! Insertion sort is efficient for processing partially sorted lists \u2014 it only requires minimal comparisons when elements are already close to their correct positions. This is key mark-scheme wording!',
+wrong:'\u2718 Incorrect. Insertion sort is efficient for processing partially sorted lists, only requiring minimal comparisons when elements are close to their correct positions. Remember this mark-scheme phrase!'
+}
+},
+{
+q:'In bubble sort, what happens at the end of the FIRST pass through the array?',
+options:['All elements are sorted','The smallest value is at the start','The largest value is at the correct end of the array','Two elements are in their final positions'],
+correct:2,
+feedback:{
+correct:'\u2714 Correct! After the first pass of bubble sort, the largest value has \u201Cbubbled\u201D to the correct end of the array. This is exact mark-scheme wording.',
+wrong:'\u2718 Incorrect. After the first pass, the largest (or smallest, depending on sort order) value is at the correct end of the array. It has \u201Cbubbled\u201D into position.'
+}
+},
+{
+q:'What does insertion sort divide the array into during the sorting process?',
+options:['Two equal halves','A sorted sublist and an unsorted section','A pivot and two partitions','Upper and lower bounds'],
+correct:1,
+feedback:{
+correct:'\u2714 Correct! Insertion sort divides the array into a sorted sublist and an unsorted section. Each element from the unsorted section is inserted into its correct position in the sorted sublist.',
+wrong:'\u2718 Incorrect. Insertion sort divides the array into a sorted sublist and an unsorted section. Elements are taken one at a time from the unsorted section and inserted into the correct position in the sorted sublist.'
+}
+},
+{
+q:'The array [9, 8, 7, 6, 5] is in reverse order (worst case). Which sort performs more swaps on this data?',
+vis:'worstCase',
+visData:[9,8,7,6,5],
+options:['Insertion Sort','They perform the same number','Bubble Sort','Neither sort uses swaps'],
+correct:2,
+feedback:{
+correct:'\u2714 Correct! On reverse-sorted data, bubble sort performs more swaps because every adjacent pair is out of order, requiring a swap at every comparison. Insertion sort shifts elements rather than swapping.',
+wrong:'\u2718 Incorrect. Bubble sort performs more swaps on reverse-sorted data because every adjacent pair needs swapping. Insertion sort uses a shifting approach rather than repeated swaps.'
+}
+},
+{
+q:'True or False: Bubble sort uses nested loops.',
+options:['True \u2014 outer loop for passes, inner for comparisons','True \u2014 but only for large arrays','False \u2014 it uses a single loop','False \u2014 it uses recursion'],
+correct:0,
+feedback:{
+correct:'\u2714 Correct! Bubble sort uses nested loops. The outer loop controls the number of passes through the array, and the inner loop controls the comparisons within each pass.',
+wrong:'\u2718 Incorrect. Bubble sort DOES use nested loops. The outer loop controls the number of passes, and the inner loop controls comparisons within each pass.'
+}
+},
+{
+q:'In bubble sort, what variable is needed to swap two values, and how does the swap work?',
+options:['No extra variable \u2014 values swap directly','A temp (temporary) variable to hold one value during the 3-line swap','A counter variable to track positions','An index variable pointing to both elements'],
+correct:1,
+feedback:{
+correct:'\u2714 Correct! A temp (temporary) variable is needed. The 3-line swap pattern is:\n1. temp = array[j]\n2. array[j] = array[j+1]\n3. array[j+1] = temp\nThis is a very common exam question!',
+wrong:'\u2718 Incorrect. A temp (temporary) variable is essential for swapping. Without it, you would lose one of the values. The pattern is: temp = array[j], array[j] = array[j+1], array[j+1] = temp.'
+}
+}
+];
+
+const RANKS=[
+{name:'Observer',min:0,max:3,emoji:'\uD83D\uDC41\uFE0F'},
+{name:'Analyst',min:4,max:5,emoji:'\uD83D\uDD0D'},
+{name:'Expert',min:6,max:7,emoji:'\u2B50'},
+{name:'Champion',min:8,max:8,emoji:'\uD83C\uDFC6'}
+];
+
+let shuffled=[],currentQ=0,score=0,streak=0,correctCount=0,answered=false;
+
+function fisherYates(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function startGame(){
+document.getElementById('welcomeScreen').style.display='none';
+document.getElementById('gameScreen').style.display='block';
+shuffled=fisherYates(QUESTIONS);
+currentQ=0;score=0;streak=0;correctCount=0;
+showQuestion();
+}
+
+function showQuestion(){
+answered=false;
+const q=shuffled[currentQ];
+document.getElementById('qNumDisplay').textContent=(currentQ+1)+' / 8';
+document.getElementById('qNumber').textContent='Question '+(currentQ+1)+' of 8';
+document.getElementById('progressFill').style.width=((currentQ)/8*100)+'%';
+document.getElementById('qText').textContent=q.q;
+document.getElementById('feedback').innerHTML='';
+document.getElementById('nextArea').style.display='none';
+
+// Visualisation
+const va=document.getElementById('visArea');
+va.innerHTML='';
+if(q.vis){renderVis(q.vis,q.visData);}
+
+// Options
+const oa=document.getElementById('optionsArea');
+oa.innerHTML='';
+const letters=['A','B','C','D'];
+q.options.forEach((opt,i)=>{
+const btn=document.createElement('button');
+btn.className='option';
+btn.innerHTML='<span class="opt-letter">'+letters[i]+'</span>'+opt;
+btn.onclick=()=>handleAnswer(i);
+oa.appendChild(btn);
+});
+}
+
+function renderVis(type,data){
+const va=document.getElementById('visArea');
+if(type==='comparison'||type==='nearlySorted'||type==='worstCase'){
+// Show the array
+const panel=document.createElement('div');
+panel.className='vis-panel';
+panel.innerHTML='<h4 style="color:#FCD34D">Array: ['+data.join(', ')+']</h4>';
+const ma=document.createElement('div');
+ma.className='mini-array';
+const maxV=Math.max(...data);
+data.forEach(v=>{
+const b=document.createElement('div');
+b.className='mini-bar b-default';
+b.style.height=(20+(v/maxV)*60)+'px';
+b.style.width='30px';
+const s=document.createElement('span');
+s.textContent=v;
+b.appendChild(s);
+ma.appendChild(b);
+});
+panel.appendChild(ma);
+if(type==='comparison'){
+panel.innerHTML+='<div class="vis-stat">Bubble: <strong>~10 comparisons</strong> | Insertion: <strong>~7 comparisons</strong></div>';
+}else if(type==='nearlySorted'){
+panel.innerHTML+='<div class="vis-stat">Only elements 4 and 3 are out of place</div>';
+}else if(type==='worstCase'){
+panel.innerHTML+='<div class="vis-stat">Every pair is out of order!</div>';
+}
+va.appendChild(panel);
+}
+}
+
+function handleAnswer(idx){
+if(answered)return;
+answered=true;
+const q=shuffled[currentQ];
+const btns=document.getElementById('optionsArea').querySelectorAll('.option');
+btns.forEach(b=>b.disabled=true);
+
+if(idx===q.correct){
+correctCount++;
+streak++;
+score+=10+(streak>=3?5:0);
+btns[idx].classList.add('correct');
+showFeedback('correct',q.feedback.correct);
+}else{
+streak=0;
+btns[idx].classList.add('wrong');
+btns[q.correct].classList.add('correct');
+showFeedback('wrong',q.feedback.wrong);
+}
+updateStats();
+document.getElementById('nextArea').style.display='block';
+if(currentQ===7)document.getElementById('nextBtn').textContent='View Results \u2192';
+}
+
+function nextQuestion(){
+currentQ++;
+if(currentQ>=8){showResults();return;}
+showQuestion();
+}
+
+function showFeedback(type,msg){
+// Replace \n with <br> for display
+const formatted=msg.replace(/\n/g,'<br>');
+document.getElementById('feedback').innerHTML='<div class="feedback-box '+type+'">'+formatted+'</div>';
+}
+
+function updateStats(){
+document.getElementById('scoreDisplay').textContent=score;
+document.getElementById('streakDisplay').textContent=streak+' \uD83D\uDD25';
+}
+
+function showResults(){
+document.getElementById('gameScreen').style.display='none';
+document.getElementById('resultsScreen').style.display='block';
+const pct=Math.round((correctCount/8)*100);
+let rank=RANKS[0];
+for(const r of RANKS)if(correctCount>=r.min&&correctCount<=r.max)rank=r;
+document.getElementById('resultsEmoji').textContent=rank.emoji;
+document.getElementById('resultsRank').textContent=rank.name+' \u2014 '+correctCount+'/8 ('+pct+'%)';
+document.getElementById('scoreCircle').style.setProperty('--pct',pct+'%');
+document.getElementById('scorePct').textContent=score;
+document.getElementById('progressFill').style.width='100%';
+if(correctCount>=6)launchConfetti();
+}
+
+function restartGame(){
+document.getElementById('resultsScreen').style.display='none';
+document.getElementById('welcomeScreen').style.display='block';
+}
+
+function launchConfetti(){
+const colors=['#FCD34D','#D97706','#2ecc71','#818CF8','#2DD4BF','#FB7185'];
+for(let i=0;i<50;i++){
+const c=document.createElement('div');
+c.className='confetti-piece';
+c.style.cssText='left:'+Math.random()*100+'%;top:-10px;background:'+colors[Math.floor(Math.random()*colors.length)]+';animation-delay:'+Math.random()*1.5+'s;border-radius:'+(Math.random()>0.5?'50%':'2px')+';width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px;';
+document.body.appendChild(c);
+setTimeout(()=>c.remove(),4500);
+}
+}
+</script>
+</body>
+</html>

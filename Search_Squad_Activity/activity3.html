@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Selector — Search Squad</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#1a0f00;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
+.container{max-width:800px;margin:0 auto;padding:24px 20px;position:relative;z-index:1}
+.bg-pattern{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 30% 20%,rgba(180,83,9,.08),transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(252,211,77,.05),transparent 50%);pointer-events:none;z-index:0}
+.back-link{display:inline-block;color:#94a3b8;text-decoration:none;font-size:.9rem;margin-bottom:16px;transition:color .3s}
+.back-link:hover{color:#fbbf24}
+.header-bar{text-align:center;padding:12px 0 16px;border-bottom:1px solid rgba(251,191,36,.15);margin-bottom:20px}
+.header-bar h1{font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,#b45309,#fcd34d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.screen{display:none}.screen.active{display:block}
+.welcome{text-align:center;padding:60px 20px}
+.welcome-emoji{font-size:5rem;animation:think 2s ease-in-out infinite}
+@keyframes think{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+.welcome h2{font-size:2rem;margin:20px 0 10px;color:#fcd34d}
+.welcome p{font-size:1.05rem;color:#94a3b8;max-width:500px;margin:0 auto 30px;line-height:1.6}
+.btn{padding:14px 36px;border:none;border-radius:30px;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,#b45309,#d97706);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(217,119,6,.3)}
+.btn-sm{padding:10px 24px;font-size:.9rem}
+
+.game-hud{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.hud-item{background:rgba(255,255,255,.05);padding:8px 16px;border-radius:12px;font-size:.85rem;font-weight:600}
+.hud-item span{color:#fbbf24}
+.progress-bar{height:6px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:20px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#b45309,#fbbf24);border-radius:3px;transition:width .4s}
+
+/* SCENARIO CARD */
+.scenario-card{background:rgba(255,255,255,.04);border:1px solid rgba(251,191,36,.1);border-radius:18px;padding:28px 24px;margin-bottom:20px;animation:slideIn .4s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.scenario-label{font-size:.8rem;text-transform:uppercase;letter-spacing:1px;color:#b45309;margin-bottom:10px;font-weight:700}
+.scenario-text{font-size:1.1rem;line-height:1.65;color:#e2e8f0}
+.scenario-text em{color:#fbbf24;font-style:normal;font-weight:600}
+
+/* CHOICE BUTTONS */
+.search-choices{display:flex;gap:14px;justify-content:center;margin:20px 0;flex-wrap:wrap}
+.search-choice{flex:1;min-width:200px;max-width:300px;padding:20px;border:2px solid rgba(255,255,255,.1);border-radius:16px;background:rgba(255,255,255,.03);cursor:pointer;transition:all .3s;text-align:center}
+.search-choice:hover{border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.05)}
+.search-choice .choice-emoji{font-size:2rem;margin-bottom:8px}
+.search-choice .choice-title{font-size:1.1rem;font-weight:700;margin-bottom:4px}
+.search-choice .choice-desc{font-size:.8rem;color:#94a3b8}
+.search-choice.correct{border-color:#2ecc71;background:rgba(46,204,113,.1)}
+.search-choice.wrong{border-color:#e74c3c;background:rgba(231,76,60,.1)}
+.search-choice.disabled{pointer-events:none;opacity:.7}
+
+.feedback-box{margin:16px 0;padding:16px 20px;border-radius:14px;font-size:.95rem;line-height:1.6;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.feedback-box.correct{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.2);color:#2ecc71}
+.feedback-box.wrong{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);color:#e74c3c}
+.feedback-box .fb-title{font-weight:700;font-size:1.05rem;margin-bottom:6px}
+.feedback-box .fb-detail{color:#cbd5e1;font-size:.9rem}
+.next-btn-wrap{text-align:center;margin-top:16px}
+
+/* STREAK */
+.streak-banner{text-align:center;padding:8px;font-size:1rem;font-weight:700;color:#fbbf24;animation:streakPop .4s ease}
+@keyframes streakPop{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* RESULTS */
+.results{text-align:center;padding:50px 20px}
+.results-emoji{font-size:4.5rem;animation:bounce 1s ease infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+.results h2{font-size:2rem;margin:16px 0 6px;color:#fcd34d}
+.results .rank{font-size:1.3rem;color:#fbbf24;font-weight:700;margin-bottom:20px}
+.score-card{background:rgba(255,255,255,.04);border-radius:16px;padding:24px;max-width:400px;margin:0 auto 24px;border:1px solid rgba(255,255,255,.06)}
+.score-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.95rem}
+.score-row:last-child{border-bottom:none}
+.score-row .label{color:#94a3b8}.score-row .val{font-weight:700;color:#fbbf24}
+.revision-box{background:rgba(180,83,9,.08);border:1px solid rgba(180,83,9,.2);border-radius:14px;padding:20px;max-width:520px;margin:0 auto 24px;text-align:left}
+.revision-box h3{color:#fbbf24;margin-bottom:10px;font-size:1rem}
+.revision-box ul{padding-left:20px;color:#94a3b8;font-size:.9rem;line-height:1.7}
+.btn-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;animation:confettiFall 3s ease forwards;z-index:100;pointer-events:none}
+@keyframes confettiFall{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+.float-score{position:fixed;font-size:1.5rem;font-weight:800;color:#fbbf24;animation:floatUp 1.5s ease forwards;pointer-events:none;z-index:100}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-80px)}}
+
+@media(max-width:600px){.welcome h2{font-size:1.5rem}.search-choice{min-width:140px}.results h2{font-size:1.5rem}}
+</style>
+</head>
+<body>
+<div class="bg-pattern"></div>
+<div class="container">
+<a href="index.html" class="back-link">← Back to Hub</a>
+<div class="header-bar"><h1>🤔 Search Selector</h1></div>
+
+<div id="welcomeScreen" class="screen active">
+<div class="welcome">
+<div class="welcome-emoji">🤔</div>
+<h2>Search Selector</h2>
+<p>Linear or Binary? Choose the right search strategy for each scenario and explain your reasoning!</p>
+<button class="btn btn-primary" onclick="startGame()">Start Selecting →</button>
+</div>
+</div>
+
+<div id="gameScreen" class="screen">
+<div class="game-hud">
+<div class="hud-item">Question: <span id="qNum">1</span>/10</div>
+<div class="hud-item">Score: <span id="scoreDisplay">0</span></div>
+<div class="hud-item">Streak: <span id="streakDisplay">0</span>🔥</div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+<div id="streakBanner"></div>
+<div id="questionContainer"></div>
+</div>
+
+<div id="resultsScreen" class="screen"></div>
+</div>
+
+<script>
+const questions=[
+{scenario:'A phonebook with 10,000 names in <em>alphabetical order</em>. You need to find "Smith".',answer:'binary',feedback:'The data is sorted alphabetically, so binary search can repeatedly halve the search area. Much faster than checking all 10,000 entries one by one.'},
+{scenario:'A shopping list of 5 items in <em>no particular order</em>. Find "milk".',answer:'linear',feedback:'Only 5 items and the list is unsorted — linear search is simple and efficient for small unsorted lists. Sorting first would take longer than just checking each item.'},
+{scenario:'Student test scores stored in a <em>random order</em>: [67, 45, 89, 23, 56]. Find score 89.',answer:'linear',feedback:'The data is unsorted — binary search requires sorted data to work correctly. Linear search must be used here.'},
+{scenario:'An array of 1,000 numbers sorted from <em>smallest to largest</em>. Find the number 742.',answer:'binary',feedback:'Large sorted dataset — binary search will find it in approximately 10 comparisons (log\u2082 1000 \u2248 10) compared to up to 1,000 for linear search.'},
+{scenario:'A class register in <em>alphabetical order</em> with 30 students. Find "Taylor".',answer:'binary',feedback:'The register is sorted alphabetically. Binary search will find any name in at most 5 steps (log\u2082 30 \u2248 5), much more efficient than checking up to 30 names.'},
+{scenario:'Error codes stored <em>as they occurred</em>: [404, 500, 301, 404, 200]. Find the first 404.',answer:'linear',feedback:'The data is unsorted (stored in order of occurrence) and we want the FIRST occurrence — we must check sequentially from the start using linear search.'},
+{scenario:'A sorted array of 7 elements. Which search would use <em>at most 3 comparisons</em>?',answer:'binary',feedback:'log\u2082(7) \u2248 2.8, so binary search needs at most 3 comparisons. Linear search could need up to 7 comparisons in the worst case.'},
+{scenario:'You\'re searching for a book in a library where books are arranged <em>by colour</em>, not alphabetically.',answer:'linear',feedback:'The books are not sorted by any searchable criterion (title, author, etc.) — you must check each one in turn using linear search.'},
+{scenario:'100 exam papers sorted by <em>student number</em>. Find student 0042.',answer:'binary',feedback:'Sorted data with 100 items — binary search needs a maximum of 7 comparisons (log\u2082 100 \u2248 6.6, rounded up). Much faster than checking up to 100 papers.'},
+{scenario:'An array where you <em>don\'t know if it\'s sorted or not</em>.',answer:'linear',feedback:'If you cannot guarantee the data is sorted, you must use linear search. Binary search on unsorted data will produce incorrect results.'}
+];
+
+let shuffled,curQ,score,streak,bestStreak,correctCount;
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function startGame(){
+showScreen('gameScreen');
+shuffled=shuffle(questions);
+curQ=0;score=0;streak=0;bestStreak=0;correctCount=0;
+updateHUD();loadQuestion();
+}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function updateHUD(){
+document.getElementById('qNum').textContent=curQ+1;
+document.getElementById('scoreDisplay').textContent=score;
+document.getElementById('streakDisplay').textContent=streak;
+document.getElementById('progressFill').style.width=((curQ)/10*100)+'%';
+}
+
+function loadQuestion(){
+updateHUD();
+const q=shuffled[curQ];
+const sb=document.getElementById('streakBanner');
+if(streak>=3)sb.innerHTML=`<div class="streak-banner">🔥 ${streak} in a row!</div>`;
+else sb.innerHTML='';
+
+document.getElementById('questionContainer').innerHTML=`
+<div class="scenario-card">
+<div class="scenario-label">Scenario ${curQ+1}</div>
+<div class="scenario-text">${q.scenario}</div>
+</div>
+<div class="search-choices">
+<div class="search-choice" id="choiceLinear" onclick="checkAnswer('linear')">
+<div class="choice-emoji">🔦</div>
+<div class="choice-title">Linear Search</div>
+<div class="choice-desc">Check each element one by one</div>
+</div>
+<div class="search-choice" id="choiceBinary" onclick="checkAnswer('binary')">
+<div class="choice-emoji">🎯</div>
+<div class="choice-title">Binary Search</div>
+<div class="choice-desc">Divide and conquer (sorted data)</div>
+</div>
+</div>
+<div id="feedbackArea"></div>
+`;
+}
+
+function checkAnswer(choice){
+const q=shuffled[curQ];
+const isCorrect=choice===q.answer;
+const cl=document.getElementById('choiceLinear');
+const cb=document.getElementById('choiceBinary');
+cl.classList.add('disabled');cb.classList.add('disabled');
+
+if(q.answer==='linear')cl.classList.add('correct');else cb.classList.add('correct');
+if(!isCorrect){
+if(choice==='linear')cl.classList.add('wrong');else cb.classList.add('wrong');
+}
+
+if(isCorrect){
+let pts=10;
+if(streak>=2)pts+=5;
+score+=pts;streak++;correctCount++;
+if(streak>bestStreak)bestStreak=streak;
+floatScore(`+${pts}`);
+document.getElementById('feedbackArea').innerHTML=`
+<div class="feedback-box correct">
+<div class="fb-title">✅ Correct! ${q.answer==='linear'?'Linear':'Binary'} Search</div>
+<div class="fb-detail">${q.feedback}</div>
+</div>
+<div class="next-btn-wrap"><button class="btn btn-primary btn-sm" onclick="nextQuestion()">Next →</button></div>
+`;
+}else{
+streak=0;
+document.getElementById('feedbackArea').innerHTML=`
+<div class="feedback-box wrong">
+<div class="fb-title">✗ The correct answer is ${q.answer==='linear'?'Linear':'Binary'} Search</div>
+<div class="fb-detail">${q.feedback}</div>
+</div>
+<div class="next-btn-wrap"><button class="btn btn-primary btn-sm" onclick="nextQuestion()">Next →</button></div>
+`;
+}
+updateHUD();
+}
+
+function nextQuestion(){
+curQ++;
+if(curQ>=10)showResults();
+else loadQuestion();
+}
+
+function showResults(){
+let rank,emoji;
+if(correctCount>=9){rank='Grand Master';emoji='👑';}
+else if(correctCount>=7){rank='Tactician';emoji='🧠';}
+else if(correctCount>=4){rank='Strategist';emoji='📊';}
+else{rank='Beginner';emoji='📚';}
+
+spawnConfetti();
+document.getElementById('resultsScreen').innerHTML=`
+<div class="results">
+<div class="results-emoji">${emoji}</div>
+<h2>Selection Complete!</h2>
+<div class="rank">${rank}</div>
+<div class="score-card">
+<div class="score-row"><span class="label">Correct Answers</span><span class="val">${correctCount}/10</span></div>
+<div class="score-row"><span class="label">Total Score</span><span class="val">${score}</span></div>
+<div class="score-row"><span class="label">Best Streak</span><span class="val">${bestStreak}🔥</span></div>
+</div>
+<div class="revision-box">
+<h3>📝 When to Use Each Search</h3>
+<ul>
+<li><strong>Use Linear Search when:</strong> data is unsorted, the list is small, or you need to find the first occurrence in sequence.</li>
+<li><strong>Use Binary Search when:</strong> the data is <strong>sorted</strong> and the dataset is large enough to benefit from halving.</li>
+<li>Binary search is <strong>much faster</strong> for large sorted data: log₂(n) comparisons vs n comparisons.</li>
+<li>Binary search <strong>will not work</strong> on unsorted data — it will skip over items and give wrong results.</li>
+<li>For very small lists (under ~10 items), the difference between linear and binary is negligible.</li>
+</ul>
+</div>
+<div class="btn-row">
+<button class="btn btn-primary" onclick="startGame()">Play Again</button>
+<a href="index.html" class="btn btn-primary" style="text-decoration:none">Back to Hub</a>
+</div>
+</div>`;
+showScreen('resultsScreen');
+}
+
+function floatScore(text){const el=document.createElement('div');el.className='float-score';el.textContent=text;el.style.left=Math.random()*60+20+'%';el.style.top='40%';document.body.appendChild(el);setTimeout(()=>el.remove(),1500);}
+function spawnConfetti(){const colors=['#b45309','#d97706','#fbbf24','#fcd34d','#2ecc71','#60a5fa'];for(let i=0;i<50;i++){const c=document.createElement('div');c.className='confetti-piece';c.style.left=Math.random()*100+'vw';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.animationDelay=Math.random()*2+'s';c.style.width=Math.random()*8+6+'px';c.style.height=Math.random()*8+6+'px';document.body.appendChild(c);setTimeout(()=>c.remove(),5000);}}
+</script>
+</body>
+</html>

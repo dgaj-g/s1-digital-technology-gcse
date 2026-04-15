@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bubble Sort Visualiser - Sort Lab</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0a1628;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
+.container{max-width:850px;margin:0 auto;padding:20px;position:relative;z-index:1}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#2DD4BF;text-decoration:none;font-size:0.9rem;margin-bottom:15px;transition:all 0.3s;padding:5px 10px;border-radius:8px}
+.back-link:hover{background:rgba(45,212,191,0.1);transform:translateX(-3px)}
+
+/* Welcome Screen */
+.welcome{text-align:center;padding:60px 20px;animation:fadeUp 0.6s ease}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+.welcome-emoji{font-size:5rem;display:block;margin-bottom:15px;animation:bubbleFloat 3s ease-in-out infinite}
+@keyframes bubbleFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-15px) scale(1.08)}}
+.welcome h1{font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,#0D9488,#2DD4BF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:15px}
+.welcome p{font-size:1.1rem;color:#94a3b8;max-width:550px;margin:0 auto 12px;line-height:1.6}
+.welcome .mission{background:rgba(13,148,136,0.1);border:1px solid rgba(45,212,191,0.2);border-radius:16px;padding:20px;margin:20px auto;max-width:520px}
+.welcome .mission p{font-size:1rem;color:#cbd5e1}
+.start-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#0D9488,#2DD4BF);color:#fff;border:none;padding:16px 36px;border-radius:14px;font-size:1.15rem;font-weight:700;cursor:pointer;transition:all 0.3s;margin-top:20px}
+.start-btn:hover{transform:scale(1.05);box-shadow:0 10px 40px rgba(13,148,136,0.4)}
+
+/* Game Screen */
+.game{display:none;animation:fadeUp 0.5s ease}
+.game-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px;padding:14px 20px;background:rgba(255,255,255,0.03);border-radius:14px;border:1px solid rgba(255,255,255,0.06)}
+.stat{text-align:center}
+.stat-label{font-size:0.75rem;color:#64748b;text-transform:uppercase;letter-spacing:1px}
+.stat-value{font-size:1.3rem;font-weight:700;color:#2DD4BF}
+.round-info{text-align:center;margin-bottom:8px}
+.round-info h2{font-size:1.2rem;color:#94a3b8;font-weight:600}
+.round-info h2 span{color:#2DD4BF}
+.pass-info{text-align:center;font-size:0.95rem;color:#64748b;margin-bottom:20px}
+.pass-info span{color:#2DD4BF;font-weight:600}
+
+/* Array Visualisation */
+.array-container{display:flex;justify-content:center;align-items:flex-end;gap:8px;min-height:280px;padding:20px;background:rgba(255,255,255,0.02);border-radius:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;position:relative}
+.bar-wrapper{display:flex;flex-direction:column;align-items:center;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1),opacity 0.3s}
+.bar{border-radius:10px 10px 4px 4px;transition:all 0.5s cubic-bezier(0.4,0,0.2,1);position:relative;min-width:50px;display:flex;align-items:flex-end;justify-content:center}
+.bar-value{font-size:1.1rem;font-weight:700;color:#fff;padding:8px 0;text-shadow:0 1px 3px rgba(0,0,0,0.3)}
+.bar.default{background:linear-gradient(180deg,#334155,#1e293b);border:2px solid #475569}
+.bar.comparing{background:linear-gradient(180deg,#fbbf24,#d97706);border:2px solid #fbbf24;animation:pulse 0.6s ease-in-out infinite;box-shadow:0 0 20px rgba(251,191,36,0.3)}
+@keyframes pulse{0%,100%{box-shadow:0 0 15px rgba(251,191,36,0.3)}50%{box-shadow:0 0 30px rgba(251,191,36,0.5)}}
+.bar.correct{background:linear-gradient(180deg,#2ecc71,#27ae60);border:2px solid #2ecc71}
+.bar.wrong{background:linear-gradient(180deg,#e74c3c,#c0392b);border:2px solid #e74c3c;animation:shake 0.5s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.bar.sorted{background:linear-gradient(180deg,#2ecc71,#27ae60);border:2px solid #2ecc71;opacity:0.7}
+.bar-index{font-size:0.75rem;color:#64748b;margin-top:6px}
+
+/* Buttons */
+.action-btns{display:flex;justify-content:center;gap:16px;margin-bottom:20px}
+.action-btn{padding:14px 32px;border-radius:14px;font-size:1.1rem;font-weight:700;border:2px solid;cursor:pointer;transition:all 0.3s;min-width:140px}
+.action-btn:hover{transform:scale(1.05)}
+.action-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.swap-btn{background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3)}
+.swap-btn:hover:not(:disabled){background:rgba(251,191,36,0.25);box-shadow:0 5px 20px rgba(251,191,36,0.2)}
+.noswap-btn{background:rgba(45,212,191,0.15);color:#2DD4BF;border-color:rgba(45,212,191,0.3)}
+.noswap-btn:hover:not(:disabled){background:rgba(45,212,191,0.25);box-shadow:0 5px 20px rgba(45,212,191,0.2)}
+
+/* Feedback */
+.feedback{text-align:center;min-height:60px;margin-bottom:10px;display:flex;align-items:center;justify-content:center}
+.feedback-msg{padding:12px 24px;border-radius:12px;font-size:1rem;font-weight:600;animation:fadeUp 0.3s ease}
+.feedback-msg.correct{background:rgba(46,204,113,0.15);color:#2ecc71;border:1px solid rgba(46,204,113,0.3)}
+.feedback-msg.wrong{background:rgba(231,76,60,0.15);color:#e74c3c;border:1px solid rgba(231,76,60,0.3)}
+.feedback-msg.info{background:rgba(45,212,191,0.15);color:#2DD4BF;border:1px solid rgba(45,212,191,0.3)}
+.pass-complete{text-align:center;padding:20px;background:rgba(46,204,113,0.1);border-radius:16px;border:1px solid rgba(46,204,113,0.2);margin-bottom:15px;animation:fadeUp 0.4s ease}
+.pass-complete h3{color:#2ecc71;font-size:1.15rem;margin-bottom:5px}
+.pass-complete p{color:#94a3b8;font-size:0.95rem}
+.next-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0D9488,#2DD4BF);color:#fff;border:none;padding:12px 28px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;margin-top:10px}
+.next-btn:hover{transform:scale(1.05);box-shadow:0 8px 30px rgba(13,148,136,0.3)}
+
+/* Conceptual Question Card */
+.concept-card{background:rgba(129,140,248,0.08);border:2px solid rgba(129,140,248,0.25);border-radius:18px;padding:24px;margin-bottom:20px;animation:fadeUp 0.4s ease;position:relative;overflow:hidden}
+.concept-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#818CF8,#A78BFA,#818CF8);background-size:200% 100%;animation:shimmerBar 2s linear infinite}
+@keyframes shimmerBar{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.concept-card .cq-label{display:inline-flex;align-items:center;gap:6px;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#A78BFA;margin-bottom:12px}
+.concept-card .cq-question{font-size:1.1rem;font-weight:600;color:#e2e8f0;line-height:1.5;margin-bottom:18px}
+.concept-card .cq-options{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.cq-option-btn{padding:12px 22px;border-radius:12px;font-size:1rem;font-weight:600;border:2px solid rgba(129,140,248,0.3);background:rgba(129,140,248,0.1);color:#c4b5fd;cursor:pointer;transition:all 0.3s;min-width:80px}
+.cq-option-btn:hover{background:rgba(129,140,248,0.2);transform:scale(1.04);border-color:rgba(129,140,248,0.5)}
+.cq-option-btn:disabled{cursor:not-allowed;transform:none}
+.cq-option-btn.cq-correct{background:rgba(46,204,113,0.2)!important;border-color:#2ecc71!important;color:#2ecc71!important;animation:fadeUp 0.3s ease}
+.cq-option-btn.cq-wrong{background:rgba(231,76,60,0.2)!important;border-color:#e74c3c!important;color:#e74c3c!important;animation:shake 0.5s ease}
+.cq-input-row{display:flex;gap:10px;justify-content:center;align-items:center}
+.cq-input{width:100px;padding:10px 14px;border-radius:10px;font-size:1.1rem;font-weight:700;border:2px solid rgba(129,140,248,0.3);background:rgba(129,140,248,0.1);color:#e2e8f0;text-align:center;outline:none;transition:border-color 0.3s}
+.cq-input:focus{border-color:#818CF8}
+.cq-submit-btn{padding:10px 22px;border-radius:10px;font-size:1rem;font-weight:700;border:none;background:linear-gradient(135deg,#7C3AED,#818CF8);color:#fff;cursor:pointer;transition:all 0.3s}
+.cq-submit-btn:hover{transform:scale(1.05);box-shadow:0 5px 20px rgba(129,140,248,0.3)}
+.cq-submit-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.cq-feedback{margin-top:14px;padding:10px 16px;border-radius:10px;font-size:0.95rem;font-weight:600;animation:fadeUp 0.3s ease}
+.cq-feedback.cq-fb-correct{background:rgba(46,204,113,0.12);color:#2ecc71;border:1px solid rgba(46,204,113,0.25)}
+.cq-feedback.cq-fb-wrong{background:rgba(231,76,60,0.12);color:#e74c3c;border:1px solid rgba(231,76,60,0.25)}
+.cq-bonus{display:inline-flex;align-items:center;gap:4px;background:rgba(129,140,248,0.2);color:#A78BFA;padding:4px 12px;border-radius:8px;font-size:0.85rem;font-weight:700;margin-left:8px;animation:bonusPop 0.4s ease}
+@keyframes bonusPop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
+
+/* Results Screen */
+.results{display:none;text-align:center;padding:40px 20px;animation:fadeUp 0.6s ease}
+.results-emoji{font-size:4.5rem;display:block;margin-bottom:10px}
+.results h1{font-size:2.2rem;font-weight:800;margin-bottom:5px}
+.results .rank{font-size:1.3rem;color:#2DD4BF;font-weight:700;margin-bottom:20px}
+.score-circle{width:140px;height:140px;border-radius:50%;background:conic-gradient(#2DD4BF var(--pct),rgba(255,255,255,0.05) 0);display:flex;align-items:center;justify-content:center;margin:0 auto 25px;position:relative}
+.score-circle::after{content:'';position:absolute;width:110px;height:110px;border-radius:50%;background:#0a1628}
+.score-circle .score-text{position:relative;z-index:1;font-size:1.8rem;font-weight:800;color:#2DD4BF}
+.round-scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:25px}
+.round-score-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px}
+.round-score-card h4{font-size:0.8rem;color:#64748b;margin-bottom:4px}
+.round-score-card .rs-val{font-size:1.4rem;font-weight:700;color:#2DD4BF}
+.key-fact{background:rgba(13,148,136,0.1);border:1px solid rgba(45,212,191,0.2);border-radius:14px;padding:18px;margin-bottom:25px;text-align:left}
+.key-fact h3{color:#2DD4BF;font-size:0.95rem;margin-bottom:6px}
+.key-fact p{color:#94a3b8;font-size:0.9rem;line-height:1.6}
+.results-btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.results-btn{padding:13px 28px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;border:2px solid}
+.results-btn:hover{transform:scale(1.05)}
+.results-btn.primary{background:linear-gradient(135deg,#0D9488,#2DD4BF);color:#fff;border-color:transparent}
+.results-btn.secondary{background:transparent;color:#2DD4BF;border-color:rgba(45,212,191,0.3)}
+
+/* Confetti */
+.confetti-piece{position:fixed;width:10px;height:10px;z-index:100;animation:confettiFall 3s ease-out forwards;pointer-events:none}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+/* Celebration flash */
+@keyframes celebFlash{0%{box-shadow:0 0 0 rgba(46,204,113,0)}50%{box-shadow:0 0 30px rgba(46,204,113,0.5)}100%{box-shadow:0 0 0 rgba(46,204,113,0)}}
+.bar.celebrate{animation:celebFlash 0.4s ease forwards}
+
+@media(max-width:600px){
+.bar{min-width:36px}.bar-value{font-size:0.9rem}
+.action-btn{padding:12px 20px;font-size:1rem;min-width:110px}
+.game-header{padding:10px 14px}
+.welcome h1{font-size:1.8rem}
+.concept-card{padding:18px 14px}
+.concept-card .cq-question{font-size:1rem}
+.cq-option-btn{padding:10px 16px;font-size:0.9rem;min-width:60px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="index.html" class="back-link">&#8592; Back to Sort Lab</a>
+
+<!-- Welcome Screen -->
+<div class="welcome" id="welcomeScreen">
+<span class="welcome-emoji">&#x1FAE7;</span>
+<h1>Bubble Sort Visualiser</h1>
+<p>Watch elements bubble into position! At each step, you'll see two adjacent elements highlighted. Decide whether they need to be swapped.</p>
+<div class="mission">
+<p>&#x1F3AF; <strong>Your Mission:</strong> Guide the bubble sort algorithm through 5 rounds. At each comparison, decide if the two highlighted elements need to be swapped to sort the array in ascending order. Answer conceptual questions to prove your algorithmic understanding!</p>
+</div>
+<button class="start-btn" onclick="startGame()">Start Sorting &#8594;</button>
+</div>
+
+<!-- Game Screen -->
+<div class="game" id="gameScreen">
+<div class="game-header">
+<div class="stat"><div class="stat-label">Round</div><div class="stat-value" id="roundDisplay">1 / 5</div></div>
+<div class="stat"><div class="stat-label">Score</div><div class="stat-value" id="scoreDisplay">0</div></div>
+<div class="stat"><div class="stat-label">Streak</div><div class="stat-value" id="streakDisplay">0 &#x1F525;</div></div>
+<div class="stat"><div class="stat-label">Accuracy</div><div class="stat-value" id="accuracyDisplay">100%</div></div>
+</div>
+<div class="round-info"><h2>Round <span id="roundNum">1</span> &mdash; <span id="roundArraySize">5 elements</span></h2></div>
+<div class="pass-info">Pass <span id="passNum">1</span> &bull; Comparison <span id="compNum">1</span> of <span id="compTotal">4</span></div>
+<div class="array-container" id="arrayContainer"></div>
+<div id="conceptArea"></div>
+<div class="feedback" id="feedback"></div>
+<div class="action-btns" id="actionBtns">
+<button class="action-btn swap-btn" id="swapBtn" onclick="handleDecision(true)">SWAP &#x1F504;</button>
+<button class="action-btn noswap-btn" id="noswapBtn" onclick="handleDecision(false)">NO SWAP &#10003;</button>
+</div>
+<div style="text-align:center;display:none" id="nextArea">
+<button class="next-btn" id="nextBtn" onclick="nextStep()">Continue &#8594;</button>
+</div>
+</div>
+
+<!-- Results Screen -->
+<div class="results" id="resultsScreen">
+<span class="results-emoji" id="resultsEmoji">&#x1FAE7;</span>
+<h1 id="resultsTitle">Round Complete!</h1>
+<div class="rank" id="resultsRank"></div>
+<div class="score-circle" id="scoreCircle"><span class="score-text" id="scorePct"></span></div>
+<div class="round-scores" id="roundScores"></div>
+<div class="key-fact">
+<h3>&#x1F4DD; Key Exam Facts</h3>
+<p><strong>Bubble sort</strong> compares <strong>adjacent</strong> elements and swaps them if they are out of order. After each pass, the largest unsorted value &ldquo;bubbles&rdquo; to its correct position at the end of the array. Bubble sort uses <strong>nested loops</strong> &mdash; the outer loop controls the number of passes, and the inner loop controls comparisons within each pass. The maximum number of passes needed is <strong>n &minus; 1</strong> where n is the number of elements.</p>
+</div>
+<div class="results-btns">
+<button class="results-btn primary" onclick="restartGame()">Sort Again &#x1FAE7;</button>
+<button class="results-btn secondary" onclick="location.href='index.html'">Back to Lab &#x1F52C;</button>
+</div>
+</div>
+</div>
+
+<script>
+const ROUNDS=[
+{arr:[47,69,12,34,25],label:'5 elements'},
+{arr:[8,3,5,1,4,7],label:'6 elements'},
+{arr:[23,45,12,67,34,89],label:'6 elements'},
+{arr:[15,42,8,31,27,19],label:'6 elements'},
+{arr:[56,23,78,45,12,67],label:'6 elements'}
+];
+const RANKS=[
+{name:'Bubble Beginner',min:0,emoji:'\uD83E\uDEE7'},
+{name:'Bubble Mixer',min:41,emoji:'\uD83E\uDEE7'},
+{name:'Bubble Master',min:61,emoji:'\uD83E\uDEE7'},
+{name:'Bubble Legend',min:81,emoji:'\uD83C\uDFC6'}
+];
+let currentRound=0,arr=[],pass=0,comp=0,totalComps=0,score=0,streak=0,maxStreak=0,totalDecisions=0,correctDecisions=0,roundScores=[],waiting=false,sortedFrom=-1;
+let conceptualCorrect=0,conceptualTotal=0;
+let pendingNextAction=null; // tracks what to do after concept question on pass complete
+
+const maxPassesForRound=()=>arr.length-1;
+
+/* ======== CONCEPTUAL QUESTION BANK ======== */
+
+// Generates a pre-pass prediction question for the given state
+function getPrePassQuestion(roundArr,passNum){
+    const n=roundArr.length;
+    const compsThisPass=n-1-passNum;
+    // Build pool of possible questions and pick one
+    const pool=[];
+
+    if(passNum===0){
+        // First pass: which value ends up at the end?
+        const largest=Math.max(...roundArr);
+        const wrongChoices=shuffleArray(roundArr.filter(v=>v!==largest)).slice(0,3);
+        const options=shuffleArray([largest,...wrongChoices].slice(0,4));
+        pool.push({
+            question:'After this pass, which value will be at the END of the array?',
+            type:'choice',
+            options:options.map(String),
+            answer:String(largest),
+            correctFeedback:'After each pass, the largest unsorted value bubbles to its correct position at the end.',
+            wrongFeedback:'After each pass, the largest unsorted value bubbles to its correct position. The largest value here is '+largest+'.'
+        });
+    }
+
+    // How many comparisons this pass?
+    pool.push({
+        question:'How many comparisons will be made in pass '+(passNum+1)+'?',
+        type:'input',
+        answer:String(compsThisPass),
+        correctFeedback:'In pass '+(passNum+1)+', there are '+(n)+' elements but '+(passNum)+' already sorted, so '+(compsThisPass)+' comparison'+(compsThisPass!==1?'s are':' is')+' needed.',
+        wrongFeedback:'The inner loop makes n \u2212 1 \u2212 (pass number) comparisons. That\u2019s '+n+' \u2212 1 \u2212 '+passNum+' = '+compsThisPass+'.'
+    });
+
+    if(passNum>0){
+        // After at least 1 pass, ask about sorted portion
+        pool.push({
+            question:'How many elements are already in their final sorted position?',
+            type:'input',
+            answer:String(passNum),
+            correctFeedback:'After '+passNum+' pass'+(passNum!==1?'es':'')+', '+passNum+' element'+(passNum!==1?'s have':' has')+' bubbled into place at the end of the array.',
+            wrongFeedback:'After each pass, one more element reaches its final position. After '+passNum+' pass'+(passNum!==1?'es':'')+', '+passNum+' element'+(passNum!==1?'s are':' is')+' sorted.'
+        });
+    }
+
+    return pool[Math.floor(Math.random()*pool.length)];
+}
+
+// Generates a post-pass conceptual question
+function getPostPassQuestion(roundArr,passNum,bubbledVal){
+    const n=roundArr.length;
+    const pool=[];
+
+    // Which element just bubbled into place?
+    const wrongVals=shuffleArray(roundArr.filter(v=>v!==bubbledVal)).slice(0,3);
+    const options=shuffleArray([bubbledVal,...wrongVals].slice(0,4));
+    pool.push({
+        question:'Which value just bubbled into its final sorted position?',
+        type:'choice',
+        options:options.map(String),
+        answer:String(bubbledVal),
+        correctFeedback:'After each pass, the largest unsorted value bubbles to its correct position at the end of the array.',
+        wrongFeedback:'The largest unsorted value ('+bubbledVal+') has bubbled to its correct position at the end.'
+    });
+
+    // How many unsorted elements remain?
+    const unsorted=n-(passNum+1);
+    pool.push({
+        question:'How many elements are still UNSORTED after this pass?',
+        type:'input',
+        answer:String(unsorted),
+        correctFeedback:unsorted+' element'+(unsorted!==1?'s remain':' remains')+' unsorted. '+(passNum+1)+' element'+(passNum+1!==1?'s have':' has')+' bubbled into place.',
+        wrongFeedback:'After '+(passNum+1)+' pass'+(passNum+1!==1?'es':'')+', '+(passNum+1)+' element'+(passNum+1!==1?'s are':' is')+' in position, leaving '+unsorted+' still unsorted.'
+    });
+
+    // Will the next pass need fewer comparisons?
+    if(passNum<n-2){
+        pool.push({
+            question:'Will the next pass need fewer comparisons than this one?',
+            type:'choice',
+            options:['Yes','No'],
+            answer:'Yes',
+            correctFeedback:'Each pass has one fewer comparison than the previous, because one more element is in its final position.',
+            wrongFeedback:'Yes \u2014 each pass has one fewer comparison because one more element is already in its final sorted position.'
+        });
+    }
+
+    return pool[Math.floor(Math.random()*pool.length)];
+}
+
+// Generates a final round question
+function getFinalRoundQuestion(n){
+    const pool=[];
+    pool.push({
+        question:'What is the maximum number of passes needed to sort an array of '+n+' elements using bubble sort?',
+        type:'input',
+        answer:String(n-1),
+        correctFeedback:'Maximum passes = n \u2212 1. For '+n+' elements, that\u2019s '+(n-1)+' passes.',
+        wrongFeedback:'Maximum passes = n \u2212 1 where n is the number of elements. For '+n+' elements: '+(n-1)+' passes.'
+    });
+    pool.push({
+        question:'Bubble sort uses nested loops. What does the OUTER loop control?',
+        type:'choice',
+        options:['The number of passes','Comparisons within a pass','Swapping elements','Checking if sorted'],
+        answer:'The number of passes',
+        correctFeedback:'The outer loop controls the number of passes; the inner loop controls comparisons within each pass.',
+        wrongFeedback:'The outer loop controls the number of passes. The inner loop controls the comparisons within each pass.'
+    });
+    pool.push({
+        question:'In bubble sort, adjacent elements are compared and swapped if they are out of order. True or false?',
+        type:'choice',
+        options:['True','False'],
+        answer:'True',
+        correctFeedback:'Bubble sort compares adjacent elements and swaps them if out of order.',
+        wrongFeedback:'True \u2014 bubble sort compares adjacent elements and swaps them if they are out of order.'
+    });
+    return pool[Math.floor(Math.random()*pool.length)];
+}
+
+/* ======== DISPLAY CONCEPT QUESTION ======== */
+
+function showConceptQuestion(q,onDone){
+    const area=document.getElementById('conceptArea');
+    let html='<div class="concept-card">';
+    html+='<div class="cq-label">\uD83E\uDDE0 Conceptual Question</div>';
+    html+='<div class="cq-question">'+q.question+'</div>';
+
+    if(q.type==='choice'){
+        html+='<div class="cq-options">';
+        q.options.forEach((opt,i)=>{
+            html+='<button class="cq-option-btn" data-val="'+escHtml(opt)+'" onclick="handleConceptChoice(this,\''+escHtml(opt)+'\')">'+escHtml(opt)+'</button>';
+        });
+        html+='</div>';
+    }else{
+        html+='<div class="cq-input-row"><input class="cq-input" type="text" id="cqInput" autocomplete="off" placeholder="?"><button class="cq-submit-btn" id="cqSubmitBtn" onclick="handleConceptInput()">Submit</button></div>';
+    }
+    html+='<div id="cqFeedback"></div>';
+    html+='</div>';
+    area.innerHTML=html;
+
+    // Store current question and callback
+    window._currentCQ=q;
+    window._currentCQDone=onDone;
+    window._cqAnswered=false;
+
+    // Focus input if applicable
+    if(q.type==='input'){
+        const inp=document.getElementById('cqInput');
+        if(inp){
+            inp.addEventListener('keydown',function(e){if(e.key==='Enter')handleConceptInput();});
+            setTimeout(()=>inp.focus(),100);
+        }
+    }
+}
+
+function handleConceptChoice(btnEl,val){
+    if(window._cqAnswered)return;
+    window._cqAnswered=true;
+    const q=window._currentCQ;
+    const isCorrect=(val===q.answer);
+    conceptualTotal++;
+
+    // Disable all buttons
+    document.querySelectorAll('.cq-option-btn').forEach(b=>{b.disabled=true;});
+
+    if(isCorrect){
+        conceptualCorrect++;
+        btnEl.classList.add('cq-correct');
+        score+=15;
+        updateStats();
+        showCQFeedback(true,q.correctFeedback);
+    }else{
+        btnEl.classList.add('cq-wrong');
+        // Highlight correct
+        document.querySelectorAll('.cq-option-btn').forEach(b=>{
+            if(b.getAttribute('data-val')===q.answer)b.classList.add('cq-correct');
+        });
+        showCQFeedback(false,q.wrongFeedback);
+    }
+    setTimeout(()=>{
+        clearConceptArea();
+        if(window._currentCQDone)window._currentCQDone();
+    },2200);
+}
+
+function handleConceptInput(){
+    if(window._cqAnswered)return;
+    const inp=document.getElementById('cqInput');
+    if(!inp)return;
+    const val=inp.value.trim();
+    if(!val)return;
+    window._cqAnswered=true;
+    const q=window._currentCQ;
+    const isCorrect=(val===q.answer);
+    conceptualTotal++;
+
+    inp.disabled=true;
+    document.getElementById('cqSubmitBtn').disabled=true;
+
+    if(isCorrect){
+        conceptualCorrect++;
+        inp.style.borderColor='#2ecc71';
+        inp.style.color='#2ecc71';
+        score+=15;
+        updateStats();
+        showCQFeedback(true,q.correctFeedback);
+    }else{
+        inp.style.borderColor='#e74c3c';
+        inp.style.color='#e74c3c';
+        showCQFeedback(false,q.wrongFeedback+' (You entered: '+val+')');
+    }
+    setTimeout(()=>{
+        clearConceptArea();
+        if(window._currentCQDone)window._currentCQDone();
+    },2400);
+}
+
+function showCQFeedback(correct,msg){
+    const el=document.getElementById('cqFeedback');
+    if(!el)return;
+    const cls=correct?'cq-fb-correct':'cq-fb-wrong';
+    const icon=correct?'\u2714':'\u2718';
+    const bonus=correct?'<span class="cq-bonus">+15 bonus</span>':'';
+    el.innerHTML='<div class="cq-feedback '+cls+'">'+icon+' '+msg+bonus+'</div>';
+}
+
+function clearConceptArea(){
+    document.getElementById('conceptArea').innerHTML='';
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function shuffleArray(a){
+    const b=[...a];
+    for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}
+    return b;
+}
+
+/* ======== CORE GAME LOGIC ======== */
+
+function startGame(){
+    document.getElementById('welcomeScreen').style.display='none';
+    document.getElementById('gameScreen').style.display='block';
+    currentRound=0;score=0;streak=0;maxStreak=0;totalDecisions=0;correctDecisions=0;roundScores=[];conceptualCorrect=0;conceptualTotal=0;
+    startRound();
+}
+
+function startRound(){
+    arr=[...ROUNDS[currentRound].arr];
+    pass=0;comp=0;sortedFrom=arr.length;
+    document.getElementById('roundDisplay').textContent=(currentRound+1)+' / 5';
+    document.getElementById('roundNum').textContent=currentRound+1;
+    document.getElementById('roundArraySize').textContent=ROUNDS[currentRound].label;
+    roundScores.push({total:0,correct:0,perfect:true});
+
+    // Show the array first, then ask pre-pass prediction question
+    renderArray();
+    showPrePassQuestion();
+}
+
+function showPrePassQuestion(){
+    enableBtns(false);
+    document.getElementById('actionBtns').style.display='none';
+    document.getElementById('nextArea').style.display='none';
+    clearFeedback();
+
+    const q=getPrePassQuestion(arr,pass);
+    showConceptQuestion(q,function(){
+        // After answering, start the actual pass
+        document.getElementById('actionBtns').style.display='flex';
+        startPass();
+    });
+}
+
+function startPass(){
+    comp=0;
+    totalComps=arr.length-1-pass;
+    if(totalComps<=0){finishRound();return;}
+    sortedFrom=arr.length-pass;
+    updatePassInfo();
+    renderArray();
+    highlightComparing();
+    enableBtns(true);
+    clearFeedback();
+}
+
+function updatePassInfo(){
+    document.getElementById('passNum').textContent=pass+1;
+    document.getElementById('compNum').textContent=comp+1;
+    document.getElementById('compTotal').textContent=totalComps;
+}
+
+function renderArray(){
+    const c=document.getElementById('arrayContainer');
+    c.innerHTML='';
+    const maxVal=Math.max(...arr);
+    arr.forEach((v,i)=>{
+        const w=document.createElement('div');
+        w.className='bar-wrapper';
+        w.id='bw-'+i;
+        const b=document.createElement('div');
+        b.className='bar default';
+        b.id='bar-'+i;
+        const h=40+(v/maxVal)*180;
+        b.style.height=h+'px';
+        b.style.width=(arr.length<=5?'60px':'50px');
+        if(i>=sortedFrom)b.classList.add('sorted');
+        const val=document.createElement('div');
+        val.className='bar-value';
+        val.textContent=v;
+        b.appendChild(val);
+        w.appendChild(b);
+        const idx=document.createElement('div');
+        idx.className='bar-index';
+        idx.textContent='['+i+']';
+        w.appendChild(idx);
+        c.appendChild(w);
+    });
+}
+
+function highlightComparing(){
+    const b1=document.getElementById('bar-'+comp);
+    const b2=document.getElementById('bar-'+(comp+1));
+    if(b1){b1.classList.remove('default','sorted');b1.classList.add('comparing');}
+    if(b2){b2.classList.remove('default','sorted');b2.classList.add('comparing');}
+}
+
+function handleDecision(userSaidSwap){
+    if(waiting)return;
+    enableBtns(false);
+    totalDecisions++;
+    roundScores[currentRound].total++;
+    const needsSwap=arr[comp]>arr[comp+1];
+    const isCorrect=(userSaidSwap===needsSwap);
+    if(isCorrect){
+        correctDecisions++;
+        roundScores[currentRound].correct++;
+        streak++;
+        if(streak>maxStreak)maxStreak=streak;
+        score+=10+(streak>=3?5:0);
+        if(needsSwap){
+            showFeedback('correct','\u2714 Correct! '+arr[comp]+' > '+arr[comp+1]+' \u2014 swap needed.'+(streak>=3?' \uD83D\uDD25 Streak x'+streak+'!':''));
+            animateSwap(comp,comp+1);
+        }else{
+            showFeedback('correct','\u2714 Correct! '+arr[comp]+' \u2264 '+arr[comp+1]+' \u2014 no swap needed.'+(streak>=3?' \uD83D\uDD25 Streak x'+streak+'!':''));
+            flashGreen(comp,comp+1);
+            setTimeout(()=>advanceComp(),600);
+        }
+    }else{
+        streak=0;
+        roundScores[currentRound].perfect=false;
+        if(needsSwap){
+            showFeedback('wrong','\u2718 Wrong! '+arr[comp]+' > '+arr[comp+1]+' \u2014 they ARE out of order, so a swap is needed.');
+            flashRed(comp,comp+1);
+            setTimeout(()=>{animateSwap(comp,comp+1);},500);
+        }else{
+            showFeedback('wrong','\u2718 Wrong! '+arr[comp]+' \u2264 '+arr[comp+1]+' \u2014 they are already in order. No swap needed.');
+            flashRed(comp,comp+1);
+            setTimeout(()=>advanceComp(),800);
+        }
+    }
+    updateStats();
+}
+
+function animateSwap(i,j){
+    waiting=true;
+    const w1=document.getElementById('bw-'+i);
+    const w2=document.getElementById('bw-'+j);
+    const gap=w1.offsetWidth+8;
+    w1.style.transform='translateX('+gap+'px)';
+    w2.style.transform='translateX(-'+gap+'px)';
+    setTimeout(()=>{
+        const tmp=arr[i];arr[i]=arr[j];arr[j]=tmp;
+        w1.style.transform='';w2.style.transform='';
+        renderArray();
+        waiting=false;
+        advanceComp();
+    },550);
+}
+
+function flashGreen(i,j){
+    const b1=document.getElementById('bar-'+i);
+    const b2=document.getElementById('bar-'+j);
+    if(b1){b1.classList.remove('comparing');b1.classList.add('correct');}
+    if(b2){b2.classList.remove('comparing');b2.classList.add('correct');}
+}
+
+function flashRed(i,j){
+    const b1=document.getElementById('bar-'+i);
+    const b2=document.getElementById('bar-'+j);
+    if(b1){b1.classList.remove('comparing');b1.classList.add('wrong');}
+    if(b2){b2.classList.remove('comparing');b2.classList.add('wrong');}
+}
+
+function advanceComp(){
+    comp++;
+    if(comp>=totalComps){
+        pass++;
+        sortedFrom=arr.length-pass;
+        const bubbledVal=arr[arr.length-pass];
+        if(pass>=arr.length-1||isArraySorted()){
+            finishRound();
+            return;
+        }
+        // Pass complete: show info, then ask conceptual question, then show next button
+        showFeedback('info','\u2714 Pass '+(pass)+' complete! The largest unsorted value ('+bubbledVal+') has bubbled to position ['+(arr.length-pass)+'].');
+        if(roundScores[currentRound].perfect)score+=15;
+        renderArray();
+
+        // Hide action buttons, show concept question instead of next button immediately
+        enableBtns(false);
+        document.getElementById('actionBtns').style.display='none';
+        document.getElementById('nextArea').style.display='none';
+
+        const q=getPostPassQuestion(arr,pass,bubbledVal);
+        showConceptQuestion(q,function(){
+            // After concept question answered, show pre-pass question for next pass
+            const preQ=getPrePassQuestion(arr,pass);
+            showConceptQuestion(preQ,function(){
+                document.getElementById('actionBtns').style.display='flex';
+                startPass();
+            });
+        });
+        return;
+    }
+    updatePassInfo();
+    renderArray();
+    highlightComparing();
+    enableBtns(true);
+}
+
+function isArraySorted(){
+    for(let i=0;i<arr.length-1;i++)if(arr[i]>arr[i+1])return false;
+    return true;
+}
+
+function showNextBtn(){
+    document.getElementById('actionBtns').style.display='none';
+    document.getElementById('nextArea').style.display='block';
+}
+
+function nextStep(){
+    document.getElementById('actionBtns').style.display='flex';
+    document.getElementById('nextArea').style.display='none';
+    clearFeedback();
+    startPass();
+}
+
+function finishRound(){
+    enableBtns(false);
+    document.getElementById('actionBtns').style.display='none';
+    document.getElementById('nextArea').style.display='none';
+    clearConceptArea();
+
+    // Celebrate sorted array
+    renderArray();
+    const bars=document.querySelectorAll('.bar');
+    bars.forEach((b,i)=>{
+        setTimeout(()=>{b.classList.remove('default','comparing');b.classList.add('correct');b.style.animation='celebFlash 0.4s ease';},i*120);
+    });
+
+    const celebTime=bars.length*120+600;
+
+    if(currentRound<ROUNDS.length-1){
+        showFeedback('info','\uD83C\uDF89 Array sorted! Round '+(currentRound+1)+' complete!');
+        setTimeout(()=>{
+            // Ask a final-round concept question before moving on
+            clearFeedback();
+            const q=getFinalRoundQuestion(arr.length);
+            showConceptQuestion(q,function(){
+                currentRound++;
+                clearFeedback();
+                document.getElementById('actionBtns').style.display='flex';
+                document.getElementById('nextArea').style.display='none';
+                startRound();
+            });
+        },celebTime);
+    }else{
+        showFeedback('info','\uD83C\uDF89 All rounds complete!');
+        setTimeout(()=>{
+            // Final exam-style question
+            clearFeedback();
+            const q=getFinalRoundQuestion(arr.length);
+            showConceptQuestion(q,function(){
+                showResults();
+            });
+        },celebTime);
+    }
+}
+
+function showResults(){
+    document.getElementById('gameScreen').style.display='none';
+    document.getElementById('resultsScreen').style.display='block';
+    const pct=totalDecisions>0?Math.round((correctDecisions/totalDecisions)*100):0;
+    let rank=RANKS[0];
+    for(const r of RANKS)if(pct>=r.min)rank=r;
+    document.getElementById('resultsEmoji').textContent=rank.emoji;
+    document.getElementById('resultsTitle').textContent='Sorting Complete!';
+    document.getElementById('resultsRank').textContent=rank.name+' \u2014 '+pct+'%';
+    document.getElementById('scoreCircle').style.setProperty('--pct',pct+'%');
+    document.getElementById('scorePct').textContent=score;
+    const rsDiv=document.getElementById('roundScores');
+    rsDiv.innerHTML='';
+    roundScores.forEach((r,i)=>{
+        const card=document.createElement('div');
+        card.className='round-score-card';
+        const rpct=r.total>0?Math.round((r.correct/r.total)*100):0;
+        card.innerHTML='<h4>Round '+(i+1)+'</h4><div class="rs-val">'+rpct+'%</div><div style="font-size:0.8rem;color:#64748b">'+r.correct+'/'+r.total+(r.perfect?' \u2B50':'')+'</div>';
+        rsDiv.appendChild(card);
+    });
+    // Add conceptual question summary card
+    if(conceptualTotal>0){
+        const card=document.createElement('div');
+        card.className='round-score-card';
+        const cpct=Math.round((conceptualCorrect/conceptualTotal)*100);
+        card.innerHTML='<h4>\uD83E\uDDE0 Concept Qs</h4><div class="rs-val">'+cpct+'%</div><div style="font-size:0.8rem;color:#64748b">'+conceptualCorrect+'/'+conceptualTotal+'</div>';
+        rsDiv.appendChild(card);
+    }
+    if(pct>=60)launchConfetti();
+}
+
+function restartGame(){
+    document.getElementById('resultsScreen').style.display='none';
+    document.getElementById('welcomeScreen').style.display='block';
+}
+
+function enableBtns(on){
+    document.getElementById('swapBtn').disabled=!on;
+    document.getElementById('noswapBtn').disabled=!on;
+}
+
+function showFeedback(type,msg){
+    document.getElementById('feedback').innerHTML='<div class="feedback-msg '+type+'">'+msg+'</div>';
+}
+function clearFeedback(){document.getElementById('feedback').innerHTML='';}
+
+function updateStats(){
+    document.getElementById('scoreDisplay').textContent=score;
+    document.getElementById('streakDisplay').textContent=streak+' \uD83D\uDD25';
+    const pct=totalDecisions>0?Math.round((correctDecisions/totalDecisions)*100):100;
+    document.getElementById('accuracyDisplay').textContent=pct+'%';
+}
+
+function launchConfetti(){
+    const colors=['#2DD4BF','#0D9488','#fbbf24','#2ecc71','#818CF8','#FB7185'];
+    for(let i=0;i<50;i++){
+        const c=document.createElement('div');
+        c.className='confetti-piece';
+        c.style.cssText='left:'+Math.random()*100+'%;top:-10px;background:'+colors[Math.floor(Math.random()*colors.length)]+';animation-delay:'+Math.random()*1.5+'s;border-radius:'+(Math.random()>0.5?'50%':'2px')+';width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px;';
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),4500);
+    }
+}
+</script>
+</body>
+</html>

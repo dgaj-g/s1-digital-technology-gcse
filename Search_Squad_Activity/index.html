@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Squad — Hub</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
+.bg-grid{position:fixed;top:0;left:0;width:100%;height:100%;background-image:radial-gradient(circle,rgba(16,185,129,.08) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.container{max-width:900px;margin:0 auto;padding:30px 20px;position:relative;z-index:1}
+.back-link{display:inline-block;color:#94a3b8;text-decoration:none;font-size:.95rem;margin-bottom:20px;transition:color .3s}
+.back-link:hover{color:#10b981}
+header{text-align:center;margin-bottom:40px}
+.logo{font-size:3.5rem;margin-bottom:8px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+h1{font-size:2.8rem;font-weight:800;background:linear-gradient(135deg,#10b981,#14b8a6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 4s ease infinite;background-size:200% 200%}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.subtitle{font-size:1.15rem;color:#94a3b8;margin-top:8px}
+.pills{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.pill{padding:6px 16px;border-radius:20px;font-size:.82rem;font-weight:600;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05)}
+.pill:nth-child(1){color:#10b981;border-color:rgba(16,185,129,.3)}
+.pill:nth-child(2){color:#60a5fa;border-color:rgba(96,165,250,.3)}
+.pill:nth-child(3){color:#fbbf24;border-color:rgba(251,191,36,.3)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:10px}
+.card{border-radius:18px;padding:28px 24px;text-decoration:none;color:#fff;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;cursor:pointer;display:flex;flex-direction:column;min-height:220px}
+.card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.3)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;opacity:.15;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.4),transparent 60%)}
+.card1{background:linear-gradient(135deg,#059669,#6ee7b7)}
+.card2{background:linear-gradient(135deg,#1e3a5f,#60a5fa)}
+.card3{background:linear-gradient(135deg,#b45309,#fcd34d)}
+.card4{background:linear-gradient(135deg,#6d28d9,#c4b5fd)}
+.card-num{position:absolute;top:14px;right:18px;background:rgba(0,0,0,.2);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+.card-emoji{font-size:2.6rem;margin-bottom:12px}
+.card-title{font-size:1.3rem;font-weight:700;margin-bottom:6px}
+.card-desc{font-size:.88rem;opacity:.9;line-height:1.45;flex:1}
+.card-btn{display:inline-flex;align-items:center;gap:6px;margin-top:16px;padding:8px 20px;background:rgba(0,0,0,.25);border-radius:25px;font-weight:700;font-size:.9rem;transition:background .3s;align-self:flex-start}
+.card:hover .card-btn{background:rgba(0,0,0,.4)}
+.footer{text-align:center;margin-top:50px;padding-top:20px;border-top:1px solid rgba(255,255,255,.06);color:#475569;font-size:.82rem}
+@keyframes cardIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:cardIn .6s ease backwards}
+.card:nth-child(2){animation-delay:.1s}
+.card:nth-child(3){animation-delay:.2s}
+.card:nth-child(4){animation-delay:.3s}
+@media(max-width:600px){h1{font-size:2rem}.logo{font-size:2.8rem}.cards{grid-template-columns:1fr}.container{padding:20px 15px}}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="container">
+<a href="../index.html" class="back-link">← Back to Activities</a>
+<header>
+<div class="logo">🔎</div>
+<h1>Search Squad</h1>
+<p class="subtitle">Master Linear Search &amp; Binary Search</p>
+<div class="pills">
+<span class="pill">Linear Search</span>
+<span class="pill">Binary Search</span>
+<span class="pill">Search Strategy</span>
+</div>
+</header>
+<div class="cards">
+<a href="activity1.html" class="card card1">
+<span class="card-num">1</span>
+<div class="card-emoji">🔦</div>
+<div class="card-title">Linear Search Tracker</div>
+<div class="card-desc">Step through arrays element by element. Predict matches, count comparisons, and track the search path.</div>
+<span class="card-btn">PLAY →</span>
+</a>
+<a href="activity2.html" class="card card2">
+<span class="card-num">2</span>
+<div class="card-emoji">🎯</div>
+<div class="card-title">Binary Search Mission</div>
+<div class="card-desc">Divide and conquer! Calculate midpoints, eliminate halves, and zero in on the target value.</div>
+<span class="card-btn">PLAY →</span>
+</a>
+<a href="activity3.html" class="card card3">
+<span class="card-num">3</span>
+<div class="card-emoji">🤔</div>
+<div class="card-title">Search Selector</div>
+<div class="card-desc">Linear or Binary? Choose the right search strategy for real-world scenarios and justify your reasoning.</div>
+<span class="card-btn">PLAY →</span>
+</a>
+<a href="activity4.html" class="card card4">
+<span class="card-num">4</span>
+<div class="card-emoji">💻</div>
+<div class="card-title">Search Code Challenge</div>
+<div class="card-desc">Complete pseudocode, build algorithms from fragments, and trace through search code step by step.</div>
+<span class="card-btn">PLAY →</span>
+</a>
+</div>
+<div class="footer">Search Squad — GCSE Digital Technology</div>
+</div>
+</body>
+</html>

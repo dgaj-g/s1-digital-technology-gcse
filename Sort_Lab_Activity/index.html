@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sort Lab - GCSE Digital Technology</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0a1628;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
+.bg-particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.particle{position:absolute;border-radius:50%;opacity:0.15;animation:floatParticle 20s infinite ease-in-out}
+@keyframes floatParticle{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-30px) rotate(90deg)}50%{transform:translateY(10px) rotate(180deg)}75%{transform:translateY(-20px) rotate(270deg)}}
+.container{max-width:900px;margin:0 auto;padding:30px 20px;position:relative;z-index:1}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#67e8f9;text-decoration:none;font-size:0.95rem;margin-bottom:25px;transition:all 0.3s;padding:6px 12px;border-radius:8px}
+.back-link:hover{background:rgba(103,232,249,0.1);transform:translateX(-3px)}
+header{text-align:center;margin-bottom:45px}
+.lab-icon{font-size:4rem;display:block;margin-bottom:10px;animation:bubbleFloat 3s ease-in-out infinite}
+@keyframes bubbleFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-12px) scale(1.05)}}
+h1{font-size:3.2rem;font-weight:800;background:linear-gradient(135deg,#0D9488,#2DD4BF,#67e8f9,#818CF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:300% 300%;animation:gradientShift 4s ease infinite;margin-bottom:8px}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.subtitle{font-size:1.25rem;color:#94a3b8;font-weight:400;margin-bottom:25px}
+.topic-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:10px}
+.pill{padding:8px 18px;border-radius:50px;font-size:0.85rem;font-weight:600;border:none;cursor:default;animation:pillPop 0.5s ease backwards}
+.pill:nth-child(1){background:rgba(13,148,136,0.2);color:#2DD4BF;border:1px solid rgba(45,212,191,0.3);animation-delay:0.1s}
+.pill:nth-child(2){background:rgba(79,70,229,0.2);color:#818CF8;border:1px solid rgba(129,140,248,0.3);animation-delay:0.2s}
+.pill:nth-child(3){background:rgba(217,119,6,0.2);color:#FCD34D;border:1px solid rgba(252,211,77,0.3);animation-delay:0.3s}
+@keyframes pillPop{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-bottom:40px}
+.card{border-radius:20px;padding:28px;text-decoration:none;color:#fff;position:relative;overflow:hidden;transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);cursor:pointer;border:1px solid rgba(255,255,255,0.1);animation:cardSlide 0.6s ease backwards}
+.card:nth-child(1){animation-delay:0.15s}
+.card:nth-child(2){animation-delay:0.3s}
+.card:nth-child(3){animation-delay:0.45s}
+.card:nth-child(4){animation-delay:0.6s}
+@keyframes cardSlide{0%{transform:translateY(40px);opacity:0}100%{transform:translateY(0);opacity:1}}
+.card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(255,255,255,0.1) 0%,transparent 50%);pointer-events:none}
+.card-1{background:linear-gradient(135deg,#0D9488,#2DD4BF)}
+.card-2{background:linear-gradient(135deg,#4F46E5,#818CF8)}
+.card-3{background:linear-gradient(135deg,#D97706,#FCD34D)}
+.card-4{background:linear-gradient(135deg,#E11D48,#FB7185)}
+.card-num{position:absolute;top:14px;right:18px;font-size:0.8rem;font-weight:700;background:rgba(0,0,0,0.2);padding:4px 10px;border-radius:12px}
+.card-emoji{font-size:2.8rem;margin-bottom:12px;display:block}
+.card h2{font-size:1.35rem;font-weight:700;margin-bottom:8px}
+.card p{font-size:0.9rem;opacity:0.9;line-height:1.5;margin-bottom:18px}
+.play-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);padding:10px 22px;border-radius:12px;font-weight:700;font-size:0.95rem;border:1px solid rgba(255,255,255,0.3);color:#fff;cursor:pointer;transition:all 0.3s}
+.play-btn:hover{background:rgba(255,255,255,0.35);transform:scale(1.05)}
+.card-3 .card-num,.card-3 h2,.card-3 p,.card-3 .play-btn{color:#1a1a2e}
+.card-3 .play-btn{border-color:rgba(0,0,0,0.2);background:rgba(0,0,0,0.1)}
+.card-3 .play-btn:hover{background:rgba(0,0,0,0.2)}
+footer{text-align:center;color:#475569;font-size:0.85rem;padding-top:20px;border-top:1px solid rgba(255,255,255,0.05)}
+.dna-strand{position:fixed;right:20px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:20px;opacity:0.08;pointer-events:none}
+.dna-dot{width:8px;height:8px;border-radius:50%;background:#2DD4BF;animation:dnaWave 3s ease-in-out infinite}
+@keyframes dnaWave{0%,100%{transform:translateX(0)}50%{transform:translateX(25px)}}
+@media(max-width:600px){h1{font-size:2.2rem}.subtitle{font-size:1rem}.cards-grid{grid-template-columns:1fr}.card{padding:22px}}
+</style>
+</head>
+<body>
+<div class="bg-particles" id="particles"></div>
+<div class="dna-strand" id="dna"></div>
+<div class="container">
+<a href="../index.html" class="back-link">&#8592; Back to Activities</a>
+<header>
+<span class="lab-icon">&#x1F52C;</span>
+<h1>Sort Lab</h1>
+<p class="subtitle">Master Bubble Sort &amp; Insertion Sort</p>
+<div class="topic-pills">
+<span class="pill">Bubble Sort</span>
+<span class="pill">Insertion Sort</span>
+<span class="pill">Comparing Sorts</span>
+</div>
+</header>
+<div class="cards-grid">
+<a href="activity1.html" class="card card-1">
+<span class="card-num">01</span>
+<span class="card-emoji">&#x1FAE7;</span>
+<h2>Bubble Sort Visualiser</h2>
+<p>Watch elements bubble into position! Decide whether adjacent elements need swapping at each step.</p>
+<span class="play-btn">PLAY &#8594;</span>
+</a>
+<a href="activity2.html" class="card card-2">
+<span class="card-num">02</span>
+<span class="card-emoji">&#x1F4E5;</span>
+<h2>Insertion Sort Visualiser</h2>
+<p>Build the sorted list one element at a time! Place each element in its correct position.</p>
+<span class="play-btn">PLAY &#8594;</span>
+</a>
+<a href="activity3.html" class="card card-3">
+<span class="card-num">03</span>
+<span class="card-emoji">&#9876;&#65039;</span>
+<h2>Sort Showdown</h2>
+<p>Bubble Sort vs Insertion Sort &mdash; which is more efficient? Compare algorithms head-to-head.</p>
+<span class="play-btn">PLAY &#8594;</span>
+</a>
+<a href="activity4.html" class="card card-4">
+<span class="card-num">04</span>
+<span class="card-emoji">&#x1F3D7;&#65039;</span>
+<h2>Sort Code Builder</h2>
+<p>Construct sorting algorithms from pseudocode fragments. Watch out for tricky distractors!</p>
+<span class="play-btn">PLAY &#8594;</span>
+</a>
+</div>
+<footer>GCSE Digital Technology &mdash; Unit 4</footer>
+</div>
+<script>
+(function(){
+const pC=document.getElementById('particles');
+for(let i=0;i<25;i++){
+const p=document.createElement('div');
+p.className='particle';
+const s=Math.random()*6+3;
+p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${['#0D9488','#2DD4BF','#4F46E5','#818CF8','#67e8f9'][Math.floor(Math.random()*5)]};animation-delay:${Math.random()*20}s;animation-duration:${15+Math.random()*15}s`;
+pC.appendChild(p);
+}
+const dna=document.getElementById('dna');
+for(let i=0;i<15;i++){
+const d=document.createElement('div');
+d.className='dna-dot';
+d.style.animationDelay=(i*0.2)+'s';
+dna.appendChild(d);
+}
+})();
+</script>
+</body>
+</html>
