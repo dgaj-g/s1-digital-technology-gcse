@@ -1,0 +1,2123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cara's Physics Revision</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-1: #fff1f7;
+    --bg-2: #e8f7ff;
+    --bg-3: #fdf6e3;
+    --bg-4: #e9fbe7;
+    --ink: #2c3e50;
+    --ink-soft: #5b6b7a;
+    --card: #ffffff;
+    --good: #2ecc71;
+    --bad: #e74c3c;
+    --warn: #f39c12;
+    --line: #e6e2f0;
+    --shadow: 0 10px 30px rgba(60, 50, 100, 0.08), 0 4px 10px rgba(60, 50, 100, 0.05);
+  }
+
+  html, body {
+    height: 100%;
+    font-family: -apple-system, "SF Pro Rounded", "Segoe UI", "Avenir Next", Avenir, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 35%, var(--bg-3) 70%, var(--bg-4) 100%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    min-height: 100vh;
+    padding: 24px;
+    line-height: 1.55;
+  }
+
+  .app {
+    max-width: 980px;
+    margin: 0 auto;
+  }
+
+  /* ---------- HEADER ---------- */
+  header.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 22px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+  }
+  header.top .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  header.top .brand .dot {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff8ab5, #ffc16b);
+    display: grid; place-items: center;
+    color: white; font-size: 1.1rem;
+    box-shadow: 0 4px 10px rgba(255, 138, 181, 0.45);
+  }
+  header.top nav button {
+    border: 0;
+    background: rgba(255,255,255,0.8);
+    padding: 8px 14px;
+    border-radius: 12px;
+    font: inherit;
+    color: var(--ink-soft);
+    cursor: pointer;
+    margin-left: 6px;
+    transition: transform 0.15s, background 0.15s;
+  }
+  header.top nav button:hover { background: white; transform: translateY(-1px); }
+
+  /* ---------- WELCOME ---------- */
+  .welcome {
+    background: var(--card);
+    border-radius: 28px;
+    padding: 40px 36px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .welcome::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(255, 180, 200, 0.25), transparent 35%),
+      radial-gradient(circle at 88% 22%, rgba(180, 220, 255, 0.3), transparent 38%),
+      radial-gradient(circle at 70% 90%, rgba(255, 230, 150, 0.25), transparent 40%);
+    pointer-events: none;
+  }
+  .welcome > * { position: relative; }
+  .welcome h1 {
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg, #ff7eb6, #ffa45c, #6ec3ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .welcome p.lead {
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    max-width: 600px;
+    margin: 0 auto 8px;
+  }
+  .welcome p.sub {
+    color: var(--ink-soft);
+    max-width: 580px;
+    margin: 0 auto 24px;
+    font-size: 0.98rem;
+  }
+  .welcome .start-btn {
+    background: linear-gradient(90deg, #ff8ab5, #ffae5c);
+    color: white;
+    border: 0;
+    padding: 14px 34px;
+    border-radius: 16px;
+    font: inherit;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(255, 138, 181, 0.4);
+    transition: transform 0.15s;
+  }
+  .welcome .start-btn:hover { transform: translateY(-2px); }
+  .welcome .tips {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+  }
+  .welcome .tips .tip {
+    background: rgba(255,255,255,0.6);
+    padding: 14px 12px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+  .welcome .tips .tip strong { color: var(--ink); display: block; margin-bottom: 4px; }
+
+  /* ---------- TOPIC MENU ---------- */
+  .menu-head {
+    text-align: center;
+    margin: 8px 0 22px;
+  }
+  .menu-head h2 {
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+  }
+  .menu-head p { color: var(--ink-soft); }
+
+  .topics {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+  }
+  .topic-card {
+    background: var(--card);
+    border-radius: 22px;
+    padding: 22px 20px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  .topic-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(60, 50, 100, 0.12);
+  }
+  .topic-card .stripe {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 6px;
+  }
+  .topic-card .emoji {
+    font-size: 2.2rem;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .topic-card h3 {
+    font-size: 1.15rem;
+    margin-bottom: 4px;
+  }
+  .topic-card p.desc {
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    margin-bottom: 14px;
+    min-height: 38px;
+  }
+  .topic-card .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+  .topic-card .badge {
+    background: var(--good);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .topic-card .badge.not-done {
+    background: #eceff1;
+    color: var(--ink-soft);
+  }
+  .topic-card .bar {
+    height: 6px;
+    background: #f3f0fa;
+    border-radius: 999px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  .topic-card .bar > span {
+    display: block; height: 100%;
+    background: linear-gradient(90deg, #ffae5c, #ff8ab5);
+    width: 0;
+    transition: width 0.4s;
+  }
+
+  /* ---------- QUIZ SCREEN ---------- */
+  .quiz {
+    background: var(--card);
+    border-radius: 26px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+  }
+  .quiz .header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .quiz .header .emoji { font-size: 2rem; }
+  .quiz .header .info { flex: 1; }
+  .quiz .header h2 { font-size: 1.4rem; line-height: 1.15; }
+  .quiz .header .progress-text {
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+  }
+  .quiz .header .streak {
+    background: linear-gradient(135deg, #ff8a5b, #ffd166);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 10px rgba(255,138,91,0.35);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .quiz .header .streak.show { opacity: 1; transform: scale(1); }
+
+  .progress-bar {
+    height: 8px;
+    background: #f0ebf7;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .progress-bar > div {
+    height: 100%;
+    background: linear-gradient(90deg, #6ec3ff, #ff8ab5, #ffae5c);
+    width: 0;
+    transition: width 0.4s;
+    border-radius: 999px;
+  }
+
+  .question {
+    animation: pop 0.35s ease both;
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .question .stem {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+    line-height: 1.4;
+  }
+  .question .stem .blank {
+    display: inline-block;
+    min-width: 80px;
+    border-bottom: 2.5px dashed #c9bdf1;
+    padding: 0 4px;
+    color: transparent;
+  }
+  .question .type-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #f0ebf7;
+    color: #7a5cb1;
+    margin-bottom: 10px;
+  }
+
+  /* multiple choice */
+  .options { display: grid; gap: 10px; }
+  .option {
+    background: #faf7ff;
+    border: 2px solid var(--line);
+    padding: 12px 16px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    text-align: left;
+    font: inherit;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .option:hover { background: white; border-color: #c9bdf1; }
+  .option .letter {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: white;
+    border: 2px solid var(--line);
+    display: grid; place-items: center;
+    font-weight: 700;
+    color: var(--ink-soft);
+    flex-shrink: 0;
+  }
+  .option.selected { border-color: #7a5cb1; background: white; }
+  .option.correct {
+    background: #e9f9ef;
+    border-color: var(--good);
+  }
+  .option.correct .letter { background: var(--good); color: white; border-color: var(--good); }
+  .option.wrong {
+    background: #fdecec;
+    border-color: var(--bad);
+  }
+  .option.wrong .letter { background: var(--bad); color: white; border-color: var(--bad); }
+  .option.disabled { cursor: default; opacity: 0.85; }
+
+  /* fill in the blank */
+  .fill-in {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .fill-in input {
+    flex: 1;
+    min-width: 200px;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: 2px solid var(--line);
+    font: inherit;
+    background: #faf7ff;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .fill-in input:focus { outline: none; border-color: #7a5cb1; background: white; }
+  .fill-in input.correct { border-color: var(--good); background: #e9f9ef; }
+  .fill-in input.wrong { border-color: var(--bad); background: #fdecec; }
+
+  /* short answer */
+  textarea.short-answer {
+    width: 100%;
+    min-height: 100px;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: 2px solid var(--line);
+    font: inherit;
+    background: #faf7ff;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  textarea.short-answer:focus { outline: none; border-color: #7a5cb1; background: white; }
+  textarea.short-answer.locked { background: #f5f2fb; }
+
+  /* numerical */
+  .num-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .num-input input {
+    width: 160px;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: 2px solid var(--line);
+    font: inherit;
+    background: #faf7ff;
+    font-size: 1.1rem;
+    text-align: right;
+  }
+  .num-input input:focus { outline: none; border-color: #7a5cb1; background: white; }
+  .num-input .unit {
+    font-weight: 600;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+  }
+  .num-input input.correct { border-color: var(--good); background: #e9f9ef; }
+  .num-input input.wrong { border-color: var(--bad); background: #fdecec; }
+
+  /* true/false */
+  .tf-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    max-width: 360px;
+  }
+  .tf-btn {
+    padding: 16px;
+    border-radius: 14px;
+    background: #faf7ff;
+    border: 2px solid var(--line);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    font-size: 1.05rem;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .tf-btn:hover { background: white; border-color: #c9bdf1; }
+  .tf-btn.correct { background: #e9f9ef; border-color: var(--good); color: #18794b; }
+  .tf-btn.wrong { background: #fdecec; border-color: var(--bad); color: #a3271c; }
+  .tf-btn.disabled { cursor: default; }
+
+  /* sort/match */
+  .sort {
+    display: grid;
+    gap: 16px;
+  }
+  .sort-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 14px;
+    border-radius: 14px;
+    background: #faf7ff;
+    border: 2px dashed var(--line);
+    min-height: 60px;
+  }
+  .sort-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .sort-cat {
+    background: white;
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    padding: 12px;
+    min-height: 110px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .sort-cat.over { border-color: #7a5cb1; background: #faf7ff; }
+  .sort-cat h4 {
+    font-size: 0.95rem;
+    text-align: center;
+    margin-bottom: 8px;
+    color: var(--ink-soft);
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  .sort-cat .drop-zone {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 60px;
+  }
+  .sort-chip {
+    background: white;
+    border: 2px solid var(--line);
+    padding: 7px 12px;
+    border-radius: 999px;
+    cursor: grab;
+    font-size: 0.9rem;
+    user-select: none;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .sort-chip:hover { box-shadow: 0 3px 8px rgba(0,0,0,0.06); }
+  .sort-chip.dragging { opacity: 0.5; transform: scale(0.95); }
+  .sort-chip.correct { background: #e9f9ef; border-color: var(--good); }
+  .sort-chip.wrong { background: #fdecec; border-color: var(--bad); }
+  .sort-chip.tap-selected { background: #ede5fb; border-color: #7a5cb1; }
+
+  /* feedback */
+  .feedback {
+    margin-top: 18px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    animation: pop 0.3s ease both;
+    line-height: 1.5;
+  }
+  .feedback.good { background: #e9f9ef; border-left: 4px solid var(--good); color: #1d5b3b; }
+  .feedback.bad { background: #fdecec; border-left: 4px solid var(--bad); color: #862d22; }
+  .feedback.partial { background: #fff7e6; border-left: 4px solid var(--warn); color: #7a4d10; }
+  .feedback .head { font-weight: 700; margin-bottom: 4px; }
+  .feedback .answer-line {
+    margin-top: 6px;
+    font-size: 0.95rem;
+    background: rgba(255,255,255,0.5);
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+
+  /* nav buttons */
+  .quiz .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 12px 22px;
+    border-radius: 14px;
+    border: 0;
+    background: #f0ebf7;
+    color: var(--ink);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn:hover { background: #e6dff0; }
+  .btn.primary {
+    background: linear-gradient(90deg, #6ec3ff, #ff8ab5);
+    color: white;
+    box-shadow: 0 6px 14px rgba(110, 195, 255, 0.4);
+  }
+  .btn.primary:hover { transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+  /* ---------- RESULTS ---------- */
+  .results {
+    background: var(--card);
+    border-radius: 26px;
+    padding: 36px 28px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .results .ribbon {
+    font-size: 4rem;
+    margin-bottom: 8px;
+    display: inline-block;
+    animation: bounce 0.7s ease;
+  }
+  @keyframes bounce {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  .results h2 { font-size: 1.8rem; margin-bottom: 6px; }
+  .results .rank {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #ffae5c, #ff8ab5);
+    color: white;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .results .score-line {
+    font-size: 1.2rem;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .results .score-line strong { color: var(--ink); font-size: 1.6rem; }
+  .results .summary {
+    text-align: left;
+    background: #faf7ff;
+    border-radius: 14px;
+    padding: 18px;
+    margin: 22px auto;
+    max-width: 560px;
+  }
+  .results .summary h3 { font-size: 1rem; margin-bottom: 10px; color: var(--ink-soft); }
+  .results .summary ul { list-style: none; padding: 0; }
+  .results .summary li {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 0.95rem;
+  }
+  .results .summary li:last-child { border-bottom: 0; }
+  .results .summary li .mark {
+    font-weight: 700;
+    flex-shrink: 0;
+    width: 24px;
+  }
+  .results .summary li .mark.ok { color: var(--good); }
+  .results .summary li .mark.no { color: var(--bad); }
+  .results .summary li .mark.partial { color: var(--warn); }
+  .results .actions-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* confetti */
+  .confetti-piece {
+    position: fixed;
+    width: 9px; height: 16px;
+    top: -20px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    0% { transform: translateY(0) rotate(0); opacity: 1; }
+    100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* hint */
+  .hint-btn {
+    background: transparent;
+    border: 0;
+    color: #7a5cb1;
+    font: inherit;
+    font-size: 0.92rem;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 4px 0;
+  }
+  .hint-text {
+    color: var(--ink-soft);
+    background: #faf6e8;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    border-left: 3px solid #f1c84e;
+  }
+
+  /* small */
+  @media (max-width: 600px) {
+    body { padding: 14px; }
+    .quiz, .welcome, .results { padding: 22px 18px; }
+    .welcome h1 { font-size: 1.75rem; }
+    .question .stem { font-size: 1.05rem; }
+    .tf-buttons { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app"></div>
+
+<script>
+/* =========================================================
+   CARA'S PHYSICS REVISION — auto-marking question bank
+   ========================================================= */
+
+const QUESTIONS = [
+  /* ---------------- 1. ENERGY ---------------- */
+  {
+    id: 'energy',
+    name: 'Energy',
+    emoji: '⚡',
+    color: '#f39c12',
+    stripe: 'linear-gradient(90deg, #ffae5c, #ffd166)',
+    intro: "Start with the basics — types of energy, units, and the principle that ties it all together.",
+    questions: [
+      { type: 'mc',
+        q: "Which of these is a form of <em>active</em> energy?",
+        options: ["Chemical","Gravitational potential","Kinetic","Strain"],
+        answer: 2,
+        explanation: "Active forms are heat, light, sound, electrical, magnetic and kinetic. The other three in the list are types of <em>potential</em> (stored) energy."
+      },
+      { type: 'mc',
+        q: "Which is a type of <em>potential</em> energy?",
+        options: ["Sound","Strain (elastic)","Electrical","Heat"],
+        answer: 1,
+        explanation: "Potential energy is stored — chemical, strain/elastic and gravitational. Sound, electrical and heat are active forms."
+      },
+      { type: 'fill',
+        q: "The unit of energy is ___.",
+        answers: ["joules","joule","j"],
+        explanation: "Energy is measured in joules (J). About 1 joule is needed to lift an apple vertically 1 metre."
+      },
+      { type: 'mc',
+        q: "An apple weighs about 1 newton. Roughly how much energy is needed to lift it vertically 1 metre?",
+        options: ["1 joule","10 joules","100 joules","1000 joules"],
+        answer: 0,
+        explanation: "Work done = force × distance = 1 N × 1 m = 1 J. So 1 joule is a tiny amount of energy — roughly enough to lift an apple 1 metre. A useful way to picture how small a joule really is."
+      },
+      { type: 'tf',
+        q: "Energy can be created and destroyed.",
+        answer: false,
+        explanation: "False. The principle of conservation of energy says energy can be <em>changed</em> from one form to another, but the total never changes."
+      },
+      { type: 'short',
+        q: "State the principle of conservation of energy.",
+        keywords: [
+          ["energy"],
+          ["changed","transferred","converted","transformed"],
+          ["total","not","same","conserved","destroyed","created"]
+        ],
+        model: "Energy can be changed from one form to another, but the total amount of energy does not change.",
+        explanation: "The key idea is that total energy in = total energy out. It is transferred, never created or destroyed."
+      },
+      { type: 'sort',
+        q: "Sort each energy type into <em>Potential</em> or <em>Active</em>.",
+        categories: { Potential: ["Chemical","Strain","Gravitational"], Active: ["Heat","Light","Sound","Electrical","Magnetic","Kinetic"] },
+        explanation: "Potential = stored. Active = doing something (moving, heating, lighting, etc.)."
+      },
+      { type: 'mc',
+        q: "A battery and a piece of food are both examples of which energy store?",
+        options: ["Kinetic","Chemical potential","Sound","Strain"],
+        answer: 1,
+        explanation: "Food, fuel, batteries — all chemical potential energy."
+      }
+    ]
+  },
+
+  /* ---------------- 2. RENEWABLES ---------------- */
+  {
+    id: 'renewables',
+    name: 'Renewable Energy',
+    emoji: '🌱',
+    color: '#27ae60',
+    stripe: 'linear-gradient(90deg, #27ae60, #6ec3ff)',
+    intro: "Where does our energy come from — and what does it cost the planet?",
+    questions: [
+      { type: 'short',
+        q: "Define a <em>non-renewable</em> energy resource.",
+        keywords: [
+          ["used","using"],
+          ["quicker","faster","more","quickly"],
+          ["created","replaced","made"]
+        ],
+        model: "A resource that is being used up quicker than it is being created (it will run out).",
+        explanation: "Non-renewables run out — they are used up faster than nature can make them."
+      },
+      { type: 'short',
+        q: "Define a <em>renewable</em> energy resource.",
+        keywords: [
+          ["created","made","replaced","replenished"],
+          ["faster","quicker","quickly"],
+          ["used","using"]
+        ],
+        model: "A resource that is being created faster than it is being used up (won't run out).",
+        explanation: "Renewables are replenished at least as fast as we use them — they don't run out."
+      },
+      { type: 'sort',
+        q: "Sort each resource as <em>Renewable</em> or <em>Non-renewable</em>.",
+        categories: {
+          Renewable: ["Hydroelectric","Solar cells","Tidal","Wave","Wind","Biomass","Geothermal"],
+          "Non-renewable": ["Coal","Oil","Gas","Nuclear"]
+        },
+        explanation: "Coal, oil, gas and nuclear fuel run out. Hydro, solar, tidal, wave, wind, biomass and geothermal are all renewable."
+      },
+      { type: 'mc',
+        q: "What two gases are released when coal, oil or gas are burned?",
+        options: ["CO₂ and SO₂","O₂ and N₂","H₂ and He","CO₂ and O₂"],
+        answer: 0,
+        explanation: "Burning fossil fuels releases CO₂ (causing global warming) and SO₂ (causing acid rain)."
+      },
+      { type: 'mc',
+        q: "Which non-renewable resource produces radioactive waste?",
+        options: ["Coal","Oil","Gas","Nuclear"],
+        answer: 3,
+        explanation: "Nuclear power produces long-lived radioactive waste that can cause cancer if not properly handled."
+      },
+      { type: 'fill',
+        q: "Hydroelectric power stations can damage ___ because they need water to be held back.",
+        answers: ["habitats","habitat","wildlife habitats"],
+        explanation: "Flooding land for reservoirs destroys natural habitats — a key disadvantage of hydro."
+      },
+      { type: 'short',
+        q: "Give one advantage of renewable energy resources.",
+        keywords: [
+          ["renewable","won't","never","run out","no co","no carbon","pollution","clean","free","unlimited","greenhouse"]
+        ],
+        model: "They are renewable (won't run out) and release no CO₂.",
+        explanation: "Either advantage gets the mark — they don't run out, and they don't release CO₂."
+      }
+    ]
+  },
+
+  /* ---------------- 3. WEIGHT & WORK ---------------- */
+  {
+    id: 'weight-work',
+    name: 'Weight, Work & Energy',
+    emoji: '🏋️',
+    color: '#e67e22',
+    stripe: 'linear-gradient(90deg, #ff8a5b, #ffd166)',
+    intro: "Forces, work done, and the energy equations you'll need.",
+    questions: [
+      { type: 'fill',
+        q: "Weight is the force due to the pull of ___ on an object.",
+        answers: ["gravity"],
+        explanation: "Weight (in newtons) = mass × gravity. On Earth, gravity ≈ 10 N/kg."
+      },
+      { type: 'fill',
+        q: "The unit of weight is ___.",
+        answers: ["newtons","newton","n"],
+        explanation: "Weight is a force, so it's measured in newtons (N). We use a newton meter to measure it."
+      },
+      { type: 'num',
+        q: "What is the weight of a 5 kg mass on Earth? (use g = 10)",
+        answer: 50, tolerance: 0.5, unit: "N",
+        explanation: "Weight = mass × gravity = 5 × 10 = 50 N."
+      },
+      { type: 'num',
+        q: "A girl has a mass of 45 kg. What is her weight?",
+        answer: 450, tolerance: 0.5, unit: "N",
+        explanation: "Weight = mass × gravity = 45 × 10 = 450 N."
+      },
+      { type: 'fill',
+        q: "Work = force × ___.",
+        answers: ["distance"],
+        explanation: "Work done (in joules) = force (N) × distance moved in the direction of the force (m)."
+      },
+      { type: 'num',
+        q: "A force of 20 N pushes a box 3 m. How much work is done?",
+        answer: 60, tolerance: 0.5, unit: "J",
+        explanation: "Work = F × d = 20 × 3 = 60 J. Work is measured in joules — the same unit as energy."
+      },
+      { type: 'fill',
+        q: "The equation for gravitational potential energy is PE = mass × gravity × ___.",
+        answers: ["height","h"],
+        explanation: "PE = mgh. The higher you lift something, the more gravitational potential energy it stores."
+      },
+      { type: 'num',
+        q: "A 2 kg book is lifted to a shelf 1.5 m high. What is its gain in PE? (g = 10)",
+        answer: 30, tolerance: 0.5, unit: "J",
+        explanation: "PE = mgh = 2 × 10 × 1.5 = 30 J."
+      },
+      { type: 'fill',
+        q: "Kinetic energy = ½ × mass × ___².",
+        answers: ["velocity","v","speed"],
+        explanation: "KE = ½ × m × v². Velocity is squared — doubling the speed quadruples the KE."
+      },
+      { type: 'num',
+        q: "What is the kinetic energy of a 4 kg ball moving at 3 m/s?",
+        answer: 18, tolerance: 0.5, unit: "J",
+        explanation: "KE = ½ × m × v² = ½ × 4 × 3² = ½ × 4 × 9 = 18 J."
+      },
+      { type: 'short',
+        q: "When an object is dropped, what happens to its potential energy and kinetic energy as it falls?",
+        keywords: [
+          ["potential","pe"],
+          ["kinetic","ke"],
+          ["lost","decrease","convert","change","gain","increase","transfer"]
+        ],
+        model: "PE at the top is converted into KE at the bottom — PE lost = KE gained.",
+        explanation: "PE at the top = KE at the bottom. PE lost = KE gained. Total energy stays the same (conservation)."
+      },
+      { type: 'tf',
+        q: "Your mass changes if you travel to the Moon, but your weight stays the same.",
+        answer: false,
+        explanation: "It's the other way around. Mass is the same anywhere — weight depends on gravity, so your weight is smaller on the Moon."
+      }
+    ]
+  },
+
+  /* ---------------- 4. POWER ---------------- */
+  {
+    id: 'power',
+    name: 'Power & Efficiency',
+    emoji: '💡',
+    color: '#9b59b6',
+    stripe: 'linear-gradient(90deg, #c08af0, #ff8ab5)',
+    intro: "How fast energy is transferred — and how much actually does something useful.",
+    questions: [
+      { type: 'fill',
+        q: "Power = work done ÷ ___.",
+        answers: ["time","time taken","t"],
+        explanation: "Power = work / time. It's how fast energy is used or transferred. Unit: watts (W)."
+      },
+      { type: 'fill',
+        q: "The unit of power is the ___.",
+        answers: ["watt","watts","w"],
+        explanation: "1 watt = 1 joule per second."
+      },
+      { type: 'num',
+        q: "A motor does 200 J of work in 4 s. What is its power?",
+        answer: 50, tolerance: 0.5, unit: "W",
+        explanation: "Power = work / time = 200 / 4 = 50 W."
+      },
+      { type: 'num',
+        q: "A 60 W lamp transfers how many joules of energy each second?",
+        answer: 60, tolerance: 0.5, unit: "J",
+        explanation: "A watt is a joule per second — so 60 W = 60 J every second."
+      },
+      { type: 'fill',
+        q: "Efficiency = ___ output ÷ total input.",
+        answers: ["useful"],
+        explanation: "Efficiency = useful energy out / total energy in. Often given as a decimal or %."
+      },
+      { type: 'num',
+        q: "1 MJ (megajoule) = how many joules?",
+        answer: 1000000, tolerance: 0, unit: "J",
+        explanation: "1 MJ = 1,000,000 J = 1 × 10⁶ J."
+      },
+      { type: 'short',
+        q: "Describe how you would measure your <em>personal power</em> running up a set of stairs. List the steps.",
+        keywords: [
+          ["weight","newton","scales","mass"],
+          ["height","vertical","ruler"],
+          ["time","stopwatch","seconds"],
+          ["force","weight","distance","height","time","p="]
+        ],
+        model: "Measure your weight in newtons using scales; measure the vertical height of the stairs with a metre ruler; time how long you take to run up with a stopwatch; then use P = (F × d) / t to find your power in watts.",
+        explanation: "Four steps: weight (scales), height (metre ruler), time (stopwatch), and the formula P = Fd/t."
+      },
+      { type: 'mc',
+        q: "Which formula gives power from energy and time?",
+        options: ["P = E × t","P = E / t","P = t / E","P = E + t"],
+        answer: 1,
+        explanation: "Power = energy / time. The same shape as work / time — they're equivalent (work and energy share units)."
+      }
+    ]
+  },
+
+  /* ---------------- 5. HOOKE'S LAW ---------------- */
+  {
+    id: 'hookes',
+    name: "Hooke's Law",
+    emoji: '🧷',
+    color: '#16a085',
+    stripe: 'linear-gradient(90deg, #1abc9c, #6ec3ff)',
+    intro: "Springs, extensions and the limit of proportionality.",
+    questions: [
+      { type: 'fill',
+        q: "Hooke's Law: the extension of a spring is directly ___ to the force applied, provided the limit of proportionality is not exceeded.",
+        answers: ["proportional"],
+        explanation: "Double the force, double the extension — as long as you haven't stretched it past the limit of proportionality."
+      },
+      { type: 'mc',
+        q: "On a force–extension graph, what does the gradient (slope) represent?",
+        options: ["The spring's mass","The spring constant","The limit of proportionality","Weight"],
+        answer: 1,
+        explanation: "Gradient = spring constant (k). The steeper the slope, the stiffer the spring."
+      },
+      { type: 'fill',
+        q: "The equation linking force, spring constant and extension is F = k × ___.",
+        answers: ["e","extension","x"],
+        explanation: "F = ke. Force (N) = spring constant × extension."
+      },
+      { type: 'mc',
+        q: "In a Hooke's Law experiment, what is the <em>independent</em> variable?",
+        options: ["Extension of the spring","Force applied","Type of spring","Temperature"],
+        answer: 1,
+        explanation: "You choose the force (independent), and measure the extension (dependent). The type of spring is controlled."
+      },
+      { type: 'mc',
+        q: "What is the <em>dependent</em> variable?",
+        options: ["Force","Type of spring","Extension of the spring","Mass of the spring"],
+        answer: 2,
+        explanation: "Extension is what you measure — it depends on the force you applied."
+      },
+      { type: 'short',
+        q: "What happens to a spring if you stretch it beyond the limit of proportionality?",
+        keywords: [
+          ["no longer","not","stop","stops"],
+          ["proportional","hooke","straight","line","linear","obey"]
+        ],
+        model: "It no longer obeys Hooke's Law — extension is no longer proportional to force, and eventually the spring breaks.",
+        explanation: "Past the limit, the graph curves — extension stops being proportional to force. Push it far enough and the spring breaks."
+      },
+      { type: 'num',
+        q: "A spring has a spring constant of 5 N/cm. What force produces an extension of 4 cm?",
+        answer: 20, tolerance: 0.5, unit: "N",
+        explanation: "F = k × e = 5 × 4 = 20 N."
+      }
+    ]
+  },
+
+  /* ---------------- 6. PRESSURE ---------------- */
+  {
+    id: 'pressure',
+    name: 'Pressure',
+    emoji: '🔻',
+    color: '#3498db',
+    stripe: 'linear-gradient(90deg, #6ec3ff, #c08af0)',
+    intro: "Why does a sharp knife cut so easily? Force over area.",
+    questions: [
+      { type: 'fill',
+        q: "Pressure = ___ ÷ area.",
+        answers: ["force","weight"],
+        explanation: "Pressure = force / area. The unit is the pascal (Pa)."
+      },
+      { type: 'fill',
+        q: "1 pascal = 1 ___ per square metre.",
+        answers: ["newton","n"],
+        explanation: "1 Pa = 1 N/m²."
+      },
+      { type: 'mc',
+        q: "A force spread over a <em>large</em> contact area produces…",
+        options: ["a large pressure","a small pressure","no pressure","double the force"],
+        answer: 1,
+        explanation: "Same force ÷ bigger area = smaller pressure. That's why snowshoes don't sink."
+      },
+      { type: 'mc',
+        q: "A force acting over a <em>small</em> contact area produces…",
+        options: ["a small pressure","no pressure","a large pressure","negative pressure"],
+        answer: 2,
+        explanation: "Same force ÷ smaller area = bigger pressure. That's why sharp knives cut well."
+      },
+      { type: 'num',
+        q: "A box exerts a force of 100 N on the floor through an area of 2 m². What is the pressure?",
+        answer: 50, tolerance: 0.5, unit: "Pa",
+        explanation: "Pressure = force / area = 100 / 2 = 50 Pa."
+      },
+      { type: 'num',
+        q: "A girl weighing 600 N stands on one stiletto heel of area 0.0005 m². What pressure does she exert?",
+        answer: 1200000, tolerance: 1000, unit: "Pa",
+        explanation: "Pressure = 600 / 0.0005 = 1,200,000 Pa. Tiny area = huge pressure — that's why stilettos damage soft floors."
+      },
+      { type: 'short',
+        q: "Explain why snowshoes stop a person sinking into deep snow.",
+        keywords: [
+          ["large","big","increase","more","wider"],
+          ["area","surface"],
+          ["small","less","lower","reduce"],
+          ["pressure"]
+        ],
+        model: "Snowshoes spread the person's weight over a larger area, so the pressure on the snow is smaller, and they don't sink in.",
+        explanation: "Larger area → smaller pressure for the same weight. The snow can support the lower pressure."
+      }
+    ]
+  },
+
+  /* ---------------- 7. MOMENTS & STABILITY ---------------- */
+  {
+    id: 'moments',
+    name: 'Moments & Stability',
+    emoji: '⚖️',
+    color: '#e74c3c',
+    stripe: 'linear-gradient(90deg, #ff7eb6, #ffae5c)',
+    intro: "Turning forces, balance points, and what keeps things from toppling.",
+    questions: [
+      { type: 'fill',
+        q: "Moment of a force = force × ___ distance from the pivot.",
+        answers: ["perpendicular","perp"],
+        explanation: "Moment = force × perpendicular distance from the pivot. Unit: newton metres (Nm)."
+      },
+      { type: 'fill',
+        q: "The unit of a moment is ___.",
+        answers: ["nm","newton metres","newton metre","newton-metres","nm (newton metres)"],
+        explanation: "Newton metres (Nm) — because moment = newtons × metres."
+      },
+      { type: 'num',
+        q: "A force of 20 N is applied 0.5 m from the pivot. What is the moment?",
+        answer: 10, tolerance: 0.5, unit: "Nm",
+        explanation: "Moment = F × d = 20 × 0.5 = 10 Nm."
+      },
+      { type: 'short',
+        q: "State the principle of moments.",
+        keywords: [
+          ["equilibrium","balance","balanced"],
+          ["clockwise"],
+          ["anti-clockwise","anticlockwise","anti clockwise"],
+          ["equal","equals","same","="]
+        ],
+        model: "When a body is in equilibrium (balanced), the clockwise moments about any point equal the anti-clockwise moments about the same point.",
+        explanation: "If something is balanced, clockwise moments = anti-clockwise moments about the same pivot."
+      },
+      { type: 'mc',
+        q: "To make an object <em>more</em> stable you should give it…",
+        options: ["a narrow base and a high centre of gravity","a wide base and a lower centre of gravity","a small mass","a smooth surface"],
+        answer: 1,
+        explanation: "Wide base + low centre of gravity = more stable. Think of a racing car — wide and low to the ground."
+      },
+      { type: 'short',
+        q: "When does an object topple over?",
+        keywords: [
+          ["centre","center"],
+          ["gravity","mass","cog"],
+          ["outside","past","beyond","over"],
+          ["base"]
+        ],
+        model: "An object will topple when its centre of gravity passes outside its base, because the weight then causes a turning moment.",
+        explanation: "If the centre of gravity is over the base, it's stable. The moment it moves outside the base, weight produces a turning moment and it topples."
+      },
+      { type: 'fill',
+        q: "For a uniform object, the centre of gravity is at the ___ of the object.",
+        answers: ["centre","center","middle"],
+        explanation: "Uniform = same shape and density throughout — so the COG is right in the centre."
+      },
+      { type: 'tf',
+        q: "An object with a high centre of gravity and a narrow base is very stable.",
+        answer: false,
+        explanation: "False. That's the least stable combination — it topples easily. Stable = wide base + low centre of gravity."
+      }
+    ]
+  },
+
+  /* ---------------- 8. MASS, DENSITY & MATTER ---------------- */
+  {
+    id: 'matter',
+    name: 'Mass, Density & States of Matter',
+    emoji: '🧊',
+    color: '#1abc9c',
+    stripe: 'linear-gradient(90deg, #1abc9c, #ffd166)',
+    intro: "Mass vs weight, density, and how particles behave in solids, liquids and gases.",
+    questions: [
+      { type: 'mc',
+        q: "Mass is measured in…",
+        options: ["newtons (N)","joules (J)","kilograms (kg)","watts (W)"],
+        answer: 2,
+        explanation: "Mass is measured in kilograms using an electronic balance. Mass is the amount of matter — it doesn't change."
+      },
+      { type: 'short',
+        q: "What is the difference between mass and weight?",
+        keywords: [
+          ["mass"],
+          ["amount","matter","material","substance","unchanging","same"],
+          ["weight"],
+          ["force","gravity","pull","newton","planet","changes","different"]
+        ],
+        model: "Mass is the amount of matter in something (in kg) — it doesn't change. Weight is the force of gravity on a mass (in N) — it changes if the gravity changes (e.g. on a different planet).",
+        explanation: "Mass = how much stuff (kg, unchanging). Weight = pull of gravity on that mass (N, changes with gravity)."
+      },
+      { type: 'fill',
+        q: "Density = mass ÷ ___.",
+        answers: ["volume","v"],
+        explanation: "Density = mass / volume. Common units: kg/m³ or g/cm³."
+      },
+      { type: 'num',
+        q: "A block has a mass of 60 kg and a volume of 20 m³. What is its density?",
+        answer: 3, tolerance: 0.1, unit: "kg/m³",
+        explanation: "Density = 60 / 20 = 3 kg/m³."
+      },
+      { type: 'mc',
+        q: "On a graph of mass against volume, the gradient represents…",
+        options: ["weight","density","volume","gravity"],
+        answer: 1,
+        explanation: "Gradient of a mass–volume graph = density. Mass is directly proportional to volume."
+      },
+      { type: 'sort',
+        q: "Sort each property under the correct state of matter.",
+        categories: {
+          Solid: ["High density","Particles vibrate in fixed positions","Packed very closely together"],
+          Liquid: ["Medium density","Particles slide past each other","Particles close together"],
+          Gas: ["Very low density","Particles move freely and randomly","Particles very far apart"]
+        },
+        explanation: "Solids: packed, vibrate in place. Liquids: close but flowing. Gases: spread out, moving fast and randomly."
+      },
+      { type: 'short',
+        q: "Why can the particles in a gas move freely while those in a solid cannot?",
+        keywords: [
+          ["gas","gases"],
+          ["overcome","enough","more","high","escape","weak","far"],
+          ["intermolecular","forces","attraction","bonds"]
+        ],
+        model: "Gas particles have enough energy to overcome the intermolecular forces of attraction, so they can move freely. Solid particles don't, so they only vibrate in fixed positions.",
+        explanation: "It's about the strength of the intermolecular forces and how much energy the particles have to overcome them."
+      }
+    ]
+  },
+
+  /* ---------------- 9. MOTION ---------------- */
+  {
+    id: 'motion',
+    name: 'Motion',
+    emoji: '🏃',
+    color: '#2980b9',
+    stripe: 'linear-gradient(90deg, #6ec3ff, #1abc9c)',
+    intro: "Speed, velocity, acceleration — scalars, vectors, and graphs.",
+    questions: [
+      { type: 'fill',
+        q: "Average speed = distance travelled ÷ ___.",
+        answers: ["time","time taken","t"],
+        explanation: "Speed = distance / time. Unit: metres per second (m/s)."
+      },
+      { type: 'mc',
+        q: "Which of these is a <em>vector</em> quantity?",
+        options: ["Speed","Distance","Velocity","Mass"],
+        answer: 2,
+        explanation: "A vector has magnitude AND direction. Velocity, displacement and acceleration are vectors. Speed and distance are scalars."
+      },
+      { type: 'fill',
+        q: "A scalar quantity has magnitude only. A vector has magnitude and ___.",
+        answers: ["direction"],
+        explanation: "Scalar = size only. Vector = size + direction."
+      },
+      { type: 'sort',
+        q: "Sort each quantity as a scalar or a vector.",
+        categories: {
+          Scalar: ["Speed","Distance"],
+          Vector: ["Velocity","Displacement","Acceleration"]
+        },
+        explanation: "Scalars: speed, distance. Vectors: velocity, displacement, acceleration — they all need a direction."
+      },
+      { type: 'num',
+        q: "A car travels 100 m in 20 s. What is its average speed?",
+        answer: 5, tolerance: 0.1, unit: "m/s",
+        explanation: "Speed = distance / time = 100 / 20 = 5 m/s."
+      },
+      { type: 'fill',
+        q: "Acceleration = (final velocity − initial velocity) ÷ ___.",
+        answers: ["time","time taken","t"],
+        explanation: "a = (v − u) / t. Units: m/s²."
+      },
+      { type: 'num',
+        q: "A cyclist speeds up from 4 m/s to 10 m/s in 3 s. What is the acceleration?",
+        answer: 2, tolerance: 0.1, unit: "m/s²",
+        explanation: "a = (v − u) / t = (10 − 4) / 3 = 6 / 3 = 2 m/s²."
+      },
+      { type: 'mc',
+        q: "On a distance–time graph, a horizontal line means the body is…",
+        options: ["accelerating","stationary","decelerating","speeding up"],
+        answer: 1,
+        explanation: "Distance isn't changing → the object isn't moving. It's stationary."
+      },
+      { type: 'mc',
+        q: "On a distance–time graph, the gradient (slope) represents…",
+        options: ["distance","time","speed","acceleration"],
+        answer: 2,
+        explanation: "Slope of a distance–time graph = average speed. Steeper = faster."
+      },
+      { type: 'short',
+        q: "How can you calculate the average speed of an object that is accelerating?",
+        keywords: [
+          ["initial","starting","u"],
+          ["final","end","v"],
+          ["divide","over","/","2","two","half"]
+        ],
+        model: "Average speed = (initial speed + final speed) ÷ 2.",
+        explanation: "Average speed = (u + v) / 2 — the mean of starting and ending speeds."
+      }
+    ]
+  },
+
+  /* ---------------- 10. ATOMS & ISOTOPES ---------------- */
+  {
+    id: 'atoms',
+    name: 'Atoms & Isotopes',
+    emoji: '⚛️',
+    color: '#8e44ad',
+    stripe: 'linear-gradient(90deg, #c08af0, #6ec3ff)',
+    intro: "Inside the atom — protons, neutrons, electrons, and the difference between isotopes.",
+    questions: [
+      { type: 'mc',
+        q: "Where are protons and neutrons found inside an atom?",
+        options: ["In the shells","In the nucleus","Outside the atom","On the surface"],
+        answer: 1,
+        explanation: "Protons and neutrons are in the nucleus. Electrons orbit in shells around it."
+      },
+      { type: 'sort',
+        q: "Match each particle to its charge.",
+        categories: {
+          "Positive (+1)": ["Proton"],
+          "Neutral (0)": ["Neutron"],
+          "Negative (−1)": ["Electron"]
+        },
+        explanation: "Proton +1, neutron 0, electron −1. Electrons are also tiny — mass ≈ 1/1840 of a proton."
+      },
+      { type: 'fill',
+        q: "Mass number = number of protons + number of ___.",
+        answers: ["neutrons","neutron"],
+        explanation: "Mass number (A) = protons + neutrons. Also called the nucleon number."
+      },
+      { type: 'fill',
+        q: "Atomic number = number of ___.",
+        answers: ["protons","proton"],
+        explanation: "Atomic number (Z) = number of protons (which also equals the number of electrons in a neutral atom)."
+      },
+      { type: 'num',
+        q: "An atom of carbon-14 has 6 protons. How many neutrons does it have?",
+        answer: 8, tolerance: 0, unit: "neutrons",
+        explanation: "Neutrons = mass number − proton number = 14 − 6 = 8."
+      },
+      { type: 'short',
+        q: "What is an <em>isotope</em>?",
+        keywords: [
+          ["same","equal"],
+          ["protons","proton","atomic number"],
+          ["different","unequal"],
+          ["neutrons","neutron","mass number"]
+        ],
+        model: "Isotopes are atoms of the same element with the same number of protons but a different number of neutrons.",
+        explanation: "Same element (same protons), different mass (different neutrons). E.g. carbon-12 and carbon-14."
+      },
+      { type: 'tf',
+        q: "An electron has the same mass as a proton.",
+        answer: false,
+        explanation: "False. An electron's mass is about 1/1840 of a proton's mass — tiny."
+      }
+    ]
+  },
+
+  /* ---------------- 11. RADIOACTIVITY ---------------- */
+  {
+    id: 'radioactivity',
+    name: 'Radioactivity',
+    emoji: '☢️',
+    color: '#d35400',
+    stripe: 'linear-gradient(90deg, #ff8a5b, #ffd166)',
+    intro: "Unstable nuclei, alpha/beta/gamma radiation, and how to stop it.",
+    questions: [
+      { type: 'short',
+        q: "When is a nucleus said to be <em>radioactive</em>?",
+        keywords: [
+          ["unstable"],
+          ["disintegrates","decays","emits","emit","gives out","breaks"],
+          ["alpha","beta","gamma","radiation"],
+          ["random","spontaneous"]
+        ],
+        model: "A nucleus is radioactive when it is unstable and disintegrates, emitting alpha, beta or gamma radiation randomly and spontaneously.",
+        explanation: "Unstable nuclei give out radiation (α, β or γ) at random — we can't predict when an individual atom will decay."
+      },
+      { type: 'mc',
+        q: "An alpha particle has the same structure as the nucleus of which atom?",
+        options: ["Hydrogen","Helium","Carbon","Uranium"],
+        answer: 1,
+        explanation: "An alpha particle = 2 protons + 2 neutrons = a helium nucleus. Charge +2."
+      },
+      { type: 'mc',
+        q: "A beta particle is…",
+        options: ["A helium nucleus","An electromagnetic wave","A high-energy electron","A neutron"],
+        answer: 2,
+        explanation: "Beta particle = high-energy electron emitted from the nucleus when a neutron turns into a proton. Charge −1."
+      },
+      { type: 'fill',
+        q: "Gamma rays are very short wavelength ___ waves.",
+        answers: ["electromagnetic","em","light"],
+        explanation: "Gamma rays are electromagnetic waves travelling at the speed of light. They carry no charge."
+      },
+      { type: 'sort',
+        q: "Match each radiation type to what stops it.",
+        categories: {
+          "Paper / a few cm of air": ["Alpha"],
+          "Thin aluminium": ["Beta"],
+          "Thick lead": ["Gamma"]
+        },
+        explanation: "Alpha is stopped by paper or a few cm of air; beta by a few mm of aluminium; gamma needs thick lead."
+      },
+      { type: 'num',
+        q: "A nucleus emits an alpha particle. Its mass number was 226. What is the new mass number?",
+        answer: 222, tolerance: 0, unit: "",
+        explanation: "Alpha decay: mass number decreases by 4. 226 − 4 = 222."
+      },
+      { type: 'num',
+        q: "After alpha decay, by how much does the proton (atomic) number decrease?",
+        answer: 2, tolerance: 0, unit: "",
+        explanation: "An alpha particle takes away 2 protons, so the atomic number drops by 2."
+      },
+      { type: 'num',
+        q: "In beta decay, by how much does the atomic number <em>increase</em>?",
+        answer: 1, tolerance: 0, unit: "",
+        explanation: "A neutron turns into a proton, so protons go up by 1 — mass number stays the same."
+      },
+      { type: 'mc',
+        q: "Which type of radiation causes the most ionisation?",
+        options: ["Alpha","Beta","Gamma","All the same"],
+        answer: 0,
+        explanation: "Alpha is the most ionising — it's the heaviest and most highly charged. Gamma is the least ionising."
+      },
+      { type: 'short',
+        q: "Why is alpha radiation more dangerous if it is breathed in or swallowed than if the source is outside the body?",
+        keywords: [
+          ["outside"],
+          ["skin","stop","blocked","cannot","can't"],
+          ["inside","breathed","swallowed","cells"],
+          ["ionising","ionisation","ionise","damage"]
+        ],
+        model: "Outside the body, alpha can't pass through the skin so it can't reach cells. Inside the body it is highly ionising and damages nearby cells directly.",
+        explanation: "Alpha is stopped by the skin, so an external source is fairly safe. But inside the body it's the most ionising — it does lots of damage to cells."
+      },
+      { type: 'tf',
+        q: "Ionisation is the addition of extra protons to an atom.",
+        answer: false,
+        explanation: "False. Ionisation is the removal of electrons from an atom."
+      }
+    ]
+  },
+
+  /* ---------------- 12. HALF-LIFE & BACKGROUND ---------------- */
+  {
+    id: 'halflife',
+    name: 'Half-life & Background',
+    emoji: '⏳',
+    color: '#16a085',
+    stripe: 'linear-gradient(90deg, #1abc9c, #c08af0)',
+    intro: "How quickly radioactivity dies away — and the background that's always there.",
+    questions: [
+      { type: 'short',
+        q: "Define <em>half-life</em>.",
+        keywords: [
+          ["time"],
+          ["half"],
+          ["atoms","nuclei","sample","activity"],
+          ["decay","disintegrate"]
+        ],
+        model: "The time taken for half the atoms in a given radioactive sample to decay.",
+        explanation: "Half-life = the time for the count rate (or number of undecayed atoms) to halve."
+      },
+      { type: 'num',
+        q: "A sample contains 800 undecayed atoms. After three half-lives, how many are left?",
+        answer: 100, tolerance: 0, unit: "atoms",
+        explanation: "Halve three times: 800 → 400 → 200 → 100."
+      },
+      { type: 'num',
+        q: "A source has a half-life of 5 minutes. It starts with a count rate of 1600 Bq. What is the count rate after 15 minutes?",
+        answer: 200, tolerance: 0, unit: "Bq",
+        explanation: "15 minutes = 3 half-lives. 1600 → 800 → 400 → 200 Bq."
+      },
+      { type: 'fill',
+        q: "Activity is measured in ___ — counts per second.",
+        answers: ["becquerels","becquerel","bq"],
+        explanation: "1 becquerel (Bq) = 1 disintegration per second. Measured with a Geiger-Müller tube and counter."
+      },
+      { type: 'short',
+        q: "What is <em>background radiation</em>?",
+        keywords: [
+          ["radiation","activity"],
+          ["all","known"],
+          ["removed","present","without","absent","no"],
+          ["sources"]
+        ],
+        model: "Background radiation is the activity that is measured when all known sources of radiation have been removed.",
+        explanation: "It's the radiation always around us, from natural and human-made sources. You must subtract it from your readings."
+      },
+      { type: 'sort',
+        q: "Sort each source of background radiation as <em>Natural</em> or <em>Human-made</em>.",
+        categories: {
+          Natural: ["Cosmic rays from space","Radon gas","Rocks and soil"],
+          "Human-made": ["Medical X-rays","Waste from nuclear power plants"]
+        },
+        explanation: "Most background is natural (cosmic rays, radon, rocks). Medical X-rays and nuclear waste are human-made contributions."
+      },
+      { type: 'mc',
+        q: "A smoke alarm should use a source with which property?",
+        options: ["Short half-life, gamma","Long half-life, alpha","Short half-life, beta","No half-life, gamma"],
+        answer: 1,
+        explanation: "Smoke alarms use a long half-life alpha source (e.g. americium-241) — so it lasts for years, and alpha is stopped by the casing so it's safe."
+      },
+      { type: 'mc',
+        q: "A medical tracer used inside the body should be…",
+        options: ["a long half-life alpha source","a short half-life gamma source","a long half-life beta source","a short half-life alpha source"],
+        answer: 1,
+        explanation: "Short half-life so the activity drops quickly inside the patient; gamma because it can leave the body to be detected."
+      },
+      { type: 'fill',
+        q: "Corrected count rate = measured count rate − ___ count rate.",
+        answers: ["background"],
+        explanation: "Always subtract the background count rate before doing half-life calculations."
+      }
+    ]
+  },
+
+  /* ---------------- 13. FISSION & FUSION ---------------- */
+  {
+    id: 'fission-fusion',
+    name: 'Nuclear Fission & Fusion',
+    emoji: '☀️',
+    color: '#f1c40f',
+    stripe: 'linear-gradient(90deg, #ffd166, #ff8ab5)',
+    intro: "Splitting heavy nuclei (fission) and joining light ones (fusion).",
+    questions: [
+      { type: 'fill',
+        q: "Nuclear fission is when an unstable <em>heavy</em> nucleus splits into ___ lighter nuclei, releasing energy and neutrons.",
+        answers: ["two","2"],
+        explanation: "Fission = one heavy nucleus splits into two lighter ones, plus neutrons + lots of energy."
+      },
+      { type: 'mc',
+        q: "Which element is most commonly used as the fuel in a nuclear fission reactor?",
+        options: ["Carbon","Hydrogen","Uranium","Helium"],
+        answer: 2,
+        explanation: "Uranium is the standard fission fuel. Its nucleus absorbs a neutron and splits."
+      },
+      { type: 'short',
+        q: "Describe how a fission chain reaction works.",
+        keywords: [
+          ["neutron","neutrons"],
+          ["absorb","hits","strikes","absorbed"],
+          ["split","splits","fission","divides","break"],
+          ["more","further","other","another","new"]
+        ],
+        model: "A uranium nucleus absorbs a neutron and splits, releasing energy and several more neutrons. These neutrons are absorbed by other uranium nuclei, causing further fission — a chain reaction.",
+        explanation: "Neutron in → nucleus splits → more neutrons out → they hit other nuclei → and so on. That's the chain reaction."
+      },
+      { type: 'short',
+        q: "What is nuclear <em>fusion</em>?",
+        keywords: [
+          ["combine","combining","joining","join","fuse","merge"],
+          ["light","small"],
+          ["nuclei","nucleus"],
+          ["heavier","larger","bigger","heavy"]
+        ],
+        model: "Nuclear fusion is the combining of two light nuclei into a heavier nucleus, releasing energy.",
+        explanation: "Two small nuclei join to make a bigger one, releasing huge amounts of energy. It's what powers the Sun."
+      },
+      { type: 'mc',
+        q: "Where does nuclear fusion happen naturally?",
+        options: ["In nuclear power stations","In the Sun and stars","In smoke alarms","In car batteries"],
+        answer: 1,
+        explanation: "Fusion happens naturally in the Sun and other stars."
+      },
+      { type: 'sort',
+        q: "Sort each fact under fission or fusion.",
+        categories: {
+          Fission: ["A heavy nucleus splits in two","Fuel is uranium","Produces long-lived radioactive waste","Used in current power stations"],
+          Fusion: ["Two light nuclei combine","Fuel is hydrogen (deuterium and tritium)","Happens in the Sun","Needs very high temperatures"]
+        },
+        explanation: "Fission: split, uranium, radioactive waste. Fusion: combine, hydrogen isotopes, stars, very hot."
+      },
+      { type: 'short',
+        q: "Why does nuclear fusion need such a high temperature?",
+        keywords: [
+          ["nuclei","nucleus"],
+          ["positive","positively","+"],
+          ["repel","repulsion","push","force","apart"],
+          ["overcome","beat","fast","kinetic"]
+        ],
+        model: "Both nuclei are positively charged, so they repel each other. A very high temperature gives them enough kinetic energy to overcome this repulsion and fuse.",
+        explanation: "Positive + positive = repulsion. Only at extremely high temperatures (and KE) can the nuclei get close enough to fuse."
+      },
+      { type: 'mc',
+        q: "Which of these is an advantage of nuclear fusion?",
+        options: ["Produces lots of radioactive waste","Releases greenhouse gases","No long-lived radioactive waste","Cheap to build a reactor"],
+        answer: 2,
+        explanation: "Fusion has no long-lived radioactive waste, no greenhouse gases, and the by-product (helium) is inert. But it's very hard and expensive to build."
+      },
+      { type: 'fill',
+        q: "Deuterium, the fuel for fusion, can be found naturally in ___.",
+        answers: ["sea water","seawater","the sea","water","oceans"],
+        explanation: "Deuterium is an isotope of hydrogen, found in sea water — so fusion fuel is virtually inexhaustible."
+      }
+    ]
+  }
+];
+
+/* =========================================================
+   APP STATE & ENGINE
+   ========================================================= */
+const STORE_KEY = 'caras-physics-revision-v1';
+const state = {
+  screen: 'welcome',
+  currentTopic: null,
+  currentIdx: 0,
+  answers: [], // per question: {correct, partial?, given?}
+  streak: 0,
+  questionOrder: [],
+  scores: load().scores || {} // {topicId: {best:N, total:N}}
+};
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
+  catch(e) { return {}; }
+}
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify({scores: state.scores})); } catch(e) {}
+}
+
+/* Fisher-Yates shuffle */
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+const $app = document.getElementById('app');
+
+function render() {
+  if (state.screen === 'welcome') renderWelcome();
+  else if (state.screen === 'menu') renderMenu();
+  else if (state.screen === 'quiz') renderQuiz();
+  else if (state.screen === 'results') renderResults();
+}
+
+function topBar(showHome = true) {
+  return `
+    <header class="top">
+      <div class="brand">
+        <div class="dot">C</div>
+        <div>Cara's Physics Revision</div>
+      </div>
+      <nav>
+        ${showHome ? '<button onclick="go(\'menu\')">Topics</button>' : ''}
+      </nav>
+    </header>`;
+}
+
+/* ---------- WELCOME ---------- */
+function renderWelcome() {
+  $app.innerHTML = `
+    ${topBar(false)}
+    <div class="welcome">
+      <h1>Hi Cara — let's get you ready for physics.</h1>
+      <p class="lead">This guide goes through every topic in your notes, with short quizzes that mark themselves so you can spot what to revisit.</p>
+      <p class="sub">Take your time. There's no time limit and you can redo any topic — your best score is saved.</p>
+      <button class="start-btn" onclick="go('menu')">Let's start →</button>
+      <div class="tips">
+        <div class="tip"><strong>13 topics</strong>Energy, forces, motion, atoms and more.</div>
+        <div class="tip"><strong>Mix of styles</strong>Multiple choice, fill-in-the-blank, sorting, short answer and calculations.</div>
+        <div class="tip"><strong>Honest feedback</strong>Every wrong answer comes with the right one and a quick explanation.</div>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- MENU ---------- */
+function renderMenu() {
+  const cards = QUESTIONS.map(t => {
+    const score = state.scores[t.id];
+    const total = t.questions.length;
+    const pct = score ? Math.round((score.best / total) * 100) : 0;
+    const badgeHtml = score
+      ? `<span class="badge">${score.best}/${total} · ${pct}%</span>`
+      : `<span class="badge not-done">Not tried yet</span>`;
+    return `
+      <div class="topic-card" onclick="startTopic('${t.id}')">
+        <div class="stripe" style="background:${t.stripe};"></div>
+        <span class="emoji">${t.emoji}</span>
+        <h3>${t.name}</h3>
+        <p class="desc">${t.intro}</p>
+        <div class="meta">
+          <span>${total} questions</span>
+          ${badgeHtml}
+        </div>
+        <div class="bar"><span style="width:${pct}%"></span></div>
+      </div>
+    `;
+  }).join('');
+
+  $app.innerHTML = `
+    ${topBar(false)}
+    <div class="menu-head">
+      <h2>Pick a topic, Cara</h2>
+      <p>Tap any card to start. You can come back to the menu at any time.</p>
+    </div>
+    <div class="topics">${cards}</div>
+  `;
+}
+
+/* ---------- QUIZ ---------- */
+function startTopic(id) {
+  state.currentTopic = QUESTIONS.find(t => t.id === id);
+  state.currentIdx = 0;
+  state.answers = [];
+  state.streak = 0;
+  state.questionOrder = shuffle(state.currentTopic.questions);
+  state.screen = 'quiz';
+  render();
+}
+
+function renderQuiz() {
+  const t = state.currentTopic;
+  const q = state.questionOrder[state.currentIdx];
+  const total = state.questionOrder.length;
+  const pct = ((state.currentIdx) / total) * 100;
+  const answered = state.answers[state.currentIdx];
+
+  $app.innerHTML = `
+    ${topBar()}
+    <div class="quiz">
+      <div class="header">
+        <span class="emoji">${t.emoji}</span>
+        <div class="info">
+          <h2>${t.name}</h2>
+          <div class="progress-text">Question ${state.currentIdx + 1} of ${total}</div>
+        </div>
+        <div class="streak ${state.streak >= 2 ? 'show' : ''}">🔥 ${state.streak} streak</div>
+      </div>
+      <div class="progress-bar"><div style="width:${pct}%"></div></div>
+      <div class="question" id="qbody">${renderQuestion(q, answered)}</div>
+      <div class="actions">
+        <button class="btn" onclick="go('menu')">← Back to topics</button>
+        <button class="btn primary" id="next-btn" onclick="nextQuestion()" ${answered ? '' : 'disabled'}>
+          ${state.currentIdx + 1 === total ? 'See results →' : 'Next question →'}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function renderQuestion(q, ans) {
+  const tag = ({mc:'Multiple Choice', fill:'Fill in the Blank', short:'Short Answer', num:'Calculation', tf:'True or False', sort:'Sort & Match'})[q.type] || '';
+  const body = (() => {
+    switch (q.type) {
+      case 'mc': return renderMC(q, ans);
+      case 'fill': return renderFill(q, ans);
+      case 'short': return renderShort(q, ans);
+      case 'num': return renderNum(q, ans);
+      case 'tf': return renderTF(q, ans);
+      case 'sort': return renderSort(q, ans);
+    }
+    return '';
+  })();
+  const feedback = ans ? renderFeedback(ans, q) : '';
+  return `<span class="type-tag">${tag}</span><div class="stem">${q.q}</div>${body}${feedback}`;
+}
+
+/* ---------- MC ---------- */
+function renderMC(q, ans) {
+  const letters = ['A','B','C','D','E','F'];
+  const opts = q.options.map((opt, i) => {
+    let cls = 'option';
+    if (ans) {
+      cls += ' disabled';
+      if (i === q.answer) cls += ' correct';
+      else if (i === ans.given) cls += ' wrong';
+    }
+    const onclick = ans ? '' : `onclick="answerMC(${i})"`;
+    return `<button class="${cls}" ${onclick}><span class="letter">${letters[i]}</span><span>${opt}</span></button>`;
+  }).join('');
+  return `<div class="options">${opts}</div>`;
+}
+
+function answerMC(i) {
+  const q = state.questionOrder[state.currentIdx];
+  const correct = i === q.answer;
+  recordAnswer({correct, given: i});
+}
+
+/* ---------- FILL ---------- */
+function renderFill(q, ans) {
+  const v = ans ? ans.given : '';
+  const cls = ans ? (ans.correct ? 'correct' : 'wrong') : '';
+  const ro = ans ? 'readonly' : '';
+  return `
+    <div class="fill-in">
+      <input id="fill-input" type="text" class="${cls}" value="${escapeAttr(v)}" placeholder="Type your answer…" ${ro} onkeydown="if(event.key==='Enter') checkFill()">
+      ${ans ? '' : '<button class="btn primary" onclick="checkFill()">Check</button>'}
+    </div>
+  `;
+}
+
+function checkFill() {
+  const inp = document.getElementById('fill-input');
+  const given = inp.value.trim();
+  if (!given) return;
+  const q = state.questionOrder[state.currentIdx];
+  const norm = given.toLowerCase().replace(/[.,!?]/g,'').trim();
+  const correct = q.answers.some(a => {
+    const an = a.toLowerCase().trim();
+    return norm === an || norm.includes(an) || an.includes(norm);
+  });
+  recordAnswer({correct, given});
+}
+
+/* ---------- SHORT ANSWER ---------- */
+function renderShort(q, ans) {
+  const v = ans ? ans.given : '';
+  const ro = ans ? 'readonly' : '';
+  const cls = ans ? 'locked' : '';
+  return `
+    <textarea id="short-input" class="short-answer ${cls}" placeholder="Type your answer in a sentence or two…" ${ro}>${escapeHtml(v)}</textarea>
+    ${ans ? '' : '<div style="margin-top:10px;display:flex;gap:10px;align-items:center;"><button class="btn primary" onclick="checkShort()">Check</button><button class="hint-btn" onclick="showModel()">Show model answer</button></div>'}
+    <div id="model-display"></div>
+  `;
+}
+
+function showModel() {
+  const q = state.questionOrder[state.currentIdx];
+  document.getElementById('model-display').innerHTML =
+    `<div class="hint-text"><strong>Model answer:</strong> ${q.model}</div>`;
+}
+
+function checkShort() {
+  const inp = document.getElementById('short-input');
+  const given = inp.value.trim();
+  if (!given) return;
+  const q = state.questionOrder[state.currentIdx];
+  const lower = ' ' + given.toLowerCase().replace(/[.,!?;:\-]/g,' ') + ' ';
+  let groupsMatched = 0;
+  for (const group of q.keywords) {
+    if (group.some(k => lower.includes(' ' + k.toLowerCase() + ' ') || lower.includes(k.toLowerCase()))) {
+      groupsMatched++;
+    }
+  }
+  const ratio = groupsMatched / q.keywords.length;
+  let correct = false, partial = false;
+  if (ratio >= 0.85) correct = true;
+  else if (ratio >= 0.5) partial = true;
+  recordAnswer({correct, partial, given, ratio, groupsMatched, totalGroups: q.keywords.length});
+}
+
+/* ---------- NUMERICAL ---------- */
+function renderNum(q, ans) {
+  const v = ans ? ans.given : '';
+  const cls = ans ? (ans.correct ? 'correct' : 'wrong') : '';
+  const ro = ans ? 'readonly' : '';
+  return `
+    <div class="num-input">
+      <input id="num-input" type="number" step="any" class="${cls}" value="${escapeAttr(v)}" placeholder="?" ${ro} onkeydown="if(event.key==='Enter') checkNum()">
+      <span class="unit">${q.unit || ''}</span>
+      ${ans ? '' : '<button class="btn primary" onclick="checkNum()">Check</button>'}
+    </div>
+  `;
+}
+
+function checkNum() {
+  const inp = document.getElementById('num-input');
+  if (inp.value === '') return;
+  const given = parseFloat(inp.value);
+  const q = state.questionOrder[state.currentIdx];
+  const correct = Math.abs(given - q.answer) <= (q.tolerance || 0);
+  recordAnswer({correct, given});
+}
+
+/* ---------- TRUE / FALSE ---------- */
+function renderTF(q, ans) {
+  let cT = 'tf-btn', cF = 'tf-btn';
+  if (ans) {
+    cT += ' disabled'; cF += ' disabled';
+    if (q.answer === true) cT += ' correct';
+    else cF += ' correct';
+    if (ans.given === true && !ans.correct) cT += ' wrong';
+    if (ans.given === false && !ans.correct) cF += ' wrong';
+  }
+  const ontT = ans ? '' : 'onclick="answerTF(true)"';
+  const ontF = ans ? '' : 'onclick="answerTF(false)"';
+  return `
+    <div class="tf-buttons">
+      <button class="${cT}" ${ontT}>✓ True</button>
+      <button class="${cF}" ${ontF}>✗ False</button>
+    </div>
+  `;
+}
+
+function answerTF(val) {
+  const q = state.questionOrder[state.currentIdx];
+  recordAnswer({correct: val === q.answer, given: val});
+}
+
+/* ---------- SORT / MATCH ---------- */
+let sortDragItem = null;
+let sortTapSelected = null;
+
+function renderSort(q, ans) {
+  // build initial pool of items if not answered
+  if (!ans) {
+    if (!q._allItems) {
+      const all = [];
+      for (const cat of Object.keys(q.categories)) {
+        for (const item of q.categories[cat]) all.push({item, cat});
+      }
+      q._allItems = all;
+    }
+    if (!q._currentPlacement) {
+      q._currentPlacement = {};
+      q._allItems.forEach(({item}) => q._currentPlacement[item] = '_pool');
+    }
+    const pool = q._allItems.filter(x => q._currentPlacement[x.item] === '_pool').map(x => x.item);
+    const cats = Object.keys(q.categories);
+    const shuffled = shuffle(pool);
+    return `
+      <div class="sort">
+        <div class="sort-items" id="sort-pool" ondragover="event.preventDefault()" ondrop="dropTo('_pool')">
+          ${shuffled.map(it => sortChipHTML(it, q, false)).join('') || '<span style="color:#9aa;align-self:center;font-size:0.9rem;">All placed!</span>'}
+        </div>
+        <div class="sort-categories">
+          ${cats.map(c => `
+            <div class="sort-cat" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="this.classList.remove('over');dropTo('${escapeAttr(c)}')" onclick="tapPlace('${escapeAttr(c)}')">
+              <h4>${c}</h4>
+              <div class="drop-zone">
+                ${q._allItems.filter(x => q._currentPlacement[x.item] === c).map(x => sortChipHTML(x.item, q, false)).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div style="text-align:right;">
+          <button class="btn primary" onclick="checkSort()" ${Object.values(q._currentPlacement).every(v => v !== '_pool') ? '' : 'disabled'}>Check answers</button>
+        </div>
+      </div>
+    `;
+  }
+  // answered: show with marks
+  const cats = Object.keys(q.categories);
+  return `
+    <div class="sort">
+      <div class="sort-categories">
+        ${cats.map(c => `
+          <div class="sort-cat">
+            <h4>${c}</h4>
+            <div class="drop-zone">
+              ${q._allItems.filter(x => q._currentPlacement[x.item] === c).map(x => {
+                const correct = x.cat === c;
+                return `<span class="sort-chip ${correct ? 'correct' : 'wrong'}">${x.item}${correct ? ' ✓' : ' ✗'}</span>`;
+              }).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function sortChipHTML(item, q, placed) {
+  const isSelected = sortTapSelected === item;
+  return `<span class="sort-chip${isSelected ? ' tap-selected' : ''}" draggable="true"
+    ondragstart="sortDragItem='${escapeAttr(item)}';this.classList.add('dragging')"
+    ondragend="this.classList.remove('dragging')"
+    onclick="event.stopPropagation();tapSelect('${escapeAttr(item)}')">${item}</span>`;
+}
+
+function tapSelect(item) {
+  sortTapSelected = sortTapSelected === item ? null : item;
+  render();
+}
+
+function tapPlace(cat) {
+  if (!sortTapSelected) return;
+  const q = state.questionOrder[state.currentIdx];
+  if (!q._currentPlacement) return;
+  q._currentPlacement[sortTapSelected] = cat;
+  sortTapSelected = null;
+  render();
+}
+
+function dropTo(cat) {
+  if (!sortDragItem) return;
+  const q = state.questionOrder[state.currentIdx];
+  q._currentPlacement[sortDragItem] = cat;
+  sortDragItem = null;
+  render();
+}
+
+function checkSort() {
+  const q = state.questionOrder[state.currentIdx];
+  let correctCount = 0;
+  for (const x of q._allItems) {
+    if (q._currentPlacement[x.item] === x.cat) correctCount++;
+  }
+  const ratio = correctCount / q._allItems.length;
+  let correct = false, partial = false;
+  if (ratio === 1) correct = true;
+  else if (ratio >= 0.6) partial = true;
+  recordAnswer({correct, partial, given: 'sort', ratio, correctCount, totalItems: q._allItems.length});
+}
+
+/* =========================================================
+   RECORD + FEEDBACK
+   ========================================================= */
+function recordAnswer(ans) {
+  state.answers[state.currentIdx] = ans;
+  if (ans.correct) {
+    state.streak++;
+    if (state.streak === 3 || state.streak === 5 || state.streak === 8) burstConfetti(15);
+  } else {
+    state.streak = 0;
+  }
+  render();
+}
+
+function renderFeedback(ans, q) {
+  if (ans.correct) {
+    const msgs = [
+      "Nice — that's right.",
+      "Spot on, Cara.",
+      "Got it — well done.",
+      "Yes! Bang on.",
+      "Perfect. Keep going.",
+      "Exactly right.",
+      "Nice spotting!"
+    ];
+    const msg = msgs[Math.floor(Math.random() * msgs.length)];
+    return `<div class="feedback good"><div class="head">${msg}</div>${q.explanation}</div>`;
+  }
+  if (ans.partial) {
+    const acceptableModel = q.model ? `<div class="answer-line"><strong>Model answer:</strong> ${q.model}</div>` : '';
+    return `<div class="feedback partial">
+      <div class="head">Partly there.</div>
+      ${ans.totalGroups ? `You got ${ans.groupsMatched} of the ${ans.totalGroups} key ideas. ` : ''}
+      ${ans.totalItems ? `You placed ${ans.correctCount} of ${ans.totalItems} correctly. ` : ''}
+      ${q.explanation}
+      ${acceptableModel}
+    </div>`;
+  }
+  let answerLine = '';
+  if (q.type === 'mc') answerLine = `<div class="answer-line"><strong>Answer:</strong> ${q.options[q.answer]}</div>`;
+  else if (q.type === 'fill') answerLine = `<div class="answer-line"><strong>Answer:</strong> ${q.answers[0]}</div>`;
+  else if (q.type === 'num') answerLine = `<div class="answer-line"><strong>Answer:</strong> ${q.answer}${q.unit ? ' ' + q.unit : ''}</div>`;
+  else if (q.type === 'tf') answerLine = `<div class="answer-line"><strong>Answer:</strong> ${q.answer ? 'True' : 'False'}</div>`;
+  else if (q.type === 'short') answerLine = q.model ? `<div class="answer-line"><strong>Model answer:</strong> ${q.model}</div>` : '';
+  return `<div class="feedback bad">
+    <div class="head">Not this time.</div>
+    ${q.explanation}
+    ${answerLine}
+  </div>`;
+}
+
+/* ---------- NEXT / RESULTS ---------- */
+function nextQuestion() {
+  if (state.currentIdx + 1 >= state.questionOrder.length) {
+    finishQuiz();
+  } else {
+    state.currentIdx++;
+    // reset sort interaction state across questions
+    sortTapSelected = null;
+    render();
+  }
+}
+
+function finishQuiz() {
+  const t = state.currentTopic;
+  let score = 0;
+  state.answers.forEach((a) => {
+    if (a.correct) score += 1;
+    else if (a.partial) score += 0.5;
+  });
+  // store best
+  const total = state.questionOrder.length;
+  const prev = state.scores[t.id];
+  if (!prev || score > prev.best) {
+    state.scores[t.id] = { best: score, total };
+  }
+  save();
+  // clear sort caches for re-attempts
+  t.questions.forEach(q => { delete q._allItems; delete q._currentPlacement; });
+  state.screen = 'results';
+  render();
+}
+
+function renderResults() {
+  const t = state.currentTopic;
+  let score = 0;
+  state.answers.forEach((a) => {
+    if (a.correct) score += 1;
+    else if (a.partial) score += 0.5;
+  });
+  const total = state.questionOrder.length;
+  const pct = Math.round((score / total) * 100);
+
+  let ribbon, rank, msg;
+  if (pct >= 90) { ribbon = '🏆'; rank = 'Physics Pro'; msg = "Brilliant work, Cara. You've really got this topic locked in."; burstConfetti(60); }
+  else if (pct >= 75) { ribbon = '🌟'; rank = 'Strong revision'; msg = "Great going. Just a couple to tighten up and you're there."; burstConfetti(30); }
+  else if (pct >= 50) { ribbon = '🚀'; rank = 'Good progress'; msg = "Solid effort — go back over the ones you missed and try again."; }
+  else { ribbon = '📘'; rank = 'Worth another go'; msg = "Don't worry — this is exactly why you revise. Read back through the notes for these and have another try."; }
+
+  const summary = state.answers.map((a, i) => {
+    const q = state.questionOrder[i];
+    const stem = (q.q || '').replace(/<[^>]+>/g,'').slice(0, 100);
+    let mark = '<span class="mark no">✗</span>';
+    if (a.correct) mark = '<span class="mark ok">✓</span>';
+    else if (a.partial) mark = '<span class="mark partial">~</span>';
+    return `<li>${mark}<span>${stem}${(q.q || '').length > 100 ? '…' : ''}</span></li>`;
+  }).join('');
+
+  // suggest next topic
+  const idx = QUESTIONS.findIndex(x => x.id === t.id);
+  const nextTopic = QUESTIONS[(idx + 1) % QUESTIONS.length];
+
+  $app.innerHTML = `
+    ${topBar()}
+    <div class="results">
+      <span class="ribbon">${ribbon}</span>
+      <h2>${t.emoji} ${t.name}</h2>
+      <div class="rank">${rank}</div>
+      <p class="score-line">You scored <strong>${score}</strong> out of <strong>${total}</strong> &nbsp;·&nbsp; ${pct}%</p>
+      <p style="color:var(--ink-soft);max-width:520px;margin:8px auto 0;">${msg}</p>
+      <div class="summary">
+        <h3>Question summary</h3>
+        <ul>${summary}</ul>
+      </div>
+      <div class="actions-row">
+        <button class="btn" onclick="startTopic('${t.id}')">↻ Try again</button>
+        <button class="btn primary" onclick="startTopic('${nextTopic.id}')">Next topic: ${nextTopic.emoji} ${nextTopic.name} →</button>
+        <button class="btn" onclick="go('menu')">All topics</button>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================
+   UTIL
+   ========================================================= */
+function go(screen) {
+  state.screen = screen;
+  sortTapSelected = null;
+  render();
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) {
+  return escapeHtml(s).replace(/`/g, '&#96;');
+}
+
+function burstConfetti(count) {
+  const colours = ['#ff8ab5','#ffae5c','#ffd166','#6ec3ff','#c08af0','#2ecc71'];
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = (Math.random() * 100) + 'vw';
+    p.style.background = colours[Math.floor(Math.random() * colours.length)];
+    p.style.animationDuration = (1.6 + Math.random() * 1.4) + 's';
+    p.style.animationDelay = (Math.random() * 0.3) + 's';
+    p.style.transform = `rotate(${Math.random() * 360}deg)`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 3500);
+  }
+}
+
+render();
+</script>
+</body>
+</html>
