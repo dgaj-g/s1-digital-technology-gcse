@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triple Match — Number Systems HQ</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:linear-gradient(135deg,#001a14 0%,#013d33 45%,#002b25 100%);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#dff5ee;overflow-x:hidden;}
+.container{max-width:850px;margin:0 auto;padding:20px 20px 60px;position:relative;}
+a.back{display:inline-block;color:#2ee6c5;text-decoration:none;font-size:0.9em;margin-bottom:16px;opacity:0.85;}
+a.back:hover{opacity:1;}
+.progress-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;margin-bottom:24px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#00b894,#00cec9);border-radius:3px;transition:width 0.5s ease;width:0%;}
+.screen{display:none;animation:fadeIn 0.5s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pop{0%{transform:scale(0.8);opacity:0;}50%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-7px);}75%{transform:translateX(7px);}}
+@keyframes bounceIn{0%{transform:scale(0);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+@keyframes matchPop{0%{transform:scale(1);}50%{transform:scale(1.12);}100%{transform:scale(1);}}
+h2{font-size:1.6em;font-weight:700;margin-bottom:6px;color:#2ee6c5;}
+.phase-label{text-transform:uppercase;font-size:0.75em;letter-spacing:2px;color:#4ca896;margin-bottom:14px;}
+.welcome{text-align:center;padding:34px 0;}
+.welcome-icon{font-size:80px;animation:bounceIn 0.8s ease;}
+.welcome h2{font-size:2em;background:linear-gradient(135deg,#00cec9,#00b894);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:16px 0 10px;}
+.welcome p{color:#9cc4bb;max-width:520px;margin:0 auto 8px;line-height:1.6;}
+.mission-box{background:rgba(0,206,201,0.08);border:1px solid rgba(0,206,201,0.25);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:520px;text-align:left;font-size:0.92em;line-height:1.7;}
+.mission-box strong{color:#2ee6c5;}
+.btn{display:inline-block;padding:12px 32px;border:none;border-radius:10px;font-size:1em;font-weight:700;cursor:pointer;transition:all 0.3s;color:#fff;}
+.btn-primary{background:linear-gradient(135deg,#00b894,#019e7f);}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,184,148,0.4);}
+.btn-success{background:linear-gradient(135deg,#2ecc71,#27ae60);}.btn-success:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(46,204,113,0.4);}
+.teach-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;margin-bottom:18px;animation:fadeIn 0.5s ease;}
+.teach-card h3{font-size:1.15em;color:#2ee6c5;margin-bottom:10px;}
+.teach-card p{font-size:0.94em;color:#b3d4cc;line-height:1.7;}
+.highlight{background:rgba(0,206,201,0.1);border-left:3px solid #00cec9;padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:0.9em;}
+.eqtable{width:100%;border-collapse:collapse;margin:14px 0;}
+.eqtable th{background:rgba(0,184,148,0.2);padding:8px;font-size:0.85em;border:1px solid rgba(255,255,255,0.1);}
+.eqtable td{padding:8px;text-align:center;border:1px solid rgba(255,255,255,0.08);font-family:'Courier New',monospace;font-weight:700;}
+.test-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.score-display{font-size:0.95em;color:#2ee6c5;font-weight:600;}
+.instr{color:#9cc4bb;font-size:0.9em;margin-bottom:14px;}
+/* cards */
+.cardgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:10px 0;}
+.vcard{position:relative;border-radius:12px;padding:18px 8px;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.12);user-select:none;min-height:78px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.vcard:hover{border-color:rgba(46,230,197,0.5);background:rgba(46,230,197,0.08);}
+.vcard .badge{font-size:0.62em;text-transform:uppercase;letter-spacing:1px;color:#4ca896;margin-bottom:4px;font-family:'Segoe UI',sans-serif;}
+.vcard .v{font-family:'Courier New',monospace;font-weight:800;font-size:1.15em;color:#fff;}
+.vcard.sel{border-color:#2ee6c5;box-shadow:0 0 14px rgba(46,230,197,0.4);background:rgba(46,230,197,0.12);}
+.vcard.matched{border-color:#2ecc71;background:rgba(46,204,113,0.15);opacity:0.55;pointer-events:none;animation:matchPop 0.3s ease;}
+.vcard.correct{border-color:#2ecc71!important;background:rgba(46,204,113,0.2)!important;animation:matchPop 0.3s ease;}
+.vcard.wrong{border-color:#e74c3c!important;background:rgba(231,76,60,0.18)!important;animation:shake 0.3s ease;}
+.vcard.dim{opacity:0.4;}
+.feedback-box{padding:12px 16px;border-radius:8px;margin-top:14px;font-size:0.9em;line-height:1.5;animation:fadeIn 0.3s ease;}
+.feedback-box.correct{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.25);color:#a5d6a7;}
+.feedback-box.wrong{background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.25);color:#ef9a9a;}
+.results{text-align:center;padding:30px 0;}
+.results-icon{font-size:80px;animation:bounceIn 0.6s ease;}
+.results h2{margin:16px 0 6px;}
+.score-big{font-size:2.2em;font-weight:900;color:#00cec9;margin:10px 0;}
+.rank{font-size:1.1em;color:#2ee6c5;margin-bottom:20px;}
+.breakdown{background:rgba(255,255,255,0.04);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:400px;text-align:left;}
+.breakdown-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.9em;}
+.breakdown-row:last-child{border:none;font-weight:700;color:#00cec9;}
+.revision-box{background:rgba(0,206,201,0.08);border:1px solid rgba(0,206,201,0.2);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:520px;text-align:left;font-size:0.88em;line-height:1.7;}
+.revision-box h4{color:#2ee6c5;margin-bottom:8px;}
+.btn-row{display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;animation:confettiFall 3s linear forwards;pointer-events:none;z-index:999;}
+@media(max-width:600px){h2{font-size:1.3em;}.cardgrid{grid-template-columns:repeat(2,1fr);}.vcard .v{font-size:1em;}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="index.html">← Back to Hub</a>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="screen active" id="welcomeScreen">
+<div class="welcome">
+<div class="welcome-icon">🔗</div>
+<h2>Triple Match</h2>
+<p>The same number can be written three ways — binary, denary and hex. They look totally different, but they're worth exactly the same. Train your eye to see through the disguise.</p>
+<div class="mission-box">
+<strong>Briefing:</strong><br>
+Phase 1 — See how one value looks in all three systems<br>
+Phase 2 — Round 1: Match the Pairs (find equal values)<br>
+Phase 2 — Round 2: Odd One Out (spot the impostor)<br>
+Phase 2 — Round 3: Biggest of the Bunch (compare across bases)
+</div>
+<button class="btn btn-primary" onclick="startTeach()">Start →</button>
+</div>
+</div>
+
+<div class="screen" id="teachScreen">
+<div class="phase-label">Phase 1 — Three Faces of a Number</div>
+<div id="teachContent"></div>
+<div style="text-align:center;margin-top:20px;"><button class="btn btn-primary" id="teachNextBtn" onclick="nextTeach()">Next →</button></div>
+</div>
+
+<div class="screen" id="r1Screen">
+<div class="phase-label">Phase 2 — Round 1: Match the Pairs</div>
+<div class="test-header"><h2>Match equal values</h2><span class="score-display" id="r1Score">0 pairs</span></div>
+<p class="instr">Click two cards that are worth the same value (they'll be in different number systems). Clear the whole board.</p>
+<div id="r1Content"></div>
+</div>
+
+<div class="screen" id="r2Screen">
+<div class="phase-label">Phase 2 — Round 2: Odd One Out</div>
+<div class="test-header"><h2>Spot the impostor</h2><span class="score-display" id="r2Score">0/0</span></div>
+<p class="instr">Three of these cards are worth the same value. Click the ONE that is different.</p>
+<div id="r2Content"></div>
+</div>
+
+<div class="screen" id="r3Screen">
+<div class="phase-label">Phase 2 — Round 3: Biggest of the Bunch</div>
+<div class="test-header"><h2>Find the largest</h2><span class="score-display" id="r3Score">0/0</span></div>
+<p class="instr">Convert them in your head and click the card with the LARGEST value.</p>
+<div id="r3Content"></div>
+</div>
+
+<div class="screen" id="resultsScreen"><div class="results" id="resultsContent"></div></div>
+</div>
+
+<script>
+function shuffle(a){let arr=[...a];for(let i=arr.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function setProgress(p){document.getElementById('progressFill').style.width=p+'%';}
+function toBin(n){let b=n.toString(2).padStart(8,'0');return b.slice(0,4)+' '+b.slice(4);}
+function toHex(n){return n.toString(16).toUpperCase().padStart(2,'0');}
+function label(n,base){if(base==='den')return{badge:'Denary',v:String(n)};if(base==='bin')return{badge:'Binary',v:toBin(n)};return{badge:'Hex',v:toHex(n)};}
+function distinctVals(count,lo,hi){const s=new Set();while(s.size<count){s.add(lo+Math.floor(Math.random()*(hi-lo)));}return [...s];}
+
+/* ===== TEACH ===== */
+let teachStep=0;
+const teachSteps=[
+()=>`<div class="teach-card"><h3>🎭 One value, three disguises</h3>
+<p>A number keeps the same value no matter which system you write it in. Here is the value <strong>45</strong> shown three ways:</p>
+<table class="eqtable"><tr><th>Denary</th><th>Binary</th><th>Hex</th></tr>
+<tr><td style="color:#2ee6c5;">45</td><td style="color:#7cc6ff;">0010 1101</td><td style="color:#d97bf0;">2D</td></tr></table>
+<p>Check: binary 0010 1101 = 32+8+4+1 = 45. Hex 2D = (2×16)+13 = 45. All equal!</p>
+<div class="highlight"><strong>To compare two numbers in different systems, convert them to the same system first</strong> — usually denary is easiest.</div></div>`,
+()=>`<div class="teach-card"><h3>🔍 A few to recognise</h3>
+<p>The more conversions you practise, the faster you'll spot equal values on sight.</p>
+<table class="eqtable"><tr><th>Denary</th><th>Binary</th><th>Hex</th></tr>
+<tr><td>10</td><td>0000 1010</td><td>0A</td></tr>
+<tr><td>16</td><td>0001 0000</td><td>10</td></tr>
+<tr><td>100</td><td>0110 0100</td><td>64</td></tr>
+<tr><td>255</td><td>1111 1111</td><td>FF</td></tr></table>
+<div class="highlight"><strong>Watch out:</strong> hex "10" is NOT ten — it's sixteen! Always check the system label.</div></div>`
+];
+function startTeach(){showScreen('teachScreen');teachStep=0;renderTeach();setProgress(8);}
+function renderTeach(){document.getElementById('teachContent').innerHTML=teachSteps[teachStep]();document.getElementById('teachNextBtn').textContent=teachStep<teachSteps.length-1?'Next →':'Start Round 1 →';}
+function nextTeach(){teachStep++;if(teachStep>=teachSteps.length){startR1();}else{renderTeach();setProgress(8+teachStep*10);}}
+
+/* ===== ROUND 1: Match the Pairs ===== */
+let r1cards=[],r1sel=null,r1matched=0,r1pairs=4,r1tries=0,r1wrong=0;
+function startR1(){
+ const vals=distinctVals(r1pairs,10,255);
+ r1cards=[];
+ vals.forEach((v,i)=>{
+  const bases=shuffle(['den','bin','hex']).slice(0,2);
+  bases.forEach(b=>{const l=label(v,b);r1cards.push({value:v,base:b,badge:l.badge,v:l.v,id:i+'-'+b});});
+ });
+ r1cards=shuffle(r1cards);r1sel=null;r1matched=0;r1wrong=0;
+ showScreen('r1Screen');setProgress(34);renderR1();
+}
+function renderR1(){
+ document.getElementById('r1Score').textContent=r1matched+'/'+r1pairs+' pairs';
+ document.getElementById('r1Content').innerHTML=`<div class="cardgrid">${r1cards.map((c,i)=>
+  `<div class="vcard" id="c${i}" onclick="pick(${i})"><div class="badge">${c.badge}</div><div class="v">${c.v}</div></div>`).join('')}</div>
+  <div id="r1Fb"></div>`;
+ // re-apply matched state
+ r1cards.forEach((c,i)=>{if(c.done)document.getElementById('c'+i).classList.add('matched');});
+}
+function pick(i){
+ const c=r1cards[i];if(c.done)return;
+ const el=document.getElementById('c'+i);
+ if(r1sel===null){r1sel=i;el.classList.add('sel');return;}
+ if(r1sel===i){el.classList.remove('sel');r1sel=null;return;}
+ const first=r1cards[r1sel],firstEl=document.getElementById('c'+r1sel);
+ if(first.value===c.value){
+  c.done=true;first.done=true;
+  el.classList.remove('sel');el.classList.add('matched');firstEl.classList.remove('sel');firstEl.classList.add('matched');
+  r1matched++;r1sel=null;
+  document.getElementById('r1Score').textContent=r1matched+'/'+r1pairs+' pairs';
+  if(r1matched>=r1pairs){document.getElementById('r1Fb').innerHTML=`<div class="feedback-box correct">✓ Board cleared! ${r1wrong===0?'Perfect — no wrong taps!':'Wrong taps: '+r1wrong}</div>`;setTimeout(finishR1,1300);}
+ } else {
+  r1wrong++;
+  el.classList.add('wrong');firstEl.classList.add('wrong');
+  const a=first,b=c;
+  setTimeout(()=>{el.classList.remove('wrong','sel');firstEl.classList.remove('wrong','sel');},600);
+  r1sel=null;
+ }
+}
+function finishR1(){startR2();}
+
+/* ===== ROUND 2: Odd One Out ===== */
+let r2Q=[],r2i=0,r2s=0;
+function startR2(){
+ r2Q=[];
+ for(let k=0;k<5;k++){
+  const [t,o]=distinctVals(2,10,255);
+  const bases=shuffle(['den','bin','hex']); // 3 cards = t in all three bases
+  const cards=bases.map(b=>{const l=label(t,b);return{value:t,badge:l.badge,v:l.v,odd:false};});
+  const ob=shuffle(['den','bin','hex'])[0];const ol=label(o,ob);
+  cards.push({value:o,badge:ol.badge,v:ol.v,odd:true});
+  r2Q.push({cards:shuffle(cards),target:t,odd:o});
+ }
+ r2i=0;r2s=0;showScreen('r2Screen');setProgress(58);showR2();
+}
+function showR2(){
+ if(r2i>=r2Q.length){finishR2();return;}
+ const q=r2Q[r2i];
+ document.getElementById('r2Score').textContent=r2s+'/'+r2i;
+ document.getElementById('r2Content').innerHTML=`<div class="cardgrid">${q.cards.map((c,i)=>
+  `<div class="vcard" id="o${i}" onclick="ansR2(${i})"><div class="badge">${c.badge}</div><div class="v">${c.v}</div></div>`).join('')}</div>
+  <div id="r2Fb"></div>`;
+}
+function ansR2(i){
+ const q=r2Q[r2i],c=q.cards[i];
+ document.querySelectorAll('#r2Content .vcard').forEach(e=>e.onclick=null);
+ if(c.odd){r2s++;document.getElementById('o'+i).classList.add('correct');
+  document.getElementById('r2Fb').innerHTML=`<div class="feedback-box correct">✓ Correct! The other three all equal ${q.target} in denary; this one was ${q.odd}.</div>`;}
+ else{document.getElementById('o'+i).classList.add('wrong');
+  q.cards.forEach((cc,ii)=>{if(cc.odd)document.getElementById('o'+ii).classList.add('correct');});
+  document.getElementById('r2Fb').innerHTML=`<div class="feedback-box wrong">✗ That one equals ${q.target}. The impostor (worth ${q.odd}) is highlighted in green.</div>`;}
+ r2i++;setTimeout(showR2,1900);
+}
+function finishR2(){document.getElementById('r2Score').textContent=r2s+'/'+r2Q.length;startR3();}
+
+/* ===== ROUND 3: Biggest ===== */
+let r3Q=[],r3i=0,r3s=0;
+function startR3(){
+ r3Q=[];
+ for(let k=0;k<5;k++){
+  const vals=distinctVals(4,10,255);
+  const bases=['den','bin','hex'];
+  const cards=vals.map(v=>{const b=bases[Math.floor(Math.random()*3)];const l=label(v,b);return{value:v,badge:l.badge,v:l.v};});
+  const maxv=Math.max(...vals);
+  r3Q.push({cards:shuffle(cards),max:maxv});
+ }
+ r3i=0;r3s=0;showScreen('r3Screen');setProgress(82);showR3();
+}
+function showR3(){
+ if(r3i>=r3Q.length){finishR3();return;}
+ const q=r3Q[r3i];
+ document.getElementById('r3Score').textContent=r3s+'/'+r3i;
+ document.getElementById('r3Content').innerHTML=`<div class="cardgrid">${q.cards.map((c,i)=>
+  `<div class="vcard" id="b${i}" onclick="ansR3(${i})"><div class="badge">${c.badge}</div><div class="v">${c.v}</div></div>`).join('')}</div>
+  <div id="r3Fb"></div>`;
+}
+function ansR3(i){
+ const q=r3Q[r3i],c=q.cards[i];
+ document.querySelectorAll('#r3Content .vcard').forEach(e=>e.onclick=null);
+ if(c.value===q.max){r3s++;document.getElementById('b'+i).classList.add('correct');
+  document.getElementById('r3Fb').innerHTML=`<div class="feedback-box correct">✓ Correct! ${c.v} = ${c.value} in denary, the largest here.</div>`;}
+ else{document.getElementById('b'+i).classList.add('wrong');
+  q.cards.forEach((cc,ii)=>{if(cc.value===q.max)document.getElementById('b'+ii).classList.add('correct');});
+  document.getElementById('r3Fb').innerHTML=`<div class="feedback-box wrong">✗ That was ${c.value}. The largest was ${q.max} (highlighted).</div>`;}
+ r3i++;setTimeout(showR3,1900);
+}
+function finishR3(){showResults();}
+
+/* ===== RESULTS ===== */
+function showResults(){
+ const r1pts=Math.max(0,r1pairs-r1wrong); // up to 4
+ const total=r1pts+r2s+r3s,max=r1pairs+r2Q.length+r3Q.length;
+ const pct=Math.round(total/max*100);
+ let icon='🌱',rank='Pattern Spotter';
+ if(pct>=90){icon='👑';rank='Base Master';}else if(pct>=70){icon='⭐';rank='Conversion Pro';}else if(pct>=50){icon='🔗';rank='Code Linker';}
+ setProgress(100);showScreen('resultsScreen');fireConfetti();
+ const tips=[];
+ if(r1wrong>1)tips.push("To match values, convert each card to denary in your head first, then compare.");
+ if(r2s<r2Q.length-1)tips.push("Watch the system label — hex '10' is sixteen, binary '10' is two, denary '10' is ten.");
+ if(r3s<r3Q.length-1)tips.push("To compare across bases, convert everything to denary, then pick the biggest number.");
+ document.getElementById('resultsContent').innerHTML=`<div class="results-icon">${icon}</div>
+ <h2>All Matched!</h2><div class="score-big">${total}/${max} (${pct}%)</div><div class="rank">${rank}</div>
+ <div class="breakdown">
+ <div class="breakdown-row"><span>Round 1: Match the Pairs</span><span>${r1pts}/${r1pairs}</span></div>
+ <div class="breakdown-row"><span>Round 2: Odd One Out</span><span>${r2s}/${r2Q.length}</span></div>
+ <div class="breakdown-row"><span>Round 3: Biggest of the Bunch</span><span>${r3s}/${r3Q.length}</span></div>
+ <div class="breakdown-row"><span>Total</span><span>${total}/${max}</span></div></div>
+ ${tips.length?`<div class="revision-box"><h4>📝 Revision Notes</h4><ul>${tips.map(t=>'<li>'+t+'</li>').join('')}</ul></div>`:''}
+ <div class="btn-row"><a href="index.html" class="btn btn-primary" style="text-decoration:none;">← Back to Hub</a>
+ <a href="activity1.html" class="btn btn-success" style="text-decoration:none;">↻ Replay from Bit Lab</a></div>`;
+}
+function fireConfetti(){const colors=['#00b894','#00cec9','#2ee6c5','#2ecc71','#ffd24c'];for(let i=0;i<44;i++){const c=document.createElement('div');c.className='confetti-piece';c.style.left=Math.random()*100+'%';c.style.top='-10px';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.width=(6+Math.random()*8)+'px';c.style.height=(6+Math.random()*8)+'px';c.style.animationDelay=Math.random()*1.5+'s';c.style.animationDuration=(2+Math.random()*2)+'s';document.body.appendChild(c);c.addEventListener('animationend',()=>c.remove());}}
+</script>
+</body>
+</html>

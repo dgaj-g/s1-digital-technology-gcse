@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversion Arcade — Number Systems HQ</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:linear-gradient(135deg,#1a0500 0%,#3d1400 45%,#2a0008 100%);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#ffe9dd;overflow-x:hidden;}
+.container{max-width:820px;margin:0 auto;padding:20px 20px 60px;position:relative;}
+a.back{display:inline-block;color:#ff8a4c;text-decoration:none;font-size:0.9em;margin-bottom:16px;opacity:0.85;}
+a.back:hover{opacity:1;}
+.screen{display:none;animation:fadeIn 0.5s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pop{0%{transform:scale(0.8);opacity:0;}50%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
+@keyframes bounceIn{0%{transform:scale(0);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+@keyframes floatUp{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-70px) scale(1.4);opacity:0;}}
+@keyframes flashRed{0%{background:rgba(231,76,60,0);}30%{background:rgba(231,76,60,0.25);}100%{background:rgba(231,76,60,0);}}
+h2{font-size:1.6em;font-weight:700;margin-bottom:6px;color:#ff8a4c;}
+.welcome{text-align:center;padding:30px 0;}
+.welcome-icon{font-size:80px;animation:bounceIn 0.8s ease;}
+.welcome h2{font-size:2.1em;background:linear-gradient(135deg,#ff8a4c,#ff3b30);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:14px 0 10px;letter-spacing:1px;}
+.welcome p{color:#d9b3a3;max-width:520px;margin:0 auto 8px;line-height:1.6;}
+.rules-box{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.25);border-radius:12px;padding:16px 20px;margin:18px auto;max-width:520px;text-align:left;font-size:0.92em;line-height:1.8;}
+.rules-box strong{color:#ff8a4c;}
+.ref{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 18px;margin:14px auto;max-width:560px;font-size:0.86em;line-height:1.7;text-align:left;color:#d9b3a3;}
+.ref b{color:#ffd9a3;font-family:'Courier New',monospace;}
+.btn{display:inline-block;padding:13px 36px;border:none;border-radius:10px;font-size:1.05em;font-weight:800;cursor:pointer;transition:all 0.3s;color:#fff;letter-spacing:1px;}
+.btn-primary{background:linear-gradient(135deg,#ff6b00,#ff3b30);}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(255,107,0,0.5);}
+.btn-success{background:linear-gradient(135deg,#2ecc71,#27ae60);}.btn-success:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(46,204,113,0.4);}
+/* HUD */
+.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+.hud-item{text-align:center;}
+.hud-item .lbl{font-size:0.7em;text-transform:uppercase;letter-spacing:1px;color:#b3826e;}
+.hud-item .val{font-size:1.5em;font-weight:900;font-family:'Courier New',monospace;color:#fff;}
+.score-val{color:#ffd24c!important;}
+.combo-val{color:#ff5a36!important;}
+.timer-wrap{height:12px;background:rgba(255,255,255,0.08);border-radius:6px;overflow:hidden;margin-bottom:18px;}
+.timer-fill{height:100%;width:100%;background:linear-gradient(90deg,#2ecc71,#ffd24c,#ff3b30);transition:width 1s linear;}
+.combo-flash{text-align:center;font-weight:900;font-size:1.1em;color:#ff5a36;height:24px;margin-bottom:4px;text-transform:uppercase;letter-spacing:2px;}
+.qcard{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:26px 22px;text-align:center;position:relative;overflow:hidden;}
+.qcard.flash{animation:flashRed 0.5s ease;}
+.q-prompt{font-size:0.95em;color:#d9b3a3;margin-bottom:6px;}
+.q-big{font-size:2.6em;font-weight:900;font-family:'Courier New',monospace;color:#fff;margin:6px 0 18px;letter-spacing:3px;}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.opt{padding:16px;border:2px solid rgba(255,255,255,0.14);border-radius:12px;background:rgba(255,255,255,0.05);color:#ffe9dd;font-weight:800;font-size:1.25em;cursor:pointer;transition:all 0.15s;font-family:'Courier New',monospace;}
+.opt:hover{border-color:rgba(255,138,76,0.6);background:rgba(255,138,76,0.12);transform:scale(1.02);}
+.opt:disabled{cursor:default;}
+.opt.correct{border-color:#2ecc71!important;background:rgba(46,204,113,0.2)!important;color:#2ecc71!important;}
+.opt.wrong{border-color:#e74c3c!important;background:rgba(231,76,60,0.2)!important;color:#e74c3c!important;animation:shake 0.3s ease;}
+.floater{position:absolute;left:50%;top:40%;transform:translateX(-50%);font-size:1.8em;font-weight:900;color:#ffd24c;pointer-events:none;animation:floatUp 0.9s ease forwards;text-shadow:0 2px 8px rgba(0,0,0,0.5);}
+.results{text-align:center;padding:30px 0;}
+.results-icon{font-size:80px;animation:bounceIn 0.6s ease;}
+.results h2{margin:16px 0 6px;}
+.score-big{font-size:2.6em;font-weight:900;color:#ffd24c;margin:10px 0;font-family:'Courier New',monospace;}
+.rank{font-size:1.15em;color:#ff8a4c;margin-bottom:20px;}
+.breakdown{background:rgba(255,255,255,0.04);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:380px;text-align:left;}
+.breakdown-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.92em;}
+.breakdown-row:last-child{border:none;font-weight:700;color:#ffd24c;}
+.btn-row{display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;animation:confettiFall 3s linear forwards;pointer-events:none;z-index:999;}
+@media(max-width:600px){.q-big{font-size:1.9em;}.opt{font-size:1.05em;padding:13px;}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="index.html">← Back to Hub</a>
+
+<!-- WELCOME -->
+<div class="screen active" id="welcomeScreen">
+<div class="welcome">
+<div class="welcome-icon">🕹️</div>
+<h2>Conversion Arcade</h2>
+<p>One minute. As many conversions as you can. Build a combo by answering correctly in a row to multiply your points — but one wrong answer breaks the chain!</p>
+<div class="rules-box">
+<strong>How to play:</strong><br>
+• You have <strong>60 seconds</strong>.<br>
+• Each correct answer scores points × your combo multiplier.<br>
+• Every 3 correct in a row raises the multiplier (up to ×5 🔥).<br>
+• A wrong answer resets your combo to ×1.
+</div>
+<div class="ref">
+<strong style="color:#ff8a4c;">Quick reference</strong><br>
+Binary place values: <b>128 64 32 16 8 4 2 1</b><br>
+Hex digits: <b>A=10 B=11 C=12 D=13 E=14 F=15</b><br>
+Hex→denary: left×16 + right &nbsp;•&nbsp; Denary→hex: ÷16 (whole=left, remainder=right)<br>
+Binary↔hex: each group of 4 bits = one hex digit
+</div>
+<button class="btn btn-primary" onclick="startGame()">▶ INSERT COIN</button>
+</div>
+</div>
+
+<!-- GAME -->
+<div class="screen" id="gameScreen">
+<div class="hud">
+<div class="hud-item"><div class="lbl">Score</div><div class="val score-val" id="scoreVal">0</div></div>
+<div class="hud-item"><div class="lbl">Combo</div><div class="val combo-val" id="comboVal">×1</div></div>
+<div class="hud-item"><div class="lbl">Time</div><div class="val" id="timeVal">60</div></div>
+</div>
+<div class="timer-wrap"><div class="timer-fill" id="timerFill"></div></div>
+<div class="combo-flash" id="comboFlash"></div>
+<div id="gameContent"></div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="resultsScreen"><div class="results" id="resultsContent"></div></div>
+</div>
+
+<script>
+function shuffle(a){let arr=[...a];for(let i=arr.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+const PV=[128,64,32,16,8,4,2,1];
+function toBin(n){let b=n.toString(2).padStart(8,'0');return b.slice(0,4)+' '+b.slice(4);}
+function toHex(n){return n.toString(16).toUpperCase().padStart(2,'0');}
+
+let timeLeft,score,combo,answered,correct,bestCombo,timerId,locked;
+const DURATION=60;
+
+function startGame(){
+ timeLeft=DURATION;score=0;combo=0;answered=0;correct=0;bestCombo=0;locked=false;
+ document.getElementById('scoreVal').textContent='0';
+ document.getElementById('comboVal').textContent='×1';
+ document.getElementById('timeVal').textContent=DURATION;
+ document.getElementById('timerFill').style.width='100%';
+ document.getElementById('comboFlash').textContent='';
+ showScreen('gameScreen');
+ nextQ();
+ timerId=setInterval(tick,1000);
+}
+function tick(){
+ timeLeft--;
+ document.getElementById('timeVal').textContent=timeLeft;
+ document.getElementById('timerFill').style.width=(timeLeft/DURATION*100)+'%';
+ if(timeLeft<=0){clearInterval(timerId);endGame();}
+}
+function multiplier(){return Math.min(5,1+Math.floor(combo/3));}
+
+function genQ(){
+ const types=['b2d','d2b','h2d','d2h','b2h','h2b'];
+ const t=types[Math.floor(Math.random()*types.length)];
+ const n=8+Math.floor(Math.random()*247);
+ let prompt,big,correctStr,mk;
+ if(t==='b2d'){prompt='Binary → Denary';big=toBin(n);correctStr=String(n);mk=d=>String(d);}
+ else if(t==='d2b'){prompt='Denary → Binary';big=String(n);correctStr=toBin(n);mk=d=>toBin(d);}
+ else if(t==='h2d'){prompt='Hex → Denary';big=toHex(n);correctStr=String(n);mk=d=>String(d);}
+ else if(t==='d2h'){prompt='Denary → Hex';big=String(n);correctStr=toHex(n);mk=d=>toHex(d);}
+ else if(t==='b2h'){prompt='Binary → Hex';big=toBin(n);correctStr=toHex(n);mk=d=>toHex(d);}
+ else {prompt='Hex → Binary';big=toHex(n);correctStr=toBin(n);mk=d=>toBin(d);}
+ const w=new Set([correctStr]);
+ const offs=[1,-1,2,-2,4,-4,8,-8,16,-16,32];
+ while(w.size<4){let d=n+offs[Math.floor(Math.random()*offs.length)];if(d>=0&&d<256)w.add(mk(d));}
+ return {prompt,big,correctStr,opts:shuffle([...w])};
+}
+function nextQ(){
+ if(timeLeft<=0)return;
+ locked=false;
+ const q=genQ();
+ document.getElementById('gameContent').innerHTML=`<div class="qcard" id="qcard">
+ <div class="q-prompt">${q.prompt}</div>
+ <div class="q-big">${q.big}</div>
+ <div class="opts">${q.opts.map(o=>`<button class="opt" onclick="answer(this,'${o}','${q.correctStr}')">${o}</button>`).join('')}</div>
+ </div>`;
+}
+function answer(btn,choice,correctStr){
+ if(locked)return;locked=true;
+ answered++;
+ const btns=document.querySelectorAll('.opt');btns.forEach(b=>b.disabled=true);
+ if(choice===correctStr){
+  correct++;combo++;if(combo>bestCombo)bestCombo=combo;
+  const pts=100*multiplier();score+=pts;
+  btn.classList.add('correct');
+  document.getElementById('scoreVal').textContent=score;
+  document.getElementById('comboVal').textContent='×'+multiplier();
+  const f=document.createElement('div');f.className='floater';f.textContent='+'+pts;document.getElementById('qcard').appendChild(f);
+  const cf=document.getElementById('comboFlash');
+  if(combo>=3&&combo%3===0)cf.textContent='🔥 COMBO ×'+multiplier()+'!';else cf.textContent='';
+  setTimeout(nextQ,360);
+ } else {
+  combo=0;
+  btn.classList.add('wrong');
+  document.getElementById('comboVal').textContent='×1';
+  document.getElementById('comboFlash').textContent='';
+  document.getElementById('qcard').classList.add('flash');
+  btns.forEach(b=>{if(b.textContent===correctStr)b.classList.add('correct');});
+  setTimeout(nextQ,820);
+ }
+}
+function endGame(){
+ const acc=answered?Math.round(correct/answered*100):0;
+ let icon='🌱',rank='Arcade Rookie';
+ if(score>=2500){icon='👑';rank='Conversion Legend';}
+ else if(score>=1500){icon='⭐';rank='Arcade Master';}
+ else if(score>=800){icon='🎮';rank='Skilled Player';}
+ showScreen('resultsScreen');fireConfetti();
+ document.getElementById('resultsContent').innerHTML=`<div class="results-icon">${icon}</div>
+ <h2>Time's Up!</h2><div class="score-big">${score}</div><div class="rank">${rank}</div>
+ <div class="breakdown">
+ <div class="breakdown-row"><span>Correct answers</span><span>${correct}</span></div>
+ <div class="breakdown-row"><span>Accuracy</span><span>${acc}%</span></div>
+ <div class="breakdown-row"><span>Best combo</span><span>🔥 ${bestCombo}</span></div>
+ <div class="breakdown-row"><span>Final score</span><span>${score}</span></div></div>
+ <div class="btn-row"><button class="btn btn-primary" onclick="startGame()">▶ PLAY AGAIN</button>
+ <a href="activity4.html" class="btn btn-success" style="text-decoration:none;">Next: Triple Match →</a></div>
+ <div style="margin-top:14px;"><a href="index.html" style="color:#ff8a4c;text-decoration:none;font-size:0.9em;">← Back to Hub</a></div>`;
+}
+function fireConfetti(){const colors=['#ff6b00','#ff3b30','#ffd24c','#2ecc71','#ff8a4c'];for(let i=0;i<46;i++){const c=document.createElement('div');c.className='confetti-piece';c.style.left=Math.random()*100+'%';c.style.top='-10px';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.width=(6+Math.random()*8)+'px';c.style.height=(6+Math.random()*8)+'px';c.style.animationDelay=Math.random()*1.5+'s';c.style.animationDuration=(2+Math.random()*2)+'s';document.body.appendChild(c);c.addEventListener('animationend',()=>c.remove());}}
+</script>
+</body>
+</html>

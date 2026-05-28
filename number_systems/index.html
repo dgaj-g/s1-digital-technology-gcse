@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number Systems HQ</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:linear-gradient(135deg,#05071a 0%,#0a1640 45%,#06122e 100%);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#e0e6f0;overflow-x:hidden;}
+.binary-bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+.binary-digit{position:absolute;color:rgba(0,200,255,0.13);font-family:'Courier New',monospace;font-size:18px;animation:fall linear infinite;}
+@keyframes fall{0%{transform:translateY(-20px);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translateY(100vh);opacity:0;}}
+.container{max-width:900px;margin:0 auto;padding:30px 20px 60px;position:relative;z-index:1;}
+.header{text-align:center;margin-bottom:30px;animation:fadeInDown 0.8s ease;}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
+.header-icon{font-size:64px;margin-bottom:6px;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+.header h1{font-size:2.5em;font-weight:800;background:linear-gradient(135deg,#00d4ff,#7b6cff,#c026d3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.header p{font-size:1.05em;color:#8a9bc0;max-width:620px;margin:0 auto;line-height:1.6;}
+.subtitle{display:inline-block;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.25);border-radius:20px;padding:6px 18px;font-size:0.82em;color:#00d4ff;margin-top:14px;letter-spacing:1px;}
+.base-strip{display:flex;justify-content:center;gap:10px;margin:24px 0;flex-wrap:wrap;animation:fadeIn 1s ease 0.4s both;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.base-chip{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:8px 16px;text-align:center;}
+.base-chip .b{font-family:'Courier New',monospace;font-weight:700;font-size:1.05em;color:#fff;}
+.base-chip .l{font-size:0.7em;color:#8a9bc0;text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+.cards{display:flex;flex-direction:column;gap:18px;}
+.card{display:flex;border-radius:16px;overflow:hidden;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:all 0.3s ease;text-decoration:none;color:inherit;animation:fadeInUp 0.6s ease both;}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(25px);}to{opacity:1;transform:translateY(0);}}
+.card:nth-child(1){animation-delay:0.1s;}.card:nth-child(2){animation-delay:0.2s;}.card:nth-child(3){animation-delay:0.3s;}.card:nth-child(4){animation-delay:0.4s;}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,0.4);border-color:rgba(255,255,255,0.14);}
+.card-num-strip{display:flex;align-items:center;justify-content:center;width:84px;min-height:130px;font-size:2.1em;font-weight:900;color:rgba(255,255,255,0.95);}
+.card-body{flex:1;padding:18px 20px;display:flex;flex-direction:column;gap:8px;}
+.card-title-row{display:flex;align-items:center;gap:10px;}
+.card-icon{font-size:1.7em;}
+.card-title{font-size:1.25em;font-weight:700;}
+.card-desc{font-size:0.9em;color:#8a9bc0;line-height:1.5;}
+.card-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.card-badge{font-size:0.74em;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,0.06);color:#aab8d4;}
+.card-action{display:flex;align-items:center;justify-content:center;padding:0 26px;font-weight:700;font-size:0.95em;white-space:nowrap;}
+/* 1 - Bit Lab - electric blue */
+.card:nth-child(1) .card-num-strip{background:linear-gradient(135deg,#003e7e,#0077ff);}
+.card:nth-child(1) .card-title,.card:nth-child(1) .card-action{color:#3fa9ff;}
+.card:nth-child(1):hover{border-color:rgba(63,169,255,0.35);}
+/* 2 - Hex HQ - purple/magenta */
+.card:nth-child(2) .card-num-strip{background:linear-gradient(135deg,#5b1a9e,#c026d3);}
+.card:nth-child(2) .card-title,.card:nth-child(2) .card-action{color:#d97bf0;}
+.card:nth-child(2):hover{border-color:rgba(217,123,240,0.35);}
+/* 3 - Conversion Arcade - orange/red */
+.card:nth-child(3) .card-num-strip{background:linear-gradient(135deg,#b34700,#ff3b30);}
+.card:nth-child(3) .card-title,.card:nth-child(3) .card-action{color:#ff8a4c;}
+.card:nth-child(3):hover{border-color:rgba(255,138,76,0.35);}
+/* 4 - Triple Match - teal/green */
+.card:nth-child(4) .card-num-strip{background:linear-gradient(135deg,#00715a,#00cec9);}
+.card:nth-child(4) .card-title,.card:nth-child(4) .card-action{color:#2ee6c5;}
+.card:nth-child(4):hover{border-color:rgba(46,230,197,0.35);}
+.footer{text-align:center;margin-top:46px;padding:20px;color:#556688;font-size:0.85em;animation:fadeIn 1s ease 1s both;}
+@media(max-width:600px){.header h1{font-size:1.9em;}.card-num-strip{width:62px;font-size:1.6em;min-height:110px;}.card-body{padding:14px;}.card-action{padding:0 14px;font-size:0.85em;}.container{padding:20px 14px 40px;}}
+</style>
+</head>
+<body>
+<div class="binary-bg" id="binaryBg"></div>
+<div class="container">
+<div class="header">
+<div class="header-icon">🔢</div>
+<h1>Number Systems HQ</h1>
+<p>Master how computers count. Four interactive challenges take you from flipping bits to cracking hex codes — convert confidently between binary, denary and hexadecimal.</p>
+<div class="subtitle">GCSE DIGITAL TECHNOLOGY &bull; UNIT 1: DIGITAL DATA</div>
+</div>
+<div class="base-strip">
+<div class="base-chip"><div class="b">1011&nbsp;0010</div><div class="l">Binary</div></div>
+<div class="base-chip"><div class="b">178</div><div class="l">Denary</div></div>
+<div class="base-chip"><div class="b">B2</div><div class="l">Hex</div></div>
+</div>
+<div class="cards">
+<a class="card" href="activity1.html">
+<div class="card-num-strip">1</div>
+<div class="card-body">
+<div class="card-title-row"><span class="card-icon">💡</span><span class="card-title">Bit Lab</span></div>
+<div class="card-desc">Step into the power lab. Flip the bit switches to build numbers, learn the place values, and convert between binary and denary by hand.</div>
+<div class="card-meta"><span class="card-badge">⏱ 6 min</span><span class="card-badge">Place value</span><span class="card-badge">Binary ⇄ Denary</span></div>
+</div>
+<div class="card-action">PLAY →</div>
+</a>
+<a class="card" href="activity2.html">
+<div class="card-num-strip">2</div>
+<div class="card-body">
+<div class="card-title-row"><span class="card-icon">🕵️</span><span class="card-title">Hex HQ</span></div>
+<div class="card-desc">Join the cipher unit. Learn the sixteen hex digits, then decode intercepted messages and colour codes by converting hex to denary and binary.</div>
+<div class="card-meta"><span class="card-badge">⏱ 7 min</span><span class="card-badge">Hex digits A–F</span><span class="card-badge">Hex ⇄ Denary ⇄ Binary</span></div>
+</div>
+<div class="card-action">PLAY →</div>
+</a>
+<a class="card" href="activity3.html">
+<div class="card-num-strip">3</div>
+<div class="card-body">
+<div class="card-title-row"><span class="card-icon">🕹️</span><span class="card-title">Conversion Arcade</span></div>
+<div class="card-desc">Beat the clock. Rapid-fire conversions across all three number systems, with a combo multiplier and streak bonuses. How high can you score?</div>
+<div class="card-meta"><span class="card-badge">⏱ 5 min</span><span class="card-badge">Speed run</span><span class="card-badge">All bases</span></div>
+</div>
+<div class="card-action">PLAY →</div>
+</a>
+<a class="card" href="activity4.html">
+<div class="card-num-strip">4</div>
+<div class="card-body">
+<div class="card-title-row"><span class="card-icon">🔗</span><span class="card-title">Triple Match</span></div>
+<div class="card-desc">Three systems, one value. Match the binary, denary and hex cards that represent the same number — then spot the odd one out under pressure.</div>
+<div class="card-meta"><span class="card-badge">⏱ 7 min</span><span class="card-badge">Equivalence</span><span class="card-badge">Binary = Denary = Hex</span></div>
+</div>
+<div class="card-action">PLAY →</div>
+</a>
+</div>
+<div class="footer">GCSE Digital Technology &bull; Unit 1: Digital Data &bull; Number Systems</div>
+</div>
+<script>
+const bg=document.getElementById('binaryBg');
+function spawnDigit(){const d=document.createElement('div');d.className='binary-digit';d.textContent=Math.random()>0.5?'1':'0';d.style.left=Math.random()*100+'%';d.style.animationDuration=(8+Math.random()*12)+'s';d.style.animationDelay=Math.random()*2+'s';d.style.fontSize=(14+Math.random()*10)+'px';bg.appendChild(d);d.addEventListener('animationend',()=>d.remove());}
+for(let i=0;i<30;i++)setTimeout(()=>spawnDigit(),i*200);
+setInterval(spawnDigit,600);
+</script>
+</body>
+</html>

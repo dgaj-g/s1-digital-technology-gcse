@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bit Lab — Number Systems HQ</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:linear-gradient(135deg,#021024 0%,#053a6b 45%,#021a33 100%);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#e0e6f0;overflow-x:hidden;}
+.container{max-width:850px;margin:0 auto;padding:20px 20px 60px;position:relative;}
+a.back{display:inline-block;color:#3fa9ff;text-decoration:none;font-size:0.9em;margin-bottom:16px;opacity:0.85;}
+a.back:hover{opacity:1;}
+.progress-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;margin-bottom:24px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#0077ff,#00d4ff);border-radius:3px;transition:width 0.5s ease;width:0%;}
+.screen{display:none;animation:fadeIn 0.5s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pop{0%{transform:scale(0.8);opacity:0;}50%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+@keyframes bounceIn{0%{transform:scale(0);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+@keyframes flick{0%{box-shadow:0 0 4px rgba(0,212,255,0.2);}50%{box-shadow:0 0 22px rgba(0,212,255,0.8);}100%{box-shadow:0 0 4px rgba(0,212,255,0.2);}}
+h2{font-size:1.6em;font-weight:700;margin-bottom:6px;color:#7cc6ff;}
+.phase-label{text-transform:uppercase;font-size:0.75em;letter-spacing:2px;color:#5588bb;margin-bottom:14px;}
+.welcome{text-align:center;padding:36px 0;}
+.welcome-icon{font-size:80px;animation:bounceIn 0.8s ease;}
+.welcome h2{font-size:2em;background:linear-gradient(135deg,#3fa9ff,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:16px 0 10px;}
+.welcome p{color:#8a9bc0;max-width:520px;margin:0 auto 8px;line-height:1.6;}
+.mission-box{background:rgba(0,119,255,0.08);border:1px solid rgba(0,119,255,0.25);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:520px;text-align:left;font-size:0.92em;line-height:1.7;}
+.mission-box strong{color:#3fa9ff;}
+.btn{display:inline-block;padding:12px 32px;border:none;border-radius:10px;font-size:1em;font-weight:700;cursor:pointer;transition:all 0.3s;color:#fff;}
+.btn-primary{background:linear-gradient(135deg,#0077ff,#0a5fd0);}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,119,255,0.4);}
+.btn-success{background:linear-gradient(135deg,#2ecc71,#27ae60);}.btn-success:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(46,204,113,0.4);}
+.teach-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;margin-bottom:18px;animation:fadeIn 0.5s ease;}
+.teach-card h3{font-size:1.15em;color:#7cc6ff;margin-bottom:10px;}
+.teach-card p,.teach-card li{font-size:0.94em;color:#b8c4dc;line-height:1.7;}
+.highlight{background:rgba(0,119,255,0.1);border-left:3px solid #0077ff;padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:0.9em;}
+/* bit grid */
+.bitgrid{display:flex;gap:6px;justify-content:center;margin:18px 0;flex-wrap:wrap;}
+.bitcol{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.pv{font-size:0.78em;color:#5588bb;font-weight:700;font-family:'Courier New',monospace;}
+.switch{width:50px;height:62px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:1.3em;cursor:pointer;transition:all 0.25s;border:2px solid rgba(255,255,255,0.1);background:#0e2238;color:#3a4f6a;user-select:none;}
+.switch .led{width:9px;height:9px;border-radius:50%;background:#2a3a52;margin-bottom:5px;transition:all 0.25s;}
+.switch.on{background:linear-gradient(135deg,#0077ff,#00d4ff);color:#fff;border-color:#00d4ff;animation:flick 0.4s ease;}
+.switch.on .led{background:#eaffff;box-shadow:0 0 8px #00f0ff;}
+.switch.locked{cursor:default;}
+.readout{text-align:center;font-size:1.05em;margin:10px 0;color:#b8c4dc;}
+.readout b{color:#00d4ff;font-family:'Courier New',monospace;font-size:1.15em;}
+.test-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.score-display{font-size:0.95em;color:#3fa9ff;font-weight:600;}
+.streak-badge{background:rgba(255,152,0,0.15);color:#ffb74d;padding:3px 12px;border-radius:12px;font-size:0.82em;font-weight:600;display:none;}
+.streak-badge.show{display:inline-block;animation:pop 0.3s ease;}
+.qcard{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;margin-bottom:14px;text-align:center;animation:fadeIn 0.4s ease;}
+.q-text{font-size:1.1em;font-weight:600;margin-bottom:8px;color:#e0e6f0;}
+.q-sub{font-size:0.85em;color:#8a9bc0;margin-bottom:8px;}
+input.num{width:150px;padding:11px 14px;border:2px solid rgba(0,212,255,0.3);border-radius:8px;background:rgba(255,255,255,0.05);color:#fff;font-size:1.15em;font-weight:700;text-align:center;outline:none;font-family:'Courier New',monospace;}
+input.num:focus{border-color:#00d4ff;}
+input.num.correct{border-color:#2ecc71;background:rgba(46,204,113,0.12);}
+input.num.wrong{border-color:#e74c3c;background:rgba(231,76,60,0.12);animation:shake 0.4s ease;}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+.opt{padding:12px;border:2px solid rgba(255,255,255,0.12);border-radius:10px;background:rgba(255,255,255,0.04);color:#e0e6f0;font-weight:700;font-size:1.05em;cursor:pointer;transition:all 0.25s;font-family:'Courier New',monospace;}
+.opt:hover{border-color:rgba(63,169,255,0.5);background:rgba(63,169,255,0.1);}
+.opt:disabled{cursor:default;}
+.opt.correct{border-color:#2ecc71!important;background:rgba(46,204,113,0.15)!important;color:#2ecc71!important;}
+.opt.wrong{border-color:#e74c3c!important;background:rgba(231,76,60,0.15)!important;color:#e74c3c!important;animation:shake 0.4s ease;}
+.feedback-box{padding:12px 16px;border-radius:8px;margin-top:12px;font-size:0.9em;line-height:1.5;animation:fadeIn 0.3s ease;text-align:left;}
+.feedback-box.correct{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.25);color:#a5d6a7;}
+.feedback-box.wrong{background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.25);color:#ef9a9a;}
+.results{text-align:center;padding:30px 0;}
+.results-icon{font-size:80px;animation:bounceIn 0.6s ease;}
+.results h2{margin:16px 0 6px;}
+.score-big{font-size:2.2em;font-weight:900;color:#00d4ff;margin:10px 0;}
+.rank{font-size:1.1em;color:#7cc6ff;margin-bottom:20px;}
+.breakdown{background:rgba(255,255,255,0.04);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:400px;text-align:left;}
+.breakdown-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.9em;}
+.breakdown-row:last-child{border:none;font-weight:700;color:#00d4ff;}
+.revision-box{background:rgba(0,119,255,0.08);border:1px solid rgba(0,119,255,0.2);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:520px;text-align:left;font-size:0.88em;line-height:1.7;}
+.revision-box h4{color:#3fa9ff;margin-bottom:8px;}
+.btn-row{display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;animation:confettiFall 3s linear forwards;pointer-events:none;z-index:999;}
+@media(max-width:600px){h2{font-size:1.3em;}.switch{width:38px;height:52px;font-size:1.05em;}.pv{font-size:0.65em;}.opts{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="index.html">← Back to Hub</a>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- WELCOME -->
+<div class="screen active" id="welcomeScreen">
+<div class="welcome">
+<div class="welcome-icon">💡</div>
+<h2>Bit Lab</h2>
+<p>Welcome to the Bit Lab, technician. Inside every computer, data is stored using switches that are either ON (1) or OFF (0). Here you'll learn to read those switches, build numbers with them, and convert between binary and denary.</p>
+<div class="mission-box">
+<strong>Lab Briefing:</strong><br>
+Phase 1 — Learn the place values on the switch board<br>
+Phase 2 — Round 1: Read the Grid (binary → denary)<br>
+Phase 2 — Round 2: Build the Number (denary → binary)<br>
+Phase 2 — Round 3: Lightning Round (mixed)
+</div>
+<button class="btn btn-primary" onclick="startTeach()">Power Up →</button>
+</div>
+</div>
+
+<!-- TEACH -->
+<div class="screen" id="teachScreen">
+<div class="phase-label">Phase 1 — Lab Induction</div>
+<div id="teachContent"></div>
+<div style="text-align:center;margin-top:20px;">
+<button class="btn btn-primary" id="teachNextBtn" onclick="nextTeach()">Next →</button>
+</div>
+</div>
+
+<!-- ROUND 1 -->
+<div class="screen" id="r1Screen">
+<div class="phase-label">Phase 2 — Round 1: Read the Grid</div>
+<div class="test-header"><h2>What's the value?</h2><div><span class="score-display" id="r1Score">0/0</span> <span class="streak-badge" id="r1Streak">🔥 0</span></div></div>
+<p style="color:#8a9bc0;font-size:0.9em;margin-bottom:8px;">Read the lit switches, add the place values above them, and type the denary value.</p>
+<div id="r1Content"></div>
+</div>
+
+<!-- ROUND 2 -->
+<div class="screen" id="r2Screen">
+<div class="phase-label">Phase 2 — Round 2: Build the Number</div>
+<div class="test-header"><h2>Build the target</h2><span class="score-display" id="r2Score">0/0</span></div>
+<p style="color:#8a9bc0;font-size:0.9em;margin-bottom:8px;">Click the switches to turn bits ON/OFF until they add up to the target, then Lock In.</p>
+<div id="r2Content"></div>
+</div>
+
+<!-- ROUND 3 -->
+<div class="screen" id="r3Screen">
+<div class="phase-label">Phase 2 — Round 3: Lightning Round</div>
+<div class="test-header"><h2>Quick conversions</h2><div><span class="score-display" id="r3Score">0/0</span> <span class="streak-badge" id="r3Streak">🔥 0</span></div></div>
+<div id="r3Content"></div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="resultsScreen"><div class="results" id="resultsContent"></div></div>
+</div>
+
+<script>
+function shuffle(a){let arr=[...a];for(let i=arr.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function setProgress(p){document.getElementById('progressFill').style.width=p+'%';}
+const PV=[128,64,32,16,8,4,2,1];
+function toBits(n){return PV.map(v=>(n&v)?1:0);}
+function bitsStr(n){let b=toBits(n).join('');return b.slice(0,4)+' '+b.slice(4);}
+
+/* ===== TEACH ===== */
+let teachStep=0;
+const teachSteps=[
+()=>`<div class="teach-card"><h3>⚡ The switch board</h3>
+<p>A byte is made of 8 switches (bits). Each switch has a <strong>place value</strong>. From left to right these double each time: 128, 64, 32, 16, 8, 4, 2, 1.</p>
+<div class="bitgrid">${PV.map((v,i)=>`<div class="bitcol"><div class="pv">${v}</div><div class="switch ${[1,0,1,1,0,0,1,0][i]?'on':''}"><span class="led"></span>${[1,0,1,1,0,0,1,0][i]}</div></div>`).join('')}</div>
+<div class="readout">This pattern reads <b>1011 0010</b></div>
+<div class="highlight"><strong>Try the next pages</strong> to see how these switches turn into denary numbers — and back again.</div></div>`,
+()=>`<div class="teach-card"><h3>🔵 Binary → Denary: add the ON switches</h3>
+<p>To find the denary value, add together the place value of every switch that is ON (showing 1). Ignore the OFF switches.</p>
+<div class="bitgrid">${PV.map((v,i)=>`<div class="bitcol"><div class="pv">${v}</div><div class="switch ${[1,0,1,1,0,0,1,0][i]?'on':''}"><span class="led"></span>${[1,0,1,1,0,0,1,0][i]}</div></div>`).join('')}</div>
+<div class="readout">128 + 32 + 16 + 2 = <b>178</b></div>
+<div class="highlight"><strong>Key:</strong> only the switches that are ON count. Add their place values together.</div></div>`,
+()=>`<div class="teach-card"><h3>🟢 Denary → Binary: switch on the values that fit</h3>
+<p>Work from 128 down to 1. For each place value ask: "does it fit into what's left?" If yes, switch it ON and subtract it. If no, leave it OFF.</p>
+<p style="margin-top:8px;">Example — make <strong>150</strong>: 128 fits (ON, 22 left) → 16 fits (ON, 6 left) → 4 fits (ON, 2 left) → 2 fits (ON, 0 left).</p>
+<div class="bitgrid">${PV.map((v,i)=>`<div class="bitcol"><div class="pv">${v}</div><div class="switch ${[1,0,0,1,0,1,1,0][i]?'on':''}"><span class="led"></span>${[1,0,0,1,0,1,1,0][i]}</div></div>`).join('')}</div>
+<div class="readout">150 = <b>1001 0110</b> &nbsp;(128+16+4+2)</div>
+<div class="highlight"><strong>You're ready.</strong> Time to run the tests, technician.</div></div>`
+];
+function startTeach(){showScreen('teachScreen');teachStep=0;renderTeach();setProgress(8);}
+function renderTeach(){document.getElementById('teachContent').innerHTML=teachSteps[teachStep]();document.getElementById('teachNextBtn').textContent=teachStep<teachSteps.length-1?'Next →':'Start Round 1 →';}
+function nextTeach(){teachStep++;if(teachStep>=teachSteps.length){startR1();}else{renderTeach();setProgress(8+teachStep*7);}}
+
+/* ===== ROUND 1: Read the Grid ===== */
+let r1Q=[],r1i=0,r1s=0,r1st=0,r1max=0;
+function genR1(){const set=new Set();while(set.size<6){set.add(20+Math.floor(Math.random()*230));}return shuffle([...set]);}
+function startR1(){r1Q=genR1();r1i=0;r1s=0;r1st=0;r1max=0;showScreen('r1Screen');setProgress(32);showR1();}
+function showR1(){
+ if(r1i>=r1Q.length){finishR1();return;}
+ const n=r1Q[r1i],bits=toBits(n);
+ document.getElementById('r1Score').textContent=r1s+'/'+r1i;
+ const sb=document.getElementById('r1Streak');if(r1st>=2){sb.textContent='🔥 '+r1st;sb.classList.add('show');}else sb.classList.remove('show');
+ document.getElementById('r1Content').innerHTML=`<div class="qcard">
+ <div class="q-sub">Switch grid ${r1i+1} of ${r1Q.length}</div>
+ <div class="bitgrid">${PV.map((v,i)=>`<div class="bitcol"><div class="pv">${v}</div><div class="switch ${bits[i]?'on':''} locked"><span class="led"></span>${bits[i]}</div></div>`).join('')}</div>
+ <div class="q-text">What is this in denary?</div>
+ <input class="num" id="r1In" type="number" onkeydown="if(event.key==='Enter')checkR1()" autofocus>
+ <div><button class="btn btn-primary" style="margin-top:14px;" onclick="checkR1()">Submit</button></div>
+ <div id="r1Fb"></div></div>`;
+ setTimeout(()=>{const e=document.getElementById('r1In');if(e)e.focus();},80);
+}
+function checkR1(){
+ const inp=document.getElementById('r1In');if(!inp||inp.disabled)return;
+ const n=r1Q[r1i],val=parseInt(inp.value);inp.disabled=true;
+ const on=PV.filter(v=>(n&v));
+ if(val===n){r1s++;r1st++;if(r1st>r1max)r1max=r1st;inp.classList.add('correct');
+  document.getElementById('r1Fb').innerHTML=`<div class="feedback-box correct">✓ Correct! ${on.join(' + ')} = <b>${n}</b></div>`;}
+ else{r1st=0;inp.classList.add('wrong');
+  document.getElementById('r1Fb').innerHTML=`<div class="feedback-box wrong">✗ The answer is <b>${n}</b>. Add the ON switches: ${on.join(' + ')} = ${n}.</div>`;}
+ r1i++;setTimeout(showR1,1700);
+}
+function finishR1(){document.getElementById('r1Score').textContent=r1s+'/'+r1Q.length;
+ document.getElementById('r1Content').innerHTML=`<div style="text-align:center;padding:20px;"><div style="font-size:2.5em;animation:bounceIn 0.5s ease;">${r1s>=5?'🎯':r1s>=3?'👍':'📚'}</div>
+ <p style="margin:12px 0;font-size:1.1em;">Round 1: <strong style="color:#00d4ff;">${r1s}/${r1Q.length}</strong></p>
+ ${r1max>=3?`<p style="color:#ffb74d;font-size:0.9em;">Best streak: 🔥 ${r1max}</p>`:''}
+ <button class="btn btn-primary" style="margin-top:14px;" onclick="startR2()">Round 2: Build the Number →</button></div>`;}
+
+/* ===== ROUND 2: Build the Number ===== */
+let r2Q=[],r2i=0,r2s=0,r2bits=[0,0,0,0,0,0,0,0];
+function startR2(){const set=new Set();while(set.size<5){set.add(15+Math.floor(Math.random()*235));}r2Q=[...set];r2i=0;r2s=0;showScreen('r2Screen');setProgress(58);showR2();}
+function showR2(){
+ if(r2i>=r2Q.length){finishR2();return;}
+ r2bits=[0,0,0,0,0,0,0,0];
+ document.getElementById('r2Score').textContent=r2s+'/'+r2i;
+ renderR2();
+}
+function renderR2(fb){
+ const target=r2Q[r2i];const cur=r2bits.reduce((a,b,i)=>a+(b?PV[i]:0),0);
+ document.getElementById('r2Content').innerHTML=`<div class="qcard">
+ <div class="q-sub">Target ${r2i+1} of ${r2Q.length}</div>
+ <div class="q-text">Build the number <b style="color:#00d4ff;font-size:1.2em;">${target}</b></div>
+ <div class="bitgrid">${PV.map((v,i)=>`<div class="bitcol"><div class="pv">${v}</div><div class="switch ${r2bits[i]?'on':''}" onclick="flip(${i})"><span class="led"></span>${r2bits[i]}</div></div>`).join('')}</div>
+ <div class="readout">Current total: <b>${cur}</b> &nbsp;|&nbsp; binary <b>${r2bits.join('').slice(0,4)} ${r2bits.join('').slice(4)}</b></div>
+ <div><button class="btn btn-success" style="margin-top:6px;" onclick="lockR2()">Lock In</button></div>
+ <div id="r2Fb">${fb||''}</div></div>`;
+}
+function flip(i){r2bits[i]=r2bits[i]?0:1;renderR2();}
+function lockR2(){
+ const target=r2Q[r2i];const cur=r2bits.reduce((a,b,i)=>a+(b?PV[i]:0),0);
+ if(cur===target){r2s++;
+  renderR2(`<div class="feedback-box correct">✓ Locked in! ${bitsStr(target)} = ${target}.</div>`);
+  document.querySelectorAll('#r2Content .switch').forEach(s=>s.onclick=null);
+  document.querySelector('#r2Content .btn-success').disabled=true;
+  r2i++;setTimeout(showR2,1500);
+ } else {
+  const hint=cur<target?`add ${target-cur} more`:`remove ${cur-target}`;
+  renderR2(`<div class="feedback-box wrong">Not yet — you have ${cur}, target is ${target}. Try to ${hint}.</div>`);
+ }
+}
+function finishR2(){document.getElementById('r2Score').textContent=r2s+'/'+r2Q.length;
+ document.getElementById('r2Content').innerHTML=`<div style="text-align:center;padding:20px;"><div style="font-size:2.5em;animation:bounceIn 0.5s ease;">${r2s>=4?'🎯':r2s>=2?'👍':'📚'}</div>
+ <p style="margin:12px 0;font-size:1.1em;">Round 2: <strong style="color:#00d4ff;">${r2s}/${r2Q.length}</strong></p>
+ <button class="btn btn-primary" style="margin-top:14px;" onclick="startR3()">Round 3: Lightning Round →</button></div>`;}
+
+/* ===== ROUND 3: Lightning (mixed MC) ===== */
+let r3Q=[],r3i=0,r3s=0,r3st=0,r3max=0;
+function genR3(){
+ const qs=[];
+ for(let k=0;k<3;k++){const n=10+Math.floor(Math.random()*240);qs.push({type:'b2d',n});}
+ for(let k=0;k<3;k++){const n=10+Math.floor(Math.random()*240);qs.push({type:'d2b',n});}
+ return shuffle(qs);
+}
+function startR3(){r3Q=genR3();r3i=0;r3s=0;r3st=0;r3max=0;showScreen('r3Screen');setProgress(84);showR3();}
+function showR3(){
+ if(r3i>=r3Q.length){finishR3();return;}
+ const q=r3Q[r3i];
+ document.getElementById('r3Score').textContent=r3s+'/'+r3i;
+ const sb=document.getElementById('r3Streak');if(r3st>=2){sb.textContent='🔥 '+r3st;sb.classList.add('show');}else sb.classList.remove('show');
+ let qtext,correct,opts;
+ if(q.type==='b2d'){qtext=`Convert <b style="font-family:'Courier New',monospace;color:#00d4ff;">${bitsStr(q.n)}</b> to denary`;correct=String(q.n);
+  const wrong=new Set([correct]);while(wrong.size<4){let d=q.n+[-1,1,2,-2,4,-4,8,16][Math.floor(Math.random()*8)];if(d>0&&d<256)wrong.add(String(d));}opts=shuffle([...wrong]);}
+ else{qtext=`Convert <b style="color:#00d4ff;">${q.n}</b> to binary`;correct=bitsStr(q.n);
+  const wrong=new Set([correct]);while(wrong.size<4){let d=q.n+[1,-1,2,-2,4,8,16,32][Math.floor(Math.random()*8)];if(d>0&&d<256)wrong.add(bitsStr(d));}opts=shuffle([...wrong]);}
+ document.getElementById('r3Content').innerHTML=`<div class="qcard">
+ <div class="q-sub">Question ${r3i+1} of ${r3Q.length}</div>
+ <div class="q-text">${qtext}</div>
+ <div class="opts">${opts.map(o=>`<button class="opt" onclick="ansR3(this,'${o}','${correct}')">${o}</button>`).join('')}</div>
+ <div id="r3Fb"></div></div>`;
+}
+function ansR3(btn,choice,correct){
+ const btns=document.querySelectorAll('.opt');btns.forEach(b=>b.disabled=true);
+ if(choice===correct){r3s++;r3st++;if(r3st>r3max)r3max=r3st;btn.classList.add('correct');
+  document.getElementById('r3Fb').innerHTML=`<div class="feedback-box correct">✓ Correct!</div>`;}
+ else{r3st=0;btn.classList.add('wrong');btns.forEach(b=>{if(b.textContent===correct)b.classList.add('correct');});
+  document.getElementById('r3Fb').innerHTML=`<div class="feedback-box wrong">✗ The answer is <b>${correct}</b>.</div>`;}
+ r3i++;setTimeout(showR3,1400);
+}
+function finishR3(){showResults();}
+
+/* ===== RESULTS ===== */
+function showResults(){
+ const total=r1s+r2s+r3s,max=r1Q.length+r2Q.length+r3Q.length;
+ const pct=Math.round(total/max*100);
+ let icon='🌱',rank='Trainee Technician';
+ if(pct>=90){icon='👑';rank='Chief Bit Engineer';}else if(pct>=70){icon='⭐';rank='Senior Technician';}else if(pct>=50){icon='💡';rank='Junior Technician';}
+ setProgress(100);showScreen('resultsScreen');fireConfetti();
+ const tips=[];
+ if(r1s<r1Q.length-1)tips.push("Binary → denary: add the place values of every switch that is ON (128 64 32 16 8 4 2 1).");
+ if(r2s<r2Q.length-1)tips.push("Denary → binary: work from 128 down, switching a bit ON only if its value fits into what's left.");
+ if(r3s<r3Q.length-1)tips.push("Practise the eight place values until you know them instantly — they are the key to every question.");
+ document.getElementById('resultsContent').innerHTML=`<div class="results-icon">${icon}</div>
+ <h2>Lab Complete!</h2><div class="score-big">${total}/${max} (${pct}%)</div><div class="rank">${rank}</div>
+ <div class="breakdown">
+ <div class="breakdown-row"><span>Round 1: Read the Grid</span><span>${r1s}/${r1Q.length}</span></div>
+ <div class="breakdown-row"><span>Round 2: Build the Number</span><span>${r2s}/${r2Q.length}</span></div>
+ <div class="breakdown-row"><span>Round 3: Lightning Round</span><span>${r3s}/${r3Q.length}</span></div>
+ <div class="breakdown-row"><span>Total</span><span>${total}/${max}</span></div></div>
+ ${tips.length?`<div class="revision-box"><h4>📝 Revision Notes</h4><ul>${tips.map(t=>'<li>'+t+'</li>').join('')}</ul></div>`:''}
+ <div class="btn-row"><a href="index.html" class="btn btn-primary" style="text-decoration:none;">← Back to Hub</a>
+ <a href="activity2.html" class="btn btn-success" style="text-decoration:none;">Next: Hex HQ →</a></div>`;
+}
+function fireConfetti(){const colors=['#0077ff','#00d4ff','#2ecc71','#ffb74d','#7b6cff'];for(let i=0;i<44;i++){const c=document.createElement('div');c.className='confetti-piece';c.style.left=Math.random()*100+'%';c.style.top='-10px';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.width=(6+Math.random()*8)+'px';c.style.height=(6+Math.random()*8)+'px';c.style.animationDelay=Math.random()*1.5+'s';c.style.animationDuration=(2+Math.random()*2)+'s';document.body.appendChild(c);c.addEventListener('animationend',()=>c.remove());}}
+</script>
+</body>
+</html>

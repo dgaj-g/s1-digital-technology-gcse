@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hex HQ — Number Systems HQ</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:linear-gradient(135deg,#16021f 0%,#3d0a52 45%,#1b0330 100%);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#ecdff5;overflow-x:hidden;}
+.container{max-width:850px;margin:0 auto;padding:20px 20px 60px;position:relative;}
+a.back{display:inline-block;color:#d97bf0;text-decoration:none;font-size:0.9em;margin-bottom:16px;opacity:0.85;}
+a.back:hover{opacity:1;}
+.progress-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;margin-bottom:24px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#7b2ff7,#c026d3);border-radius:3px;transition:width 0.5s ease;width:0%;}
+.screen{display:none;animation:fadeIn 0.5s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pop{0%{transform:scale(0.8);opacity:0;}50%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+@keyframes bounceIn{0%{transform:scale(0);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+@keyframes scan{0%{opacity:0.3;}50%{opacity:1;}100%{opacity:0.3;}}
+h2{font-size:1.6em;font-weight:700;margin-bottom:6px;color:#d97bf0;}
+.phase-label{text-transform:uppercase;font-size:0.75em;letter-spacing:2px;color:#9a6bb5;margin-bottom:14px;}
+.welcome{text-align:center;padding:36px 0;}
+.welcome-icon{font-size:80px;animation:bounceIn 0.8s ease;}
+.welcome h2{font-size:2em;background:linear-gradient(135deg,#c026d3,#7b2ff7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:16px 0 10px;}
+.welcome p{color:#b79ec8;max-width:520px;margin:0 auto 8px;line-height:1.6;}
+.mission-box{background:rgba(192,38,211,0.08);border:1px solid rgba(192,38,211,0.25);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:520px;text-align:left;font-size:0.92em;line-height:1.7;}
+.mission-box strong{color:#d97bf0;}
+.btn{display:inline-block;padding:12px 32px;border:none;border-radius:10px;font-size:1em;font-weight:700;cursor:pointer;transition:all 0.3s;color:#fff;}
+.btn-primary{background:linear-gradient(135deg,#9b27d8,#7b2ff7);}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(155,39,216,0.45);}
+.btn-success{background:linear-gradient(135deg,#2ecc71,#27ae60);}.btn-success:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(46,204,113,0.4);}
+.teach-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;margin-bottom:18px;animation:fadeIn 0.5s ease;}
+.teach-card h3{font-size:1.15em;color:#d97bf0;margin-bottom:10px;}
+.teach-card p,.teach-card li{font-size:0.94em;color:#c7b3d6;line-height:1.7;}
+.highlight{background:rgba(192,38,211,0.1);border-left:3px solid #c026d3;padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:0.9em;}
+.hextable{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:14px 0;}
+.hexcell{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 4px;text-align:center;}
+.hexcell .h{font-family:'Courier New',monospace;font-weight:900;font-size:1.2em;color:#e9b3f5;}
+.hexcell .d{font-size:0.72em;color:#9a6bb5;margin-top:2px;}
+.hexcell.letter .h{color:#ff7be0;}
+.codebox{font-family:'Courier New',monospace;font-size:2.4em;font-weight:900;letter-spacing:6px;color:#fff;background:rgba(0,0,0,0.3);border:1px solid rgba(192,38,211,0.4);border-radius:12px;padding:16px;margin:10px auto;display:inline-block;animation:scan 2s ease-in-out infinite;}
+.swatch{display:inline-block;width:60px;height:30px;border-radius:6px;vertical-align:middle;border:1px solid rgba(255,255,255,0.3);margin-left:8px;}
+.test-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.score-display{font-size:0.95em;color:#d97bf0;font-weight:600;}
+.streak-badge{background:rgba(255,152,0,0.15);color:#ffb74d;padding:3px 12px;border-radius:12px;font-size:0.82em;font-weight:600;display:none;}
+.streak-badge.show{display:inline-block;animation:pop 0.3s ease;}
+.qcard{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;margin-bottom:14px;text-align:center;animation:fadeIn 0.4s ease;}
+.q-text{font-size:1.1em;font-weight:600;margin-bottom:8px;color:#ecdff5;}
+.q-sub{font-size:0.85em;color:#9a6bb5;margin-bottom:8px;}
+input.num{width:150px;padding:11px 14px;border:2px solid rgba(192,38,211,0.3);border-radius:8px;background:rgba(255,255,255,0.05);color:#fff;font-size:1.15em;font-weight:700;text-align:center;outline:none;font-family:'Courier New',monospace;text-transform:uppercase;}
+input.num:focus{border-color:#c026d3;}
+input.num.correct{border-color:#2ecc71;background:rgba(46,204,113,0.12);}
+input.num.wrong{border-color:#e74c3c;background:rgba(231,76,60,0.12);animation:shake 0.4s ease;}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+.opt{padding:12px;border:2px solid rgba(255,255,255,0.12);border-radius:10px;background:rgba(255,255,255,0.04);color:#ecdff5;font-weight:700;font-size:1.1em;cursor:pointer;transition:all 0.25s;font-family:'Courier New',monospace;}
+.opt:hover{border-color:rgba(217,123,240,0.5);background:rgba(217,123,240,0.1);}
+.opt:disabled{cursor:default;}
+.opt.correct{border-color:#2ecc71!important;background:rgba(46,204,113,0.15)!important;color:#2ecc71!important;}
+.opt.wrong{border-color:#e74c3c!important;background:rgba(231,76,60,0.15)!important;color:#e74c3c!important;animation:shake 0.4s ease;}
+.feedback-box{padding:12px 16px;border-radius:8px;margin-top:12px;font-size:0.9em;line-height:1.5;animation:fadeIn 0.3s ease;text-align:left;}
+.feedback-box.correct{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.25);color:#a5d6a7;}
+.feedback-box.wrong{background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.25);color:#ef9a9a;}
+.results{text-align:center;padding:30px 0;}
+.results-icon{font-size:80px;animation:bounceIn 0.6s ease;}
+.results h2{margin:16px 0 6px;}
+.score-big{font-size:2.2em;font-weight:900;color:#c026d3;margin:10px 0;}
+.rank{font-size:1.1em;color:#d97bf0;margin-bottom:20px;}
+.breakdown{background:rgba(255,255,255,0.04);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:400px;text-align:left;}
+.breakdown-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.9em;}
+.breakdown-row:last-child{border:none;font-weight:700;color:#c026d3;}
+.revision-box{background:rgba(192,38,211,0.08);border:1px solid rgba(192,38,211,0.2);border-radius:12px;padding:16px 20px;margin:20px auto;max-width:520px;text-align:left;font-size:0.88em;line-height:1.7;}
+.revision-box h4{color:#d97bf0;margin-bottom:8px;}
+.btn-row{display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;animation:confettiFall 3s linear forwards;pointer-events:none;z-index:999;}
+@media(max-width:600px){h2{font-size:1.3em;}.hextable{grid-template-columns:repeat(4,1fr);}.opts{grid-template-columns:1fr;}.codebox{font-size:1.8em;letter-spacing:4px;}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="index.html">← Back to Hub</a>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="screen active" id="welcomeScreen">
+<div class="welcome">
+<div class="welcome-icon">🕵️</div>
+<h2>Hex HQ</h2>
+<p>Welcome to the cipher unit, agent. Computers often write data in hexadecimal — a base-16 shorthand for binary. Your mission: learn the sixteen hex digits, then decode intercepted codes by converting between hex, denary and binary.</p>
+<div class="mission-box">
+<strong>Mission Briefing:</strong><br>
+Phase 1 — Learn the hex digits and the conversion methods<br>
+Phase 2 — Round 1: Decode the Cipher (hex → denary)<br>
+Phase 2 — Round 2: Encrypt the Order (denary → hex)<br>
+Phase 2 — Round 3: Nibble Splicer (binary ↔ hex)
+</div>
+<button class="btn btn-primary" onclick="startTeach()">Enter HQ →</button>
+</div>
+</div>
+
+<div class="screen" id="teachScreen">
+<div class="phase-label">Phase 1 — Cipher Training</div>
+<div id="teachContent"></div>
+<div style="text-align:center;margin-top:20px;"><button class="btn btn-primary" id="teachNextBtn" onclick="nextTeach()">Next →</button></div>
+</div>
+
+<div class="screen" id="r1Screen">
+<div class="phase-label">Phase 2 — Round 1: Decode the Cipher</div>
+<div class="test-header"><h2>Hex → Denary</h2><div><span class="score-display" id="r1Score">0/0</span> <span class="streak-badge" id="r1Streak">🔥 0</span></div></div>
+<div id="r1Content"></div>
+</div>
+
+<div class="screen" id="r2Screen">
+<div class="phase-label">Phase 2 — Round 2: Encrypt the Order</div>
+<div class="test-header"><h2>Denary → Hex</h2><div><span class="score-display" id="r2Score">0/0</span> <span class="streak-badge" id="r2Streak">🔥 0</span></div></div>
+<div id="r2Content"></div>
+</div>
+
+<div class="screen" id="r3Screen">
+<div class="phase-label">Phase 2 — Round 3: Nibble Splicer</div>
+<div class="test-header"><h2>Binary ⇄ Hex</h2><div><span class="score-display" id="r3Score">0/0</span> <span class="streak-badge" id="r3Streak">🔥 0</span></div></div>
+<p style="color:#9a6bb5;font-size:0.9em;margin-bottom:8px;">Split into nibbles (groups of 4 bits). Each nibble is one hex digit.</p>
+<div id="r3Content"></div>
+</div>
+
+<div class="screen" id="resultsScreen"><div class="results" id="resultsContent"></div></div>
+</div>
+
+<script>
+function shuffle(a){let arr=[...a];for(let i=arr.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function setProgress(p){document.getElementById('progressFill').style.width=p+'%';}
+const HEX="0123456789ABCDEF";
+function toHex(n){return n.toString(16).toUpperCase().padStart(2,'0');}
+function toBin(n){let b=n.toString(2).padStart(8,'0');return b.slice(0,4)+' '+b.slice(4);}
+function nib(h){return parseInt(h,16).toString(2).padStart(4,'0');}
+
+/* ===== TEACH ===== */
+let teachStep=0;
+const teachSteps=[
+()=>`<div class="teach-card"><h3>🔤 The sixteen hex digits</h3>
+<p>Hexadecimal needs sixteen symbols. It uses 0–9 as normal, then the letters <strong>A–F</strong> for ten to fifteen:</p>
+<div class="hextable">${[...HEX].map((h,i)=>`<div class="hexcell ${i>9?'letter':''}"><div class="h">${h}</div><div class="d">= ${i}</div></div>`).join('')}</div>
+<div class="highlight"><strong>Memorise:</strong> A=10, B=11, C=12, D=13, E=14, F=15. Forgetting these is the #1 cause of lost marks.</div></div>`,
+()=>`<div class="teach-card"><h3>🔓 Hex → Denary</h3>
+<p>A 2-digit hex code has a <strong>16s column</strong> and a <strong>1s column</strong>. Multiply the left digit by 16, then add the right digit.</p>
+<div style="text-align:center;"><div class="codebox" style="animation:none;">2F</div></div>
+<p style="text-align:center;margin:6px 0;">(2 × 16) + (F × 1) = (2 × 16) + (15 × 1) = 32 + 15 = <strong style="color:#2ecc71;">47</strong></p>
+<div class="highlight"><strong>Remember</strong> to swap any letter for its value first: here F = 15.</div></div>`,
+()=>`<div class="teach-card"><h3>🔒 Denary → Hex</h3>
+<p>Divide the denary number by 16. The whole-number answer is the left hex digit; the remainder is the right hex digit.</p>
+<p style="text-align:center;margin:8px 0;font-size:1.05em;">200 ÷ 16 = 12 remainder 8 &nbsp;→&nbsp; 12 = C &nbsp;→&nbsp; <strong style="color:#2ecc71;">C8</strong></p>
+<div class="highlight"><strong>Check:</strong> (C × 16) + 8 = (12 × 16) + 8 = 200. ✓</div></div>`,
+()=>`<div class="teach-card"><h3>✂️ Binary ⇄ Hex: the nibble trick</h3>
+<p>One hex digit equals exactly one nibble (4 bits). So to convert, just split into groups of four — no maths needed.</p>
+<p style="margin:8px 0;"><strong>Binary → Hex:</strong> 1011 0110 → 1011 = B, 0110 = 6 → <strong style="color:#2ecc71;">B6</strong></p>
+<p style="margin:8px 0;"><strong>Hex → Binary:</strong> 4F → 4 = 0100, F = 1111 → <strong style="color:#2ecc71;">0100 1111</strong></p>
+<p style="margin-top:10px;">Hex is everywhere — for example, website colours: <strong>FF0000</strong> is pure red <span class="swatch" style="background:#FF0000;"></span> and <strong>00FF00</strong> is green <span class="swatch" style="background:#00FF00;"></span>.</p>
+<div class="highlight"><strong>You're cleared for duty, agent.</strong></div></div>`
+];
+function startTeach(){showScreen('teachScreen');teachStep=0;renderTeach();setProgress(8);}
+function renderTeach(){document.getElementById('teachContent').innerHTML=teachSteps[teachStep]();document.getElementById('teachNextBtn').textContent=teachStep<teachSteps.length-1?'Next →':'Start Round 1 →';}
+function nextTeach(){teachStep++;if(teachStep>=teachSteps.length){startR1();}else{renderTeach();setProgress(8+teachStep*6);}}
+
+/* ===== ROUND 1: Hex -> Denary (type) ===== */
+let r1Q=[],r1i=0,r1s=0,r1st=0,r1max=0;
+function startR1(){const set=new Set();while(set.size<6){set.add(16+Math.floor(Math.random()*239));}r1Q=[...set];r1i=0;r1s=0;r1st=0;r1max=0;showScreen('r1Screen');setProgress(34);showR1();}
+function showR1(){
+ if(r1i>=r1Q.length){finishR1();return;}
+ const n=r1Q[r1i],h=toHex(n);
+ document.getElementById('r1Score').textContent=r1s+'/'+r1i;
+ const sb=document.getElementById('r1Streak');if(r1st>=2){sb.textContent='🔥 '+r1st;sb.classList.add('show');}else sb.classList.remove('show');
+ document.getElementById('r1Content').innerHTML=`<div class="qcard">
+ <div class="q-sub">Intercepted code ${r1i+1} of ${r1Q.length}</div>
+ <div class="codebox">${h}</div>
+ <div class="q-text">Decode to denary:</div>
+ <input class="num" id="r1In" type="number" onkeydown="if(event.key==='Enter')checkR1()" autofocus>
+ <div><button class="btn btn-primary" style="margin-top:14px;" onclick="checkR1()">Decode</button></div>
+ <div id="r1Fb"></div></div>`;
+ setTimeout(()=>{const e=document.getElementById('r1In');if(e)e.focus();},80);
+}
+function checkR1(){
+ const inp=document.getElementById('r1In');if(!inp||inp.disabled)return;
+ const n=r1Q[r1i],h=toHex(n),val=parseInt(inp.value);inp.disabled=true;
+ const d1=parseInt(h[0],16),d2=parseInt(h[1],16);
+ if(val===n){r1s++;r1st++;if(r1st>r1max)r1max=r1st;inp.classList.add('correct');
+  document.getElementById('r1Fb').innerHTML=`<div class="feedback-box correct">✓ Correct! (${d1}×16) + ${d2} = <b>${n}</b></div>`;}
+ else{r1st=0;inp.classList.add('wrong');
+  document.getElementById('r1Fb').innerHTML=`<div class="feedback-box wrong">✗ ${h} = (${d1}×16) + ${d2} = <b>${n}</b></div>`;}
+ r1i++;setTimeout(showR1,1700);
+}
+function finishR1(){document.getElementById('r1Score').textContent=r1s+'/'+r1Q.length;
+ document.getElementById('r1Content').innerHTML=`<div style="text-align:center;padding:20px;"><div style="font-size:2.5em;">${r1s>=5?'🎯':r1s>=3?'👍':'📚'}</div>
+ <p style="margin:12px 0;font-size:1.1em;">Round 1: <strong style="color:#c026d3;">${r1s}/${r1Q.length}</strong></p>
+ <button class="btn btn-primary" style="margin-top:14px;" onclick="startR2()">Round 2: Encrypt the Order →</button></div>`;}
+
+/* ===== ROUND 2: Denary -> Hex (multiple choice) ===== */
+let r2Q=[],r2i=0,r2s=0,r2st=0,r2max=0;
+function startR2(){const set=new Set();while(set.size<6){set.add(16+Math.floor(Math.random()*239));}r2Q=[...set];r2i=0;r2s=0;r2st=0;r2max=0;showScreen('r2Screen');setProgress(58);showR2();}
+function showR2(){
+ if(r2i>=r2Q.length){finishR2();return;}
+ const n=r2Q[r2i],correct=toHex(n);
+ document.getElementById('r2Score').textContent=r2s+'/'+r2i;
+ const sb=document.getElementById('r2Streak');if(r2st>=2){sb.textContent='🔥 '+r2st;sb.classList.add('show');}else sb.classList.remove('show');
+ const wrong=new Set([correct]);while(wrong.size<4){let d=n+[1,-1,16,-16,15,-15,17][Math.floor(Math.random()*7)];if(d>=0&&d<256)wrong.add(toHex(d));}
+ const opts=shuffle([...wrong]);
+ document.getElementById('r2Content').innerHTML=`<div class="qcard">
+ <div class="q-sub">Order ${r2i+1} of ${r2Q.length}</div>
+ <div class="q-text">Encrypt <b style="color:#c026d3;font-size:1.3em;">${n}</b> into hexadecimal</div>
+ <div class="q-sub">${n} ÷ 16 = ${Math.floor(n/16)} remainder ${n%16}</div>
+ <div class="opts">${opts.map(o=>`<button class="opt" onclick="ansR2(this,'${o}','${correct}')">${o}</button>`).join('')}</div>
+ <div id="r2Fb"></div></div>`;
+}
+function ansR2(btn,choice,correct){
+ const btns=document.querySelectorAll('#r2Content .opt');btns.forEach(b=>b.disabled=true);
+ if(choice===correct){r2s++;r2st++;if(r2st>r2max)r2max=r2st;btn.classList.add('correct');
+  document.getElementById('r2Fb').innerHTML=`<div class="feedback-box correct">✓ Correct!</div>`;}
+ else{r2st=0;btn.classList.add('wrong');btns.forEach(b=>{if(b.textContent===correct)b.classList.add('correct');});
+  document.getElementById('r2Fb').innerHTML=`<div class="feedback-box wrong">✗ The answer is <b>${correct}</b>. The whole number becomes the left digit, the remainder the right digit.</div>`;}
+ r2i++;setTimeout(showR2,1500);
+}
+function finishR2(){document.getElementById('r2Score').textContent=r2s+'/'+r2Q.length;
+ document.getElementById('r2Content').innerHTML=`<div style="text-align:center;padding:20px;"><div style="font-size:2.5em;">${r2s>=5?'🎯':r2s>=3?'👍':'📚'}</div>
+ <p style="margin:12px 0;font-size:1.1em;">Round 2: <strong style="color:#c026d3;">${r2s}/${r2Q.length}</strong></p>
+ <button class="btn btn-primary" style="margin-top:14px;" onclick="startR3()">Round 3: Nibble Splicer →</button></div>`;}
+
+/* ===== ROUND 3: Binary <-> Hex (multiple choice) ===== */
+let r3Q=[],r3i=0,r3s=0,r3st=0,r3max=0;
+function startR3(){
+ const qs=[];const set=new Set();while(set.size<6){set.add(16+Math.floor(Math.random()*239));}
+ [...set].forEach((n,i)=>qs.push({n,dir:i%2===0?'b2h':'h2b'}));
+ r3Q=shuffle(qs);r3i=0;r3s=0;r3st=0;r3max=0;showScreen('r3Screen');setProgress(82);showR3();}
+function showR3(){
+ if(r3i>=r3Q.length){finishR3();return;}
+ const q=r3Q[r3i],h=toHex(q.n),b=toBin(q.n);
+ document.getElementById('r3Score').textContent=r3s+'/'+r3i;
+ const sb=document.getElementById('r3Streak');if(r3st>=2){sb.textContent='🔥 '+r3st;sb.classList.add('show');}else sb.classList.remove('show');
+ let qtext,correct,opts;
+ if(q.dir==='b2h'){qtext=`Convert <b style="font-family:'Courier New',monospace;color:#c026d3;">${b}</b> to hex`;correct=h;
+  const w=new Set([correct]);while(w.size<4){let d=q.n+[1,-1,16,-16,17,-17][Math.floor(Math.random()*6)];if(d>=0&&d<256)w.add(toHex(d));}opts=shuffle([...w]);}
+ else{qtext=`Convert <b style="font-family:'Courier New',monospace;color:#c026d3;">${h}</b> to binary`;correct=b;
+  const w=new Set([correct]);while(w.size<4){let d=q.n+[1,-1,16,-16,17,-17][Math.floor(Math.random()*6)];if(d>=0&&d<256)w.add(toBin(d));}opts=shuffle([...w]);}
+ document.getElementById('r3Content').innerHTML=`<div class="qcard">
+ <div class="q-sub">Splice ${r3i+1} of ${r3Q.length}</div>
+ <div class="q-text">${qtext}</div>
+ <div class="opts">${opts.map(o=>`<button class="opt" onclick="ansR3(this,'${o}','${correct}')">${o}</button>`).join('')}</div>
+ <div id="r3Fb"></div></div>`;
+}
+function ansR3(btn,choice,correct){
+ const btns=document.querySelectorAll('#r3Content .opt');btns.forEach(b=>b.disabled=true);
+ const q=r3Q[r3i],h=toHex(q.n);
+ if(choice===correct){r3s++;r3st++;if(r3st>r3max)r3max=r3st;btn.classList.add('correct');
+  document.getElementById('r3Fb').innerHTML=`<div class="feedback-box correct">✓ Correct! ${h[0]}=${nib(h[0])}, ${h[1]}=${nib(h[1])}</div>`;}
+ else{r3st=0;btn.classList.add('wrong');btns.forEach(b=>{if(b.textContent===correct)b.classList.add('correct');});
+  document.getElementById('r3Fb').innerHTML=`<div class="feedback-box wrong">✗ The answer is <b>${correct}</b>. ${h[0]}=${nib(h[0])}, ${h[1]}=${nib(h[1])}.</div>`;}
+ r3i++;setTimeout(showR3,1600);
+}
+function finishR3(){showResults();}
+
+/* ===== RESULTS ===== */
+function showResults(){
+ const total=r1s+r2s+r3s,max=r1Q.length+r2Q.length+r3Q.length;
+ const pct=Math.round(total/max*100);
+ let icon='🌱',rank='Cipher Trainee';
+ if(pct>=90){icon='👑';rank='Master Cryptographer';}else if(pct>=70){icon='⭐';rank='Senior Agent';}else if(pct>=50){icon='🕵️';rank='Field Agent';}
+ setProgress(100);showScreen('resultsScreen');fireConfetti();
+ const tips=[];
+ if(r1s<r1Q.length-1)tips.push("Hex → denary: multiply the left digit by 16, then add the right digit (swap A–F for 10–15 first).");
+ if(r2s<r2Q.length-1)tips.push("Denary → hex: divide by 16. The whole number is the left digit, the remainder is the right digit.");
+ if(r3s<r3Q.length-1)tips.push("Binary ⇄ hex: split into nibbles of 4 bits — each nibble is one hex digit. Learn the 0000–1111 patterns.");
+ document.getElementById('resultsContent').innerHTML=`<div class="results-icon">${icon}</div>
+ <h2>Mission Complete!</h2><div class="score-big">${total}/${max} (${pct}%)</div><div class="rank">${rank}</div>
+ <div class="breakdown">
+ <div class="breakdown-row"><span>Round 1: Decode (hex → denary)</span><span>${r1s}/${r1Q.length}</span></div>
+ <div class="breakdown-row"><span>Round 2: Encrypt (denary → hex)</span><span>${r2s}/${r2Q.length}</span></div>
+ <div class="breakdown-row"><span>Round 3: Nibble Splicer</span><span>${r3s}/${r3Q.length}</span></div>
+ <div class="breakdown-row"><span>Total</span><span>${total}/${max}</span></div></div>
+ ${tips.length?`<div class="revision-box"><h4>📝 Revision Notes</h4><ul>${tips.map(t=>'<li>'+t+'</li>').join('')}</ul></div>`:''}
+ <div class="btn-row"><a href="index.html" class="btn btn-primary" style="text-decoration:none;">← Back to Hub</a>
+ <a href="activity3.html" class="btn btn-success" style="text-decoration:none;">Next: Conversion Arcade →</a></div>`;
+}
+function fireConfetti(){const colors=['#c026d3','#7b2ff7','#2ecc71','#ffb74d','#ff7be0'];for(let i=0;i<44;i++){const c=document.createElement('div');c.className='confetti-piece';c.style.left=Math.random()*100+'%';c.style.top='-10px';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.width=(6+Math.random()*8)+'px';c.style.height=(6+Math.random()*8)+'px';c.style.animationDelay=Math.random()*1.5+'s';c.style.animationDuration=(2+Math.random()*2)+'s';document.body.appendChild(c);c.addEventListener('animationend',()=>c.remove());}}
+</script>
+</body>
+</html>
