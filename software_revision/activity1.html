@@ -567,7 +567,7 @@ teach:[
 <p>The operating system manages the storage of data and files on external devices, such as a hard drive.</p></div>
 <div class="teach-card"><h3>⏱️ Function 3: Processing time</h3>
 <p>The operating system allocates processing time between the programs that are currently in use. It divides the time into a number of <b>time slices</b>. Depending on the <b>priority</b> of the tasks to be processed, each task is allocated a number of these time slices.</p>
-<p style="margin-top:8px;font-size:0.85em;color:#8899aa;">In this example, Program A has the highest priority, so it is given the most time slices.</p>
+<p style="margin-top:8px;font-size:0.85em;color:#8899aa;">In this example, each program is allocated a number of time slices depending on its priority.</p>
 <div class="timeline" id="slices">${'AABACAABAC'.split('').map(p=>`<div style="background:${p==='A'?'#64b5f6':p==='B'?'#ffb74d':'#81c784'}">${p}</div>`).join('')}</div>
 <button class="btn btn-ghost" style="padding:8px 18px;font-size:0.85em;" onclick="playSlices()">▶ Play the time slices</button></div>`,init:playSlices},
 {html:`<div class="teach-card"><h3>🎯 Exam focus</h3>
@@ -597,7 +597,7 @@ rounds:[
   {type:'classify',text:'The program is transferred back out of main memory when it is no longer required',answer:'mem',src:'PP 2018 Q5(b)(ii)',feedback:'Step 3 of allocating memory.'},
   {type:'classify',text:'Manages the storage of data and files on external devices, such as a hard drive',answer:'sto',src:'TB p9',feedback:'Storage.'},
   {type:'classify',text:'Divides the time into a number of time slices',answer:'cpu',src:'TB p9',feedback:'Processing time is divided into time slices.'},
-  {type:'classify',text:'Gives each task a number of time slices, depending on its priority',answer:'cpu',src:'TB p9',feedback:'Processing time: higher-priority tasks can be given more time slices.'},
+  {type:'classify',text:'Gives each task a number of time slices, depending on its priority',answer:'cpu',src:'TB p9',feedback:'Processing time: each task is allocated a number of time slices, depending on its priority.'},
   {type:'classify',text:'Allocates processing time between the programs that are currently in use',answer:'cpu',src:'TB p9',feedback:'Processing time.'}
  ]},
 {title:'Exam Room',heading:'Real CCEA exam questions',keepOrder:true,teachAt:[4],boss:{icon:'🖥️',name:'The Rogue Kernel'},tip:'Learn the three memory-allocation steps, the 2025 OS sentence (software / manage / resources / interface), and the word "booting".',
