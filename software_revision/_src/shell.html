@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TITLE}} — Software HQ</title>
+<style>
+{{CSS}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="index.html">← Back to Software HQ</a>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="screen active" id="welcomeScreen"></div>
+
+<div class="screen" id="teachScreen">
+<div class="phase-label" id="teachLabel"></div>
+<div id="teachContent"></div>
+<div class="teach-nav">
+<button class="btn btn-ghost" id="teachBackBtn" onclick="prevTeach()">← Back</button>
+<button class="btn btn-primary" id="teachNextBtn" onclick="nextTeach()">Next →</button>
+</div>
+</div>
+
+<div class="screen" id="roundScreen">
+<div class="phase-label hud-row" id="roundLabel"></div>
+<h3 id="roundHeading" class="round-heading"></h3>
+<div id="taskArea"></div>
+</div>
+
+<div class="screen" id="resultsScreen"></div>
+</div>
+<script>
+{{CONTENT}}
+</script>
+<script>
+{{ENGINE}}
+</script>
+</body>
+</html>
