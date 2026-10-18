@@ -95,5 +95,7 @@
  "controls.toolbox": "Drag this from the Toolbox",
  "controls.name": "Its name in MY example",
  "controls.set": "Then set this in Properties",
- "controls.nothing": "Nothing else to set"
+ "controls.nothing": "Nothing else to set",
+ "fixed.namesGlobal": "These are the names in MY example. Keep them the same, so every form can find them.",
+ "check.code.intro": "Try each row in Visual Studio. You do not run the program. Tick each row that works. A row that fails tells you where to go."
 }

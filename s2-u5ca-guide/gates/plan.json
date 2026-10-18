@@ -22,7 +22,12 @@
  "03": {
   "stages": 4,
   "screens": 7,
-  "methods": []
+  "methods": [
+   [
+    "Global",
+    "fields"
+   ]
+  ]
  },
  "04": {
   "stages": 4,

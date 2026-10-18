@@ -1,12 +1,11 @@
 {
-  "_note": "Plain words for every name a code block can use. The names strip reads this. Form controls: what it is in OUR example. Global.*: what the notebook line holds.",
+  "_note": "Plain words for every name a code block can use. The names strip reads this. Form controls: what it is in MY example. Global.*: what the notebook line holds.",
   "frmLogin": "the login form",
   "frmDataEntry": "the data entry form",
   "frmQuiz": "the quiz form",
   "frmTest": "the reaction test form",
   "frmReport": "the report form",
   "Global": "the file that remembers things for the whole program",
-
   "pnlLogin": "the panel that holds the login boxes and button",
   "tbxUsername": "the box where the username is typed",
   "tbxPassword": "the box where the password is typed",
@@ -18,7 +17,6 @@
   "pbxLogo1": "a picture box with a logo",
   "pbxLogo2": "a picture box with a logo",
   "btnHelp1": "the ? button on the login form",
-
   "pnlPupilDetails": "the panel that holds the pupil's name, gender and year group",
   "pnlSwimLengths": "the panel that holds the three attempts and the average",
   "pnlQuizResult": "the panel that shows the quiz score and the Take Quiz button",
@@ -61,7 +59,6 @@
   "btnHelpQuizResult": "the ? button in the quiz panel",
   "btnHelpReactionTest": "the ? button in the test panel",
   "btnHelpSwimmingGroup": "the ? button in the group panel",
-
   "pnlQuizScore": "the tall panel on the left that shows the score and the Return button",
   "pnlTextQuestion": "the panel for question 1, which is answered in a text box",
   "pnlButtonsQuestion": "question 2's panel, two buttons",
@@ -93,10 +90,17 @@
   "lblQuestion3": "the words of question 3",
   "lblQuestion5": "the words of question 5",
   "btnHelpQuizScore": "the ? button in the score panel",
-
   "pbx1": "picture box 1 of the 12 on the test form",
-  "pbx2": "picture box 2", "pbx3": "picture box 3", "pbx4": "picture box 4", "pbx5": "picture box 5", "pbx6": "picture box 6",
-  "pbx7": "picture box 7", "pbx8": "picture box 8", "pbx9": "picture box 9", "pbx10": "picture box 10", "pbx11": "picture box 11",
+  "pbx2": "picture box 2",
+  "pbx3": "picture box 3",
+  "pbx4": "picture box 4",
+  "pbx5": "picture box 5",
+  "pbx6": "picture box 6",
+  "pbx7": "picture box 7",
+  "pbx8": "picture box 8",
+  "pbx9": "picture box 9",
+  "pbx10": "picture box 10",
+  "pbx11": "picture box 11",
   "pbx12": "picture box 12 of the 12 on the test form",
   "pbxRed": "the key picture that shows what a red picture means",
   "pbxWhiteandBlack": "the key picture that shows what a white and black picture means",
@@ -111,7 +115,6 @@
   "tmrCountdown": "the timer that counts the seconds down",
   "CountdownValue": "the number of seconds left, kept at the top of the test's code",
   "pictureboxes": "the list that holds the 12 picture boxes",
-
   "dgvReport": "the grid that shows the table",
   "cbxGroup": "the drop-down list that filters by group",
   "cbxYear": "the drop-down list that filters by year group",
@@ -120,7 +123,6 @@
   "lblYear": "the label beside the year list",
   "lblReportInstructions": "the line of instructions at the top of the report",
   "dt": "the table held in memory, kept at the top of the report's code",
-
   "Global.quizScore": "the quiz score, a whole number",
   "Global.surname": "the surname that was entered",
   "Global.firstname": "the first name that was entered",
@@ -134,5 +136,10 @@
   "Global.attempt3": "attempt 3, a whole number",
   "Global.reactionTestScore": "the test score, a whole number",
   "Global.reactionTestTaken": "true once the test has been taken",
-  "Global.assignedGroup": "the group that was worked out"
+  "Global.assignedGroup": "the group that was worked out",
+  "string": "Words. It starts empty.",
+  "int": "A whole number, like 4.",
+  "double": "A number that can have a point, like 4.5.",
+  "bool": "true or false.",
+  "errors": "the list of problems found so far"
 }

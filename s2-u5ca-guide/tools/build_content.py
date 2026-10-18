@@ -36,9 +36,10 @@ def frames(fid, title, fr):
     return {"frames": {"id": fid, "title": title, "frames": [dict(cap(n, alt), say=say) for n, alt, say in fr]}}
 def have(id_, what, how, fix, go):
     return {"id": id_, "what": what, "how": how, "fix": fix, "go": go, "expect": "have"}
-def tryit(id_, what, how, fix, go, neg=False, design=False):
+def tryit(id_, what, how, fix, go, neg=False, design=False, code=False):
     r = {"id": id_, "what": what, "how": how, "fix": fix, "go": go, "expect": "mustnot" if neg else "must"}
     if design: r["on"] = "design"   # checked in the Design tab, not the running program
+    if code: r["on"] = "code"       # tried in the code tab and the Build menu, the program is not run
     return r
 
 # ------------------------------------------------------------------ chapter 7

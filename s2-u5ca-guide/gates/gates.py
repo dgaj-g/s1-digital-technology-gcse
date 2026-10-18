@@ -91,13 +91,14 @@ def g4():
 def known():
     k = set(NAMES) | {'Global.' + f for f in GLOBAL} | set(CONTROLS)
     for f in CONTROLS.values(): k |= set(f.get('controls', {}))
-    return k - {'_note'}
+    return k - {'_note', 'string', 'int', 'double', 'bool'}   # C# types sit in names.json for the Global.cs IntelliSense strip only
 def g6():
     out, K = [], known()
     for cid, ch in CH.items():
         for sid, _, c in codes(ch):
             if c['kind'] != 'type': continue
             t = re.sub(r'//.*', '', c['text'])
+            if c.get('form') == 'Global': t = re.sub(r'(static \w+ )(\w+)', r'\1Global.\2', t)   # in Global.cs a field IS Global.<field>
             have = {n for n in K if re.search(r'(?<![\w.])' + re.escape(n) + r'\b', t)}
             have -= {n for n in have if any(m != n and (m.endswith('.' + n) or m.startswith(n + '.')) and m in have for m in have)}
             names = set(c.get('names', []))

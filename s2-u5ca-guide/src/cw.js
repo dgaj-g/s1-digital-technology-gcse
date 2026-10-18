@@ -148,8 +148,11 @@ function bDrawn(d, ctx) {
     st.appendChild(el(`<div class="dw-code"><span class="badge">runs now</span>private void frmQuiz_Load(...)<br>{<br>&nbsp;&nbsp;&nbsp;&nbsp;pnlListQuestion.Enabled = false;<br>}</div>`));
   } else if (d.id === 'stop-sign') {
     st.appendChild(el(`<div class="dw-stop"><div class="sign">STOP</div><div class="lines">MessageBox.Show("Please choose...");<br><span class="tok-k">return;</span><br><span class="d">if (rbB.Checked)</span><br><span class="d">{ ... }</span></div></div>`));
+  } else if (d.id === 'notebook') {
+    /* ch03: the quiz form closes and its score card would be lost; it drops into Global.cs, which keeps it */
+    st.appendChild(el(`<div class="dw-note"><div class="dw-win shut"><div class="tb"><i></i>frmQuiz</div><div class="body"><div class="pn open"></div><div class="pn open"></div><div class="pn open"></div></div></div><div class="book"><div class="ttl">🗒️ Global.cs</div><div class="slot"><span class="score">quizScore = 4</span></div><div class="ln">surname = "Kelly"</div><div class="ln">quizTaken = true</div></div></div>`));
   } else if (d.id === 'fresh-screen') {
-    st.appendChild(el(`<div class="dw-fresh"><div class="sc"><div class="t">frmDataEntry, fresh</div><div class="l"></div><div class="l" style="width:70%"></div><div class="l" style="width:85%"></div></div><div class="ar">→</div><div class="sc new"><div class="t">Global, the notebook</div><div>quizScore = 4</div><div>quizTaken = true</div><div>reactionScore = 0</div></div></div>`));
+    st.appendChild(el(`<div class="dw-fresh"><div class="sc"><div class="t">frmDataEntry, fresh</div><div class="l"></div><div class="l" style="width:70%"></div><div class="l" style="width:85%"></div></div><div class="ar">→</div><div class="sc new"><div class="t">Global.cs</div><div>quizScore = 4</div><div>quizTaken = true</div><div>reactionScore = 0</div></div></div>`));
   } else if (d.id === 'mini-chapter') {
     const st7 = (S.index.chapters.find(c => c.id === '07') || { stages: [] }).stages.slice(0, 3);
     st.appendChild(el(`<div class="dw-mini">${st7.map((s, i) => `${i ? '<span class="ar">→</span>' : ''}<span class="st">${esc(s[1])}<br><small style="color:var(--mute)">${'● '.repeat(Math.max(1, s[2] - 1))}✓</small></span>`).join('')}<span class="ar">→</span><span class="st">…</span></div>`));
@@ -238,13 +241,15 @@ function bFrames(fr, ctx) {
 function isenseFor(form, pick) {
   const dot = pick.indexOf('.');
   const typed = dot > 0 ? pick.slice(0, dot + 1) : pick.slice(0, 3);
+  /* Global.cs has no controls: its IntelliSense list is the four C# types (ch03) */
+  if (form === 'Global' || ['bool', 'double', 'int', 'string'].includes(pick)) { const ty = pick.slice(0, 3); return { form, typed: ty, pick, list: ['bool', 'double', 'int', 'string'] }; }
   let pool = dot > 0 ? Object.keys(S.names).filter(k => k.startsWith(typed)) : Object.keys((S.controls[form] || S.controls.frmDataEntry).controls).filter(k => k.toLowerCase().startsWith(typed.toLowerCase()));
   pool = Array.from(new Set(pool.concat([pick]))).sort();
   if (pool.length > 5) { const i = pool.indexOf(pick); const a = Math.max(0, Math.min(i - 2, pool.length - 5)); pool = pool.slice(a, a + 5); }
   return { form, typed, pick, list: pool };
 }
 function bIsense(is, ctx, auto) {
-  const n = el(`<div class="cw-isense"><div class="ttl"><span>${esc(t('isense.title'))}</span><button class="btn">${esc(t('isense.replay'))}</button></div><div class="ig"><div class="il"><div class="line"><span class="tx"></span><span class="caret"></span></div><div class="list" aria-hidden="true">${is.list.map(x => `<div data-n="${esc(x)}"><i></i>${esc(x)}</div>`).join('')}</div></div><div class="ir"><p class="fixed">${esc(t('fixed.isense1'))}</p><p class="fixed">${esc(t('fixed.isense2'))}</p></div></div></div>`);
+  const n = el(`<div class="cw-isense"><div class="ttl"><span>${esc(t('isense.title'))}</span><button class="btn">${esc(t('isense.replay'))}</button></div><div class="ig"><div class="il"><div class="line"><span class="tx"></span><span class="caret"></span></div><div class="list" aria-hidden="true">${is.list.map(x => `<div data-n="${esc(x)}"><i></i>${esc(x)}</div>`).join('')}</div></div><div class="ir"><p class="fixed">${esc(t('fixed.isense1'))}</p>${is.form === 'Global' ? '' : `<p class="fixed">${esc(t('fixed.isense2'))}</p>`}</div></div></div>`);
   const tx = $('.tx', n), list = $('.list', n), items = $$('.list div', n);
   const sel = k => items.forEach((d, j) => d.classList.toggle('sel', j === k));
   function play() {
@@ -261,8 +266,8 @@ function bIsense(is, ctx, auto) {
   if (auto) later(play, 500); else { tx.textContent = is.pick; list.classList.add('on'); sel(is.list.indexOf(is.pick)); }
   return n;
 }
-function bNames(list, title, ctx) {
-  const n = el(`<div class="cw-names"><div class="ttl">${esc(title)}</div><ul>${list.map((x, i) => `<li style="--d:${450 + i * 140}ms"><code>${esc(x)}</code><span>${esc(S.names[x] || '')}</span></li>`).join('')}</ul><p class="fixed">${esc(t('fixed.names'))}</p>${ctx.inSheet ? '' : `<button class="link how">${esc(t('fixed.howName'))}</button>`}</div>`);
+function bNames(list, title, ctx, form) {
+  const n = el(`<div class="cw-names"><div class="ttl">${esc(title)}</div><ul>${list.map((x, i) => `<li style="--d:${450 + i * 140}ms"><code>${esc(x)}</code><span>${esc(S.names[x] || '')}</span></li>`).join('')}</ul><p class="fixed">${esc(t(form === 'Global' ? 'fixed.namesGlobal' : 'fixed.names'))}</p>${ctx.inSheet || form === 'Global' ? '' : `<button class="link how">${esc(t('fixed.howName'))}</button>`}</div>`);
   const h = $('.how', n); if (h) h.addEventListener('click', openSheet);
   return n;
 }
@@ -288,7 +293,7 @@ function bSteps(steps, ctx) {
 function bCheck(rows, ctx) {
   const tryIt = rows.some(r => r.expect !== 'have');
   const wrap = document.createDocumentFragment();
-  wrap.appendChild(el(`<p class="intro">${esc(t(rows.some(r => r.on === 'design') ? 'check.design.intro' : tryIt ? 'check.try.intro' : 'check.have.intro'))}</p>`));
+  wrap.appendChild(el(`<p class="intro">${esc(t(rows.some(r => r.on === 'design') ? 'check.design.intro' : rows.some(r => r.on === 'code') ? 'check.code.intro' : tryIt ? 'check.try.intro' : 'check.have.intro'))}</p>`));
   const ul = el(`<ul class="cw-check"></ul>`);
   const tk = ticks(ctx.chId);
   rows.forEach((r, i) => {
@@ -371,7 +376,7 @@ function bCode(c, ctx) {
   card._after = () => { layoutParts(card); typeIt(false); };
   const out = [card];
   const names = c.names || [];
-  if (names.length) out.push(bNames(names, t('code.namesTitle'), ctx));
+  if (names.length) out.push(bNames(names, t('code.namesTitle'), ctx, c.form));
   if (c.isense && c.isense.length) { const auto = !S.isenseShown[ctx.chId]; S.isenseShown[ctx.chId] = true; out.push(bIsense(isenseFor(c.form || 'frmDataEntry', c.isense[0]), ctx, auto)); }
   if (c.continues) out.push(el(`<p class="cw-p" style="color:var(--mute);font-weight:700">${esc(t('code.continues'))}</p>`));
   return out;

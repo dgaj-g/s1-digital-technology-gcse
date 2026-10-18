@@ -35,7 +35,7 @@ def block(b, lines):
             for w in s.get('wrong', []): lines.append('  ' + t('step.wrong') + ' ' + clean(w[0]) + ' -> ' + clean(w[1]))
     elif 'check' in b:
         tryIt = any(r['expect'] != 'have' for r in b['check'])
-        lines.append('[List of checks: %s]  %s' % (t('check.try.title') if tryIt else t('check.have.title'), t('check.design.intro') if any(r.get('on') == 'design' for r in b['check']) else t('check.try.intro') if tryIt else t('check.have.intro')))
+        lines.append('[List of checks: %s]  %s' % (t('check.try.title') if tryIt else t('check.have.title'), t('check.design.intro') if any(r.get('on') == 'design' for r in b['check']) else t('check.code.intro') if any(r.get('on') == 'code' for r in b['check']) else t('check.try.intro') if tryIt else t('check.have.intro')))
         for r in b['check']:
             lab = {'must': t('check.must') + '. ', 'mustnot': t('check.mustNot') + '. '}.get(r['expect'], '')
             lines.append('  [tick box] %s%s' % (lab, clean(r['what'])))
@@ -48,7 +48,7 @@ def block(b, lines):
         for i, ln in enumerate(c['text'].split('\n')): lines.append('  %s%s' % ('[grey, already there] ' if a0 + i in g else '', ln))
         for pl in c['partLines']: lines.append('  [%s] %s: %s' % ('Line %d' % pl[0] if pl[0] == pl[1] else 'Lines %d to %d' % (pl[0], pl[1]), clean(pl[2]), clean(pl[3])))
         if c.get('yours'): lines.append('  ' + clean(c['yours']))
-        if c.get('names'): lines.append('  [Names in this code: %s]  %s' % (', '.join(c['names']), t('fixed.names')))
+        if c.get('names'): lines.append('  [Names in this code: %s]  %s' % (', '.join(c['names']), t('fixed.namesGlobal' if c.get('form') == 'Global' else 'fixed.names')))
         if c.get('isense'): lines.append('  [IntelliSense animation: typing the first letters of %s and picking it from the list]' % c['isense'][0])
     elif 'box' in b:
         x = b['box']; lines.append('[Fold-out box, closed until clicked: %s]' % clean(x['title']))
@@ -83,7 +83,7 @@ for name in [c + '.json' for c in CHS]:
 head = '''# What the reader sees
 This is the pupil-visible text of a login-gated web guide, read on a school PC beside Visual Studio 2019 (or in a browser tab beside the Programming Environment tab).
 The reader is a Year 12 pupil (15 or 16) in a very weak GCSE Digital Technology class. Many have missed lessons. They are creating their own C# Windows Forms program (a login form, a data entry form, a quiz, a reaction test, a report) for their controlled assessment. The guide shows MY example program (the teacher's). The pupil's program has different control names.
-Words this pupil has met in class: form, control, button, text box, panel, radio button, number box, label, group box, code, Design tab, code tab, Solution Explorer, Toolbox (the list of controls down the left of Visual Studio, taught in chapter 1), Properties window, green Start arrow, property, IntelliSense, Enabled, Visible, switched off, switched on. The Load event is NEW to them; chapter 7 is where they meet it.
+Words this pupil has met in class: form, control, button, text box, panel, radio button, number box, label, group box, code, Design tab, code tab, Solution Explorer, Toolbox (the list of controls down the left of Visual Studio, taught in chapter 1), curly brackets, semicolon, Build Solution (all three taught in chapters 0 and 1), Properties window, green Start arrow, property, IntelliSense, Enabled, Visible, switched off, switched on. The Load event is NEW to them; chapter 7 is where they meet it.
 A screen is one card with a title, some text or one big block (steps, a code card, a diagram, a picture strip, a list of checks) and a big button at the foot. Text in [square brackets] describes a picture, animation or card the pupil sees but is not itself text.
 '''
 for sub in ('A', 'B'):

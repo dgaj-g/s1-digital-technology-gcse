@@ -142,22 +142,36 @@
    "title": "Global.cs: the file that remembers things between forms",
    "one": "One file that every form can read and write.",
    "color": "#2A9D8F",
-   "built": false,
-   "steps": [],
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "2-2.1",
+    "2-2.2",
+    "2-2.3",
+    "3-1.c1",
+    "3-2.c1",
+    "3-3.c1",
+    "4-1.t1",
+    "4-1.t2",
+    "4-1.t3"
+   ],
    "stages": [
     [
      "1",
-     "Check you have what this chapter needs",
+     "Check what your Global.cs has",
      1
     ],
     [
      "2",
-     "Add the class",
+     "Add the Global.cs file",
      2
     ],
     [
      "3",
-     "The fields",
+     "The fourteen variables",
      3
     ],
     [

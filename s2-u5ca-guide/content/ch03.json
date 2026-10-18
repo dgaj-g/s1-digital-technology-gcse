@@ -1,0 +1,437 @@
+{
+ "id": "03",
+ "n": 3,
+ "of": 15,
+ "title": "Global.cs: the file that remembers things between forms",
+ "kind": "expected",
+ "color": "#2A9D8F",
+ "one": "One file that every form can read and write.",
+ "prev": {
+  "id": "02",
+  "n": 2,
+  "title": "The data entry form: its panels and boxes"
+ },
+ "next": {
+  "id": "04",
+  "n": 4,
+  "title": "Pupil details: the Enter button"
+ },
+ "methods": [
+  [
+   "Global",
+   "fields"
+  ]
+ ],
+ "stages": [
+  {
+   "id": "1",
+   "title": "Check what your Global.cs has",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Check what your Global.cs already has",
+     "foot": "have",
+     "goal": "I check for a Global.cs file that says public class Global and holds all fourteen public static lines.",
+     "blocks": [
+      {
+       "p": "Your project may have Global.cs already. This screen checks what is there."
+      },
+      {
+       "check": [
+        {
+         "id": "1-1.t1",
+         "what": "In Solution Explorer, is there a file called Global.cs?",
+         "how": "Solution Explorer is on the right. Look down its list of files.",
+         "fix": "Go to stage 2.",
+         "go": "#cw/03/2-1",
+         "expect": "have"
+        },
+        {
+         "id": "1-1.t2",
+         "what": "Double-click Global.cs. Does it say public class Global?",
+         "how": "Look at the top of the file, a few lines down.",
+         "fix": "Go to stage 2, screen 2.",
+         "go": "#cw/03/2-2",
+         "expect": "have"
+        },
+        {
+         "id": "1-1.t3",
+         "what": "Is there a public static line for surname, attempt1, quizScore and the eleven others?",
+         "how": "All fourteen names are on stage 3. Check each one.",
+         "fix": "Go to stage 3.",
+         "go": "#cw/03/3-1",
+         "expect": "have"
+        },
+        {
+         "id": "1-1.t4",
+         "what": "Click the Build menu, then Build Solution. Does the bottom bar say Build succeeded?",
+         "how": "The Build menu is along the top of Visual Studio.",
+         "fix": "Go to chapter 0, stage 3.",
+         "go": "#cw/00/3-1",
+         "expect": "have"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "Add the Global.cs file",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Keep things safe when a form closes",
+     "foot": "next",
+     "goal": "A form forgets everything when it closes, so Global.cs keeps what every form needs.",
+     "blocks": [
+      {
+       "p": "A form forgets everything when it closes. The quiz form closes, and its score is gone."
+      },
+      {
+       "words": [
+        [
+         "Global",
+         "The file every form can read and write in.",
+         "2-1",
+         true
+        ],
+        [
+         "variable",
+         "A name that holds one thing, like a score.",
+         "2-1",
+         true
+        ],
+        [
+         "static",
+         "There is only one of it. Every form sees the same one.",
+         "2-1",
+         true
+        ]
+       ],
+       "intro": "Three new words in this chapter. Click any marked word to see what it means."
+      },
+      {
+       "drawn": {
+        "id": "notebook",
+        "alt": "The quiz form fades away. Its score card drops into Global.cs, which keeps it.",
+        "say": "The quiz form closes. Its score drops into Global.cs, and Global.cs keeps it."
+       }
+      },
+      {
+       "p": "[[Global|0]] is that file. It is called Global.cs."
+      },
+      {
+       "p": "Each line in it is a [[variable|1]]. [[static|2]] means there is only one, shared by every form."
+      },
+      {
+       "watch": "Global.cs holds no controls. It has no Design tab. It is only code."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Add Global.cs to your project",
+     "foot": "done",
+     "goal": "I add a class called Global and put the word public in front of class.",
+     "blocks": [
+      {
+       "p": "Visual Studio makes the new file for you. You change one word in it."
+      },
+      {
+       "steps": [
+        {
+         "id": "2-2.1",
+         "do": "Click the Project menu along the top. Click Add Class.",
+         "see": "A box opens with Class picked in its list.",
+         "wrong": [
+          [
+           "I cannot see Add Class.",
+           "Click your project's name in Solution Explorer first. Then open the Project menu again."
+          ]
+         ]
+        },
+        {
+         "id": "2-2.2",
+         "do": "In the Name box at the bottom, type Global.cs. Click Add.",
+         "see": "Global.cs opens in the code tab. It says class Global."
+        },
+        {
+         "id": "2-2.3",
+         "do": "Click in front of the word class. Type the word public and a space.",
+         "see": "The line now says public class Global."
+        }
+       ]
+      },
+      {
+       "box": {
+        "title": "See it in Visual Studio",
+        "fold": true,
+        "blocks": [
+         {
+          "frames": {
+           "id": "F6",
+           "title": "Add a class called Global",
+           "frames": [
+            {
+             "img": "img/cap/f6-1.png",
+             "alt": "The Project menu open, with Add Class in its list",
+             "w": 1280,
+             "h": 800,
+             "say": "Open the Project menu. Click Add Class."
+            },
+            {
+             "img": "img/cap/f6-2.png",
+             "alt": "The Add New Item box with Class picked and Global.cs in the Name box",
+             "w": 1280,
+             "h": 800,
+             "say": "Class is picked. Type Global.cs in the Name box."
+            },
+            {
+             "img": "img/cap/f6-3.png",
+             "alt": "The new Global.cs in the code tab, showing class Global",
+             "w": 1280,
+             "h": 800,
+             "say": "Click Add. Global.cs opens in the code tab."
+            }
+           ]
+          }
+         }
+        ]
+       }
+      },
+      {
+       "watch": "Type public in front of class. Without it, your other forms may not find Global."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "The fourteen variables",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Keep the pupil's details in Global.cs",
+     "foot": "done",
+     "goal": "Global.cs holds four string variables for the surname, first name, year group and gender, each starting empty.",
+     "blocks": [
+      {
+       "p": "Every line in Global.cs has the same shape. This screen explains it once."
+      },
+      {
+       "p": "public means every form may use it. static means there is only one. string means words."
+      },
+      {
+       "code": {
+        "id": "3-1.c1",
+        "kind": "type",
+        "title": "Global.cs, part 1 of 3",
+        "where": "between the curly brackets of public class Global, in Global.cs",
+        "form": "Global",
+        "method": "fields",
+        "lang": "cs",
+        "from": 1,
+        "to": 4,
+        "text": "        public static string surname = \"\";\n        public static string firstname = \"\";\n        public static string yearGroup = \"\";\n        public static string gender = \"\";",
+        "partLines": [
+         [
+          1,
+          1,
+          "The shape of every line",
+          "public static, then the kind, then the name. = \"\" means it starts empty."
+         ],
+         [
+          2,
+          4,
+          "Three more for the pupil",
+          "The first name, the year group and the gender. Each one is words, so each is a string."
+         ]
+        ],
+        "names": [
+         "Global.surname",
+         "Global.firstname",
+         "Global.yearGroup",
+         "Global.gender"
+        ],
+        "isense": [
+         "string"
+        ]
+       }
+      },
+      {
+       "watch": "Each line ends with a semicolon. A missing one gives a red line."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Keep the three attempts and their average",
+     "foot": "done",
+     "goal": "Global.cs holds three int attempts, a double average and a bool that says if the average is worked out.",
+     "blocks": [
+      {
+       "p": "Next come the three attempts and their average. These are numbers, not words."
+      },
+      {
+       "code": {
+        "id": "3-2.c1",
+        "kind": "type",
+        "title": "Global.cs, part 2 of 3",
+        "where": "under part 1, between the curly brackets of public class Global, in Global.cs",
+        "form": "Global",
+        "method": "fields",
+        "lang": "cs",
+        "from": 5,
+        "to": 9,
+        "text": "        public static int attempt1 = 0;\n        public static int attempt2 = 0;\n        public static int attempt3 = 0;\n        public static double average = 0;\n        public static bool averageCalculated = false;",
+        "partLines": [
+         [
+          5,
+          7,
+          "The three attempts",
+          "Each attempt is a whole number, so each is an int. Each starts at 0."
+         ],
+         [
+          8,
+          8,
+          "The average",
+          "A double can have a point, like 4.5. An average often does."
+         ],
+         [
+          9,
+          9,
+          "Is the average worked out yet?",
+          "A bool is true or false. It starts false. Chapter 5 sets it to true."
+         ]
+        ],
+        "names": [
+         "Global.attempt1",
+         "Global.attempt2",
+         "Global.attempt3",
+         "Global.average",
+         "Global.averageCalculated"
+        ],
+        "isense": [
+         "int"
+        ],
+        "yours": "MY three attempts are swim lengths. attempt1, attempt2 and attempt3 fit any task, so keep these names."
+       }
+      },
+      {
+       "watch": "average is a double, not an int. An int would lose the point."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Keep the quiz, the reaction test and the group",
+     "foot": "done",
+     "goal": "Global.cs holds the quiz score, the reaction test score, a bool for each saying it is taken, and the group.",
+     "blocks": [
+      {
+       "p": "Last come the quiz, the reaction test and the group the pupil goes in."
+      },
+      {
+       "code": {
+        "id": "3-3.c1",
+        "kind": "type",
+        "title": "Global.cs, part 3 of 3",
+        "where": "under part 2, between the curly brackets of public class Global, in Global.cs",
+        "form": "Global",
+        "method": "fields",
+        "lang": "cs",
+        "from": 10,
+        "to": 14,
+        "text": "        public static int quizScore = 0;\n        public static bool quizTaken = false;\n        public static int reactionTestScore = 0;\n        public static bool reactionTestTaken = false;\n        public static string assignedGroup = \"\";",
+        "partLines": [
+         [
+          10,
+          11,
+          "The quiz",
+          "quizScore holds the score. quizTaken turns true once the quiz is done."
+         ],
+         [
+          12,
+          13,
+          "The reaction test",
+          "The same two again, for the reaction test."
+         ],
+         [
+          14,
+          14,
+          "The group",
+          "assignedGroup holds the group the pupil is put in. It is words."
+         ]
+        ],
+        "names": [
+         "Global.quizScore",
+         "Global.quizTaken",
+         "Global.reactionTestScore",
+         "Global.reactionTestTaken",
+         "Global.assignedGroup"
+        ],
+        "isense": [
+         "bool"
+        ]
+       }
+      },
+      {
+       "p": "That makes fourteen lines. Count yours."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "Try it",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Check every form can find your fourteen variables",
+     "foot": "chapter-done",
+     "goal": "The project builds, and typing Global and a full stop in another form lists all fourteen names.",
+     "blocks": [
+      {
+       "p": "These checks happen in Visual Studio. The program does not need to run."
+      },
+      {
+       "check": [
+        {
+         "id": "4-1.t1",
+         "what": "Click the Build menu, then Build Solution.",
+         "how": "The bottom bar says Build succeeded.",
+         "fix": "Look at the line with the red mark. Then go to stage 3.",
+         "go": "#cw/03/3-1",
+         "expect": "must",
+         "on": "code"
+        },
+        {
+         "id": "4-1.t2",
+         "what": "Double-click the Login button on YOUR login form. Click an empty line in its code. Type Global and a full stop.",
+         "how": "A list pops up with YOUR fourteen names in it. Then delete what you typed.",
+         "fix": "Check each line starts public static. Go to stage 3.",
+         "go": "#cw/03/3-1",
+         "expect": "must",
+         "on": "code"
+        },
+        {
+         "id": "4-1.t3",
+         "what": "Take the word static off one line and build. Type Global and a full stop again.",
+         "how": "That name must NOT be in the list. Put static back afterwards.",
+         "fix": "If the name is still there, build again first. Then look at stage 3.",
+         "go": "#cw/03/3-1",
+         "expect": "mustnot",
+         "on": "code"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
