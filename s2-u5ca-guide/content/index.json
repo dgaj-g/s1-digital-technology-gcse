@@ -285,18 +285,45 @@
    "title": "The quiz: the first three questions",
    "one": "Get to the quiz, then mark a typed answer, two buttons and a list.",
    "color": "#D1495B",
-   "built": false,
-   "steps": [],
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "1-1.t5",
+    "2-1.1",
+    "2-1.2",
+    "2-1.3",
+    "3-1.1",
+    "3-1.c1",
+    "4-1.1",
+    "4-1.c1",
+    "4-2.c1",
+    "5-1.1",
+    "5-1.c1",
+    "5-2.1",
+    "5-2.c1",
+    "5-3.1",
+    "5-3.c1",
+    "5-4.c1",
+    "5-5.c1",
+    "6-1.t1",
+    "6-1.t2",
+    "6-1.t3",
+    "6-1.t4",
+    "6-1.t5"
+   ],
    "stages": [
     [
      "1",
-     "Check you have what this chapter needs",
+     "Check what your quiz has",
      1
     ],
     [
      "2",
      "The quiz form: its panels and buttons",
-     3
+     4
     ],
     [
      "3",
@@ -311,15 +338,15 @@
     [
      "5",
      "Questions 2 and 3",
-     3
+     5
     ],
     [
      "6",
-     "Try it",
+     "Try your first three questions",
      1
     ]
    ],
-   "screens": 11
+   "screens": 14
   },
   {
    "id": "07",
@@ -396,12 +423,29 @@
    "title": "The data entry form: its Load event",
    "one": "When the form opens, read Global.cs and switch on the right panel.",
    "color": "#E07A1F",
-   "built": false,
-   "steps": [],
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "2-2.1",
+    "2-2.2",
+    "3-1.c1",
+    "4-1.c1",
+    "4-2.c1",
+    "4-3.c1",
+    "4-4.c1",
+    "4-5.c1",
+    "5-1.t1",
+    "5-1.t2",
+    "5-1.t3",
+    "5-1.t4"
+   ],
    "stages": [
     [
      "1",
-     "Check you have what this chapter needs",
+     "Check what you need first",
      1
     ],
     [
@@ -421,7 +465,7 @@
     ],
     [
      "5",
-     "Try it",
+     "Try your Load event",
      1
     ]
    ],

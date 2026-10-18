@@ -1,0 +1,4 @@
+ch06#2-3	Fill the question 2 and question 3 panels
+ch06#2-4	Fill the question 4 and question 5 panels
+ch06#3-1	Open the quiz from the Take quiz button
+ch06#4-2	Switch off question 1 and switch on question 2

@@ -1,0 +1,5 @@
+ch08#2-1	Why the form must read Global.cs as it opens
+ch08#4-1	Show the score when the quiz has been taken
+ch08#4-3	Switch on the details panel when the quiz is not taken
+ch08#4-5	Switch on the group panel when the test is taken
+ch08#5-1	Try the data entry form before and after the quiz

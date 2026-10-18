@@ -151,6 +151,9 @@ function bDrawn(d, ctx) {
   } else if (d.id === 'notebook') {
     /* ch03: the quiz form closes and its score card would be lost; it drops into Global.cs, which keeps it */
     st.appendChild(el(`<div class="dw-note"><div class="dw-win shut"><div class="tb"><i></i>frmQuiz</div><div class="body"><div class="pn open"></div><div class="pn open"></div><div class="pn open"></div></div></div><div class="book"><div class="ttl">🗒️ Global.cs</div><div class="slot"><span class="score">quizScore = 4</span></div><div class="ln">surname = "Kelly"</div><div class="ln">quizTaken = true</div></div></div>`));
+  } else if (d.id === 'form-swap') {
+    /* ch06: the data entry form closes, the quiz form opens in its place */
+    st.appendChild(el(`<div class="dw-swap"><div class="dw-win shut"><div class="tb"><i></i>frmDataEntry</div><div class="body"><div class="pn open"></div><div class="pn open"></div><div class="pn open"></div></div></div><div class="ar">→</div><div class="dw-win new"><div class="tb"><i></i>frmQuiz</div><div class="body"><div class="pn open"></div><div class="pn"></div><div class="pn"></div><div class="pn"></div><div class="pn"></div><div class="pn"></div></div></div></div>`));
   } else if (d.id === 'fresh-screen') {
     st.appendChild(el(`<div class="dw-fresh"><div class="sc"><div class="t">frmDataEntry, fresh</div><div class="l"></div><div class="l" style="width:70%"></div><div class="l" style="width:85%"></div></div><div class="ar">→</div><div class="sc new"><div class="t">Global.cs</div><div>quizScore = 4</div><div>quizTaken = true</div><div>reactionScore = 0</div></div></div>`));
   } else if (d.id === 'mini-chapter') {

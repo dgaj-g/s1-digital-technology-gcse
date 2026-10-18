@@ -1,0 +1,14 @@
+ch06#1-1	Check what your quiz already has
+ch06#2-1	Add the quiz form and its six panels
+ch06#2-2	Fill the score panel and the question 1 panel
+ch06#2-3	Fill the question 2 and question 3 panels
+ch06#2-4	Fill the question 4 and question 5 panels
+ch06#3-1	Open the quiz from the Take quiz button
+ch06#4-1	Mark the typed answer to question 1 right or wrong
+ch06#4-2	Switch off question 1 and switch on question 2
+ch06#5-1	Score a point when the right button is pressed
+ch06#5-2	Turn question 2 red when the wrong button is pressed
+ch06#5-3	Stop question 3 when nothing is chosen
+ch06#5-4	Score a point when the right item is chosen
+ch06#5-5	Turn question 3 red, then switch on question 4
+ch06#6-1	Try every way through questions 1, 2 and 3

@@ -1,0 +1,10 @@
+ch08#1-1	Before I start, I check the Enter button, the average button, the quiz Return button and three lines in Global.cs.
+ch08#2-1	Each time the data entry form opens it is brand new and empty, but Global.cs still holds everything.
+ch08#2-2	The Load event switches every panel off, asks Global.cs three questions, then fills the boxes and switches on the right panel.
+ch08#3-1	The first lines of the Load event switch off all five panels on the data entry form.
+ch08#4-1	If the quiz has been taken, the score shows in black, Take quiz is hidden and the reaction test panel switches on.
+ch08#4-2	When the quiz has been taken, the surname, first name, gender and year group go back from Global.cs into their boxes.
+ch08#4-3	If the quiz is not taken, the details panel switches on and the quiz status says Quiz not taken yet in red.
+ch08#4-4	If the average is worked out, the three attempts and the average go back in their boxes and the average button hides.
+ch08#4-5	If the reaction test is taken, its score shows, Take test hides, its panel switches off and the group panel switches on.
+ch08#5-1	I run the program and check that only the details panel works at first, and that the quiz brings the details back.

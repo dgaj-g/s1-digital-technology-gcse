@@ -1,0 +1,5 @@
+ch08#2-1	Each time the data entry form opens it is brand new and empty, but Global.cs still holds everything.
+ch08#4-1	If the quiz has been taken, the score shows in black, Take quiz is hidden and the reaction test panel switches on.
+ch08#4-3	If the quiz is not taken, the details panel switches on and the quiz status says Quiz not taken yet in red.
+ch08#4-5	If the reaction test is taken, its score shows, Take test hides, its panel switches off and the group panel switches on.
+ch08#5-1	I run the program and check that only the details panel works at first, and that the quiz brings the details back.

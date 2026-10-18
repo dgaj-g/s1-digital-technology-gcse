@@ -1,0 +1,10 @@
+ch08#1-1	Check the parts this chapter needs
+ch08#2-1	The form forgets, Global.cs remembers
+ch08#2-2	Plan the Load event and make it
+ch08#3-1	Switch off all five panels
+ch08#4-1	Show the score when the quiz has been taken
+ch08#4-2	Put the pupil's details back in their boxes
+ch08#4-3	Start from the details when the quiz is not taken
+ch08#4-4	Show the attempts when the average is worked out
+ch08#4-5	Switch on the group panel when the test is taken
+ch08#5-1	Try the data entry form before and after the quiz
