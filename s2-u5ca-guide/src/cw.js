@@ -179,6 +179,10 @@ function bDrawn(d, ctx) {
     /* ch10: three numbers drop into a box with a name, one word comes out */
     const ins = d.ins || ['1', '2', '3'];
     st.appendChild(el(`<div class="dw-mach">${ins.map((x, i) => `<span class="in" style="--d:${400 + i * 350}ms;--x:${(i - 1) * 70}px">${esc(x)}</span>`).join('')}<div class="box"><span class="nm">${esc(d.name || 'CalculateGroup')}</span></div><span class="out">${esc(d.out || '')}</span></div>`));
+  } else if (d.id === 'record-line') {
+    /* ch11: one line of the file, each piece numbered 0 to 10, with a ~ fence between the pieces */
+    const pc = d.pieces || [];
+    st.appendChild(el(`<div class="dw-rec">${pc.map((x, i) => `${i ? `<span class="fe" style="--d:${300 + i * 260}ms">~</span>` : ''}<span class="pc" style="--d:${300 + i * 260}ms;--c:var(--${['tok-k', 'tok-s', 'tok-m', 'tok-n', 'brand'][i % 5]})"><b>${i}</b>${esc(x)}</span>`).join('')}</div>`));
   } else {
     st.appendChild(el(`<div class="ph">${esc(d.alt)}</div>`));
   }

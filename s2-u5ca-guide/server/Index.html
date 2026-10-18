@@ -729,13 +729,18 @@ body.is-home header.bar .who{margin-left:auto}
   .dw-list .grid,.dw-wire .grid{grid-template-columns:repeat(4,56px)}
   .dw-wire{grid-template-columns:1fr;justify-items:center}
 }
+.dw-rec{--c:var(--brand);display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:4px 2px;max-width:860px;margin:0 auto;font-family:var(--mono);font-size:17px}
+.dw-rec .pc{display:flex;flex-direction:column;align-items:center;padding:6px 8px;border-radius:10px;border:2px solid var(--c);background:var(--card);color:var(--ink);font-weight:700;opacity:0;animation:recIn .5s ease var(--d) forwards}
+.dw-rec .pc b{font-family:var(--sans);font-size:12px;color:var(--c);margin-bottom:2px}
+.dw-rec .fe{color:var(--mute);font-weight:700;padding:0 2px 8px;opacity:0;animation:recIn .5s ease var(--d) forwards}
+@keyframes recIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
 
 </style>
 </head>
 <body>
 <script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" };
 window.A2_VENDOR = ["https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/","https://dgaj-g.github.io/ols-digital-skills/a2-ssd/platform/vendor/"];
-window.A2_DEPLOY = "s2u5-s2-2026-10-18-ffcaa0cf";
+window.A2_DEPLOY = "s2u5-s2-2026-10-18-409b0699";
 window.A2_CW = "https://dgaj-g.github.io/s1-digital-technology-gcse/s2-u5ca-guide/content/";</script>
 <div class="app" id="app"></div>
 <script>
@@ -1479,6 +1484,10 @@ function bDrawn(d, ctx) {
     /* ch10: three numbers drop into a box with a name, one word comes out */
     const ins = d.ins || ['1', '2', '3'];
     st.appendChild(el(`<div class="dw-mach">${ins.map((x, i) => `<span class="in" style="--d:${400 + i * 350}ms;--x:${(i - 1) * 70}px">${esc(x)}</span>`).join('')}<div class="box"><span class="nm">${esc(d.name || 'CalculateGroup')}</span></div><span class="out">${esc(d.out || '')}</span></div>`));
+  } else if (d.id === 'record-line') {
+    /* ch11: one line of the file, each piece numbered 0 to 10, with a ~ fence between the pieces */
+    const pc = d.pieces || [];
+    st.appendChild(el(`<div class="dw-rec">${pc.map((x, i) => `${i ? `<span class="fe" style="--d:${300 + i * 260}ms">~</span>` : ''}<span class="pc" style="--d:${300 + i * 260}ms;--c:var(--${['tok-k', 'tok-s', 'tok-m', 'tok-n', 'brand'][i % 5]})"><b>${i}</b>${esc(x)}</span>`).join('')}</div>`));
   } else {
     st.appendChild(el(`<div class="ph">${esc(d.alt)}</div>`));
   }

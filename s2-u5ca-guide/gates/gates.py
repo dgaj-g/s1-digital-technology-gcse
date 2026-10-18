@@ -103,7 +103,7 @@ def g6():
             have = {n for n in K if re.search(r'(?<![\w.])' + re.escape(n) + r'\b', t)}
             have -= {n for n in have if any(m != n and m.startswith(n + '.') and m in have for m in have)}
             names = set(c.get('names', []))
-            if not names: out.append('%s %s: no names strip' % (cid, c['id']))
+            if not names and have: out.append('%s %s: no names strip, though the code has names in it' % (cid, c['id']))
             out += ['%s %s: strip name %s is not a control, Global field or names.json entry' % (cid, c['id'], n) for n in names - K]
             out += ['%s %s: %s is in the code but not the strip' % (cid, c['id'], n) for n in sorted(have - names)
                     if not (n.startswith('frm') and n in CONTROLS and not re.search(r'new %s\b' % n, t))]

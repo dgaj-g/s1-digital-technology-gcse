@@ -1,4 +1,4 @@
-S2 gates 18 Oct 2026 20:24
+S2 gates 18 Oct 2026 20:40
 PASS  build
 PASS  check_content
 PASS  G1
@@ -53,6 +53,6 @@ PASS T6 stored value length unchanged after the refusals — 275 → 275
 PASS T* each op touches the activity session (Last seen moves) — {"seen":500020,"last":[500020,500020,1,0]}
 
 ---- browser gates
-G5 no copy PASS — 62 code screens
-G12 sizes PASS — 123 screens, tallest 2200px
+G5 no copy PASS — 69 code screens
+G12 sizes PASS — 132 screens, tallest 2200px
 G14 hidden 14 PASS — before {"hash":"#cw","card":false,"later":""} · home {"card":true,"later":["A bonus chapter has appeared. It is completely optional."]} · after {"hash":"#cw/14/1-1","screen":true}

@@ -155,5 +155,9 @@
  "total": "the three bands added together",
  "quizCategory": "the quiz band, 1, 2 or 3",
  "reactionTestCategory": "the reaction test band, 1, 2 or 3",
- "swimLengthsCategory": "the average band, 1, 2 or 3"
+ "swimLengthsCategory": "the average band, 1, 2 or 3",
+ "System.IO": "the file tools. With this line the form can use File.",
+ "record": "one line of words that holds all of one pupil's details",
+ "File.AppendAllText": "adds words to the end of a file. It makes the file if it is not there.",
+ "Environment.NewLine": "the end of a line, so the next pupil starts on a new line"
 }

@@ -606,12 +606,28 @@
    "title": "Save the details to the file",
    "one": "Put one line in the file, clear Global.cs, start again.",
    "color": "#6A994E",
-   "built": false,
-   "steps": [],
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "2-1.c1",
+    "3-1.c1",
+    "3-2.c1",
+    "4-1.c1",
+    "4-2.c1",
+    "4-3.c1",
+    "4-4.c1",
+    "5-1.t1",
+    "5-1.t2",
+    "5-1.t3",
+    "5-1.t4",
+    "5-1.t5"
+   ],
    "stages": [
     [
      "1",
-     "Check you have what this chapter needs",
+     "Check what you need first",
      1
     ],
     [
@@ -622,11 +638,11 @@
     [
      "3",
      "Only when everything is done",
-     1
+     2
     ],
     [
      "4",
-     "The record",
+     "Write the line to the file",
      4
     ],
     [
@@ -635,7 +651,7 @@
      1
     ]
    ],
-   "screens": 8
+   "screens": 9
   },
   {
    "id": "12",

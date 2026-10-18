@@ -1,0 +1,9 @@
+ch11#1-1	Before I start, I check the group, the Save button and Global.cs.
+ch11#2-1	One line at the top of frmDataEntry's code lets this form use the file tools.
+ch11#3-1	The Save code only goes ahead when all five panels are grey.
+ch11#3-2	If any panel is still on, a message shows and nothing is saved.
+ch11#4-1	All eleven details join into one line, with a ~ between each piece.
+ch11#4-2	The line ends, goes on the end of the file and a message says it is saved.
+ch11#4-3	The first seven names in Global.cs go back to empty, ready for the next pupil.
+ch11#4-4	The other seven names are cleared, the form closes and a fresh data entry form opens.
+ch11#5-1	I save two pupils, find the file and check it has two lines with fences.
