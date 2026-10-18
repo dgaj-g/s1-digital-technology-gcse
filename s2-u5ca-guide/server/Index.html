@@ -746,7 +746,7 @@ body.is-home header.bar .who{margin-left:auto}
 <body>
 <script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" };
 window.A2_VENDOR = ["https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/","https://dgaj-g.github.io/ols-digital-skills/a2-ssd/platform/vendor/"];
-window.A2_DEPLOY = "s2u5-s2-2026-10-18-cd6ffd0b";
+window.A2_DEPLOY = "s2u5-s2-2026-10-18-85f610f3";
 window.A2_CW = "https://dgaj-g.github.io/s1-digital-technology-gcse/s2-u5ca-guide/content/";</script>
 <div class="app" id="app"></div>
 <script>
@@ -1746,7 +1746,7 @@ function renderBlocks(blocks, ctx) {
     else if (b.flow) out.push(bFlow(b.flow, ctx));
     else if (b.frames) out.push(bFrames(b.frames, ctx));
     else if (b.isense) out.push(bIsense(b.isense, ctx, true));
-    else if (b.names) out.push(bNames(b.names.list, t('names.title'), ctx));
+    else if (b.names) out.push(bNames(b.names.list, b.names.title || t('names.title'), ctx));
     else if (b.steps) out.push(bSteps(b.steps, ctx));
     else if (b.controls) out.push(bControls(b.controls, ctx));
     else if (b.yours) out.push(el(`<div class="cw-yours solo"><span class="pin" aria-hidden="true">\ud83d\udccc</span><div><b>${esc(t('code.yoursTitle'))}</b>${esc(b.yours)}</div></div>`));

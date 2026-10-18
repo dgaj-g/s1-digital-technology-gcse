@@ -722,12 +722,30 @@
    "title": "Help buttons on every form",
    "one": "A question-mark button on each panel that says what to do.",
    "color": "#5C6BC0",
-   "built": false,
-   "steps": [],
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "2-1.c1",
+    "3-1.c1",
+    "3-1.c2",
+    "3-1.c3",
+    "3-1.c4",
+    "3-2.c1",
+    "3-2.c2",
+    "3-2.c3",
+    "3-3.t1",
+    "3-3.t2",
+    "3-3.t3",
+    "3-3.t4",
+    "3-3.t5"
+   ],
    "stages": [
     [
      "1",
-     "Check you have what this chapter needs",
+     "Check what you need first",
      1
     ],
     [
@@ -737,11 +755,11 @@
     ],
     [
      "3",
-     "The rest",
-     2
+     "The rest of the help buttons",
+     3
     ]
    ],
-   "screens": 4
+   "screens": 5
   },
   {
    "id": "14",

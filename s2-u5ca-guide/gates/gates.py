@@ -98,7 +98,7 @@ def g6():
     for cid, ch in CH.items():
         for sid, _, c in codes(ch):
             if c['kind'] != 'type': continue
-            t = re.sub(r'//.*', '', c['text'])
+            t = re.sub(r'"[^"\n]*"', '""', re.sub(r'//.*', '', c['text']))   # words inside quote marks are message text, not names
             if c.get('form') == 'Global': t = re.sub(r'(static \w+ )(\w+)', r'\1Global.\2', t)   # in Global.cs a field IS Global.<field>
             have = {n for n in K if re.search(r'(?<![\w.])' + re.escape(n) + r'\b', t)}
             have -= {n for n in have if any(m != n and m.startswith(n + '.') and m in have for m in have)}

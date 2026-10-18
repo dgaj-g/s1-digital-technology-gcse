@@ -67,6 +67,10 @@ def law(name, where, t, nwords=None):
         if re.search(r"\[\[[^\]|]+\]\]", t): problems.append((name, where, "mark without index", t[:60]))
 NAMES = json.load(open(os.path.join(C, "names.json")))
 IDX0 = json.load(open(os.path.join(C, "index.json")))
+def flat(bl):
+    for b in bl or []:
+        yield b
+        if isinstance(b.get("box"), dict): yield from flat(b["box"].get("blocks"))
 for name in ["ch%s.json" % c["id"] for c in IDX0["chapters"] if c["built"]]:
     ch = json.load(open(os.path.join(C, name)))
     nwords = sum(len(b["words"]) for s in ch["stages"] for sc in s["screens"] for b in sc["blocks"] if "words" in b)
@@ -80,7 +84,7 @@ for name in ["ch%s.json" % c["id"] for c in IDX0["chapters"] if c["built"]]:
             KNOWN = {"p", "watch", "words", "intro", "drawn", "flow", "frames", "isense", "names", "steps", "controls", "yours", "check", "box", "code"}
             for b in sc["blocks"]:
                 if not (set(b) & KNOWN) or set(b) - KNOWN: problems.append((name, sid, "block the renderer does not draw", " ".join(sorted(set(b) - KNOWN)) or "empty"))
-            for b in sc["blocks"]:
+            for b in flat(sc["blocks"]):
                 if "code" in b:
                     c = b["code"]; n = c["text"].count("\n") + 1
                     cov = [0] * n; lo = c.get("from", 1)
@@ -109,8 +113,8 @@ for name in ["ch%s.json" % c["id"] for c in IDX0["chapters"] if c["built"]]:
             cov = [0] * len(src)
             for s in ch["stages"]:
                 for sc in s["screens"]:
-                    for b in sc["blocks"]:
-                        if "code" in b and b["code"].get("method") == meth:
+                    for b in flat(sc["blocks"]):   # a code block inside a fold counts too
+                        if "code" in b and b["code"].get("method") == meth and b["code"].get("form", form) == form:
                             for i in range(b["code"]["from"], b["code"]["to"] + 1): cov[i - 1] += 1
                             if b["code"].get("rest"):
                                 for i in range(b["code"]["rest"][0], b["code"]["rest"][1] + 1): cov[i - 1] += 1

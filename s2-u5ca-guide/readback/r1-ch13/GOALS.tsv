@@ -1,0 +1,5 @@
+ch13#1-1	Before I start, I check that every panel and form has its own ? button.
+ch13#2-1	Clicking the ? in the pupil details panel shows a message that says what to do.
+ch13#3-1	Each ? button on frmDataEntry shows its own message.
+ch13#3-2	The ? buttons on the login, quiz and test forms show their own messages.
+ch13#3-3	I run the program and click every ? button, and a locked one does nothing.

@@ -435,7 +435,7 @@ function renderBlocks(blocks, ctx) {
     else if (b.flow) out.push(bFlow(b.flow, ctx));
     else if (b.frames) out.push(bFrames(b.frames, ctx));
     else if (b.isense) out.push(bIsense(b.isense, ctx, true));
-    else if (b.names) out.push(bNames(b.names.list, t('names.title'), ctx));
+    else if (b.names) out.push(bNames(b.names.list, b.names.title || t('names.title'), ctx));
     else if (b.steps) out.push(bSteps(b.steps, ctx));
     else if (b.controls) out.push(bControls(b.controls, ctx));
     else if (b.yours) out.push(el(`<div class="cw-yours solo"><span class="pin" aria-hidden="true">📌</span><div><b>${esc(t('code.yoursTitle'))}</b>${esc(b.yours)}</div></div>`));
