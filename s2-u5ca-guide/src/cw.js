@@ -2,7 +2,7 @@
    CW.mount(host, {base, api}) then CW.show(hash); every pupil act goes to api (apiCw, op had added, SPEC 3.3);
    code lines carry their text in data-t, drawn by CSS, never a text node (SPEC 6.3, G5); chapter 14 waits for 1 to 13 (SPEC 3.6).
    Was: the prototype renderer. Same bones as the AS cw.js (one IIFE, S state, hash routes #cw / #cw/07 / #cw/07/3-2),
-   with the S2 blocks of DESIGN_SPEC 6: p, watch, words, drawn, flow, frames, isense, names, steps, check, box, code, foot. */
+   with the S2 blocks of DESIGN_SPEC 6: p, watch, words, drawn, flow, frames, isense, names, steps, controls, check, box, code, foot. */
 (function () {
 'use strict';
 const S = { host: null, api: {}, base: '../content/', T: {}, index: null, ch: {}, controls: null, names: null, typed: {}, isenseShown: {}, timers: [], fast: false };
@@ -172,14 +172,22 @@ function bFlow(f, ctx) {
     const r = el(`<div class="fp" data-n="${esc(name)}" style="left:${c.loc[0] * sc}px;top:${22 + c.loc[1] * sc}px;width:${c.size[0] * sc}px;height:${c.size[1] * sc}px">${esc(name)}<span class="k" aria-hidden="true">🔒</span></div>`);
     rooms[name] = r; order.push(name); box.appendChild(r);
   });
+  /* map: a plain map of the form's panels, no switched on or off (ch02). Each panel lights in turn, then all stay lit */
+  if (f.map) { $('.key', n).remove(); $('.fixed', n).remove(); n.querySelectorAll('.fp .k').forEach(k => k.remove()); }
   const lit0 = f.lit || [], then = f.then || [];
-  const set = (name, on, pop) => { const r = rooms[name]; if (!r) return; r.classList.toggle('lit', on); $('.k', r).textContent = on ? '🔑' : '🔒'; if (pop) { r.classList.remove('just'); void r.offsetWidth; r.classList.add('just'); } };
+  const set = (name, on, pop) => { const r = rooms[name]; if (!r) return; r.classList.toggle('lit', on); const k = $('.k', r); if (k) k.textContent = on ? '🔑' : '🔒'; if (pop) { r.classList.remove('just'); void r.offsetWidth; r.classList.add('just'); } };
   /* end state: the lit panels on; each `then` panel on while the one before it goes off (the first lit panel stays) */
   const endState = () => { const on = new Set(lit0); let active = lit0[lit0.length - 1]; then.forEach(k => { if (active && active !== lit0[0]) on.delete(active); on.add(k); active = k; }); return on; };
   let T = [];
   const at = (fn, ms) => T.push(later(fn, ms));
   const play = () => {
     T.forEach(clearTimeout); T = [];
+    if (f.map) {
+      order.forEach(k => set(k, false, false)); say.textContent = f.before || f.say;
+      if (reduced()) { order.forEach(k => set(k, true, false)); say.textContent = f.say; return; }
+      let ms = 500; order.forEach(k => { at(() => set(k, true, true), ms); ms += 450; });
+      at(() => { say.textContent = f.say; }, ms); return;
+    }
     if (reduced()) { const on = endState(); order.forEach(k => set(k, on.has(k), false)); say.textContent = f.say; return; }
     if (!then.length) {
       /* beat 1: every panel switched on, as the form would be without a Load event; beat 2: they switch off one at a time */
@@ -257,6 +265,11 @@ function bNames(list, title, ctx) {
   const n = el(`<div class="cw-names"><div class="ttl">${esc(title)}</div><ul>${list.map((x, i) => `<li style="--d:${450 + i * 140}ms"><code>${esc(x)}</code><span>${esc(S.names[x] || '')}</span></li>`).join('')}</ul><p class="fixed">${esc(t('fixed.names'))}</p>${ctx.inSheet ? '' : `<button class="link how">${esc(t('fixed.howName'))}</button>`}</div>`);
   const h = $('.how', n); if (h) h.addEventListener('click', openSheet);
   return n;
+}
+function bControls(x, ctx) {
+  const rows = x.rows.map(r => `<tr><td data-l="${esc(t('controls.toolbox'))}">${esc(r.toolbox)}</td><td class="nm" data-l="${esc(t('controls.name'))}"><code>${esc(r.name)}</code><span class="what">${esc(S.names[r.name] || '')}</span></td><td data-l="${esc(t('controls.set'))}">${(r.set || []).length ? r.set.map(v => `<span class="set">${esc(v)}</span>`).join('') : `<span class="note">${esc(t('controls.nothing'))}</span>`}</td></tr>`).join('');
+  const n = el(`<div class="cw-controls"><table><thead><tr><th>${esc(t('controls.toolbox'))}</th><th>${esc(t('controls.name'))}</th><th>${esc(t('controls.set'))}</th></tr></thead><tbody>${rows}</tbody></table>${x.done ? `<div class="cw-see"><span class="eye" aria-hidden="true">👁</span><span><b>${esc(t('step.see'))}</b> ${prose(x.done, ctx)}</span></div>` : ''}</div>`);
+  wireWords(n, ctx); return n;
 }
 function bSteps(steps, ctx) {
   const ol = el(`<ol class="cw-steps"></ol>`);
@@ -391,6 +404,7 @@ function renderBlocks(blocks, ctx) {
     else if (b.isense) out.push(bIsense(b.isense, ctx, true));
     else if (b.names) out.push(bNames(b.names.list, t('names.title'), ctx));
     else if (b.steps) out.push(bSteps(b.steps, ctx));
+    else if (b.controls) out.push(bControls(b.controls, ctx));
     else if (b.check) out.push(bCheck(b.check, ctx));
     else if (b.box) out.push(bBox(b.box, ctx));
     else if (b.code) bCode(b.code, ctx).forEach(n => out.push(n));

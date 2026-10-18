@@ -75,7 +75,7 @@ for name in ["ch%s.json" % c["id"] for c in IDX0["chapters"] if c["built"]]:
         for sc in s["screens"]:
             sid = "%s-%s" % (s["id"], sc["id"])
             if not sc.get("goal", "").strip(): problems.append((name, sid, "no goal", ""))
-            big = [k for b in sc["blocks"] for k in b if k in ("code", "frames") or (k == "steps" and (len(b[k]) > 1 or any(x.get("img") for x in b[k])))]
+            big = [k for b in sc["blocks"] for k in b if k in ("code", "frames", "controls") or (k == "steps" and (len(b[k]) > 1 or any(x.get("img") for x in b[k])))]
             if len(big) > 1: problems.append((name, sid, "two big blocks", " ".join(big)))
             for b in sc["blocks"]:
                 if "code" in b:

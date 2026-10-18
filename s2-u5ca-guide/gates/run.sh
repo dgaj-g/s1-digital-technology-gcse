@@ -17,6 +17,7 @@ ctl() {   # ctl <name> <cmd...>    must fail
   if "$@" > "$OUT/ctl-$n.log" 2>&1; then line "GREEN control $n   — the gate did not catch its planted fault"; red=1; else line "red   control $n"; fi
 }
 line "S2 gates $(date '+%d %b %Y %H:%M')${S2_SHIP:+  [ship check]}"
+gate build node s2-u5ca-guide/tools/build-s2.js   # the gates test the page as built from content/ and src/ now
 gate check_content python3 -I s2-u5ca-guide/tools/check_content.py
 for g in G1 G2 G4 G6 G7 G8b G11 G12s G13; do gate $g python3 -I s2-u5ca-guide/gates/gates.py $g; done
 gate G9  python3 -I s2-u5ca-guide/gates/g9_tokens.py

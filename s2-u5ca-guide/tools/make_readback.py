@@ -17,7 +17,11 @@ def block(b, lines):
         for w in b['words']: lines.append('  ' + w[0] + ' = ' + clean(w[1]))
     elif 'drawn' in b: lines.append('[Animated picture: %s]  Caption: %s' % (b['drawn']['alt'], clean(b['drawn']['say'])))
     elif 'flow' in b:
-        f = b['flow']; lines.append('[Animated diagram of %s. Panels switched on: %s.%s]' % (f['form'], ', '.join(f['lit']), (' Then %s switches on.' % ', '.join(f['then'])) if f.get('then') else ''))
+        f = b['flow']
+        if f.get('map'):
+            lines.append('[Animated map of %s. Each panel lights up in turn, labelled with its name: %s]' % (f['form'], ', '.join(f['lit'])))
+            lines.append('  Caption: ' + clean(f['say'])); return
+        lines.append('[Animated diagram of %s. Panels switched on: %s.%s]' % (f['form'], ', '.join(f['lit']), (' Then %s switches on.' % ', '.join(f['then'])) if f.get('then') else ''))
         if f.get('before'): lines.append('  Caption first: ' + clean(f['before']))
         lines.append('  Caption: ' + clean(f['say'])); lines.append('  Under it: ' + t('fixed.flow'))
     elif 'frames' in b:
@@ -39,8 +43,9 @@ def block(b, lines):
         c = b['code']
         lines.append('[CODE CARD. %s. %s]' % (t('code.kindType') if c['kind'] == 'type' else t('code.kindRead'), clean(c['title'])))
         if c.get('where'): lines.append('  Where: ' + clean(c['where']))
-        lines.append('  ' + c['text'].replace('\n', '\n  '))
-        for i, pl in enumerate(c['partLines']): lines.append('  Part %d (lines %d to %d). %s: %s' % (i + 1, pl[0], pl[1], clean(pl[2]), clean(pl[3])))
+        g = set(n for pl in c['partLines'] if len(pl) > 4 and pl[4] == 'given' for n in range(pl[0], pl[1] + 1)); a0 = c.get('from', 1)
+        for i, ln in enumerate(c['text'].split('\n')): lines.append('  %s%s' % ('[grey, already there] ' if a0 + i in g else '', ln))
+        for pl in c['partLines']: lines.append('  [%s] %s: %s' % ('Line %d' % pl[0] if pl[0] == pl[1] else 'Lines %d to %d' % (pl[0], pl[1]), clean(pl[2]), clean(pl[3])))
         if c.get('yours'): lines.append('  ' + clean(c['yours']))
         if c.get('names'): lines.append('  [Names in this code: %s]  %s' % (', '.join(c['names']), t('fixed.names')))
         if c.get('isense'): lines.append('  [IntelliSense animation: typing the first letters of %s and picking it from the list]' % c['isense'][0])
@@ -50,10 +55,18 @@ def block(b, lines):
         for sb in x.get('blocks', []):
             sub = []; block(sb, sub); lines.extend('  ' + l for l in sub)
     elif 'isense' in b: lines.append('[IntelliSense animation: types %s, a list drops down, %s is picked]' % (b['isense']['typed'], b['isense']['pick']))
+    elif 'controls' in b:
+        x = b['controls']; NM = json.load(open(os.path.join(D, 'content', 'names.json')))
+        lines.append('[Table of controls for %s. Columns: %s | %s | %s]' % (x['form'], t('controls.toolbox'), t('controls.name'), t('controls.set')))
+        for r in x['rows']:
+            nm = NM.get(r['name']); nm = nm if isinstance(nm, str) else (nm or {}).get('d', '')
+            lines.append('  %s | %s (%s) | %s' % (r['toolbox'], r['name'], clean(nm), ', '.join(r['set']) or t('controls.nothing')))
+        if x.get('done'): lines.append('  ' + t('step.see') + ' ' + clean(x['done']))
     elif 'names' in b: lines.append('[Names strip: %s]  %s' % (', '.join(b['names']['list']), t('fixed.names')))
 FOOT = {'next': t('foot.next'), 'done': t('foot.done'), 'have': t('foot.have'), 'chapter-done': t('foot.chapterDone').replace('{n}', 'N')}
 rows, tr, goals = [], [], []
-for name in ('ch00.json', 'ch07.json'):
+CHS = os.environ.get('S2_RB_CH', 'ch00,ch07').split(',')   # S2_RB_CH=ch01 for one new chapter
+for name in [c + '.json' for c in CHS]:
     ch = json.load(open(os.path.join(D, 'content', name)))
     tr.append('\n# Chapter %d. %s\nUnder the title: %s\nTop bar of every chapter screen: a gold button "%s" that goes back to the home page.\n' % (ch['n'], clean(ch['title']), clean(ch['one']), t('home.where')))
     for s in ch['stages']:
@@ -64,7 +77,7 @@ for name in ('ch00.json', 'ch07.json'):
             tr.append('\n### Screen %s. %s' % (key, clean(sc['title'])))
             lines = []
             for b in sc['blocks']: block(b, lines)
-            tr.extend(lines); tr.append('[Big button at the foot: %s]' % FOOT.get(sc['foot'], sc['foot']))
+            tr.extend(lines); tr.append('[Big button at the foot: %s]' % FOOT.get(sc['foot'], sc['foot']).replace('Chapter N', 'Chapter %d' % ch['n']))
             rows.append((key, clean(sc['title']))); goals.append((key, sc.get('goal', '')))
 head = '''# What the reader sees
 This is the pupil-visible text of a login-gated web guide, read on a school PC beside Visual Studio 2019 (or in a browser tab beside the Programming Environment tab).

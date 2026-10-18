@@ -90,5 +90,9 @@
  "cw.failed": "The guide could not load. Check you are online, then reload the page.",
  "ev.cwHad": "Said chapter {c} was done already",
  "ev.cwUnhad": "Took back \"I had this done already\" on chapter {c}",
- "staff.cw.had": "had"
+ "staff.cw.had": "had",
+ "controls.toolbox": "Drag this from the Toolbox",
+ "controls.name": "Its name in MY example",
+ "controls.set": "Then set this in Properties",
+ "controls.nothing": "Nothing else to set"
 }

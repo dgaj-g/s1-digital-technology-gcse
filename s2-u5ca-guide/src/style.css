@@ -8,6 +8,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 a{color:var(--sw-ink)}
 img{max-width:100%}
 .app{min-height:100vh;display:flex;flex-direction:column}
+@media (max-width:900px){.app{height:auto;overflow:visible}}   /* A2 scrolls inside main.split on a phone; the S2 page has no split, so the page itself scrolls */
 header.bar{height:60px;background:var(--brand);color:var(--white);display:flex;align-items:center;gap:14px;padding:0 24px;flex:none;position:sticky;top:0;z-index:20;box-shadow:var(--shadow)}
 header.bar .logo{width:34px;height:34px;border-radius:10px;background:var(--accent);display:grid;place-items:center;color:var(--ink);font-weight:900;font-size:15px;flex:none}
 header.bar .title{font-weight:900;font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}

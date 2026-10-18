@@ -71,6 +71,11 @@ async function klass(base, tag) { const cls = 'S2-G' + tag + '-' + (Date.now() %
       if (m.h > lim) bad.push(ch + '/' + key + ' ' + m.h + 'px > ' + lim);
       if (m.inner) bad.push(ch + '/' + key + ' a code card scrolls inside');
     }
+    // a phone can reach the bottom of the screen: the page itself scrolls at 390 px (found in the own look, 18 Oct 2026)
+    await page.setViewport({ width: 390, height: 800 }); await settle(400);
+    if (CTL) await page.evaluate(() => { document.querySelector('#app').style.cssText = 'height:100vh;overflow:hidden'; });
+    const ph = await page.evaluate(() => { const s = document.querySelector('.cw-screen'); return { doc: document.documentElement.scrollHeight, end: s.getBoundingClientRect().bottom + scrollY }; });
+    if (ph.doc + 2 < ph.end) bad.push('at 390 px the page stops at ' + ph.doc + 'px but the screen ends at ' + Math.round(ph.end) + 'px');
     res('G12 sizes', !bad.length && n > 0, n + ' screens, tallest ' + tallest + 'px' + (bad.length ? '; ' + bad.slice(0, 4).join('; ') : ''));
     await page.close();
   }

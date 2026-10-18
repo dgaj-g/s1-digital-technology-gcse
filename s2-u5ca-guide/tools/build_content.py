@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Builds content/ch00.json, content/ch07.json and content/index.json from the briefs in DESIGN_SPEC.md §9.
-Run: python3 -I tools/build_content.py   (from _design/)"""
+"""Builds content/chNN.json and content/index.json. Chapters 0 and 7 are written here; every other chapter is tools/chapters/chNN.py,
+run with these helpers and defining CH. Stage lists of unbuilt chapters come from the briefs in DESIGN_SPEC.md §9.
+Run: python3 -I s2-u5ca-guide/tools/build_content.py"""
 import json, re, os
 HERE = os.path.dirname(os.path.abspath(__file__)); D = os.path.dirname(HERE)
 CODE = os.path.join(D, 'content', 'code')
@@ -430,8 +431,16 @@ def tick_ids(ch):
                 if k not in ("steps", "check", "code"): walk(v)
     walk(ch["stages"]); return ids
 
+# ------------------------------------------------------------------ the other chapters
+import glob
+BUILT = {0: ch0, 7: ch7}
+for f in sorted(glob.glob(os.path.join(HERE, 'chapters', 'ch[0-9][0-9].py'))):
+    ns = dict(globals()); exec(compile(open(f).read(), f, 'exec'), ns); BUILT[int(ns['CH']['id'])] = ns['CH']
+
 # ------------------------------------------------------------------ index from the spec briefs
-_all = open(os.path.join(D, 'DESIGN_SPEC.md')).read().split('\n')
+SPEC = os.path.join(D, 'DESIGN_SPEC.md')
+if not os.path.exists(SPEC): SPEC = '/Users/damiengartland/Desktop/Claude Work/S2 U5CA Guide/_design/DESIGN_SPEC.md'
+_all = open(SPEC).read().split('\n')
 _a = next(i for i, l in enumerate(_all) if l.startswith('## 9. Chapter briefs'))
 _b = next(i for i, l in enumerate(_all) if l.startswith('## 10. '))
 spec = _all[_a:_b]
@@ -450,10 +459,8 @@ chapters = []
 for n in range(15):
     b = briefs[n]; text = '\n'.join(b["lines"])
     stages = []
-    if n == 0:
-        stages = [[s["id"], s["title"], len(s["screens"])] for s in ch0["stages"]]
-    elif n == 7:
-        stages = [[s["id"], s["title"], len(s["screens"])] for s in ch7["stages"]]
+    if n in BUILT:
+        stages = [[s["id"], s["title"], len(s["screens"])] for s in BUILT[n]["stages"]]
     else:
         names = {}
         for m in re.finditer(r'^- (\d{1,2}) (.+?)(?: — |$)', text, re.M): names[m.group(1)] = m.group(2).strip()
@@ -464,9 +471,9 @@ for n in range(15):
         has_hygt = 'Have you got this?' in text and n != 14
         if has_hygt or n == 14: stages.append(["1", "Check you have what this chapter needs" if has_hygt else "Before you start", 1])
         for s in sorted(names, key=int): stages.append([s, names[s], counts.get(s, 1)])
-    built = {0: ch0, 7: ch7}.get(n)
+    built = BUILT.get(n)
     entry = {"id": "%02d" % n, "n": n, "title": built["title"] if built else b["title"], "one": built["one"] if built else b["one"], "color": colors[n],
-             "built": n in (0, 7), "steps": tick_ids(ch0) if n == 0 else tick_ids(ch7) if n == 7 else [],
+             "built": n in BUILT, "steps": tick_ids(built) if built else [],
              "stages": stages, "screens": sum(s[2] for s in stages)}
     if n == 14: entry["hidden"] = "after-all"
     chapters.append(entry)
@@ -477,7 +484,7 @@ index = {
  "chapters": chapters}
 
 out = os.path.join(D, 'content')
-for name, obj in (("ch00.json", ch0), ("ch07.json", ch7), ("index.json", index)):
+for name, obj in [("ch%02d.json" % n, c) for n, c in sorted(BUILT.items())] + [("index.json", index)]:
     with open(os.path.join(out, name), 'w') as f: json.dump(obj, f, ensure_ascii=False, indent=1)
     print(name, 'written')
 for c in chapters: print(' ', c["id"], c["title"][:34].ljust(34), 'stages', len(c["stages"]), 'screens', c["screens"], 'ticks', len(c["steps"]), c.get("hidden", ""))

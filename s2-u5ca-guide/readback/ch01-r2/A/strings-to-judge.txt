@@ -1,0 +1,7 @@
+ch01#2-1	Put the boxes, labels and buttons on the login form
+ch01#2-2	Give every control its name
+ch01#2-3	Make the password show stars
+ch01#3-1	Stop a username that is too long
+ch01#3-2	Let the right username and password in
+ch01#3-3	Show Login incorrect when the details are wrong
+ch01#4-1	Try every way into your login form
