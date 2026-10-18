@@ -49,6 +49,7 @@
  "check.have.go": "Go there ›",
  "check.try.title": "Try it",
  "check.try.intro": "Click the green Start arrow and try each row in your running program.",
+ "check.design.intro": "Look at your form in the Design tab. Tick each row that is right. A row that is wrong tells you where to go.",
  "check.must": "Must happen",
  "check.mustNot": "Must NOT happen",
  "check.fix": "If not",

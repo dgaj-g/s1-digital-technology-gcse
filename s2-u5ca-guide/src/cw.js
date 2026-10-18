@@ -2,7 +2,7 @@
    CW.mount(host, {base, api}) then CW.show(hash); every pupil act goes to api (apiCw, op had added, SPEC 3.3);
    code lines carry their text in data-t, drawn by CSS, never a text node (SPEC 6.3, G5); chapter 14 waits for 1 to 13 (SPEC 3.6).
    Was: the prototype renderer. Same bones as the AS cw.js (one IIFE, S state, hash routes #cw / #cw/07 / #cw/07/3-2),
-   with the S2 blocks of DESIGN_SPEC 6: p, watch, words, drawn, flow, frames, isense, names, steps, controls, check, box, code, foot. */
+   with the S2 blocks of DESIGN_SPEC 6: p, watch, words, drawn, flow, frames, isense, names, steps, controls, yours, check, box, code, foot. */
 (function () {
 'use strict';
 const S = { host: null, api: {}, base: '../content/', T: {}, index: null, ch: {}, controls: null, names: null, typed: {}, isenseShown: {}, timers: [], fast: false };
@@ -288,7 +288,7 @@ function bSteps(steps, ctx) {
 function bCheck(rows, ctx) {
   const tryIt = rows.some(r => r.expect !== 'have');
   const wrap = document.createDocumentFragment();
-  wrap.appendChild(el(`<p class="intro">${esc(t(tryIt ? 'check.try.intro' : 'check.have.intro'))}</p>`));
+  wrap.appendChild(el(`<p class="intro">${esc(t(rows.some(r => r.on === 'design') ? 'check.design.intro' : tryIt ? 'check.try.intro' : 'check.have.intro'))}</p>`));
   const ul = el(`<ul class="cw-check"></ul>`);
   const tk = ticks(ctx.chId);
   rows.forEach((r, i) => {
@@ -405,6 +405,7 @@ function renderBlocks(blocks, ctx) {
     else if (b.names) out.push(bNames(b.names.list, t('names.title'), ctx));
     else if (b.steps) out.push(bSteps(b.steps, ctx));
     else if (b.controls) out.push(bControls(b.controls, ctx));
+    else if (b.yours) out.push(el(`<div class="cw-yours solo"><span class="pin" aria-hidden="true">📌</span><div><b>${esc(t('code.yoursTitle'))}</b>${esc(b.yours)}</div></div>`));
     else if (b.check) out.push(bCheck(b.check, ctx));
     else if (b.box) out.push(bBox(b.box, ctx));
     else if (b.code) bCode(b.code, ctx).forEach(n => out.push(n));

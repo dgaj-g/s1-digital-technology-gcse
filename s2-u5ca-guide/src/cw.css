@@ -129,7 +129,7 @@
 .cw-flow{margin:4px 0 18px;background:var(--bg);border:2px solid var(--line);border-radius:16px;padding:16px 18px 10px}
 .cw-flow .form{position:relative;margin:0 auto;background:var(--form-bg);border:2px solid var(--mute);border-radius:6px;overflow:hidden;box-shadow:var(--shadow)}
 .cw-flow .form .tb{position:absolute;left:0;right:0;top:0;height:22px;background:var(--brand);color:var(--white);font-size:12px;font-weight:700;padding:0 8px;line-height:22px}
-.cw-flow .fp{position:absolute;border:2px solid var(--locked);background:var(--locked);border-radius:4px;transition:background .6s,border-color .6s,box-shadow .6s;display:flex;align-items:flex-start;padding:4px 6px;font-size:11px;font-weight:700;color:var(--mute);font-family:var(--mono);overflow:hidden}
+.cw-flow .fp{position:absolute;border:2px solid var(--locked);background:var(--locked);border-radius:4px;transition:background .6s,border-color .6s,box-shadow .6s;display:flex;align-items:flex-start;padding:4px 6px;font-size:11px;font-weight:700;color:var(--mute);font-family:var(--mono);overflow:hidden;overflow-wrap:anywhere;line-height:1.25}
 .cw-flow .fp .k{position:absolute;right:4px;bottom:3px;font-size:14px}
 .cw-flow .fp.lit{background:var(--open);border-color:var(--watch-edge);color:var(--gold-ink);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 45%,transparent)}
 .cw-flow .fp.just{animation:justLit .9s ease-out}

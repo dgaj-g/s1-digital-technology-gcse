@@ -1,0 +1,9 @@
+ch02#1-1	Check what your data entry form already has
+ch02#2-1	See the five panels on the data entry form
+ch02#2-2	Put on the five panels and name each one
+ch02#3-1	Fill the pupil details panel
+ch02#3-2	Put the choices in the two drop-down lists
+ch02#3-3	Fill the three attempts panel
+ch02#3-4	Fill the quiz panel and the reaction test panel
+ch02#3-5	Fill the group panel and add the two big buttons
+ch02#4-1	Check every name on your data entry form

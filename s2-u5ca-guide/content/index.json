@@ -93,12 +93,29 @@
    "title": "The data entry form: its panels and boxes",
    "one": "Five panels, two buttons, and a name on every control.",
    "color": "#F28C28",
-   "built": false,
-   "steps": [],
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "2-2.1",
+    "2-2.2",
+    "2-2.3",
+    "2-2.4",
+    "3-2.1",
+    "3-2.2",
+    "3-2.3",
+    "3-2.4",
+    "4-1.t1",
+    "4-1.t2",
+    "4-1.t3",
+    "4-1.t4"
+   ],
    "stages": [
     [
      "1",
-     "Check you have what this chapter needs",
+     "Check what your data entry form has",
      1
     ],
     [
@@ -109,7 +126,7 @@
     [
      "3",
      "Inside each panel",
-     4
+     5
     ],
     [
      "4",
@@ -117,7 +134,7 @@
      1
     ]
    ],
-   "screens": 8
+   "screens": 9
   },
   {
    "id": "03",
