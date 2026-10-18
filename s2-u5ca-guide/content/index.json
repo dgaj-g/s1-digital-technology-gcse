@@ -556,23 +556,41 @@
    "title": "Work out the group",
    "one": "Three scores become one group, worked out by a piece of code you name yourself.",
    "color": "#3A6EA5",
-   "built": false,
-   "steps": [],
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "2-2.c1",
+    "2-3.c1",
+    "3-1.c1",
+    "3-2.c1",
+    "3-3.c1",
+    "3-4.c1",
+    "3-5.c1",
+    "3-6.c1",
+    "3-7.c1",
+    "4-1.t1",
+    "4-1.t2",
+    "4-1.t3",
+    "4-1.t4"
+   ],
    "stages": [
     [
      "1",
-     "Check you have what this chapter needs",
+     "Check what you need first",
      1
     ],
     [
      "2",
-     "Your own method: code you name yourself",
+     "Your own piece of code, with a name you choose",
      3
     ],
     [
      "3",
-     "The button",
-     6
+     "The Calculate button",
+     7
     ],
     [
      "4",
@@ -580,7 +598,7 @@
      1
     ]
    ],
-   "screens": 11
+   "screens": 12
   },
   {
    "id": "11",

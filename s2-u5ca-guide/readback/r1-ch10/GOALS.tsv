@@ -1,0 +1,12 @@
+ch10#1-1	Before I start, I check the Load event, the group panel, Global.cs and my task sheet.
+ch10#2-1	I write a piece of code by hand, give it a name, and it turns three numbers into one group.
+ch10#2-2	CalculateGroup takes in three whole numbers, adds them up, and hands back Weak when the total is 4 or less.
+ch10#2-3	A total of 7 or less hands back Intermediate, and anything more hands back Advanced.
+ch10#3-1	If the quiz, the test or the average is not done, or the details are not entered, a message shows and the code stops.
+ch10#3-2	When everything is done, three whole numbers start at 0, one for each band.
+ch10#3-3	A quiz score of 1 or less is band 1, 3 or less is band 2, and anything more is band 3.
+ch10#3-4	A test score of 1 or less is band 1, and 4 or less is band 2.
+ch10#3-5	Any other test score is band 3.
+ch10#3-6	An average under 4 is band 1, 7 or less is band 2, and anything more is band 3.
+ch10#3-7	CalculateGroup turns the three bands into a group, Global.cs remembers it and the group panel goes grey.
+ch10#4-1	I run the program, do everything, and check the group, the grey panel and two sets of scores.
