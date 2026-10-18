@@ -31,7 +31,7 @@
  },
  "04": {
   "stages": 4,
-  "screens": 7,
+  "screens": 8,
   "methods": [
    [
     "frmDataEntry",
@@ -41,7 +41,7 @@
  },
  "05": {
   "stages": 4,
-  "screens": 8,
+  "screens": 10,
   "methods": [
    [
     "frmDataEntry",

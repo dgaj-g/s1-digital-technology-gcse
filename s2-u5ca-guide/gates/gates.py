@@ -100,7 +100,7 @@ def g6():
             t = re.sub(r'//.*', '', c['text'])
             if c.get('form') == 'Global': t = re.sub(r'(static \w+ )(\w+)', r'\1Global.\2', t)   # in Global.cs a field IS Global.<field>
             have = {n for n in K if re.search(r'(?<![\w.])' + re.escape(n) + r'\b', t)}
-            have -= {n for n in have if any(m != n and (m.endswith('.' + n) or m.startswith(n + '.')) and m in have for m in have)}
+            have -= {n for n in have if any(m != n and m.startswith(n + '.') and m in have for m in have)}
             names = set(c.get('names', []))
             if not names: out.append('%s %s: no names strip' % (cid, c['id']))
             out += ['%s %s: strip name %s is not a control, Global field or names.json entry' % (cid, c['id'], n) for n in names - K]
@@ -118,7 +118,7 @@ def g7():
         ws = [w for _, sc in screens(ch) for _, b in blocks(sc['blocks'], '') if 'words' in b for w in b['words']]
         terms = [w[0] for w in ws]
         prose = ' '.join(t for _, t in strings(ch['stages']))
-        marks = {int(i) for i in re.findall(r'\[\[[^\]|]+\|(\d+)\]\]', prose)}
+        marks = {int(i) for i in re.findall(r'\[\[.+?\|(\d+)\]\]', prose)}
         for i, t in enumerate(terms):
             if t not in wl: out.append('%s: [[%s]] is not on the words list' % (cid, t))
             if t in seen: out.append('%s: %s was already taught in chapter %s' % (cid, t, seen[t]))

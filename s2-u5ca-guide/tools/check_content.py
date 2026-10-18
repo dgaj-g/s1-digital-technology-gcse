@@ -48,7 +48,7 @@ def prose(ch):
             yield ("%s-%s/title" % (s["id"], sc["id"]), sc["title"])
     yield ("chapter/title", ch["title"]); yield ("chapter/one", ch["one"])
 def sentences(t):
-    t = re.sub(r"\[\[([^|\]]+)\|\d+\]\]", r"\1", t)
+    t = re.sub(r"\[\[(.+?)\|\d+\]\]", r"\1", t)
     return [x.strip() for x in re.split(r"(?<=[.!?])\s+", t) if x.strip()]
 def law(name, where, t, nwords=None):
     if BANNED.search(t): problems.append((name, where, "banned word", BANNED.search(t).group(0)))
@@ -57,12 +57,12 @@ def law(name, where, t, nwords=None):
         if m and name not in ok: problems.append((name, where, "7a banned", m.group(0), t[:50]))
     tt = re.sub(r"\[\[[^\]]+\]\]", "", t)
     if "—" in tt or ";" in tt: problems.append((name, where, "dash or semicolon", t[:60]))
-    if "(" in t and "()" not in t: problems.append((name, where, "bracket", t[:60]))
+    if "(" in tt and "()" not in tt: problems.append((name, where, "bracket", t[:60]))
     for s in sentences(t):
         n = len(s.split())
         if n > 16: problems.append((name, where, "%d words" % n, s[:70]))
     if nwords is not None:
-        for m in re.finditer(r"\[\[([^\]|]+)\|(\d+)\]\]", t):
+        for m in re.finditer(r"\[\[(.+?)\|(\d+)\]\]", t):
             if int(m.group(2)) >= nwords: problems.append((name, where, "word index out of range", m.group(0)))
         if re.search(r"\[\[[^\]|]+\]\]", t): problems.append((name, where, "mark without index", t[:60]))
 NAMES = json.load(open(os.path.join(C, "names.json")))

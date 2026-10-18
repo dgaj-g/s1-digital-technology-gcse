@@ -106,7 +106,7 @@ function hl(s) {
 function dt(s) { return s ? `<span data-t="${esc(s)}"></span>` : ''; }
 /* marked words [[word|i]] in prose → buttons that open the meaning */
 function prose(s, ctx) {
-  return esc(s).replace(/\[\[([^\]|]+)\|(\d+)\]\]/g, (_, w, i) => `<button class="wd" data-i="${i}">${w}</button>`);
+  return esc(s).replace(/\[\[(.+?)\|(\d+)\]\]/g, (_, w, i) => `<button class="wd" data-i="${i}">${w}</button>`);
 }
 function wireWords(node, ctx) {
   $$('.wd', node).forEach(b => b.addEventListener('click', e => {
@@ -180,7 +180,7 @@ function bFlow(f, ctx) {
   const lit0 = f.lit || [], then = f.then || [];
   const set = (name, on, pop) => { const r = rooms[name]; if (!r) return; r.classList.toggle('lit', on); const k = $('.k', r); if (k) k.textContent = on ? '🔑' : '🔒'; if (pop) { r.classList.remove('just'); void r.offsetWidth; r.classList.add('just'); } };
   /* end state: the lit panels on; each `then` panel on while the one before it goes off (the first lit panel stays) */
-  const endState = () => { const on = new Set(lit0); let active = lit0[lit0.length - 1]; then.forEach(k => { if (active && active !== lit0[0]) on.delete(active); on.add(k); active = k; }); return on; };
+  const endState = () => { const on = new Set(lit0); let active = lit0[lit0.length - 1]; then.forEach(k => { if (active && (f.keep === false || active !== lit0[0])) on.delete(active); on.add(k); active = k; }); return on; };
   let T = [];
   const at = (fn, ms) => T.push(later(fn, ms));
   const play = () => {
@@ -203,7 +203,7 @@ function bFlow(f, ctx) {
       order.forEach(k => set(k, lit0.indexOf(k) >= 0, false)); say.textContent = f.before || f.say;
       at(() => lit0.forEach(k => set(k, true, true)), 300);
       let active = lit0[lit0.length - 1], ms = 1700;
-      then.forEach(k => { at(() => { if (active && active !== lit0[0]) set(active, false, true); set(k, true, true); active = k; say.textContent = f.say; }, ms); ms += 1200; });
+      then.forEach(k => { at(() => { if (active && (f.keep === false || active !== lit0[0])) set(active, false, true); set(k, true, true); active = k; say.textContent = f.say; }, ms); ms += 1200; });
     }
   };
   $('.again', n).addEventListener('click', play);

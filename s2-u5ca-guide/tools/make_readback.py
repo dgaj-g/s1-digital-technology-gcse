@@ -8,7 +8,7 @@ only = set(sys.argv[2].split(',')) if len(sys.argv) > 2 else None
 out = os.path.join(D, 'readback', rnd); os.makedirs(out, exist_ok=True)
 ST = json.load(open(os.path.join(D, 'src', 'strings-s2.json')))
 def t(k): return ST.get(k, k)
-def clean(s): return re.sub(r"\[\[([^|\]]+)\|\d+\]\]", r"\1", s or '')
+def clean(s): return re.sub(r"\[\[(.+?)\|\d+\]\]", r"\1", s or '')
 def block(b, lines):
     if 'p' in b: lines.append(clean(b['p']))
     elif 'yours' in b: lines.append(t('code.yoursTitle') + ' ' + clean(b['yours']))

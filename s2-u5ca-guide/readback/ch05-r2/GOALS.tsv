@@ -1,0 +1,3 @@
+ch05#2-1	The average button starts with a bool called passValidation set to true. Any failed check turns it false.
+ch05#3-1	The three attempts are added, divided by 3, rounded to 2 places, kept in Global.cs and shown in the box.
+ch05#3-2	Global.cs notes the average is worked out and keeps the three attempts. The attempts panel switches off.

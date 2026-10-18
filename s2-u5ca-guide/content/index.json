@@ -188,31 +188,47 @@
    "title": "Pupil details: the Enter button",
    "one": "Check the four boxes, keep them in Global.cs, switch off the panel.",
    "color": "#1F77B4",
-   "built": false,
-   "steps": [],
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "2-1.1",
+    "2-1.c1",
+    "2-2.c1",
+    "2-3.c1",
+    "3-1.c1",
+    "3-2.c1",
+    "3-3.c1",
+    "4-1.t1",
+    "4-1.t2",
+    "4-1.t3",
+    "4-1.t4"
+   ],
    "stages": [
     [
      "1",
-     "Check you have what this chapter needs",
+     "Check what your Enter button has",
      1
     ],
     [
      "2",
-     "Collecting the problems",
+     "Collect every problem",
      3
     ],
     [
      "3",
-     "Show or save",
-     2
+     "Show the problems or keep the details",
+     3
     ],
     [
      "4",
-     "Try it",
+     "Try your Enter button",
      1
     ]
    ],
-   "screens": 7
+   "screens": 8
   },
   {
    "id": "05",
@@ -220,31 +236,48 @@
    "title": "The average of three attempts",
    "one": "Three numbers in, one average out, kept in Global.cs.",
    "color": "#8E44AD",
-   "built": false,
-   "steps": [],
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "2-1.1",
+    "2-1.c1",
+    "2-2.c1",
+    "2-3.c1",
+    "2-4.c1",
+    "2-5.c1",
+    "3-1.c1",
+    "3-2.c1",
+    "3-3.c1",
+    "4-1.t1",
+    "4-1.t2",
+    "4-1.t3",
+    "4-1.t4"
+   ],
    "stages": [
     [
      "1",
-     "Check you have what this chapter needs",
+     "Check what your average button has",
      1
     ],
     [
      "2",
-     "Checking the three boxes",
-     4
+     "Check the three boxes",
+     5
     ],
     [
      "3",
-     "Working it out",
-     2
+     "Work out the average",
+     3
     ],
     [
      "4",
-     "Try it",
+     "Try your average button",
      1
     ]
    ],
-   "screens": 8
+   "screens": 10
   },
   {
    "id": "06",

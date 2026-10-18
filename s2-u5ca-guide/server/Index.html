@@ -679,7 +679,7 @@ body.is-home header.bar .who{margin-left:auto}
 <body>
 <script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" };
 window.A2_VENDOR = ["https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/","https://dgaj-g.github.io/ols-digital-skills/a2-ssd/platform/vendor/"];
-window.A2_DEPLOY = "s2u5-s2-2026-10-18-7b555c4b";
+window.A2_DEPLOY = "s2u5-s2-2026-10-18-36aff137";
 window.A2_CW = "https://dgaj-g.github.io/s1-digital-technology-gcse/s2-u5ca-guide/content/";</script>
 <div class="app" id="app"></div>
 <script>
@@ -1350,7 +1350,7 @@ function hl(s) {
 function dt(s) { return s ? `<span data-t="${esc(s)}"></span>` : ''; }
 /* marked words [[word|i]] in prose \u2192 buttons that open the meaning */
 function prose(s, ctx) {
-  return esc(s).replace(/\[\[([^\]|]+)\|(\d+)\]\]/g, (_, w, i) => `<button class="wd" data-i="${i}">${w}</button>`);
+  return esc(s).replace(/\[\[(.+?)\|(\d+)\]\]/g, (_, w, i) => `<button class="wd" data-i="${i}">${w}</button>`);
 }
 function wireWords(node, ctx) {
   $$('.wd', node).forEach(b => b.addEventListener('click', e => {
@@ -1424,7 +1424,7 @@ function bFlow(f, ctx) {
   const lit0 = f.lit || [], then = f.then || [];
   const set = (name, on, pop) => { const r = rooms[name]; if (!r) return; r.classList.toggle('lit', on); const k = $('.k', r); if (k) k.textContent = on ? '\ud83d\udd11' : '\ud83d\udd12'; if (pop) { r.classList.remove('just'); void r.offsetWidth; r.classList.add('just'); } };
   /* end state: the lit panels on; each `then` panel on while the one before it goes off (the first lit panel stays) */
-  const endState = () => { const on = new Set(lit0); let active = lit0[lit0.length - 1]; then.forEach(k => { if (active && active !== lit0[0]) on.delete(active); on.add(k); active = k; }); return on; };
+  const endState = () => { const on = new Set(lit0); let active = lit0[lit0.length - 1]; then.forEach(k => { if (active && (f.keep === false || active !== lit0[0])) on.delete(active); on.add(k); active = k; }); return on; };
   let T = [];
   const at = (fn, ms) => T.push(later(fn, ms));
   const play = () => {
@@ -1447,7 +1447,7 @@ function bFlow(f, ctx) {
       order.forEach(k => set(k, lit0.indexOf(k) >= 0, false)); say.textContent = f.before || f.say;
       at(() => lit0.forEach(k => set(k, true, true)), 300);
       let active = lit0[lit0.length - 1], ms = 1700;
-      then.forEach(k => { at(() => { if (active && active !== lit0[0]) set(active, false, true); set(k, true, true); active = k; say.textContent = f.say; }, ms); ms += 1200; });
+      then.forEach(k => { at(() => { if (active && (f.keep === false || active !== lit0[0])) set(active, false, true); set(k, true, true); active = k; say.textContent = f.say; }, ms); ms += 1200; });
     }
   };
   $('.again', n).addEventListener('click', play);

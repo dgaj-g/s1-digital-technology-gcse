@@ -1,0 +1,8 @@
+ch04#1-1	Check what your Enter button already does
+ch04#2-1	Start an empty list of problems
+ch04#2-2	Add a problem when a name box is empty
+ch04#2-3	Add a problem when a name is too long or nothing is chosen
+ch04#3-1	Show every problem in one message
+ch04#3-2	Keep the four details in Global.cs
+ch04#3-3	Switch off the details panel and switch on the attempts panel
+ch04#4-1	Try every way through the Enter button
