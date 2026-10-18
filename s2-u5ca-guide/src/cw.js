@@ -298,8 +298,8 @@ function bNames(list, title, ctx, form) {
   return n;
 }
 function bControls(x, ctx) {
-  const rows = x.rows.map(r => `<tr><td data-l="${esc(t('controls.toolbox'))}">${esc(r.toolbox)}</td><td class="nm" data-l="${esc(t('controls.name'))}"><code>${esc(r.name)}</code><span class="what">${esc(S.names[r.name] || '')}</span></td><td data-l="${esc(t('controls.set'))}">${(r.set || []).length ? r.set.map(v => `<span class="set">${esc(v)}</span>`).join('') : `<span class="note">${esc(t('controls.nothing'))}</span>`}</td></tr>`).join('');
-  const n = el(`<div class="cw-controls"><table><thead><tr><th>${esc(t('controls.toolbox'))}</th><th>${esc(t('controls.name'))}</th><th>${esc(t('controls.set'))}</th></tr></thead><tbody>${rows}</tbody></table>${x.done ? `<div class="cw-see"><span class="eye" aria-hidden="true">👁</span><span><b>${esc(t('step.see'))}</b> ${prose(x.done, ctx)}</span></div>` : ''}</div>`);
+  const rows = x.rows.map((r, k) => `<tr style="--d:${(0.3 + 0.45 * k).toFixed(2)}s"><td data-l="${esc(t('controls.toolbox'))}">${esc(r.toolbox)}</td><td class="nm" data-l="${esc(t('controls.name'))}"><code>${esc(r.name)}</code><span class="what">${esc(S.names[r.name] || '')}</span></td><td data-l="${esc(t('controls.set'))}">${(r.set || []).length ? r.set.map(v => `<span class="set">${esc(v)}</span>`).join('') : `<span class="note">${esc(t('controls.nothing'))}</span>`}</td></tr>`).join('');
+  const n = el(`<div class="cw-controls" style="--dn:${(0.3 + 0.45 * x.rows.length + 0.6).toFixed(2)}s"><table><thead><tr><th>${esc(t('controls.toolbox'))}</th><th>${esc(t('controls.name'))}</th><th>${esc(t('controls.set'))}</th></tr></thead><tbody>${rows}</tbody></table>${x.done ? `<div class="cw-see"><span class="eye" aria-hidden="true">👁</span><span><b>${esc(t('step.see'))}</b> ${prose(x.done, ctx)}</span></div>` : ''}</div>`);
   wireWords(n, ctx); return n;
 }
 function bSteps(steps, ctx) {

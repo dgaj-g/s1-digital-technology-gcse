@@ -234,7 +234,8 @@ const bodyOpen = (index.match(/<body[^>]*>/) || [])[0];
 let body = index.slice(index.indexOf(bodyOpen) + bodyOpen.length);
 body = body.slice(0, body.lastIndexOf('</body>') > -1 ? body.lastIndexOf('</body>') : body.length).replace(/<script[\s\S]*?<\/script>/gi, '');
 const boot = '<script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" };\n' +
-  'window.A2_VENDOR = ' + JSON.stringify([CDN, GH]) + ';\nwindow.A2_DEPLOY = ' + JSON.stringify('s2u5-' + BUILD) + ';\nwindow.A2_CW = ' + JSON.stringify(CW) + ';</script>';
+  // A2_DEPLOY keeps the a2ssd- prefix: the A2 client strips exactly that to compare with the server's v (with any other prefix every call shows the stale line)
+  'window.A2_VENDOR = ' + JSON.stringify([CDN, GH]) + ';\nwindow.A2_DEPLOY = ' + JSON.stringify('a2ssd-' + BUILD) + ';\nwindow.A2_CW = ' + JSON.stringify(CW) + ';</script>';
 const frags = [boot, '<script>\n' + jsBlock(shim) + '\n</script>']
   .concat(scripts.map(([n, s]) => { const b = jsBlock(s); if (/<\/script/i.test(b)) { console.error(n + ': </script left'); process.exit(1); } return '<script>\n' + b + '\n</script>'; }))
   .concat(["<script>window.addEventListener('DOMContentLoaded', function () { App.boot(); });</script>"]);
