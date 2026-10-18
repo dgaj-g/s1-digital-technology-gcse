@@ -10,6 +10,7 @@ const OUT = path.join(__dirname, '_out', 'look'); fs.mkdirSync(OUT, { recursive:
 (async () => {
   const P = 'pupil9@c2ken.net', cls = 'S2-LOOK-' + (Date.now() % 100000);
   await post('/api/apiStaff', { op: 'create', name: cls }, 'dgartland021@c2ken.net'); await post('/api/apiBoot', { cls }, P);
+  if (ch === '14') { for (let k = 1; k <= 12; k++) await post('/api/apiCw', { cls, op: 'had', ch: String(k).padStart(2, '0'), v: 1 }, P); await post('/api/apiCw', { cls, op: 'done', ch: '13', on: true }, P); }   // 14 shows once 1 to 13 are done
   const b = await puppeteer.launch({ headless: 'shell', args: ['--no-sandbox'], protocolTimeout: 60000 });
   const page = await b.newPage(); await page.setViewport({ width: w, height: 1000 });
   await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);

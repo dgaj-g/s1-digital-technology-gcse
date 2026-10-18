@@ -165,5 +165,7 @@
  "parts": "the pieces of one line, cut at each ~",
  "i": "a counter that goes 0, 1, 2 and on, one for each line",
  "File.Exists": "asks if the file is there. It gives true or false.",
- "File.ReadAllLines": "reads every line of the file into a list"
+ "File.ReadAllLines": "reads every line of the file into a list",
+ "tries": "how many wrong tries so far, kept at the top of the login code",
+ "best": "the biggest of the three attempts"
 }

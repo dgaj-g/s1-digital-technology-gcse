@@ -61,9 +61,11 @@ async function klass(base, tag) { const cls = 'S2-G' + tag + '-' + (Date.now() %
   }
   // ---- G12 sizes at 1500x1000
   if (want('G12')) {
-    const cls = await klass(BASE, '12'); const page = await open(browser, BASE, cls, '#cw', [1500, 1000]); await page.waitForSelector('.cw-cards');
+    const cls = await klass(BASE, '12'); const sized = IX.chapters.filter((c) => c.built).map((c) => c.id);   // hidden 14 too, opened as a pupil who has done 1 to 13
+    if (sized.length > built.length) { for (let k = 1; k <= 12; k++) await post(BASE, '/api/apiCw', { cls, op: 'had', ch: String(k).padStart(2, '0'), v: 1 }, P); await post(BASE, '/api/apiCw', { cls, op: 'done', ch: '13', on: true }, P); }
+    const page = await open(browser, BASE, cls, '#cw', [1500, 1000]); await page.waitForSelector('.cw-cards');
     const bad = []; let n = 0, tallest = 0;
-    for (const ch of built) for (const key of screensOf(ch)) {
+    for (const ch of sized) for (const key of screensOf(ch)) {
       await go(page, '#cw/' + ch + '/' + key, `.cw-screen[data-key="${key}"]`); await settle(300); n++;
       if (CTL && n === 1) await page.evaluate(() => { document.querySelector('.cw-screen').appendChild(Object.assign(document.createElement('div'), { style: 'height:2400px' })); });
       const m = await page.evaluate(() => ({ h: Math.max(document.documentElement.scrollHeight, ...[...document.querySelectorAll('body *')].filter((e) => !e.closest('.cw-code') && /auto|scroll/.test(getComputedStyle(e).overflowY)).map((e) => e.scrollHeight)), code: !!document.querySelector('.cw-code'), inner: [...document.querySelectorAll('.cw-code .cbody')].some((b) => b.scrollHeight > b.clientHeight + 2) }));

@@ -1,4 +1,4 @@
-S2 gates 18 Oct 2026 21:08
+S2 gates 18 Oct 2026 21:21
 PASS  build
 PASS  check_content
 PASS  G1
@@ -54,5 +54,5 @@ PASS T* each op touches the activity session (Last seen moves) — {"seen":50002
 
 ---- browser gates
 G5 no copy PASS — 82 code screens
-G12 sizes PASS — 152 screens, tallest 2200px
+G12 sizes PASS — 162 screens, tallest 2200px
 G14 hidden 14 PASS — before {"hash":"#cw","card":false,"later":""} · home {"card":true,"later":["A bonus chapter has appeared. It is completely optional."]} · after {"hash":"#cw/14/1-1","screen":true}

@@ -1,0 +1,10 @@
+ch14#1-1	Read this before you pick an extra
+ch14#2-1	Add a counter for wrong tries
+ch14#2-2	Switch Login off on the third wrong try
+ch14#2-3	Try the three tries
+ch14#3-1	Make the pictures swap faster each second
+ch14#3-2	Try the faster swaps
+ch14#4-1	Show the best of the three attempts
+ch14#4-2	Try the best attempt
+ch14#5-1	Colour the group panel by the group
+ch14#5-2	Try the coloured group
