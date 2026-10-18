@@ -1,0 +1,15 @@
+ch12#1-1	Before I start, I check that two pupils are saved and that the View report button is there.
+ch12#2-1	I add a new form called frmReport.
+ch12#2-2	frmReport holds a big table, a group list, a year list and three labels.
+ch12#2-3	frmReport has a Close button called btnClose.
+ch12#3-1	One line at the top of frmReport's code lets the report use the file tools.
+ch12#3-2	One line near the top makes a table called dt that the whole report can use.
+ch12#4-1	When the report opens, the table gets seven columns, one for each thing it shows.
+ch12#4-2	If the file is there, every line is read, and each line is cut into pieces at each ~.
+ch12#4-3	Seven of the eleven pieces go into a new row of the table, in the order of the columns.
+ch12#4-4	With no file a message shows, and then the table appears in the grid on the form.
+ch12#5-1	Choosing a group shows only the pupils in that group, and All shows everyone.
+ch12#5-2	Choosing a year shows only the pupils in that year, and All shows everyone.
+ch12#5-3	Close shuts the report and the data entry form is still there.
+ch12#5-4	The View report button opens the report and leaves the data entry form open.
+ch12#6-1	I open the report, try both lists and close it.

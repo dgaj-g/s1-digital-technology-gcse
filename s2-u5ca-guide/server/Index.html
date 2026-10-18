@@ -734,13 +734,19 @@ body.is-home header.bar .who{margin-left:auto}
 .dw-rec .pc b{font-family:var(--sans);font-size:12px;color:var(--c);margin-bottom:2px}
 .dw-rec .fe{color:var(--mute);font-weight:700;padding:0 2px 8px;opacity:0;animation:recIn .5s ease var(--d) forwards}
 @keyframes recIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+.dw-q{max-width:760px;margin:0 auto;text-align:center}
+.dw-q .ln{display:inline-block;font-family:var(--mono);font-size:22px;font-weight:700;padding:14px 18px;border-radius:12px;background:var(--card);border:2px solid var(--line);color:var(--ink)}
+.dw-q .dq{color:var(--tok-k)}.dw-q .sq{color:var(--brand)}.dw-q .sb{color:var(--tok-n)}.dw-q .w{color:var(--ink)}
+.dw-q .dq,.dw-q .sq,.dw-q .sb{opacity:0;animation:recIn .5s ease .4s forwards}.dw-q .sq{animation-delay:1.1s}.dw-q .sb{animation-delay:1.8s}
+.dw-q .key{list-style:none;padding:0;margin:14px auto 0;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;font-size:15px;color:var(--ink)}
+.dw-q .key span{font-family:var(--mono);font-weight:700;opacity:1;animation:none}
 
 </style>
 </head>
 <body>
 <script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" };
 window.A2_VENDOR = ["https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/","https://dgaj-g.github.io/ols-digital-skills/a2-ssd/platform/vendor/"];
-window.A2_DEPLOY = "s2u5-s2-2026-10-18-409b0699";
+window.A2_DEPLOY = "s2u5-s2-2026-10-18-cd6ffd0b";
 window.A2_CW = "https://dgaj-g.github.io/s1-digital-technology-gcse/s2-u5ca-guide/content/";</script>
 <div class="app" id="app"></div>
 <script>
@@ -1487,7 +1493,11 @@ function bDrawn(d, ctx) {
   } else if (d.id === 'record-line') {
     /* ch11: one line of the file, each piece numbered 0 to 10, with a ~ fence between the pieces */
     const pc = d.pieces || [];
-    st.appendChild(el(`<div class="dw-rec">${pc.map((x, i) => `${i ? `<span class="fe" style="--d:${300 + i * 260}ms">~</span>` : ''}<span class="pc" style="--d:${300 + i * 260}ms;--c:var(--${['tok-k', 'tok-s', 'tok-m', 'tok-n', 'brand'][i % 5]})"><b>${i}</b>${esc(x)}</span>`).join('')}</div>`));
+    st.appendChild(el(`<div class="dw-rec">${pc.map((x, i) => `${i ? `<span class="fe" style="--d:${300 + i * 260}ms">~</span>` : ''}<span class="pc" style="--d:${300 + i * 260}ms;--c:var(--${['brand', 'ok-ink', 'bad-ink', 'gold-ink', 'tok-k'][i % 5]})"><b>${d.label ? esc(d.label) + '[' + i + ']' : i}</b>${esc(x)}</span>`).join('')}</div>`));
+  } else if (d.id === 'three-quotes') {
+    /* ch12: the filter line with its three kinds of mark, each in its own colour, and a key underneath */
+    const q = (c, x) => `<span class="${c}">${esc(x)}</span>`;
+    st.appendChild(el(`<div class="dw-q"><div class="ln">${q('dq', '"')}${q('sb', '[Group]')}${q('w', ' = ')}${q('sq', "'")}${q('dq', '"')}${q('w', ' + cbxGroup.Text + ')}${q('dq', '"')}${q('sq', "'")}${q('dq', '"')}</div><ul class="key">${(d.key || []).map((k, i) => `<li><span class="${['dq', 'sq', 'sb'][i]}">${esc(k[0])}</span> ${esc(k[1])}</li>`).join('')}</ul></div>`));
   } else {
     st.appendChild(el(`<div class="ph">${esc(d.alt)}</div>`));
   }

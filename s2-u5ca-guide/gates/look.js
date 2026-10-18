@@ -18,6 +18,7 @@ const OUT = path.join(__dirname, '_out', 'look'); fs.mkdirSync(OUT, { recursive:
     await page.setViewport({ width: w, height: 1000 });
     await page.evaluate((h) => { location.hash = h; }, '#cw/' + ch + '/' + k);
     await page.waitForSelector(`.cw-screen[data-key="${k}"]`, { timeout: 15000 }); await new Promise((r) => setTimeout(r, 700));
+    if (process.env.LOOK_OPEN) { await page.evaluate(() => document.querySelectorAll('details').forEach((d) => { d.open = true; })); await new Promise((r) => setTimeout(r, 2500)); }   // LOOK_OPEN=1 opens every fold
     const h = await page.evaluate(() => Math.max(document.documentElement.scrollHeight, ...[...document.querySelectorAll('body *')].filter((e) => /auto|scroll/.test(getComputedStyle(e).overflowY)).map((e) => e.scrollHeight)));
     await page.setViewport({ width: w, height: Math.min(h + 40, 4000) }); await new Promise((r) => setTimeout(r, 300));
     const f = path.join(OUT, ch + '-' + k + '-' + w + '.png'); await page.screenshot({ path: f, fullPage: true }); console.log(f, h + 'px');

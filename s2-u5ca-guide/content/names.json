@@ -122,7 +122,7 @@
  "lblGroup": "the label beside the group list",
  "lblYear": "the label beside the year list",
  "lblReportInstructions": "the line of instructions at the top of the report",
- "dt": "the table held in memory, kept at the top of the report's code",
+ "dt": "the table in memory that holds every saved pupil",
  "Global.quizScore": "the quiz score, a whole number",
  "Global.surname": "the surname that was entered",
  "Global.firstname": "the first name that was entered",
@@ -159,5 +159,11 @@
  "System.IO": "the file tools. With this line the form can use File.",
  "record": "one line of words that holds all of one pupil's details",
  "File.AppendAllText": "adds words to the end of a file. It makes the file if it is not there.",
- "Environment.NewLine": "the end of a line, so the next pupil starts on a new line"
+ "Environment.NewLine": "the end of a line, so the next pupil starts on a new line",
+ "DataTable": "a table kept in memory, with columns and rows",
+ "lines": "every line of the file, one after another",
+ "parts": "the pieces of one line, cut at each ~",
+ "i": "a counter that goes 0, 1, 2 and on, one for each line",
+ "File.Exists": "asks if the file is there. It gives true or false.",
+ "File.ReadAllLines": "reads every line of the file into a list"
 }

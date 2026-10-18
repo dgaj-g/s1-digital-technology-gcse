@@ -659,33 +659,54 @@
    "title": "The report",
    "one": "Read the file back into a table on the form, with two filters.",
    "color": "#B5651D",
-   "built": false,
-   "steps": [],
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "2-1.1",
+    "2-1.2",
+    "3-1.c1",
+    "3-2.c1",
+    "4-1.c1",
+    "4-2.c1",
+    "4-3.c1",
+    "4-4.c1",
+    "5-1.c1",
+    "5-2.c1",
+    "5-3.c1",
+    "5-4.c1",
+    "6-1.t1",
+    "6-1.t2",
+    "6-1.t3",
+    "6-1.t4",
+    "6-1.t5",
+    "6-1.t6"
+   ],
    "stages": [
     [
      "1",
-     "Check you have what this chapter needs",
+     "Check what you need first",
      1
     ],
     [
      "2",
-     "The report form: its table and filters",
+     "The report form: its table and lists",
      3
     ],
     [
      "3",
-     "Before the Load event",
+     "Two lines at the top of the report code",
      2
     ],
     [
      "4",
-     "The Load event in three parts",
+     "The Load event in four parts",
      4
     ],
     [
      "5",
-     "The filters and the buttons",
-     3
+     "The two lists and the two buttons",
+     4
     ],
     [
      "6",
@@ -693,7 +714,7 @@
      1
     ]
    ],
-   "screens": 14
+   "screens": 15
   },
   {
    "id": "13",

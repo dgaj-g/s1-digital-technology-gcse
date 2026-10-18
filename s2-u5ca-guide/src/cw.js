@@ -182,7 +182,11 @@ function bDrawn(d, ctx) {
   } else if (d.id === 'record-line') {
     /* ch11: one line of the file, each piece numbered 0 to 10, with a ~ fence between the pieces */
     const pc = d.pieces || [];
-    st.appendChild(el(`<div class="dw-rec">${pc.map((x, i) => `${i ? `<span class="fe" style="--d:${300 + i * 260}ms">~</span>` : ''}<span class="pc" style="--d:${300 + i * 260}ms;--c:var(--${['tok-k', 'tok-s', 'tok-m', 'tok-n', 'brand'][i % 5]})"><b>${i}</b>${esc(x)}</span>`).join('')}</div>`));
+    st.appendChild(el(`<div class="dw-rec">${pc.map((x, i) => `${i ? `<span class="fe" style="--d:${300 + i * 260}ms">~</span>` : ''}<span class="pc" style="--d:${300 + i * 260}ms;--c:var(--${['brand', 'ok-ink', 'bad-ink', 'gold-ink', 'tok-k'][i % 5]})"><b>${d.label ? esc(d.label) + '[' + i + ']' : i}</b>${esc(x)}</span>`).join('')}</div>`));
+  } else if (d.id === 'three-quotes') {
+    /* ch12: the filter line with its three kinds of mark, each in its own colour, and a key underneath */
+    const q = (c, x) => `<span class="${c}">${esc(x)}</span>`;
+    st.appendChild(el(`<div class="dw-q"><div class="ln">${q('dq', '"')}${q('sb', '[Group]')}${q('w', ' = ')}${q('sq', "'")}${q('dq', '"')}${q('w', ' + cbxGroup.Text + ')}${q('dq', '"')}${q('sq', "'")}${q('dq', '"')}</div><ul class="key">${(d.key || []).map((k, i) => `<li><span class="${['dq', 'sq', 'sb'][i]}">${esc(k[0])}</span> ${esc(k[1])}</li>`).join('')}</ul></div>`));
   } else {
     st.appendChild(el(`<div class="ph">${esc(d.alt)}</div>`));
   }
