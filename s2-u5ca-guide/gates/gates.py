@@ -150,6 +150,8 @@ def g11():
                 imgs = (b.get('frames') or {}).get('frames', []) + [s['img'] for s in b.get('steps', []) if isinstance(s.get('img'), dict)]
                 for f in imgs:
                     if not (f.get('w') and f.get('h') and f.get('alt')): out.append('%s %s: %s lacks w, h or alt' % (cid, sid, f.get('img')))
+    land = open(os.path.join(D, 'index.html')).read()   # the landing pop-up's P1 and P3 (DESIGN_SPEC 3.5); P2 is drawn
+    for t in re.findall(r"'content/(img/cap/p\d-\d\.png)'", land): need[t] = 'landing'
     missing = [p for p in need if not os.path.exists(os.path.join(C, p))]
     if missing and SHIP: out += ['missing %s (%s)' % (p, need[p]) for p in missing]
     elif missing: print('  G11 note: %d of %d pictures not taken yet (red at ship)' % (len(missing), len(need)))

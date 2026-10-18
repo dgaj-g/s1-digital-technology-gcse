@@ -122,23 +122,23 @@
             {
              "img": "img/cap/f5-1.png",
              "alt": "The Project menu open, with Add Form in its list",
-             "w": 1280,
-             "h": 800,
+             "w": 358,
+             "h": 501,
              "say": "Open the Project menu. Click the line that starts Add Form."
             },
             {
              "img": "img/cap/f5-2.png",
              "alt": "The Add New Item box with Form picked and a name in the Name box",
-             "w": 1280,
-             "h": 800,
+             "w": 940,
+             "h": 588,
              "say": "Form is picked. Type the form's name in the Name box."
             },
             {
              "img": "img/cap/f5-3.png",
              "alt": "The new empty form in the Design tab",
-             "w": 1280,
-             "h": 800,
-             "say": "Click Add. The new form opens in the Design tab."
+             "w": 828,
+             "h": 494,
+             "say": "Click Add. The new form opens in the Design tab. My picture says frmTemp. Yours shows the name you typed."
             }
            ]
           }
@@ -223,16 +223,16 @@
            "frames": [
             {
              "img": "img/cap/f13-1.png",
-             "alt": "The Toolbox with DataGridView found and dragged onto frmReport",
-             "w": 1280,
-             "h": 800,
+             "alt": "The Toolbox searched for DataGridView, next to frmReport in the Design tab",
+             "w": 848,
+             "h": 528,
              "say": "Drag a DataGridView onto the form. Make it big."
             },
             {
              "img": "img/cap/f13-2.png",
              "alt": "frmReport with the table, two drop-down lists and their labels",
-             "w": 1280,
-             "h": 800,
+             "w": 828,
+             "h": 494,
              "say": "Add the two lists and their labels."
             }
            ]
@@ -399,8 +399,8 @@
             {
              "img": "img/cap/f20-2.png",
              "alt": "The top of frmReport.cs with the DataTable line typed above the public frmReport() line",
-             "w": 1280,
-             "h": 800,
+             "w": 808,
+             "h": 203,
              "say": "The line goes near the top, above public frmReport()."
             }
            ]
@@ -998,8 +998,8 @@
             {
              "img": "img/cap/f18-1.png",
              "alt": "The running report with one group chosen in the group list",
-             "w": 1280,
-             "h": 800,
+             "w": 794,
+             "h": 447,
              "say": "One group is chosen. Only its pupils show."
             }
            ]

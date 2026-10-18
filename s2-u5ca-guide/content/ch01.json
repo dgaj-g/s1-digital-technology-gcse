@@ -189,22 +189,22 @@
          {
           "img": "img/cap/f2-1.png",
           "alt": "A text box on the login form clicked once, with its handles showing",
-          "w": 1280,
-          "h": 800,
+          "w": 820,
+          "h": 524,
           "say": "Click the control once. Little squares appear round it."
          },
          {
           "img": "img/cap/f2-2.png",
           "alt": "The Properties window with the Name line near the top",
-          "w": 1280,
-          "h": 800,
+          "w": 348,
+          "h": 303,
           "say": "In Properties, find the word Name. It is near the top of the list."
          },
          {
           "img": "img/cap/f2-3.png",
           "alt": "The Name line in Properties changed to tbxUsername",
-          "w": 1280,
-          "h": 800,
+          "w": 348,
+          "h": 303,
           "say": "Type the new name and press Enter."
          }
         ]
@@ -333,17 +333,17 @@
            "frames": [
             {
              "img": "img/cap/f1-1.png",
-             "alt": "The pointer on the Login button in the Design tab",
-             "w": 1280,
-             "h": 800,
-             "say": "Double-click the Login button in the Design tab."
+             "alt": "A form in the Design tab, with the pointer on a button",
+             "w": 882,
+             "h": 536,
+             "say": "Double-click the button in the Design tab. My picture shows a quiz button. Yours is the Login button."
             },
             {
              "img": "img/cap/f1-2.png",
-             "alt": "The code tab with the new empty btnLogin_Click",
-             "w": 1280,
-             "h": 800,
-             "say": "The code tab opens. Visual Studio has written btnLogin_Click for you."
+             "alt": "The code tab with a new empty click method for the button",
+             "w": 808,
+             "h": 122,
+             "say": "The code tab opens. Visual Studio writes the first and last lines for you. Yours says btnLogin_Click."
             }
            ]
           }

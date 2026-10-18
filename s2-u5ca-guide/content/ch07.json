@@ -185,8 +185,8 @@
          "img": {
           "img": "img/cap/f4-1.png",
           "alt": "The quiz form open in the Design tab",
-          "w": 1280,
-          "h": 800
+          "w": 882,
+          "h": 536
          }
         },
         {
@@ -196,8 +196,8 @@
          "img": {
           "img": "img/cap/f4-2.png",
           "alt": "The pointer on the title bar of the quiz form in the Design tab",
-          "w": 1280,
-          "h": 800
+          "w": 882,
+          "h": 536
          },
          "wrong": [
           [
@@ -213,8 +213,8 @@
          "img": {
           "img": "img/cap/f4-3.png",
           "alt": "The code tab with the new empty frmQuiz_Load and the cursor between its curly brackets",
-          "w": 1280,
-          "h": 800
+          "w": 894,
+          "h": 110
          }
         }
        ]
@@ -336,22 +336,22 @@
             {
              "img": "img/cap/f3-1.png",
              "alt": "The code tab with pnl typed on a new line",
-             "w": 1280,
-             "h": 800,
+             "w": 894,
+             "h": 83,
              "say": "Type the first letters of the name."
             },
             {
              "img": "img/cap/f3-2.png",
              "alt": "The IntelliSense list open under pnl, showing the six panel names",
-             "w": 1280,
-             "h": 800,
+             "w": 796,
+             "h": 225,
              "say": "The list pops up with every matching name in YOUR program."
             },
             {
              "img": "img/cap/f3-3.png",
              "alt": "The line completed to pnlButtonsQuestion",
-             "w": 1280,
-             "h": 800,
+             "w": 894,
+             "h": 110,
              "say": "Press Tab. The name is typed for you, spelt right."
             }
            ]
@@ -437,15 +437,15 @@
          {
           "img": "img/cap/f1-1.png",
           "alt": "The quiz form in the Design tab, with the pointer on question 4's Check button",
-          "w": 1280,
-          "h": 800,
+          "w": 882,
+          "h": 536,
           "say": "In the Design tab, double-click the button."
          },
          {
           "img": "img/cap/f1-2.png",
           "alt": "The code tab with a new empty btnCheck4_Click",
-          "w": 1280,
-          "h": 800,
+          "w": 808,
+          "h": 122,
           "say": "The code tab opens. Visual Studio writes the first and last lines for you, with nothing in between."
          }
         ]
@@ -817,22 +817,22 @@
          {
           "img": "img/cap/f14-1.png",
           "alt": "The running quiz just opened: question 1 on, four grey panels, no Return button",
-          "w": 1280,
-          "h": 800,
+          "w": 794,
+          "h": 447,
           "say": "The quiz opens. Only question 1 is switched on. There is no Return button."
          },
          {
           "img": "img/cap/f14-2.png",
           "alt": "The running quiz with question 1 marked and grey, question 2 on",
-          "w": 1280,
-          "h": 800,
+          "w": 794,
+          "h": 447,
           "say": "Question 1 is marked and grey. Question 2 is switched on. The rest are still grey."
          },
          {
           "img": "img/cap/f14-3.png",
           "alt": "The running quiz with all five marked, the score showing and the Return button visible",
-          "w": 1280,
-          "h": 800,
+          "w": 794,
+          "h": 447,
           "say": "All five are marked. The Return button has appeared in the score panel."
          }
         ]

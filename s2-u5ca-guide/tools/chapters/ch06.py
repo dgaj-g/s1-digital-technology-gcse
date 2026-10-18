@@ -44,7 +44,7 @@ CH = {
       frames("F5", "Add a new form", [
         ("f5-1", "The Project menu open, with Add Form in its list", "Open the Project menu. Click the line that starts Add Form."),
         ("f5-2", "The Add New Item box with Form picked and a name in the Name box", "Form is picked. Type the form's name in the Name box."),
-        ("f5-3", "The new empty form in the Design tab", "Click Add. The new form opens in the Design tab.")])]}},
+        ("f5-3", "The new empty form in the Design tab", "Click Add. The new form opens in the Design tab. My picture says frmTemp. Yours shows the name you typed.")])]}},
     {"flow": {"form": Q, "map": True,
               "lit": ["pnlQuizScore", "pnlTextQuestion", "pnlButtonsQuestion", "pnlListQuestion", "pnlRadioQuestion", "pnlNumberQuestion"], "then": [],
               "say": "Six panels. One holds the score. Each of the other five holds one question."}},

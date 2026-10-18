@@ -151,23 +151,23 @@
             {
              "img": "img/cap/f5-1.png",
              "alt": "The Project menu open, with Add Form in its list",
-             "w": 1280,
-             "h": 800,
+             "w": 358,
+             "h": 501,
              "say": "Open the Project menu. Click the line that starts Add Form."
             },
             {
              "img": "img/cap/f5-2.png",
              "alt": "The Add New Item box with Form picked and a name in the Name box",
-             "w": 1280,
-             "h": 800,
+             "w": 940,
+             "h": 588,
              "say": "Form is picked. Type the form's name in the Name box."
             },
             {
              "img": "img/cap/f5-3.png",
              "alt": "The new empty form in the Design tab",
-             "w": 1280,
-             "h": 800,
-             "say": "Click Add. The new form opens in the Design tab."
+             "w": 828,
+             "h": 494,
+             "say": "Click Add. The new form opens in the Design tab. My picture says frmTemp. Yours shows the name you typed."
             }
            ]
           }
@@ -381,22 +381,22 @@
             {
              "img": "img/cap/f8-1.png",
              "alt": "The Toolbox with GroupBox shown",
-             "w": 1280,
-             "h": 800,
+             "w": 297,
+             "h": 132,
              "say": "Drag a GroupBox into the question 4 panel."
             },
             {
              "img": "img/cap/f8-2.png",
              "alt": "Four RadioButtons dropped inside the group box",
-             "w": 1280,
-             "h": 800,
+             "w": 365,
+             "h": 194,
              "say": "Drag four RadioButtons INSIDE the group box."
             },
             {
              "img": "img/cap/f8-3.png",
              "alt": "A NumericUpDown dropped into the question 5 panel",
-             "w": 1280,
-             "h": 800,
+             "w": 559,
+             "h": 122,
              "say": "Drag a NumericUpDown into the question 5 panel."
             }
            ]

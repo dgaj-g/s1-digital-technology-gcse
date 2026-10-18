@@ -121,15 +121,15 @@
          {
           "img": "img/cap/f11-1.png",
           "alt": "Solution Explorer on the right of Visual Studio 2019, listing the five forms and Global.cs",
-          "w": 1280,
-          "h": 800,
+          "w": 348,
+          "h": 296,
           "say": "Solution Explorer is on the right. Every form is listed. Global.cs is listed too. It is the file that remembers things for the whole program, like the quiz score."
          },
          {
           "img": "img/cap/f11-2.png",
           "alt": "The right-click menu of a form with View Code highlighted",
-          "w": 1280,
-          "h": 800,
+          "w": 545,
+          "h": 514,
           "say": "Double-click a form to see it in the Design tab. Right-click it and choose View Code to see its code."
          }
         ]
@@ -163,15 +163,15 @@
          {
           "img": "img/cap/f9-1.png",
           "alt": "The toolbar with the green Start arrow",
-          "w": 1280,
-          "h": 800,
+          "w": 294,
+          "h": 32,
           "say": "The green Start arrow at the top runs your program."
          },
          {
           "img": "img/cap/f9-2.png",
           "alt": "The toolbar while the program runs, with the red Stop square",
-          "w": 1280,
-          "h": 800,
+          "w": 276,
+          "h": 32,
           "say": "While it runs, the arrow becomes a red Stop square. Press it to stop."
          }
         ]
@@ -274,15 +274,15 @@
          {
           "img": "img/cap/f2-1.png",
           "alt": "The Design tab with one text box clicked once",
-          "w": 1280,
-          "h": 800,
+          "w": 820,
+          "h": 524,
           "say": "In the Design tab, click the control once."
          },
          {
           "img": "img/cap/f2-2.png",
           "alt": "The Properties window with the name tbxSurname at the top",
-          "w": 1280,
-          "h": 800,
+          "w": 348,
+          "h": 303,
           "say": "Look at the top of the Properties window. The name is written beside the word Name."
          }
         ]
@@ -340,22 +340,22 @@
          {
           "img": "img/cap/f3-1.png",
           "alt": "The code tab with pnl typed on a new line",
-          "w": 1280,
-          "h": 800,
+          "w": 894,
+          "h": 83,
           "say": "Type the first letters of the name."
          },
          {
           "img": "img/cap/f3-2.png",
           "alt": "The IntelliSense list open under pnl, showing the matching names",
-          "w": 1280,
-          "h": 800,
+          "w": 796,
+          "h": 225,
           "say": "The list pops up with every matching name in YOUR program."
          },
          {
           "img": "img/cap/f3-3.png",
           "alt": "The line completed to a panel name",
-          "w": 1280,
-          "h": 800,
+          "w": 894,
+          "h": 110,
           "say": "Press Tab. The name is typed for you, spelt right."
          }
         ]
@@ -433,22 +433,22 @@
          {
           "img": "img/cap/f10-1.png",
           "alt": "A code line with a red wiggly underline under a misspelt name",
-          "w": 1280,
-          "h": 800,
+          "w": 894,
+          "h": 125,
           "say": "A red wiggly line under a word."
          },
          {
           "img": "img/cap/f10-2.png",
           "alt": "The Error List at the bottom of Visual Studio 2019 with one error",
-          "w": 1280,
-          "h": 800,
+          "w": 1501,
+          "h": 93,
           "say": "The Error List at the bottom names the problem."
          },
          {
           "img": "img/cap/f10-3.png",
           "alt": "The cursor on the line after double-clicking the error",
-          "w": 1280,
-          "h": 800,
+          "w": 894,
+          "h": 123,
           "say": "Double-click the error. The cursor jumps to the line."
          }
         ]
@@ -476,15 +476,15 @@
          {
           "img": "img/cap/f12-1.png",
           "alt": "The Build menu open with Build Solution highlighted",
-          "w": 1280,
-          "h": 800,
+          "w": 370,
+          "h": 277,
           "say": "Open the Build menu and choose Build Solution."
          },
          {
           "img": "img/cap/f12-2.png",
           "alt": "The bottom left of Visual Studio 2019 saying Build succeeded",
-          "w": 1280,
-          "h": 800,
+          "w": 514,
+          "h": 27,
           "say": "Bottom left says Build succeeded."
          }
         ]

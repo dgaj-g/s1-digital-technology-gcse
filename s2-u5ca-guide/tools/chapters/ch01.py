@@ -85,8 +85,8 @@ CH = {
     {"steps": [step("3-1.1", "In the Design tab, double-click the Login button.", "The code tab opens at btnLogin_Click, empty between the curly brackets.")]},
     {"box": {"title": "See it in Visual Studio", "fold": True, "blocks": [
       frames("F1", "From the button to its code", [
-        ("f1-1", "The pointer on the Login button in the Design tab", "Double-click the Login button in the Design tab."),
-        ("f1-2", "The code tab with the new empty btnLogin_Click", "The code tab opens. Visual Studio has written btnLogin_Click for you.")])]}},
+        ("f1-1", "A form in the Design tab, with the pointer on a button", "Double-click the button in the Design tab. My picture shows a quiz button. Yours is the Login button."),
+        ("f1-2", "The code tab with a new empty click method for the button", "The code tab opens. Visual Studio writes the first and last lines for you. Yours says btnLogin_Click.")])]}},
     {"p": "[[.Text|0]] is what was typed in a box. [[.Length|1]] counts its characters. .Clear() empties a box."},
     code("3-1.c1", "The Login button, part 1 of 3", "between the curly brackets of btnLogin_Click, in frmLogin.cs", L, "btnLogin_Click", 1, 10,
          [given(1, 2),

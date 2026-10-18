@@ -149,8 +149,8 @@
             {
              "img": "img/cap/f21-1.png",
              "alt": "The top of frmDataEntry.cs with using System.IO typed under the other using lines",
-             "w": 1280,
-             "h": 800,
+             "w": 808,
+             "h": 214,
              "say": "The new line sits under the other using lines."
             }
            ]
@@ -605,22 +605,22 @@
             {
              "img": "img/cap/f19-1.png",
              "alt": "Solution Explorer with the right-click menu open on the project",
-             "w": 1280,
-             "h": 800,
+             "w": 592,
+             "h": 602,
              "say": "Right-click the project. Click Open Folder in File Explorer."
             },
             {
              "img": "img/cap/f19-2.png",
              "alt": "File Explorer showing the bin folder",
-             "w": 1280,
-             "h": 800,
+             "w": 701,
+             "h": 477,
              "say": "Double-click bin."
             },
             {
              "img": "img/cap/f19-3.png",
              "alt": "File Explorer showing the Debug folder",
-             "w": 1280,
-             "h": 800,
+             "w": 701,
+             "h": 190,
              "say": "Double-click Debug."
             }
            ]
@@ -642,15 +642,15 @@
             {
              "img": "img/cap/f17-1.png",
              "alt": "The Debug folder with pupilStats.txt in it",
-             "w": 1280,
-             "h": 800,
+             "w": 701,
+             "h": 190,
              "say": "The file is in the Debug folder."
             },
             {
              "img": "img/cap/f17-2.png",
              "alt": "pupilStats.txt open in Notepad with one line and a ~ between the pieces",
-             "w": 1280,
-             "h": 800,
+             "w": 685,
+             "h": 184,
              "say": "One line, with a ~ between each piece."
             }
            ]

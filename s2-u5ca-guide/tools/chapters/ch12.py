@@ -36,7 +36,7 @@ CH = {
       frames("F5", "Add a new form", [
         ("f5-1", "The Project menu open, with Add Form in its list", "Open the Project menu. Click the line that starts Add Form."),
         ("f5-2", "The Add New Item box with Form picked and a name in the Name box", "Form is picked. Type the form's name in the Name box."),
-        ("f5-3", "The new empty form in the Design tab", "Click Add. The new form opens in the Design tab.")])]}}
+        ("f5-3", "The new empty form in the Design tab", "Click Add. The new form opens in the Design tab. My picture says frmTemp. Yours shows the name you typed.")])]}}
    ]},
    {"id": "2", "title": "Add the table and the two lists", "foot": "done",
     "goal": "frmReport holds a big table, a group list, a year list and three labels.",
@@ -54,7 +54,7 @@ CH = {
     {"watch": "Leave no space at the end of a choice. Advanced with a space after it will not match."},
     {"box": {"title": "See it in Visual Studio", "fold": True, "blocks": [
       frames("F13", "The table and the lists", [
-        ("f13-1", "The Toolbox with DataGridView found and dragged onto frmReport", "Drag a DataGridView onto the form. Make it big."),
+        ("f13-1", "The Toolbox searched for DataGridView, next to frmReport in the Design tab", "Drag a DataGridView onto the form. Make it big."),
         ("f13-2", "frmReport with the table, two drop-down lists and their labels", "Add the two lists and their labels.")])]}}
    ]},
    {"id": "3", "title": "Add the Close button", "foot": "done",

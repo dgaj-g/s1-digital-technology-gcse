@@ -159,22 +159,22 @@
             {
              "img": "img/cap/f2-1.png",
              "alt": "A control on the form clicked once, with its handles showing",
-             "w": 1280,
-             "h": 800,
+             "w": 820,
+             "h": 524,
              "say": "Click the control once. Little squares appear round it."
             },
             {
              "img": "img/cap/f2-2.png",
              "alt": "The Properties window with the Name line near the top",
-             "w": 1280,
-             "h": 800,
+             "w": 348,
+             "h": 303,
              "say": "In Properties, find the word Name. It is near the top of the list."
             },
             {
              "img": "img/cap/f2-3.png",
              "alt": "The Name line in Properties changed to a new name",
-             "w": 1280,
-             "h": 800,
+             "w": 348,
+             "h": 303,
              "say": "Type the new name and press Enter."
             }
            ]

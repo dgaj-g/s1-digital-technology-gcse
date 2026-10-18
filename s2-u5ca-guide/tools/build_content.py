@@ -2,7 +2,7 @@
 """Builds content/chNN.json and content/index.json. Chapters 0 and 7 are written here; every other chapter is tools/chapters/chNN.py,
 run with these helpers and defining CH. Stage lists of unbuilt chapters come from the briefs in DESIGN_SPEC.md §9.
 Run: python3 -I s2-u5ca-guide/tools/build_content.py"""
-import json, re, os
+import struct, json, re, os
 HERE = os.path.dirname(os.path.abspath(__file__)); D = os.path.dirname(HERE)
 CODE = os.path.join(D, 'content', 'code')
 
@@ -29,6 +29,9 @@ def step(id_, do, see, img=None, wrong=None):
     if wrong: s["wrong"] = wrong
     return s
 def cap(name, alt, w=1280, h=800, marks=None):
+    f = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'content', 'img', 'cap', name + '.png')
+    if os.path.exists(f):   # a real capture: its own size (PNG header bytes 16-24)
+        w, h = struct.unpack('>II', open(f, 'rb').read(24)[16:24])
     d = {"img": "img/cap/" + name + ".png", "alt": alt, "w": w, "h": h}
     if marks: d["marks"] = marks
     return d

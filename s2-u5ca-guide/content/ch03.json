@@ -177,22 +177,22 @@
             {
              "img": "img/cap/f6-1.png",
              "alt": "The Project menu open, with Add Class in its list",
-             "w": 1280,
-             "h": 800,
+             "w": 358,
+             "h": 501,
              "say": "Open the Project menu. Click Add Class."
             },
             {
              "img": "img/cap/f6-2.png",
              "alt": "The Add New Item box with Class picked and Global.cs in the Name box",
-             "w": 1280,
-             "h": 800,
+             "w": 940,
+             "h": 588,
              "say": "Class is picked. Type Global.cs in the Name box."
             },
             {
              "img": "img/cap/f6-3.png",
              "alt": "The new Global.cs in the code tab, showing class Global",
-             "w": 1280,
-             "h": 800,
+             "w": 823,
+             "h": 271,
              "say": "Click Add. Global.cs opens in the code tab."
             }
            ]
