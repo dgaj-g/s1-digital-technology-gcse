@@ -670,3 +670,53 @@ body.is-home header.bar .who{margin-left:auto}
 .cw-pre .ln [data-t]::before{content:attr(data-t)}
 .cw-code .cbody,.cw-code .cbody *{-webkit-user-select:none;user-select:none}
 @media print{.cw-code,.cw-pre{display:none!important}}
+
+/* code block: the rest of the method, the same again (ch09) */
+.cw-code .rest{display:flex;gap:10px;align-items:center;margin:10px 0 0;padding:10px 12px;border:2px dashed var(--sw);border-radius:12px;font-size:16px;font-weight:700;color:var(--white)}
+.cw-code .rest .ic{font-size:22px;color:var(--sw-ink)}
+
+/* ch09 four-choices: cards flip from MY choice to the other ideas */
+.dw-flip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:860px;margin:0 auto;perspective:900px}
+.dw-flip .fc{height:170px}
+.dw-flip .in{position:relative;width:100%;height:100%;transform-style:preserve-3d;animation:flipOver .8s cubic-bezier(.3,.8,.3,1.1) var(--d) both}
+.dw-flip .fr,.dw-flip .bk{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;padding:12px;border:2px solid var(--sw);background:var(--card)}
+.dw-flip .fr{display:flex;flex-direction:column;justify-content:center;text-align:center}
+.dw-flip .bk{transform:rotateY(180deg);background:color-mix(in srgb,var(--sw) 12%,var(--card))}
+.dw-flip .ttl{font-weight:900;font-size:15px;color:var(--sw-ink);margin-bottom:6px}
+.dw-flip .mine{font-size:16px;font-weight:700}
+.dw-flip .was{font-size:13px;font-weight:700;color:var(--mute);margin:2px 0 4px}
+.dw-flip ul{margin:0;padding-left:18px;font-size:14px;line-height:1.35}
+@keyframes flipOver{from{transform:none}to{transform:rotateY(180deg)}}
+/* ch09 list-card: twelve boxes jump into one list */
+.dw-list{display:grid;grid-template-columns:auto auto 1fr;gap:14px;align-items:center;max-width:720px;margin:0 auto}
+.dw-list .grid,.dw-wire .grid{display:grid;grid-template-columns:repeat(4,64px);gap:8px}
+.dw-list .bx,.dw-wire .bx{display:grid;place-items:center;height:48px;border-radius:10px;background:var(--card);border:2px solid var(--line);font:700 13px/1 var(--mono)}
+.dw-list .bx{animation:boxGo .5s ease-in var(--d) forwards}
+.dw-list .ar{font-size:28px;color:var(--sw-ink);font-weight:900}
+.dw-list .card{border:2px solid var(--sw);border-radius:14px;padding:12px;background:var(--card);min-height:150px}
+.dw-list .card .ttl{font-weight:900;color:var(--sw-ink);margin-bottom:8px;font-family:var(--mono)}
+.dw-list .chips{display:flex;flex-wrap:wrap;gap:6px}
+.dw-list .ch{padding:4px 8px;border-radius:8px;background:color-mix(in srgb,var(--sw) 18%,var(--card));font:700 13px/1.2 var(--mono);animation:popIn .4s cubic-bezier(.2,.9,.3,1.4) var(--d) both}
+@keyframes boxGo{to{opacity:.25;transform:translateX(24px) scale(.85)}}
+/* ch09 wire-boxes: the loop wires each box in turn */
+.dw-wire{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;max-width:620px;margin:0 auto}
+.dw-wire .loop{border:2px solid var(--sw);border-radius:14px;padding:12px 14px;background:var(--card);font:700 15px/1.4 var(--mono)}
+.dw-wire .bx{gap:2px;animation:wired .45s ease-out var(--d) both}
+.dw-wire .bx i{font-style:normal;font-size:12px;opacity:0;animation:fadeIn .3s ease-out var(--d) forwards}
+@keyframes wired{from{border-color:var(--line);transform:none}50%{transform:scale(1.12)}to{border-color:var(--sw);background:color-mix(in srgb,var(--sw) 14%,var(--card));transform:none}}
+@keyframes fadeIn{to{opacity:1}}
+/* ch10 group-machine: three numbers drop in, one word comes out */
+.dw-mach{position:relative;height:250px;max-width:420px;margin:0 auto}
+.dw-mach .in{position:absolute;left:calc(50% - 22px + var(--x));top:0;width:44px;height:44px;display:grid;place-items:center;border-radius:12px;background:var(--card);border:2px solid var(--sw);font-weight:900;font-size:20px;animation:dropIn .7s cubic-bezier(.5,0,.8,.4) var(--d) forwards}
+.dw-mach .box{position:absolute;left:calc(50% - 120px);top:90px;width:240px;height:70px;border-radius:16px;background:var(--sw);display:grid;place-items:center;animation:hum .5s ease-in-out 1.6s 2}
+.dw-mach .box .nm{color:var(--white);font:900 18px/1 var(--mono)}
+.dw-mach .out{position:absolute;left:50%;top:180px;transform:translateX(-50%);padding:8px 18px;border-radius:999px;background:var(--card);border:3px solid var(--sw);font-weight:900;font-size:20px;opacity:0;animation:outPop .6s cubic-bezier(.2,.9,.3,1.4) 2.6s forwards}
+@keyframes dropIn{70%{opacity:1}to{transform:translateY(100px) scale(.6);opacity:0}}
+@keyframes hum{50%{transform:scale(1.05)}}
+@keyframes outPop{from{opacity:0;transform:translate(-50%,-20px)}to{opacity:1;transform:translate(-50%,0)}}
+@media (max-width:900px){
+  .dw-flip{grid-template-columns:1fr 1fr}.dw-flip .fc{height:160px}
+  .dw-list{grid-template-columns:1fr;justify-items:center}.dw-list .ar{transform:rotate(90deg)}
+  .dw-list .grid,.dw-wire .grid{grid-template-columns:repeat(4,56px)}
+  .dw-wire{grid-template-columns:1fr;justify-items:center}
+}

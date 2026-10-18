@@ -164,6 +164,21 @@ function bDrawn(d, ctx) {
     const wrap = el(`<ul class="cw-cards" style="grid-template-columns:1fr;max-width:420px;margin:0 auto;pointer-events:none"></ul>`);
     wrap.appendChild(card(c, { k: 9, tt: c.steps.length, state: 'open', lit: false, expected: true, demo: true }));
     st.appendChild(wrap);
+  } else if (d.id === 'four-choices') {
+    /* ch09: four cards show MY choice, then each flips to show the other ideas */
+    st.appendChild(el(`<div class="dw-flip">${(d.cards || []).map((c, i) => `<div class="fc" style="--d:${900 + i * 650}ms"><div class="in"><div class="fr"><div class="ttl">${esc(c[0])}</div><div class="mine">${esc(c[1])}</div></div><div class="bk"><div class="ttl">${esc(c[0])}</div><div class="was">MINE: ${esc(c[1])}</div><ul>${c[2].map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></div></div>`).join('')}</div>`));
+  } else if (d.id === 'list-card') {
+    /* ch09: twelve picture boxes jump, one by one, into one list */
+    const bx = Array.from({ length: 12 }, (_, i) => 'pbx' + (i + 1));
+    st.appendChild(el(`<div class="dw-list"><div class="grid">${bx.map((b, i) => `<span class="bx" style="--d:${500 + i * 160}ms">${b}</span>`).join('')}</div><div class="ar">→</div><div class="card"><div class="ttl">pictureboxes</div><div class="chips">${bx.map((b, i) => `<span class="ch" style="--d:${650 + i * 160}ms">${b}</span>`).join('')}</div></div></div>`));
+  } else if (d.id === 'wire-boxes') {
+    /* ch09: the loop wires each of the twelve boxes to the click code, one at a time */
+    const bx = Array.from({ length: 12 }, (_, i) => 'pbx' + (i + 1));
+    st.appendChild(el(`<div class="dw-wire"><div class="loop"><span class="tok-k">foreach</span> box<br><small>when clicked, run</small><br><b>PictureBox_Click</b></div><div class="grid">${bx.map((b, i) => `<span class="bx" style="--d:${600 + i * 220}ms"><i aria-hidden="true">⚡</i>${b}</span>`).join('')}</div></div>`));
+  } else if (d.id === 'group-machine') {
+    /* ch10: three numbers drop into a box with a name, one word comes out */
+    const ins = d.ins || ['1', '2', '3'];
+    st.appendChild(el(`<div class="dw-mach">${ins.map((x, i) => `<span class="in" style="--d:${400 + i * 350}ms;--x:${(i - 1) * 70}px">${esc(x)}</span>`).join('')}<div class="box"><span class="nm">${esc(d.name || 'CalculateGroup')}</span></div><span class="out">${esc(d.out || '')}</span></div>`));
   } else {
     st.appendChild(el(`<div class="ph">${esc(d.alt)}</div>`));
   }
@@ -329,6 +344,8 @@ function bCode(c, ctx) {
     pre.appendChild(el(`<span class="ln${given ? ' given' : ''}" data-n="${n}" data-p="${pi}">${hl(ln) || dt(' ')}</span>`));
   });
   parts.forEach((p, i) => partsEl.appendChild(el(`<div class="part${p.given ? ' given' : ''}" data-p="${i}"><span class="lr">${p.from === p.to ? 'Line ' + p.from : 'Lines ' + p.from + ' to ' + p.to}</span><b>${esc(p.h)}</b>${esc(p.m)}</div>`)));
+  /* rest: lines of the method not shown, told as the same pattern again for her own controls */
+  if (c.rest) { const r = el(`<div class="rest"><span class="ic" aria-hidden="true">↻</span><span>${prose(c.rest[2], ctx)}</span></div>`); wireWords(r, ctx); $('.cbody', card).appendChild(r); }
   if (c.yours) card.querySelector('.cgrid').appendChild(el(`<div class="cw-yours"><span class="pin" aria-hidden="true">📌</span><div><b>${esc(t('code.yoursTitle'))}</b>${esc(c.yours)}</div></div>`));
   /* walk mode */
   const walk = el(`<div class="cwalk"><button class="btn sec w-on">${esc(t('code.walk'))}</button><button class="btn sec w-back" hidden>${esc(t('walk.back'))}</button><button class="btn w-next" hidden>${esc(t('walk.next'))}</button><button class="btn quiet w-off" hidden>${esc(t('code.walkOff'))}</button><button class="btn quiet w-again">${esc(t('code.replay'))}</button><span class="step"></span></div>`);

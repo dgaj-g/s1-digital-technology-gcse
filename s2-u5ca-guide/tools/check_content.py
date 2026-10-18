@@ -112,6 +112,8 @@ for name in ["ch%s.json" % c["id"] for c in IDX0["chapters"] if c["built"]]:
                     for b in sc["blocks"]:
                         if "code" in b and b["code"].get("method") == meth:
                             for i in range(b["code"]["from"], b["code"]["to"] + 1): cov[i - 1] += 1
+                            if b["code"].get("rest"):
+                                for i in range(b["code"]["rest"][0], b["code"]["rest"][1] + 1): cov[i - 1] += 1
             if any(x != 1 for x in cov): problems.append((name, meth, "method coverage", cov))
             else: print("  %s: all %d lines shown exactly once" % (meth, len(src)))
     print(name, "checked")

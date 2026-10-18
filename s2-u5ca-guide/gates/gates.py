@@ -73,6 +73,7 @@ def g4():
         shown = {}
         for _, _, c in codes(CH[cid]):
             if 'method' in c: shown.setdefault((c['form'], c['method']), set()).update(range(c['from'], c['to'] + 1))
+            if 'method' in c and c.get('rest'): shown[(c['form'], c['method'])].update(range(c['rest'][0], c['rest'][1] + 1))   # lines told as 'the same again'
         for form, m in p['methods']:
             n = len(open(os.path.join(C, 'code', form, m + '.cs')).read().rstrip('\n').split('\n'))
             got = shown.get((form, m), set())

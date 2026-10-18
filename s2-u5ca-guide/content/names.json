@@ -144,5 +144,8 @@
  "errors": "the list of problems found so far",
  "passValidation": "true while every box looks right. Any failed check makes it false.",
  "average": "the three attempts added up and divided by 3",
- "roundedAv": "the average cut down to 2 numbers after the point"
+ "roundedAv": "the average cut down to 2 numbers after the point",
+ "clickedPicturebox": "the picture box that was clicked",
+ "pb": "each picture box in the list, in turn",
+ "PictureBox_Click": "the code that runs when a box is clicked"
 }
