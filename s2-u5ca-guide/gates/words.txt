@@ -1,0 +1,59 @@
+form
+control
+IntelliSense
+Load event
+method
+event handler
+property
+variable
+static
+Global
+Enabled = false
+Visible = false
+.Text
+.Checked
+.Value
+.SelectedIndex == -1
+==
+!
+||
+&&
++=
+return;
+this.Close()
+new frmQuiz().Show()
+Convert.ToInt32
+Convert.ToDouble
+.ToString()
+Math.Round(x, 2)
+string.IsNullOrWhiteSpace
+.Length
+.All(char.IsDigit)
+Timer
+Interval
+List<PictureBox>
+foreach
+sender as PictureBox
+ImageLocation
+using System.IO
+File.AppendAllText
+~
+Split('~')
+Environment.NewLine
+DataTable
+DataGridView
+RowFilter
+user-defined method
+for loop
+this.Hide()
+\n
+.ToLower()
+BackColor
+ForeColor
+@"Images\…"
+--
+string[]
+Items
+!=
+.Start()
+.Stop()

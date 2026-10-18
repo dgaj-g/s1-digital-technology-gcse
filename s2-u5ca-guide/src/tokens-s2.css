@@ -1,0 +1,17 @@
+/* S2 U5CA guide tokens (DESIGN_SPEC 7.1, 7.2). Every colour in the other stylesheets is a var() of one of these. Text variants (--sw-ink) are each swatch darkened until it reads at 4.5:1 on white. */
+:root{--ok-bg:#ECF9EF;--bad-bg:#FBE4E2;--form-bg:#ECE9F1;--isense-bg:#2A2640;--isense-edge:#4A4566;--wrap-bg:#3A3458;--wrap-ink:#E7E0FF;--code-cur:#2E2947;--inset-12:rgba(0,0,0,.12);--inset-15:rgba(0,0,0,.15);--inset-25:rgba(0,0,0,.25);--brand:#4F2D9E;--accent:#FFC53D;--tint:#F5F1FC;--bg:#FBF9FF;--card:#FFFFFF;--ink:#1C1A2E;--mute:#5E5A78;--line:#E2DCF2;--ok:#1B7F3B;--bad:#B3261E;--code-bg:#1E1B2E;--code-ink:#F4F1FF;--typed:#FFF0B3;--locked:#D9D6E3;--open:#FFE08A;--white:#FFFFFF;--black:#000000;--tok-k:#C792EA;--tok-s:#FFD580;--tok-c:#A29DBF;--tok-n:#82D8FF;--tok-m:#7FE1C1;--tok-v:#F4F1FF;--ok-ink:#1B7F3B;--bad-ink:#B3261E;--watch:#FFF4D6;--watch-edge:#E6A700;--watch-ink:#6B4E00;--gold-ink:#6B4E00;--sans:"Nunito","Segoe UI",system-ui,sans-serif;--mono:"JetBrains Mono",Menlo,Consolas,monospace;--sw:#4F2D9E;--sw-ink:#4F2D9E;--r:18px;--dim:rgba(28,26,46,.45);--shadow:0 6px 24px rgba(28,26,46,.10);--shadow-lift:0 10px 32px rgba(79,45,158,.18)}
+.sw-00{--sw:#4F2D9E;--sw-ink:#4F2D9E}
+.sw-01{--sw:#E84D6A;--sw-ink:#E32448}
+.sw-02{--sw:#F28C28;--sw-ink:#B35E0B}
+.sw-03{--sw:#2A9D8F;--sw-ink:#228175}
+.sw-04{--sw:#1F77B4;--sw-ink:#1F77B4}
+.sw-05{--sw:#8E44AD;--sw-ink:#8E44AD}
+.sw-06{--sw:#D1495B;--sw-ink:#CF4154}
+.sw-07{--sw:#0F9D8A;--sw-ink:#0C8171}
+.sw-08{--sw:#E07A1F;--sw-ink:#AF5F18}
+.sw-09{--sw:#C2185B;--sw-ink:#C2185B}
+.sw-10{--sw:#3A6EA5;--sw-ink:#3A6EA5}
+.sw-11{--sw:#6A994E;--sw-ink:#5A8142}
+.sw-12{--sw:#B5651D;--sw-ink:#AC601C}
+.sw-13{--sw:#5C6BC0;--sw-ink:#5C6BC0}
+.sw-14{--sw:#C9A227;--sw-ink:#8D721B}
