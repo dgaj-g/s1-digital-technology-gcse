@@ -296,7 +296,18 @@
      "goal": "The year group list and the gender list each hold their choices, typed one per line in Items.",
      "blocks": [
       {
-       "p": "A drop-down list is empty until you give it its choices. They go in Items, one per line."
+       "p": "A drop-down list is empty until you give it its choices. They go in [[Items|0]], one per line."
+      },
+      {
+       "words": [
+        [
+         "Items",
+         "The choices in a drop-down list, one on each line.",
+         "3-2",
+         true
+        ]
+       ],
+       "intro": "One new thing in this chapter. Click the marked word to see what it means."
       },
       {
        "steps": [

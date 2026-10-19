@@ -105,7 +105,7 @@ CH = {
     {"p": "In the Design tab, double-click the title bar of frmReport. frmReport_Load appears in the code tab."},
     code("4-1.c1", "The Load event of frmReport, part 1 of 4", "between the curly brackets of " + L, R, L, 1, 9,
          [given(1, 2),
-          [3, 6, "The first four columns", "Forename, Surname, Year and Gender. typeof string means each column holds words."],
+          [3, 6, "The first four columns", "Surname, Forename, Year and Gender. typeof string means each column holds words."],
           [7, 9, "The last three columns", "Quiz Score, Reaction Score and Group."]],
          ["dt"], [],
          yours="MY report shows seven columns. Name the columns for what YOUR report must show.")

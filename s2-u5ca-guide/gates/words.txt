@@ -3,7 +3,6 @@ control
 IntelliSense
 Load event
 method
-event handler
 property
 variable
 static
