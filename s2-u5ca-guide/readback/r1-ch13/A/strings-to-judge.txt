@@ -1,0 +1,5 @@
+ch13#1-1	Check the parts this chapter needs
+ch13#2-1	Make the pupil details ? button speak
+ch13#3-1	The other four on the data entry form
+ch13#3-2	The login, quiz and test forms
+ch13#3-3	Try every help button

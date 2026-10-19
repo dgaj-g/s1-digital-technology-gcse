@@ -1,0 +1,58 @@
+S2 gates 18 Oct 2026 22:34
+PASS  build
+PASS  check_content
+PASS  G1
+PASS  G2
+PASS  G4
+PASS  G6
+PASS  G7
+PASS  G8b
+PASS  G11
+PASS  G12s
+PASS  G13
+PASS  G9
+PASS  G10
+PASS  G5+G12+G14
+PASS  G15
+-- controls (each must be red)
+red   control G1
+red   control G2
+red   control G4
+red   control G6
+red   control G7
+red   control G8b
+red   control G12s
+red   control G13
+red   control G3
+red   control G8
+red   control G11
+red   control G9
+red   control G10
+red   control G5
+red   control G12
+red   control G14
+red   control G15
+ALL GREEN, every control red
+
+---- G15 server test
+T PASS — 15 checks, 0 failures
+PASS T1 open creates w: with o=1, f, l — {"k":"","o":1,"f":500000,"l":500000,"a":"","d":0,"c":0,"r":0}
+PASS T1 screen sets a — 6-3
+PASS T2 tick on sets bits, nothing else moves — k=9
+PASS T2 tick off clears that bit only — ["1-1.t1"]
+PASS T3 copy and reveal count up — c=2 r=1
+PASS T4 done sets d to the minute — d=500005
+PASS T7 had v:1 sets h and logs h — h=1 e=[500005,"h","07"]
+PASS T7 the class grid shows the chapter as had — {"k":["1-1.t1"],"o":1,"f":500000,"l":500000,"a":"6-3","d":500005,"c":2,"r":1,"h":1}
+PASS T7 had v:0 clears h and logs g — h=0 e=[500005,"g","07"]
+PASS T7 had on an unknown chapter refused with bad-key — {"ok":false,"error":"bad-key","v":"s2-2026-10-18-a36a5cfc"}
+PASS T4 the stale-build notice is logged once, a bad notice id refused — {"s2-guide":500005} bad-key
+PASS T5 staff grid refused before the passcode, a wrong passcode refused, the right one admits — not-staff,bad-pass,true
+PASS T6 unknown chapter, bad step, oversize payload, unknown file refused with bad-key — bad-key,bad-key,bad-key,bad-key,bad-key,bad-key,bad-key,bad-key
+PASS T6 stored value length unchanged after the refusals — 275 → 275
+PASS T* each op touches the activity session (Last seen moves) — {"seen":500020,"last":[500020,500020,1,0]}
+
+---- browser gates
+G5 no copy PASS — 82 code screens
+G12 sizes PASS — 162 screens, tallest 2200px
+G14 hidden 14 PASS — before {"hash":"#cw","card":false,"later":""} · home {"card":true,"later":["A bonus chapter has appeared. It is completely optional."]} · after {"hash":"#cw/14/1-1","screen":true}

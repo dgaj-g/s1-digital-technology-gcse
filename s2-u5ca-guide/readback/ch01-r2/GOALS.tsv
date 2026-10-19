@@ -1,0 +1,7 @@
+ch01#2-1	My login form has a panel holding two text boxes, a Login button and their labels, plus a title and a ? button.
+ch01#2-2	I name a control by clicking it once and typing its name beside Name near the top of Properties.
+ch01#2-3	Setting PasswordChar to a star on tbxPassword makes every letter typed in it show as a star.
+ch01#3-1	If the username is more than 15 letters, a message appears and both boxes are emptied.
+ch01#3-2	If the username and password are both right, a message appears, the login form hides and the data entry form opens.
+ch01#3-3	If the details are anything else, a Login incorrect message appears and both boxes are emptied.
+ch01#4-1	I run the program and try a long username, a wrong password, the right details and two empty boxes.

@@ -1,0 +1,9 @@
+ch02#1-1	I check my data entry form for its five panels, their names, the Save and View Report buttons and the year group list.
+ch02#2-1	The data entry form holds five panels: pupil details, three attempts, the quiz, the reaction test and the group.
+ch02#2-2	I drag five panels onto the data entry form and give each one a name that starts with pnl.
+ch02#3-1	The pupil details panel holds a first name box, a surname box, a gender list, a year group list, an Enter button and a ? button.
+ch02#3-2	The year group list and the gender list each hold their choices, typed one per line in Items.
+ch02#3-3	The second panel holds three attempt boxes with labels, a Calculate Average button, a box for the average and a ? button.
+ch02#3-4	The quiz panel and the test panel each hold a heading, a not taken yet label, a Take button and a ? button.
+ch02#3-5	The group panel holds a heading, a box, a button and a ? button. Save Details, View Report, a title and a logo sit on the form.
+ch02#4-1	Every panel name starts pnl, every text box tbx, every button btn and every drop-down list cbx. None is a made-up name.

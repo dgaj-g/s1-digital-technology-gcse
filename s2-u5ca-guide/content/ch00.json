@@ -1,0 +1,519 @@
+{
+ "id": "00",
+ "n": 0,
+ "of": 15,
+ "title": "Start here: how to use this guide",
+ "kind": "start",
+ "color": "#4F2D9E",
+ "noTurn": true,
+ "one": "What you are making, how a chapter works, and the three rules.",
+ "prev": null,
+ "next": {
+  "id": "01",
+  "n": 1,
+  "title": "The login form"
+ },
+ "methods": [],
+ "stages": [
+  {
+   "id": "1",
+   "title": "What you are making",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Your program: five forms and one file",
+     "foot": "next",
+     "goal": "My program is five forms joined by buttons, plus one text file that saves each pupil.",
+     "blocks": [
+      {
+       "p": "This guide helps you create your Unit 5 program, one part at a time. Here is the whole thing."
+      },
+      {
+       "words": [
+        [
+         "form",
+         "One of the pages of your program. The login is a form. The quiz is a form.",
+         "1-1",
+         false
+        ],
+        [
+         "control",
+         "Anything you put on a form: a button, a text box, a panel, a label.",
+         "3-1",
+         false
+        ],
+        [
+         "property",
+         "A setting of a control, like its Name or its Text. The Properties window lists them.",
+         "3-1",
+         false
+        ],
+        [
+         "IntelliSense",
+         "The list that pops up as you type code. It knows every name in your program.",
+         "3-2",
+         false
+        ]
+       ],
+       "intro": "Four words you will see a lot. Click any marked word to see what it means."
+      },
+      {
+       "drawn": {
+        "id": "five-screens",
+        "alt": "Five cards: Login, Data entry, Quiz, Reaction test and Report, joined by arrows, with a note card for the file pupilStats.txt.",
+        "say": "Each card is one [[form|0]]. The arrows are the buttons that take you from one to the next.",
+        "cards": [
+         [
+          "frmLogin",
+          "Login",
+          "Two boxes and a button."
+         ],
+         [
+          "frmDataEntry",
+          "Data entry",
+          "Five panels, where everything is typed in."
+         ],
+         [
+          "frmQuiz",
+          "Quiz",
+          "Five questions, one score."
+         ],
+         [
+          "frmTest",
+          "Reaction test",
+          "Twelve pictures and a ten-second clock."
+         ],
+         [
+          "frmReport",
+          "Report",
+          "A table of every saved pupil."
+         ],
+         [
+          "pupilStats.txt",
+          "The file",
+          "Your program saves each pupil's results in here, one line per pupil."
+         ]
+        ]
+       }
+      },
+      {
+       "p": "You have made some of these already. The home page shows which parts you have done and which come next."
+      },
+      {
+       "watch": "Every form has a name that starts with frm. You will see those names in the code."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Where your forms and your code live",
+     "foot": "next",
+     "goal": "Solution Explorer lists my forms, double-clicking one opens the Design tab, and View Code opens the code tab.",
+     "blocks": [
+      {
+       "p": "Everything in your project is listed in Solution Explorer, on the right of Visual Studio."
+      },
+      {
+       "frames": {
+        "id": "F11",
+        "title": "Solution Explorer",
+        "frames": [
+         {
+          "img": "img/cap/f11-1.png",
+          "alt": "Solution Explorer on the right of Visual Studio 2019, listing the five forms and Global.cs",
+          "w": 348,
+          "h": 296,
+          "say": "Solution Explorer is on the right. Every form is listed. Global.cs is listed too. It is the file that remembers things for the whole program, like the quiz score."
+         },
+         {
+          "img": "img/cap/f11-2.png",
+          "alt": "The right-click menu of a form with View Code highlighted",
+          "w": 545,
+          "h": 514,
+          "say": "Double-click a form to see it in the Design tab. Right-click it and choose View Code to see its code."
+         }
+        ]
+       }
+      },
+      {
+       "p": "Each form has two tabs. The Design tab shows the form. The code tab shows the code behind it."
+      },
+      {
+       "p": "Double-click a button in the Design tab and the code tab opens at that button's code."
+      },
+      {
+       "watch": "Closing a tab deletes nothing. Double-click the form in Solution Explorer to open it again."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Run your program and stop it again",
+     "foot": "next",
+     "goal": "The green Start arrow runs my program and the red square stops it.",
+     "blocks": [
+      {
+       "p": "You will run your program a lot in this guide. Here is how to start it and how to stop it."
+      },
+      {
+       "frames": {
+        "id": "F9",
+        "title": "Running your program",
+        "frames": [
+         {
+          "img": "img/cap/f9-1.png",
+          "alt": "The toolbar with the green Start arrow",
+          "w": 294,
+          "h": 32,
+          "say": "The green Start arrow at the top runs your program."
+         },
+         {
+          "img": "img/cap/f9-2.png",
+          "alt": "The toolbar while the program runs, with the red Stop square",
+          "w": 276,
+          "h": 32,
+          "say": "While it runs, the arrow becomes a red Stop square. Press it to stop."
+         }
+        ]
+       }
+      },
+      {
+       "watch": "Use the green arrow and the menus, never keyboard shortcuts. In a browser tab, a shortcut can reload the page."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "How this guide works",
+   "screens": [
+    {
+     "id": "1",
+     "title": "What a chapter looks like",
+     "foot": "next",
+     "goal": "A chapter is a row of stages, each stage is a few screens, and the big button at the bottom ticks a screen off.",
+     "blocks": [
+      {
+       "p": "This guide is split into chapters. One chapter is one part of your program, like the login or the quiz."
+      },
+      {
+       "drawn": {
+        "id": "mini-chapter",
+        "alt": "A small drawn chapter: a rail of stage pills, a list of three steps with tick boxes, and a big button at the foot.",
+        "say": "A chapter is a row of stages. Each stage is a few screens. Each screen has one job."
+       }
+      },
+      {
+       "p": "Every chapter starts with Have you got this? It checks you have what the chapter needs."
+      },
+      {
+       "p": "Then come the steps and the code, one screen at a time. The last screen is Test it."
+      },
+      {
+       "p": "When you have done a screen, press the big button at the bottom. It ticks the screen and moves you on."
+      },
+      {
+       "watch": "Your ticks are saved to your school account. Next lesson, the guide opens where you left off."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Find where you are up to",
+     "foot": "next",
+     "goal": "The home page lists every part in order, I tick what I have done, and I open the first part that is not ticked.",
+     "blocks": [
+      {
+       "p": "The home page is called Where am I up to? It lists every part of the program, in order."
+      },
+      {
+       "p": "Tick the parts you have already done. Then open the first part that is not ticked. That is your next job."
+      },
+      {
+       "p": "If you were away, this is how you pick up where you were. If you were here, you carry on."
+      },
+      {
+       "drawn": {
+        "id": "home-card",
+        "alt": "One chapter card from the home page: the number, the title, a progress ring, an Open button and a smaller I did this already button.",
+        "say": "A chapter card. The ring fills as you tick. The small grey button is for a part you did already."
+       }
+      },
+      {
+       "p": "Already made a part before you saw this guide? Press I did this already on its card."
+      },
+      {
+       "watch": "Only press I did this already if it is true. The guide cannot check. Your program will."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "The three rules",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Rule 1: my names are not your names",
+     "foot": "next",
+     "goal": "The guide shows the names Mr Gartland gave his controls, and I use the names I gave mine, found at the top of the Properties window.",
+     "blocks": [
+      {
+       "p": "Every [[control|1]] in your program has a name, like tbxSurname or btnEnter. The code uses those names."
+      },
+      {
+       "p": "This guide shows MY example, with MY names. YOUR names may be different, and that is fine."
+      },
+      {
+       "frames": {
+        "id": "F2",
+        "title": "Finding a control's name",
+        "frames": [
+         {
+          "img": "img/cap/f2-1.png",
+          "alt": "The Design tab with one text box clicked once",
+          "w": 820,
+          "h": 524,
+          "say": "In the Design tab, click the control once."
+         },
+         {
+          "img": "img/cap/f2-2.png",
+          "alt": "The Properties window with the name tbxSurname at the top",
+          "w": 348,
+          "h": 303,
+          "say": "Look at the top of the Properties window. The name is written beside the word Name."
+         }
+        ]
+       }
+      },
+      {
+       "p": "The name is a [[property|2]] of the control, one of its settings. Its Text is another."
+      },
+      {
+       "names": {
+        "form": "frmDataEntry",
+        "list": [
+         "tbxSurname",
+         "btnEnter",
+         "pnlPupilDetails"
+        ]
+       }
+      },
+      {
+       "watch": "When you see one of my names, read it as the name YOU gave that control."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Rule 2: let IntelliSense type the name for you",
+     "foot": "next",
+     "goal": "When I type the first letters of a name, IntelliSense lists the names in my program and Tab finishes it.",
+     "blocks": [
+      {
+       "p": "You will type a lot of names. Visual Studio can type most of each one for you."
+      },
+      {
+       "p": "[[IntelliSense|3]] is the list that pops up as you type code. It knows every name in your program."
+      },
+      {
+       "isense": {
+        "form": "frmDataEntry",
+        "typed": "pnl",
+        "pick": "pnlPupilDetails",
+        "list": [
+         "pnlPupilDetails",
+         "pnlQuizResult",
+         "pnlReactionTest",
+         "pnlSwimLengths",
+         "pnlSwimmingGroup"
+        ]
+       }
+      },
+      {
+       "frames": {
+        "id": "F3",
+        "title": "The real list in Visual Studio 2019",
+        "frames": [
+         {
+          "img": "img/cap/f3-1.png",
+          "alt": "The code tab with pnl typed on a new line",
+          "w": 894,
+          "h": 83,
+          "say": "Type the first letters of the name."
+         },
+         {
+          "img": "img/cap/f3-2.png",
+          "alt": "The IntelliSense list open under pnl, showing the matching names",
+          "w": 796,
+          "h": 225,
+          "say": "The list pops up with every matching name in YOUR program."
+         },
+         {
+          "img": "img/cap/f3-3.png",
+          "alt": "The line completed to a panel name",
+          "w": 894,
+          "h": 110,
+          "say": "Press Tab. The name is typed for you, spelt right."
+         }
+        ]
+       }
+      },
+      {
+       "watch": "If a name is not in the list, your control has a different name. Check it in the Properties window."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Rule 3: you type every line yourself",
+     "foot": "done",
+     "goal": "I cannot copy code from the guide, I type it, and I read each line as I type it.",
+     "blocks": [
+      {
+       "p": "You cannot copy code from this guide. You type it. Typing is how it sticks in your head."
+      },
+      {
+       "code": {
+        "id": "3-3.c1",
+        "kind": "type",
+        "snippet": true,
+        "title": "Three lines to try, for practice only",
+        "where": "nowhere yet. This one is only for trying the rule.",
+        "lang": "cs",
+        "text": "pnlPupilDetails.Enabled = false;\npnlSwimLengths.Enabled = true;\nbtnEnter.Visible = false;",
+        "partLines": [
+         [
+          1,
+          3,
+          "Three lines you will meet again",
+          "Switch off one panel, switch on the next, hide a button. Each line ends with a semicolon."
+         ]
+        ],
+        "names": [
+         "pnlPupilDetails",
+         "pnlSwimLengths",
+         "btnEnter"
+        ],
+        "isense": [
+         "pnlPupilDetails"
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3-3.1",
+         "do": "Try to copy a line from the box above. Select it, right-click it, or drag it.",
+         "see": "The guide says no, with a small message. You type it instead."
+        }
+       ]
+      },
+      {
+       "watch": "Read each line as you type it, so you know what it does."
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "When a line goes red",
+     "foot": "next",
+     "goal": "A red wiggly line means Visual Studio does not understand that line, and the Error List takes me to it.",
+     "blocks": [
+      {
+       "p": "Sometimes a line gets a red wiggly underline. That means Visual Studio does not understand it yet."
+      },
+      {
+       "frames": {
+        "id": "F10",
+        "title": "Finding an error",
+        "frames": [
+         {
+          "img": "img/cap/f10-1.png",
+          "alt": "A code line with a red wiggly underline under a misspelt name",
+          "w": 894,
+          "h": 125,
+          "say": "A red wiggly line under a word."
+         },
+         {
+          "img": "img/cap/f10-2.png",
+          "alt": "The Error List at the bottom of Visual Studio 2019 with one error",
+          "w": 1501,
+          "h": 93,
+          "say": "The Error List at the bottom names the problem."
+         },
+         {
+          "img": "img/cap/f10-3.png",
+          "alt": "The cursor on the line after double-clicking the error",
+          "w": 894,
+          "h": 123,
+          "say": "Double-click the error. The cursor jumps to the line."
+         }
+        ]
+       }
+      },
+      {
+       "watch": "Most red lines are a name spelt differently from the control. Check the name in the Properties window."
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "Build your program before you run it",
+     "foot": "chapter-done",
+     "goal": "Build Solution checks every line, and Build succeeded at the bottom left means I can run it.",
+     "blocks": [
+      {
+       "p": "Before you run, build. Building checks every line. Build succeeded means every line is understood."
+      },
+      {
+       "frames": {
+        "id": "F12",
+        "title": "Building",
+        "frames": [
+         {
+          "img": "img/cap/f12-1.png",
+          "alt": "The Build menu open with Build Solution highlighted",
+          "w": 370,
+          "h": 277,
+          "say": "Open the Build menu and choose Build Solution."
+         },
+         {
+          "img": "img/cap/f12-2.png",
+          "alt": "The bottom left of Visual Studio 2019 saying Build succeeded",
+          "w": 514,
+          "h": 27,
+          "say": "Bottom left says Build succeeded."
+         }
+        ]
+       }
+      },
+      {
+       "watch": "If the bottom left says Build failed, go back one screen and find the red line."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "glossary": [
+  [
+   "form",
+   "One of the pages of your program. The login is a form. The quiz is a form."
+  ],
+  [
+   "control",
+   "Anything you put on a form: a button, a text box, a panel, a label."
+  ],
+  [
+   "property",
+   "A setting of a control, like its Name or its Text. The Properties window lists them."
+  ],
+  [
+   "IntelliSense",
+   "The list that pops up as you type code. It knows every name in your program."
+  ]
+ ]
+}

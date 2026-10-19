@@ -1,0 +1,7 @@
+ch03#1-1	I check for a Global.cs file that says public class Global and holds all fourteen public static lines.
+ch03#2-1	A form forgets everything when it closes, so Global.cs keeps what every form needs.
+ch03#2-2	I add a class called Global and put the word public in front of class.
+ch03#3-1	Global.cs holds four string variables for the surname, first name, year group and gender, each starting empty.
+ch03#3-2	Global.cs holds three int attempts, a double average and a bool that says if the average is worked out.
+ch03#3-3	Global.cs holds the quiz score, the reaction test score, a bool for each saying it is taken, and the group.
+ch03#4-1	The project builds, and typing Global and a full stop in another form lists all fourteen names.

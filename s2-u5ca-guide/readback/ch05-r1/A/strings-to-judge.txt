@@ -1,0 +1,10 @@
+ch05#1-1	Check what your average button already does
+ch05#2-1	Start by trusting the three boxes
+ch05#2-2	Turn passValidation false when a box is empty
+ch05#2-3	Turn passValidation false when attempt 1 holds a letter
+ch05#2-4	Do the same check for attempts 2 and 3
+ch05#2-5	Show a message and empty the boxes if a check failed
+ch05#3-1	Add the three attempts, divide by 3 and round
+ch05#3-2	Keep the three attempts and switch off this panel
+ch05#3-3	Switch on the quiz panel
+ch05#4-1	Try every way through the average button

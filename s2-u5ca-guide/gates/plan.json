@@ -1,0 +1,233 @@
+{
+ "00": {
+  "stages": 3,
+  "screens": 10,
+  "methods": []
+ },
+ "01": {
+  "stages": 4,
+  "screens": 7,
+  "methods": [
+   [
+    "frmLogin",
+    "btnLogin_Click"
+   ]
+  ]
+ },
+ "02": {
+  "stages": 4,
+  "screens": 8,
+  "methods": []
+ },
+ "03": {
+  "stages": 4,
+  "screens": 7,
+  "methods": [
+   [
+    "Global",
+    "fields"
+   ]
+  ]
+ },
+ "04": {
+  "stages": 4,
+  "screens": 8,
+  "methods": [
+   [
+    "frmDataEntry",
+    "btnEnter_Click"
+   ]
+  ]
+ },
+ "05": {
+  "stages": 4,
+  "screens": 10,
+  "methods": [
+   [
+    "frmDataEntry",
+    "btnCalculateAverage_Click"
+   ]
+  ]
+ },
+ "06": {
+  "stages": 6,
+  "screens": 14,
+  "methods": [
+   [
+    "frmDataEntry",
+    "btnTakeQuiz_Click"
+   ],
+   [
+    "frmQuiz",
+    "btnCheck1_Click"
+   ],
+   [
+    "frmQuiz",
+    "btnCorrect_Click"
+   ],
+   [
+    "frmQuiz",
+    "btnIncorrect_Click"
+   ],
+   [
+    "frmQuiz",
+    "btnCheck3_Click"
+   ]
+  ]
+ },
+ "07": {
+  "stages": 6,
+  "screens": 17,
+  "methods": [
+   [
+    "frmQuiz",
+    "frmQuiz_Load"
+   ],
+   [
+    "frmQuiz",
+    "btnCheck4_Click"
+   ],
+   [
+    "frmQuiz",
+    "btnCheck5_Click"
+   ],
+   [
+    "frmQuiz",
+    "btnReturn_Click"
+   ]
+  ]
+ },
+ "08": {
+  "stages": 5,
+  "screens": 10,
+  "methods": [
+   [
+    "frmDataEntry",
+    "frmDataEntry_Load"
+   ]
+  ]
+ },
+ "09": {
+  "stages": 7,
+  "screens": 18,
+  "methods": [
+   [
+    "frmDataEntry",
+    "btnTakeTest_Click"
+   ],
+   [
+    "frmTest",
+    "frmTest_Load"
+   ],
+   [
+    "frmTest",
+    "PictureBox_Click"
+   ],
+   [
+    "frmTest",
+    "btnStart_Click"
+   ],
+   [
+    "frmTest",
+    "tmrSwap_Tick"
+   ],
+   [
+    "frmTest",
+    "tmrCountdown_Tick"
+   ]
+  ]
+ },
+ "10": {
+  "stages": 4,
+  "screens": 12,
+  "methods": [
+   [
+    "frmDataEntry",
+    "CalculateGroup"
+   ],
+   [
+    "frmDataEntry",
+    "btnCalculateSwimmingGroup_Click"
+   ]
+  ]
+ },
+ "11": {
+  "stages": 5,
+  "screens": 9,
+  "methods": [
+   [
+    "frmDataEntry",
+    "btnSaveDetails_Click"
+   ]
+  ]
+ },
+ "12": {
+  "stages": 6,
+  "screens": 15,
+  "methods": [
+   [
+    "frmDataEntry",
+    "btnViewReport_Click"
+   ],
+   [
+    "frmReport",
+    "frmReport_Load"
+   ],
+   [
+    "frmReport",
+    "cbxGroup_SelectedIndexChanged"
+   ],
+   [
+    "frmReport",
+    "cbxYear_SelectedIndexChanged"
+   ],
+   [
+    "frmReport",
+    "btnClose_Click"
+   ]
+  ]
+ },
+ "13": {
+  "stages": 3,
+  "screens": 5,
+  "methods": [
+   [
+    "frmLogin",
+    "btnHelp1_Click"
+   ],
+   [
+    "frmDataEntry",
+    "btnHelpPupilDetails_Click"
+   ],
+   [
+    "frmDataEntry",
+    "btnHelpQuizResult_Click"
+   ],
+   [
+    "frmDataEntry",
+    "btnHelpReactionTest_Click"
+   ],
+   [
+    "frmDataEntry",
+    "btnHelpSwimLengths_Click"
+   ],
+   [
+    "frmDataEntry",
+    "btnHelpSwimmingGroup_Click"
+   ],
+   [
+    "frmQuiz",
+    "btnHelpQuizScore_Click"
+   ],
+   [
+    "frmTest",
+    "btnHelpReactionTest_Click"
+   ]
+  ]
+ },
+ "14": {
+  "stages": 5,
+  "screens": 10,
+  "methods": []
+ }
+}

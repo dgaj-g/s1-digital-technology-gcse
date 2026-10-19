@@ -1,0 +1,3 @@
+{"path": "ch04#1-1", "verdict": "PASS", "readback": "I open my project, double-click Enter and tick which of the four things my button already does, then it sends me to the right stage if one is missing.", "words": [], "stuck": "no", "title": "YES", "why": ""}
+{"path": "ch04#2-1", "verdict": "PASS", "readback": "I type a line at the top of the Enter button code that makes an empty errors box, so every mistake can be added to it and shown together later.", "words": [], "stuck": "no", "title": "YES", "why": ""}
+{"path": "ch04#3-2", "verdict": "PASS", "readback": "I type the else part that saves the surname, first name, gender and year group into Global.cs when nothing was wrong, so other forms can use them.", "words": [], "stuck": "no", "title": "YES", "why": ""}

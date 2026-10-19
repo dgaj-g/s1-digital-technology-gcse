@@ -1,0 +1,10 @@
+ch14#1-1	Everything my program needs is done. I can pick any extra, or none.
+ch14#2-1	One line at the top of the login code makes a counter called tries that starts at 0.
+ch14#2-2	On the third wrong try, a message shows and the Login button goes grey.
+ch14#2-3	I type a wrong password three times and the Login button goes grey.
+ch14#3-1	Every second the gap between swaps shrinks by a tenth of a second, down to 0.3 seconds.
+ch14#3-2	I take the test and the swaps get faster as the clock runs down.
+ch14#4-1	After the average, the attempts heading also shows the biggest of the three attempts.
+ch14#4-2	I type three attempts and the heading shows the biggest one.
+ch14#5-1	When the group appears, the group panel turns green, yellow or red.
+ch14#5-2	I work out a group and the panel turns its colour.

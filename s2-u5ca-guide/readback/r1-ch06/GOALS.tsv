@@ -1,0 +1,14 @@
+ch06#1-1	I check for the quiz form and its six panels, the Take quiz button, and the marking of questions 1, 2 and 3.
+ch06#2-1	I add a form called frmQuiz and put six panels on it, each named for what it holds.
+ch06#2-2	The score panel holds the title, the score, a comment and two buttons, and question 1 holds a label, a box and Check.
+ch06#2-3	Question 2 holds a label and two answer buttons, and question 3 holds a label, a picture, a list and Check.
+ch06#2-4	Question 4 holds a group box with four round buttons and Check, and question 5 holds a label, a number box and Check.
+ch06#3-1	Pressing Take quiz closes the data entry form and opens a new quiz form.
+ch06#4-1	If the typed answer in small letters matches, the score goes up and the panel turns green, or else it turns red.
+ch06#4-2	After question 1 is marked, its panel switches off and the question 2 panel switches on.
+ch06#5-1	The right answer button adds 1 to the score, turns the panel green and switches on question 3.
+ch06#5-2	The wrong answer button turns the panel red, adds nothing, and still switches on question 3.
+ch06#5-3	If nothing is chosen in the question 3 list, a message asks the user to choose and nothing else happens.
+ch06#5-4	If the first item in the list is chosen, the score goes up and the panel turns green.
+ch06#5-5	Any other item turns the panel red, then question 3 switches off and question 4 switches on.
+ch06#6-1	I open the quiz, answer in capitals, answer wrongly, try both kinds of button, and press Check with nothing chosen.

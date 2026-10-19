@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GCSE Digital Technology · Unit 5 Coursework Guide</title>
+<!-- The landing page and the permission pop-up (DESIGN_SPEC 3.5). The words are the pop.* strings of src/strings-s2.json. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap">
+<link rel="stylesheet" href="src/tokens-s2.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 18px/1.5 var(--sans); }
+  header { background: var(--brand); color: var(--white); padding: 28px 16px; }
+  header h1 { margin: 0 auto; max-width: 760px; font-size: 1.6rem; font-weight: 900; }
+  header p { margin: 4px auto 0; max-width: 760px; opacity: .85; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+  .card { background: var(--card); border-radius: var(--r); padding: 24px; box-shadow: var(--shadow); }
+  .card p { margin: 0 0 12px; }
+  .btn { display: inline-block; border: 0; cursor: pointer; font: 900 1.05rem var(--sans); text-decoration: none;
+    background: var(--accent); color: var(--ink); padding: 14px 22px; border-radius: 12px; }
+  .btn:focus-visible, .skip:focus-visible, .dot:focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; }
+  .skip { display: block; margin-top: 14px; color: var(--sw-ink); font-weight: 700; background: none; border: 0; padding: 0; font: 700 1rem var(--sans); cursor: pointer; text-decoration: underline; }
+  dialog { border: 0; border-radius: var(--r); padding: 0; width: min(720px, calc(100vw - 32px)); max-height: calc(100vh - 32px);
+    box-shadow: var(--shadow-lift); color: var(--ink); background: var(--card); }
+  dialog::backdrop { background: var(--dim); }
+  .in { padding: 22px 22px 24px; }
+  dialog h2 { margin: 0 0 14px; font-size: 1.3rem; font-weight: 900; color: var(--brand); }
+  .stage { position: relative; background: var(--tint); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    aspect-ratio: 10 / 7; display: flex; align-items: center; justify-content: center; }
+  .stage img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .ph { color: var(--mute); text-align: center; padding: 20px; }
+  .ph small { display: block; margin-top: 6px; }
+  .chooser { width: min(420px, 90%); background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  .chooser .g { font-weight: 900; margin-bottom: 4px; }
+  .chooser .s { color: var(--mute); font-size: .9rem; margin-bottom: 12px; }
+  .acct { display: flex; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 10px; border: 3px solid var(--accent); }
+  .av { width: 36px; height: 36px; border-radius: 50%; background: var(--brand); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 900; }
+  .acct b { display: block; }
+  .acct span { color: var(--mute); font-size: .9rem; }
+  .say { margin: 12px 0 6px; font-weight: 700; min-height: 3em; }
+  .bar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .n { color: var(--mute); font-size: .9rem; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--brand); background: var(--white); padding: 0; cursor: pointer; }
+  .dot.on { background: var(--brand); }
+  .lines p { margin: 0 0 10px; }
+  .foot { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 16px; }
+  @media (max-width: 480px) { .in { padding: 16px; } header h1 { font-size: 1.3rem; } }
+</style>
+</head>
+<body>
+<header><h1>GCSE Digital Technology · Unit 5 Coursework Guide</h1><p>Our Lady’s Grammar School</p></header>
+<main>
+  <div class="card">
+    <p>This guide helps you create your Unit 5 program, one part at a time.</p>
+    <p>Sign in with your school account. Your ticks are saved as you go.</p>
+    <button class="btn" id="open" type="button">Open the guide</button>
+    <button class="skip" id="skip" type="button" hidden>I've read this before</button>
+  </div>
+</main>
+
+<dialog id="pop" aria-labelledby="popT">
+  <div class="in">
+    <h2 id="popT">Before you go in, Google will ask you one question</h2>
+    <div class="stage" id="stage"></div>
+    <p class="say" id="say" aria-live="polite"></p>
+    <div class="bar"><span id="dots"></span><span class="n" id="n"></span></div>
+    <div class="lines">
+      <p>This is normal. It lets the guide remember your ticks so you can carry on next lesson.</p>
+      <p>If you see 'Google hasn't verified this app', choose Advanced. Then choose 'Go to OLS GCSE DT Coursework Guide'.</p>
+    </div>
+    <div class="foot"><a class="btn" id="go" href="#">OK, take me in</a></div>
+  </div>
+</dialog>
+
+<script>
+// The /exec address of the "OLS GCSE DT Coursework Guide" web app (DESIGN_SPEC 14.5 step 3). The build window pastes it here.
+var EXEC = 'EXEC_ADDRESS';
+var GO = EXEC + '?class=S2-26-27';
+var FRAMES = [
+  { img: 'content/img/cap/p1-1.png', alt: 'Google’s screen headed Authorization required, with the Review permissions button circled',
+    say: 'Google says Authorization required. Click Review permissions.' },
+  { drawn: true, alt: 'Google’s account list, with a school account that ends in c2ken.net',
+    say: 'Choose YOUR school account. It ends in c2ken.net.' },
+  { img: 'content/img/cap/p3-1.png', alt: 'OLS GCSE DT Coursework Guide wants to access your Google Account, with the Allow button circled',
+    say: 'Google says what the guide will keep. Click Allow.' }
+];
+var SEEN = 's2cw:popSeen';
+function seen() { try { return localStorage.getItem(SEEN) === '1'; } catch (e) { return false; } }
+function mark() { try { localStorage.setItem(SEEN, '1'); } catch (e) {} }
+
+var pop = document.getElementById('pop'), stage = document.getElementById('stage'), say = document.getElementById('say'),
+    dots = document.getElementById('dots'), num = document.getElementById('n'), i = 0, timer = null;
+var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+FRAMES.forEach(function (_, k) {
+  var d = document.createElement('button'); d.type = 'button'; d.className = 'dot';
+  d.setAttribute('aria-label', 'Picture ' + (k + 1) + ' of ' + FRAMES.length);
+  d.addEventListener('click', function () { show(k, true); }); dots.appendChild(d); dots.appendChild(document.createTextNode(' '));
+});
+function show(k, byHand) {
+  clearTimeout(timer); i = k; var f = FRAMES[k]; stage.innerHTML = '';
+  if (f.drawn) {
+    stage.innerHTML = '<div class="chooser" role="img" aria-label="' + f.alt + '"><div class="g">Choose an account</div>' +
+      '<div class="s">to continue to OLS GCSE DT Coursework Guide</div>' +
+      '<div class="acct"><div class="av">Y</div><div><b>Your Name</b><span>yourname@c2ken.net</span></div></div></div>';
+  } else {
+    var im = new Image(); im.alt = f.alt; im.src = f.img;
+    im.onerror = function () { stage.innerHTML = '<div class="ph">Picture to come<small>' + f.alt + '</small></div>'; };
+    stage.appendChild(im);
+  }
+  say.textContent = f.say; num.textContent = 'Picture ' + (k + 1) + ' of ' + FRAMES.length;
+  [].forEach.call(dots.querySelectorAll('.dot'), function (d, j) { d.classList.toggle('on', j === k); });
+  if (!still && !byHand && k + 1 < FRAMES.length) timer = setTimeout(function () { show(k + 1); }, 1600 + 350 * f.say.split(' ').length);
+}
+document.getElementById('go').href = GO;
+document.getElementById('go').addEventListener('click', mark);
+document.getElementById('open').addEventListener('click', function () {
+  if (pop.showModal) pop.showModal(); else pop.setAttribute('open', '');
+  show(0);
+});
+pop.addEventListener('close', function () { clearTimeout(timer); });
+var skip = document.getElementById('skip');
+if (seen()) { skip.hidden = false; skip.addEventListener('click', function () { location.href = GO; }); }
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+ch03#1-1	Check what your Global.cs already has
+ch03#3-1	Keep the pupil's details in Global.cs
+ch03#3-2	Keep the three attempts and their average
+ch03#3-3	Keep the quiz, the reaction test and the group
+ch03#4-1	Check every form can find your fourteen variables

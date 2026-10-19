@@ -1,0 +1,18 @@
+ch09#1-1	Check the parts this chapter needs
+ch09#2-1	Choose how YOUR reaction test will look
+ch09#2-2	Put your pictures in the right folder
+ch09#3-1	Add the reaction test form
+ch09#3-2	Add twelve picture boxes
+ch09#3-3	Add the score panel
+ch09#3-4	Add two timers
+ch09#4-1	Type two lines at the top of the form's code
+ch09#4-2	Show the name and fill the list as the form opens
+ch09#5-1	Type the first line of the click code yourself
+ch09#5-2	Score the click and hide the picture
+ch09#6-1	Give every box a starting picture
+ch09#6-2	Join the clicks and start the clocks
+ch09#6-3	Swap the pictures every tick
+ch09#6-4	Count down one second at a time
+ch09#6-5	Show the score and go back to the data entry form
+ch09#7-1	Open the reaction test from the data entry form
+ch09#7-2	Try your reaction test

@@ -1,0 +1,817 @@
+{
+ "intro": "This guide helps you create your Unit 5 program, one part at a time. Each part shows MY example and says where YOUR program will be different.",
+ "header": "Tick the parts you have done. Then open the first part that is not ticked.",
+ "expected": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6
+ ],
+ "chapters": [
+  {
+   "id": "00",
+   "n": 0,
+   "title": "Start here: how to use this guide",
+   "one": "What you are making, how a chapter works, and the three rules.",
+   "color": "#4F2D9E",
+   "built": true,
+   "steps": [
+    "3-3.c1",
+    "3-3.1"
+   ],
+   "stages": [
+    [
+     "1",
+     "What you are making",
+     3
+    ],
+    [
+     "2",
+     "How this guide works",
+     2
+    ],
+    [
+     "3",
+     "The three rules",
+     5
+    ]
+   ],
+   "screens": 10
+  },
+  {
+   "id": "01",
+   "n": 1,
+   "title": "The login form",
+   "one": "Two boxes, one button, and the code that checks them.",
+   "color": "#E84D6A",
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "2-3.1",
+    "2-3.2",
+    "3-1.1",
+    "3-1.c1",
+    "3-2.c1",
+    "3-3.c1",
+    "4-1.t1",
+    "4-1.t2",
+    "4-1.t3",
+    "4-1.t4"
+   ],
+   "stages": [
+    [
+     "1",
+     "Check what your login form has",
+     1
+    ],
+    [
+     "2",
+     "The two boxes and the button",
+     3
+    ],
+    [
+     "3",
+     "The code behind the Login button",
+     3
+    ],
+    [
+     "4",
+     "Try your login form",
+     1
+    ]
+   ],
+   "screens": 8
+  },
+  {
+   "id": "02",
+   "n": 2,
+   "title": "The data entry form: its panels and boxes",
+   "one": "Five panels, two buttons, and a name on every control.",
+   "color": "#F28C28",
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "2-2.1",
+    "2-2.2",
+    "2-2.3",
+    "2-2.4",
+    "3-2.1",
+    "3-2.2",
+    "3-2.3",
+    "3-2.4",
+    "4-1.t1",
+    "4-1.t2",
+    "4-1.t3",
+    "4-1.t4"
+   ],
+   "stages": [
+    [
+     "1",
+     "Check what your data entry form has",
+     1
+    ],
+    [
+     "2",
+     "The five panels",
+     2
+    ],
+    [
+     "3",
+     "Inside each panel",
+     5
+    ],
+    [
+     "4",
+     "Try it in the Design tab",
+     1
+    ]
+   ],
+   "screens": 9
+  },
+  {
+   "id": "03",
+   "n": 3,
+   "title": "Global.cs: the file that remembers things between forms",
+   "one": "One file that every form can read and write.",
+   "color": "#2A9D8F",
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "2-2.1",
+    "2-2.2",
+    "2-2.3",
+    "3-1.c1",
+    "3-2.c1",
+    "3-3.c1",
+    "4-1.t1",
+    "4-1.t2",
+    "4-1.t3"
+   ],
+   "stages": [
+    [
+     "1",
+     "Check what your Global.cs has",
+     1
+    ],
+    [
+     "2",
+     "Add the Global.cs file",
+     2
+    ],
+    [
+     "3",
+     "The fourteen variables",
+     3
+    ],
+    [
+     "4",
+     "Try it",
+     1
+    ]
+   ],
+   "screens": 7
+  },
+  {
+   "id": "04",
+   "n": 4,
+   "title": "Pupil details: the Enter button",
+   "one": "Check the four boxes, keep them in Global.cs, switch off the panel.",
+   "color": "#1F77B4",
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "2-1.1",
+    "2-1.c1",
+    "2-2.c1",
+    "2-3.c1",
+    "3-1.c1",
+    "3-2.c1",
+    "3-3.c1",
+    "4-1.t1",
+    "4-1.t2",
+    "4-1.t3",
+    "4-1.t4"
+   ],
+   "stages": [
+    [
+     "1",
+     "Check what your Enter button has",
+     1
+    ],
+    [
+     "2",
+     "Collect every problem",
+     3
+    ],
+    [
+     "3",
+     "Show the problems or keep the details",
+     3
+    ],
+    [
+     "4",
+     "Try your Enter button",
+     1
+    ]
+   ],
+   "screens": 8
+  },
+  {
+   "id": "05",
+   "n": 5,
+   "title": "The average of three attempts",
+   "one": "Three numbers in, one average out, kept in Global.cs.",
+   "color": "#8E44AD",
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "2-1.1",
+    "2-1.c1",
+    "2-2.c1",
+    "2-3.c1",
+    "2-4.c1",
+    "2-5.c1",
+    "3-1.c1",
+    "3-2.c1",
+    "3-3.c1",
+    "4-1.t1",
+    "4-1.t2",
+    "4-1.t3",
+    "4-1.t4"
+   ],
+   "stages": [
+    [
+     "1",
+     "Check what your average button has",
+     1
+    ],
+    [
+     "2",
+     "Check the three boxes",
+     5
+    ],
+    [
+     "3",
+     "Work out the average",
+     3
+    ],
+    [
+     "4",
+     "Try your average button",
+     1
+    ]
+   ],
+   "screens": 10
+  },
+  {
+   "id": "06",
+   "n": 6,
+   "title": "The quiz: the first three questions",
+   "one": "Get to the quiz, then mark a typed answer, two buttons and a list.",
+   "color": "#D1495B",
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "1-1.t5",
+    "2-1.1",
+    "2-1.2",
+    "2-1.3",
+    "3-1.1",
+    "3-1.c1",
+    "4-1.1",
+    "4-1.c1",
+    "4-2.c1",
+    "5-1.1",
+    "5-1.c1",
+    "5-2.1",
+    "5-2.c1",
+    "5-3.1",
+    "5-3.c1",
+    "5-4.c1",
+    "5-5.c1",
+    "6-1.t1",
+    "6-1.t2",
+    "6-1.t3",
+    "6-1.t4",
+    "6-1.t5"
+   ],
+   "stages": [
+    [
+     "1",
+     "Check what your quiz has",
+     1
+    ],
+    [
+     "2",
+     "The quiz form: its panels and buttons",
+     4
+    ],
+    [
+     "3",
+     "Getting to the quiz",
+     1
+    ],
+    [
+     "4",
+     "Question 1: a typed answer",
+     2
+    ],
+    [
+     "5",
+     "Questions 2 and 3",
+     5
+    ],
+    [
+     "6",
+     "Try your first three questions",
+     1
+    ]
+   ],
+   "screens": 14
+  },
+  {
+   "id": "07",
+   "n": 7,
+   "title": "The quiz: questions 4 and 5, and the score",
+   "one": "Only question 1 works at the start, mark questions 4 and 5, send the score back.",
+   "color": "#0F9D8A",
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "1-1.t5",
+    "2-2.1",
+    "2-2.2",
+    "2-2.3",
+    "2-4.c1",
+    "3-2.1",
+    "3-3.c1",
+    "3-4.c1",
+    "3-5.c1",
+    "3-6.1",
+    "4-1.1",
+    "4-1.c1",
+    "4-2.c1",
+    "4-3.1",
+    "5-1.1",
+    "5-1.c1",
+    "6-1.t1",
+    "6-1.t2",
+    "6-1.t3",
+    "6-1.t4",
+    "6-1.t5",
+    "6-1.t6"
+   ],
+   "stages": [
+    [
+     "1",
+     "Check your quiz has what it needs",
+     1
+    ],
+    [
+     "2",
+     "Make only question 1 work when the quiz opens",
+     4
+    ],
+    [
+     "3",
+     "Mark question 4, the one with radio buttons",
+     6
+    ],
+    [
+     "4",
+     "Mark question 5, the one with the number box",
+     3
+    ],
+    [
+     "5",
+     "Send the score back to the data entry form",
+     2
+    ],
+    [
+     "6",
+     "Test the whole quiz",
+     1
+    ]
+   ],
+   "screens": 17
+  },
+  {
+   "id": "08",
+   "n": 8,
+   "title": "The data entry form: its Load event",
+   "one": "When the form opens, read Global.cs and switch on the right panel.",
+   "color": "#E07A1F",
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "2-2.1",
+    "2-2.2",
+    "3-1.c1",
+    "4-1.c1",
+    "4-2.c1",
+    "4-3.c1",
+    "4-4.c1",
+    "4-5.c1",
+    "5-1.t1",
+    "5-1.t2",
+    "5-1.t3",
+    "5-1.t4"
+   ],
+   "stages": [
+    [
+     "1",
+     "Check what you need first",
+     1
+    ],
+    [
+     "2",
+     "The problem and the plan",
+     2
+    ],
+    [
+     "3",
+     "Switch everything off first",
+     1
+    ],
+    [
+     "4",
+     "Three questions for Global.cs",
+     5
+    ],
+    [
+     "5",
+     "Try your Load event",
+     1
+    ]
+   ],
+   "screens": 10
+  },
+  {
+   "id": "09",
+   "n": 9,
+   "title": "The reaction test",
+   "one": "A new form with twelve pictures, two timers and a ten-second score.",
+   "color": "#C2185B",
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "2-2.1",
+    "2-2.2",
+    "2-2.3",
+    "2-2.4",
+    "3-1.1",
+    "3-1.2",
+    "3-1.3",
+    "3-2.1",
+    "3-2.2",
+    "3-2.3",
+    "3-2.4",
+    "3-4.1",
+    "3-4.2",
+    "4-1.c1",
+    "4-2.c1",
+    "5-1.c1",
+    "5-2.c1",
+    "6-1.c1",
+    "6-2.c1",
+    "6-3.c1",
+    "6-4.c1",
+    "6-5.c1",
+    "7-1.c1",
+    "7-2.t1",
+    "7-2.t2",
+    "7-2.t3",
+    "7-2.t4",
+    "7-2.t5"
+   ],
+   "stages": [
+    [
+     "1",
+     "Check what you need first",
+     1
+    ],
+    [
+     "2",
+     "Make yours look different",
+     2
+    ],
+    [
+     "3",
+     "The reaction test form: its pictures and buttons",
+     4
+    ],
+    [
+     "4",
+     "The code before any click",
+     2
+    ],
+    [
+     "5",
+     "What a click does",
+     2
+    ],
+    [
+     "6",
+     "Start, swap, count down",
+     5
+    ],
+    [
+     "7",
+     "Getting there, and Try it",
+     2
+    ]
+   ],
+   "screens": 18
+  },
+  {
+   "id": "10",
+   "n": 10,
+   "title": "Work out the group",
+   "one": "Three scores become one group, worked out by a piece of code you name yourself.",
+   "color": "#3A6EA5",
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "2-2.c1",
+    "2-3.c1",
+    "3-1.c1",
+    "3-2.c1",
+    "3-3.c1",
+    "3-4.c1",
+    "3-5.c1",
+    "3-6.c1",
+    "3-7.c1",
+    "4-1.t1",
+    "4-1.t2",
+    "4-1.t3",
+    "4-1.t4"
+   ],
+   "stages": [
+    [
+     "1",
+     "Check what you need first",
+     1
+    ],
+    [
+     "2",
+     "Your own piece of code, with a name you choose",
+     3
+    ],
+    [
+     "3",
+     "The Calculate button",
+     7
+    ],
+    [
+     "4",
+     "Try it",
+     1
+    ]
+   ],
+   "screens": 12
+  },
+  {
+   "id": "11",
+   "n": 11,
+   "title": "Save the details to the file",
+   "one": "Put one line in the file, clear Global.cs, start again.",
+   "color": "#6A994E",
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "2-1.c1",
+    "3-1.c1",
+    "3-2.c1",
+    "4-1.c1",
+    "4-2.c1",
+    "4-3.c1",
+    "4-4.c1",
+    "5-1.t1",
+    "5-1.t2",
+    "5-1.t3",
+    "5-1.t4",
+    "5-1.t5"
+   ],
+   "stages": [
+    [
+     "1",
+     "Check what you need first",
+     1
+    ],
+    [
+     "2",
+     "The file tools",
+     1
+    ],
+    [
+     "3",
+     "Only when everything is done",
+     2
+    ],
+    [
+     "4",
+     "Write the line to the file",
+     4
+    ],
+    [
+     "5",
+     "Try it",
+     1
+    ]
+   ],
+   "screens": 9
+  },
+  {
+   "id": "12",
+   "n": 12,
+   "title": "The report",
+   "one": "Read the file back into a table on the form, with two filters.",
+   "color": "#B5651D",
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "2-1.1",
+    "2-1.2",
+    "3-1.c1",
+    "3-2.c1",
+    "4-1.c1",
+    "4-2.c1",
+    "4-3.c1",
+    "4-4.c1",
+    "5-1.c1",
+    "5-2.c1",
+    "5-3.c1",
+    "5-4.c1",
+    "6-1.t1",
+    "6-1.t2",
+    "6-1.t3",
+    "6-1.t4",
+    "6-1.t5",
+    "6-1.t6"
+   ],
+   "stages": [
+    [
+     "1",
+     "Check what you need first",
+     1
+    ],
+    [
+     "2",
+     "The report form: its table and lists",
+     3
+    ],
+    [
+     "3",
+     "Two lines at the top of the report code",
+     2
+    ],
+    [
+     "4",
+     "The Load event in four parts",
+     4
+    ],
+    [
+     "5",
+     "The two lists and the two buttons",
+     4
+    ],
+    [
+     "6",
+     "Try it",
+     1
+    ]
+   ],
+   "screens": 15
+  },
+  {
+   "id": "13",
+   "n": 13,
+   "title": "Help buttons on every form",
+   "one": "A question-mark button on each panel that says what to do.",
+   "color": "#5C6BC0",
+   "built": true,
+   "steps": [
+    "1-1.t1",
+    "1-1.t2",
+    "1-1.t3",
+    "1-1.t4",
+    "2-1.c1",
+    "3-1.c1",
+    "3-1.c2",
+    "3-1.c3",
+    "3-1.c4",
+    "3-2.c1",
+    "3-2.c2",
+    "3-2.c3",
+    "3-3.t1",
+    "3-3.t2",
+    "3-3.t3",
+    "3-3.t4",
+    "3-3.t5"
+   ],
+   "stages": [
+    [
+     "1",
+     "Check what you need first",
+     1
+    ],
+    [
+     "2",
+     "One help button",
+     1
+    ],
+    [
+     "3",
+     "The rest of the help buttons",
+     3
+    ]
+   ],
+   "screens": 5
+  },
+  {
+   "id": "14",
+   "n": 14,
+   "title": "Push yourself: optional extras",
+   "one": "Four extras for anyone who wants more. None of them is needed.",
+   "color": "#C9A227",
+   "built": true,
+   "steps": [
+    "2-1.c1",
+    "2-2.c1",
+    "2-3.t1",
+    "2-3.t2",
+    "3-1.c1",
+    "3-2.t1",
+    "3-2.t2",
+    "4-1.c1",
+    "4-2.t1",
+    "4-2.t2",
+    "5-1.c1",
+    "5-2.t1",
+    "5-2.t2"
+   ],
+   "stages": [
+    [
+     "1",
+     "Read this first",
+     1
+    ],
+    [
+     "2",
+     "Login: three tries, then no more",
+     3
+    ],
+    [
+     "3",
+     "Reaction test: the swaps speed up",
+     2
+    ],
+    [
+     "4",
+     "Data entry: the best attempt",
+     2
+    ],
+    [
+     "5",
+     "Data entry: colour the group",
+     2
+    ]
+   ],
+   "screens": 10,
+   "hidden": "after-all"
+  }
+ ]
+}

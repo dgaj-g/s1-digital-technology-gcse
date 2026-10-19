@@ -1,0 +1,8 @@
+ch04#1-1	I check that the Enter button has code, starts with string errors, lists what is missing, and switches the panels.
+ch04#2-1	The Enter button starts with an empty string called errors, so every problem found can be added to it.
+ch04#2-2	If the surname box or the first name box is empty, a line saying so is added to errors.
+ch04#2-3	A name over 20 letters adds a too long line, and an empty drop-down list adds a must select line.
+ch04#3-1	If errors has anything in it, one message box shows every problem found.
+ch04#3-2	With no problems, the surname, first name, gender and year group each go into their line in Global.cs.
+ch04#3-3	After the details are kept, the attempts panel switches on and the details panel switches off.
+ch04#4-1	I run the program and try empty boxes, a long surname, all four filled in, and typing in the grey panel.

@@ -1,0 +1,18 @@
+ch09#1-1	Before I start, I check Global.cs, the test panel on the data entry form and the data entry Load event.
+ch09#2-1	The idea of the test stays the same, but I choose my own shape, pictures, swapping boxes and timing.
+ch09#2-2	My two or three pictures are saved in a folder called Images inside bin and then Debug.
+ch09#3-1	A new form called frmTest is in Solution Explorer, with a title label and an instructions label.
+ch09#3-2	Twelve picture boxes sit on frmTest, named pbx1 to pbx12 in reading order, each stretching its picture.
+ch09#3-3	The score panel holds the Start button, the score, the time left, the pupil's name and the ? button.
+ch09#3-4	Two timers called tmrSwap and tmrCountdown sit in the grey strip under the form, each with Interval 1000.
+ch09#4-1	Two lines at the top of frmTest's code make the countdown start at 10 and make room for a list of picture boxes.
+ch09#4-2	The Load event of frmTest shows the pupil's name and puts all twelve picture boxes into one list.
+ch09#5-1	One piece of code, PictureBox_Click, runs for any of the twelve boxes, and it finds out which box was clicked.
+ch09#5-2	A click on the winning picture adds one to the score, any other picture takes one off, and the picture hides.
+ch09#6-1	When Start is clicked, each of the twelve boxes is given its first picture, a mix of winners and losers.
+ch09#6-2	A loop joins every box to PictureBox_Click, both timers start, and the Start button switches itself off.
+ch09#6-3	Each tick of tmrSwap turns a winning picture into a losing one, and a losing one into a winner.
+ch09#6-4	Each tick of tmrCountdown takes one off the seconds left and shows it, and at zero both timers stop.
+ch09#6-5	At zero, a message shows the score, Global.cs records that the test is taken, and the data entry form opens again.
+ch09#7-1	The Take test button closes the data entry form and opens the reaction test form.
+ch09#7-2	I run the program and check the name, the swaps, the score, the countdown and the way back.

@@ -1,0 +1,10 @@
+ch05#1-1	I check the average button has code, refuses letters, and shows 6 for 5, 6 and 7.
+ch05#2-1	The average button starts with a bool called passValidation set to true. Any failed check turns it false.
+ch05#2-2	If any of the three attempt boxes is empty, passValidation is set to false.
+ch05#2-3	If the first attempt box holds something that is not a number from 0 to 9, passValidation is set to false.
+ch05#2-4	The same letter check is done for the second and third attempt boxes.
+ch05#2-5	If passValidation is false, a message asks for numbers only and the three boxes are emptied.
+ch05#3-1	The three attempts are added, divided by 3, rounded to 2 places, kept in Global.cs and shown in the box.
+ch05#3-2	Global.cs notes the average is worked out and keeps the three attempts. The attempts panel switches off.
+ch05#3-3	After the attempts are kept, the quiz panel switches on so the pupil can move on.
+ch05#4-1	I run the program and try letters, 5 6 7, 5 6 8, and typing in the grey attempts panel.

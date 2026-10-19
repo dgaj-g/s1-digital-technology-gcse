@@ -1,0 +1,9 @@
+ch11#1-1	Check the parts this chapter needs
+ch11#2-1	Type one line at the very top
+ch11#3-1	Type the if first
+ch11#3-2	Close the if and add the else
+ch11#4-1	Build one line with fences
+ch11#4-2	End the line and write the file
+ch11#4-3	Clear Global.cs, first half
+ch11#4-4	Clear the rest and start again
+ch11#5-1	Try your Save button

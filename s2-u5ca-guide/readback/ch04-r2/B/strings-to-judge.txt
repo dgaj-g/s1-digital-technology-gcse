@@ -1,0 +1,3 @@
+ch04#1-1	Check what your Enter button already does
+ch04#2-1	Start an empty list of problems
+ch04#3-2	Keep the four details in Global.cs

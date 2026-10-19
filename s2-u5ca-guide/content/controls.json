@@ -1,0 +1,1762 @@
+{
+ "frmDataEntry": {
+  "size": [
+   800,
+   478
+  ],
+  "text": "frmDataEntry",
+  "load": "frmDataEntry_Load",
+  "controls": {
+   "pnlPupilDetails": {
+    "type": "Panel",
+    "backColor": "Color.DarkSeaGreen",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     12,
+     12
+    ],
+    "size": [
+     230,
+     220
+    ],
+    "parent": "frmDataEntry"
+   },
+   "pnlQuizResult": {
+    "type": "Panel",
+    "backColor": "Color.DarkSeaGreen",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     319,
+     255
+    ],
+    "size": [
+     196,
+     199
+    ],
+    "parent": "frmDataEntry"
+   },
+   "pnlSwimLengths": {
+    "type": "Panel",
+    "backColor": "Color.DarkSeaGreen",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     12,
+     255
+    ],
+    "size": [
+     230,
+     199
+    ],
+    "parent": "frmDataEntry"
+   },
+   "pnlSwimmingGroup": {
+    "type": "Panel",
+    "backColor": "Color.DarkSeaGreen",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     592,
+     12
+    ],
+    "size": [
+     194,
+     134
+    ],
+    "parent": "frmDataEntry"
+   },
+   "pnlReactionTest": {
+    "type": "Panel",
+    "backColor": "Color.DarkSeaGreen",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     592,
+     255
+    ],
+    "size": [
+     196,
+     199
+    ],
+    "parent": "frmDataEntry"
+   },
+   "lblYeargroup": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     12,
+     137
+    ],
+    "size": [
+     74,
+     23
+    ],
+    "text": "Yeargroup",
+    "parent": "pnlPupilDetails"
+   },
+   "lblGender": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     12,
+     110
+    ],
+    "size": [
+     56,
+     23
+    ],
+    "text": "Gender",
+    "parent": "pnlPupilDetails"
+   },
+   "lblFirstName": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     10,
+     78
+    ],
+    "size": [
+     79,
+     23
+    ],
+    "text": "First Name",
+    "parent": "pnlPupilDetails"
+   },
+   "lblSurname": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     10,
+     46
+    ],
+    "size": [
+     66,
+     23
+    ],
+    "text": "Surname",
+    "parent": "pnlPupilDetails"
+   },
+   "lblPupilDetails": {
+    "type": "Label",
+    "font": "new Font(\"Broadway\", 14F)",
+    "loc": [
+     5,
+     18
+    ],
+    "size": [
+     140,
+     21
+    ],
+    "text": "Pupil Details",
+    "parent": "pnlPupilDetails"
+   },
+   "lblQuizStatus": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     3,
+     47
+    ],
+    "size": [
+     123,
+     23
+    ],
+    "text": "Quiz not taken yet",
+    "parent": "pnlQuizResult"
+   },
+   "lblQuizResult": {
+    "type": "Label",
+    "font": "new Font(\"Broadway\", 14F)",
+    "loc": [
+     3,
+     18
+    ],
+    "size": [
+     126,
+     21
+    ],
+    "text": "Quiz Result",
+    "parent": "pnlQuizResult"
+   },
+   "lblAttempt2": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     5,
+     63
+    ],
+    "size": [
+     73,
+     23
+    ],
+    "text": "Attempt 2",
+    "parent": "pnlSwimLengths"
+   },
+   "lblAttempt1": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     7,
+     34
+    ],
+    "size": [
+     75,
+     23
+    ],
+    "text": "Attempt 1 ",
+    "parent": "pnlSwimLengths"
+   },
+   "lblSwimLengths": {
+    "type": "Label",
+    "font": "new Font(\"Broadway\", 14F)",
+    "loc": [
+     12,
+     7
+    ],
+    "size": [
+     145,
+     21
+    ],
+    "text": "Swim lengths",
+    "parent": "pnlSwimLengths"
+   },
+   "lblSwimmingGroup": {
+    "type": "Label",
+    "font": "new Font(\"Broadway\", 14F)",
+    "loc": [
+     1,
+     18
+    ],
+    "size": [
+     188,
+     21
+    ],
+    "text": "Swimming Group",
+    "parent": "pnlSwimmingGroup"
+   },
+   "lblTestStatus": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     3,
+     47
+    ],
+    "size": [
+     121,
+     23
+    ],
+    "text": "Test not taken yet",
+    "parent": "pnlReactionTest"
+   },
+   "lblReactionTest": {
+    "type": "Label",
+    "font": "new Font(\"Broadway\", 14F)",
+    "loc": [
+     3,
+     17
+    ],
+    "size": [
+     146,
+     21
+    ],
+    "text": "Reaction Test",
+    "parent": "pnlReactionTest"
+   },
+   "cbxYeargroup": {
+    "type": "ComboBox",
+    "dropDownStyle": "ComboBoxStyle.DropDownList",
+    "loc": [
+     92,
+     141
+    ],
+    "size": [
+     115,
+     21
+    ],
+    "items": [
+     "11",
+     "12",
+     "13",
+     "14"
+    ],
+    "parent": "pnlPupilDetails"
+   },
+   "cbxGender": {
+    "type": "ComboBox",
+    "dropDownStyle": "ComboBoxStyle.DropDownList",
+    "loc": [
+     92,
+     110
+    ],
+    "size": [
+     115,
+     21
+    ],
+    "items": [
+     "M",
+     "F",
+     "0"
+    ],
+    "parent": "pnlPupilDetails"
+   },
+   "tbxFirstName": {
+    "type": "TextBox",
+    "loc": [
+     92,
+     81
+    ],
+    "size": [
+     115,
+     20
+    ],
+    "parent": "pnlPupilDetails"
+   },
+   "tbxSurname": {
+    "type": "TextBox",
+    "loc": [
+     92,
+     50
+    ],
+    "size": [
+     115,
+     20
+    ],
+    "parent": "pnlPupilDetails"
+   },
+   "btnTakeQuiz": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     7,
+     115
+    ],
+    "size": [
+     87,
+     46
+    ],
+    "text": "Take Quiz",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlQuizResult",
+    "handler": "btnTakeQuiz_Click"
+   },
+   "tbxCalculateAverage": {
+    "type": "TextBox",
+    "loc": [
+     9,
+     165
+    ],
+    "size": [
+     148,
+     20
+    ],
+    "parent": "pnlSwimLengths"
+   },
+   "tbxAttempt2": {
+    "type": "TextBox",
+    "loc": [
+     88,
+     65
+    ],
+    "size": [
+     119,
+     20
+    ],
+    "parent": "pnlSwimLengths"
+   },
+   "tbxAttempt1": {
+    "type": "TextBox",
+    "loc": [
+     88,
+     34
+    ],
+    "size": [
+     119,
+     20
+    ],
+    "parent": "pnlSwimLengths"
+   },
+   "btnCalculateSwimmingGroup": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     5,
+     50
+    ],
+    "size": [
+     182,
+     36
+    ],
+    "text": "Calculate Swim Group",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlSwimmingGroup",
+    "handler": "btnCalculateSwimmingGroup_Click"
+   },
+   "tbxSwimmingGroup": {
+    "type": "TextBox",
+    "loc": [
+     3,
+     92
+    ],
+    "size": [
+     182,
+     20
+    ],
+    "parent": "pnlSwimmingGroup"
+   },
+   "btnTakeTest": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     7,
+     115
+    ],
+    "size": [
+     85,
+     46
+    ],
+    "text": "Take Test",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlReactionTest",
+    "handler": "btnTakeTest_Click"
+   },
+   "lblTitle2": {
+    "type": "Label",
+    "backColor": "Color.DarkSeaGreen",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "font": "new Font(\"Broadway\", 20F)",
+    "loc": [
+     286,
+     12
+    ],
+    "size": [
+     264,
+     33
+    ],
+    "text": "Pupil Data Input",
+    "parent": "frmDataEntry"
+   },
+   "pbxLogo3": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "image": "((Image)(resources.GetObject(\"pbxLogo3.Image\")))",
+    "loc": [
+     319,
+     63
+    ],
+    "size": [
+     196,
+     169
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmDataEntry"
+   },
+   "btnEnter": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     11,
+     168
+    ],
+    "size": [
+     134,
+     31
+    ],
+    "text": "Enter ",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlPupilDetails",
+    "handler": "btnEnter_Click"
+   },
+   "btnCalculateAverage": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     9,
+     126
+    ],
+    "size": [
+     148,
+     33
+    ],
+    "text": "Calculate Average",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlSwimLengths",
+    "handler": "btnCalculateAverage_Click"
+   },
+   "btnHelpReactionTest": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     139,
+     115
+    ],
+    "size": [
+     40,
+     46
+    ],
+    "text": "?",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlReactionTest",
+    "handler": "btnHelpReactionTest_Click"
+   },
+   "btnHelpPupilDetails": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     174,
+     168
+    ],
+    "size": [
+     33,
+     31
+    ],
+    "text": "?",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlPupilDetails",
+    "handler": "btnHelpPupilDetails_Click"
+   },
+   "btnHelpQuizResult": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     141,
+     115
+    ],
+    "size": [
+     40,
+     46
+    ],
+    "text": "?",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlQuizResult",
+    "handler": "btnHelpQuizResult_Click"
+   },
+   "btnHelpSwimLengths": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     174,
+     126
+    ],
+    "size": [
+     33,
+     32
+    ],
+    "text": "?",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlSwimLengths",
+    "handler": "btnHelpSwimLengths_Click"
+   },
+   "btnHelpSwimmingGroup": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     249,
+     76
+    ],
+    "size": [
+     33,
+     33
+    ],
+    "text": "?",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlSwimmingGroup",
+    "handler": "btnHelpSwimmingGroup_Click"
+   },
+   "btnSaveDetails": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     592,
+     154
+    ],
+    "size": [
+     117,
+     36
+    ],
+    "text": "Save Details",
+    "useVisualStyleBackColor": false,
+    "parent": "frmDataEntry",
+    "handler": "btnSaveDetails_Click"
+   },
+   "btnViewReport": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     592,
+     196
+    ],
+    "size": [
+     117,
+     36
+    ],
+    "text": "View Report",
+    "useVisualStyleBackColor": false,
+    "parent": "frmDataEntry",
+    "handler": "btnViewReport_Click"
+   },
+   "tbxAttempt3": {
+    "type": "TextBox",
+    "loc": [
+     87,
+     93
+    ],
+    "size": [
+     119,
+     20
+    ],
+    "parent": "pnlSwimLengths"
+   },
+   "lblAttempt3": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     7,
+     91
+    ],
+    "size": [
+     73,
+     23
+    ],
+    "text": "Attempt 3",
+    "parent": "pnlSwimLengths"
+   }
+  }
+ },
+ "frmLogin": {
+  "size": [
+   800,
+   450
+  ],
+  "text": "frmLogin",
+  "load": null,
+  "controls": {
+   "pnlLogin": {
+    "type": "Panel",
+    "backColor": "Color.GhostWhite",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "font": "new Font(\"Sitka Banner\", 15.75F)",
+    "loc": [
+     143,
+     97
+    ],
+    "size": [
+     515,
+     256
+    ],
+    "parent": "frmLogin"
+   },
+   "pbxLogo2": {
+    "type": "PictureBox",
+    "image": "((Image)(resources.GetObject(\"pbxLogo2.Image\")))",
+    "loc": [
+     108,
+     126
+    ],
+    "size": [
+     129,
+     114
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "pnlLogin"
+   },
+   "btnLogin": {
+    "type": "Button",
+    "backColor": "Color.DarkSeaGreen",
+    "loc": [
+     314,
+     187
+    ],
+    "size": [
+     81,
+     40
+    ],
+    "text": "Login",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlLogin",
+    "handler": "btnLogin_Click"
+   },
+   "tbxPassword": {
+    "type": "TextBox",
+    "backColor": "Color.LightBlue",
+    "loc": [
+     288,
+     126
+    ],
+    "passwordChar": "'*'",
+    "size": [
+     141,
+     34
+    ],
+    "parent": "pnlLogin"
+   },
+   "pbxLogo1": {
+    "type": "PictureBox",
+    "image": "((Image)(resources.GetObject(\"pbxLogo1.Image\")))",
+    "loc": [
+     3,
+     71
+    ],
+    "size": [
+     130,
+     110
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "pnlLogin"
+   },
+   "tbxUsername": {
+    "type": "TextBox",
+    "backColor": "Color.LightBlue",
+    "loc": [
+     288,
+     56
+    ],
+    "size": [
+     141,
+     34
+    ],
+    "parent": "pnlLogin"
+   },
+   "lblPassword": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 15.75F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)))",
+    "loc": [
+     283,
+     93
+    ],
+    "size": [
+     140,
+     30
+    ],
+    "text": "Enter Password",
+    "parent": "pnlLogin"
+   },
+   "lblUsername": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 15.75F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)))",
+    "loc": [
+     283,
+     23
+    ],
+    "size": [
+     146,
+     30
+    ],
+    "text": "Enter Username",
+    "parent": "pnlLogin"
+   },
+   "lblTitle": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 26.25F, ((FontStyle)((FontStyle.Bold | FontStyle.Italic))), GraphicsUnit.Point, ((byte)(0)))",
+    "foreColor": "Color.DarkSeaGreen",
+    "loc": [
+     3,
+     7
+    ],
+    "size": [
+     185,
+     50
+    ],
+    "text": "Login Form",
+    "parent": "pnlLogin"
+   },
+   "lblSubtitle": {
+    "type": "Label",
+    "backColor": "Color.DarkSeaGreen",
+    "font": "new Font(\"Broadway\", 36F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)))",
+    "foreColor": "SystemColors.ControlText",
+    "loc": [
+     87,
+     24
+    ],
+    "size": [
+     658,
+     55
+    ],
+    "text": "Swimming club records",
+    "parent": "frmLogin"
+   },
+   "btnHelp1": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     722,
+     379
+    ],
+    "size": [
+     40,
+     50
+    ],
+    "text": "?",
+    "useVisualStyleBackColor": false,
+    "parent": "frmLogin",
+    "handler": "btnHelp1_Click"
+   }
+  }
+ },
+ "frmQuiz": {
+  "size": [
+   800,
+   450
+  ],
+  "text": "frmQuiz",
+  "load": "frmQuiz_Load",
+  "controls": {
+   "lblQuiz": {
+    "type": "Label",
+    "backColor": "Color.Black",
+    "font": "new Font(\"Stencil\", 50F)",
+    "foreColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "loc": [
+     13,
+     8
+    ],
+    "size": [
+     184,
+     80
+    ],
+    "text": "Quiz",
+    "parent": "pnlQuizScore"
+   },
+   "pnlTextQuestion": {
+    "type": "Panel",
+    "backColor": "Color.White",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     241,
+     12
+    ],
+    "size": [
+     263,
+     122
+    ],
+    "parent": "frmQuiz"
+   },
+   "btnCheck1": {
+    "type": "Button",
+    "backColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "font": "new Font(\"Stencil\", 9.75F)",
+    "loc": [
+     135,
+     77
+    ],
+    "size": [
+     123,
+     36
+    ],
+    "text": "Check",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlTextQuestion",
+    "handler": "btnCheck1_Click"
+   },
+   "tbxQuestion1": {
+    "type": "TextBox",
+    "loc": [
+     8,
+     85
+    ],
+    "size": [
+     123,
+     20
+    ],
+    "parent": "pnlTextQuestion"
+   },
+   "lblQuestion1": {
+    "type": "Label",
+    "font": "new Font(\"Stencil\", 9.75F)",
+    "loc": [
+     7,
+     8
+    ],
+    "size": [
+     251,
+     64
+    ],
+    "text": "1) If another person has come into \\r\\ndifficulty in a body of water",
+    "parent": "pnlTextQuestion"
+   },
+   "lblScore": {
+    "type": "Label",
+    "backColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "font": "new Font(\"Stencil\", 16F)",
+    "loc": [
+     3,
+     320
+    ],
+    "size": [
+     86,
+     26
+    ],
+    "text": "Score:",
+    "parent": "pnlQuizScore"
+   },
+   "lblResult": {
+    "type": "Label",
+    "backColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "font": "new Font(\"Stencil\", 16F)",
+    "loc": [
+     104,
+     320
+    ],
+    "size": [
+     25,
+     26
+    ],
+    "text": "0",
+    "parent": "pnlQuizScore"
+   },
+   "pnlListQuestion": {
+    "type": "Panel",
+    "backColor": "Color.White",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     241,
+     140
+    ],
+    "size": [
+     182,
+     187
+    ],
+    "parent": "frmQuiz"
+   },
+   "btnCheck3": {
+    "type": "Button",
+    "backColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "font": "new Font(\"Stencil\", 9.75F)",
+    "loc": [
+     99,
+     72
+    ],
+    "size": [
+     76,
+     36
+    ],
+    "text": "Check",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlListQuestion",
+    "handler": "btnCheck3_Click"
+   },
+   "cbxQuestion3": {
+    "type": "ComboBox",
+    "loc": [
+     99,
+     45
+    ],
+    "size": [
+     76,
+     21
+    ],
+    "items": [
+     "No swimming",
+     "Seek advice",
+     "Safe to swim"
+    ],
+    "parent": "pnlListQuestion"
+   },
+   "pbxQuestion3": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "image": "((Image)(resources.GetObject(\"pbxQuestion3.Image\")))",
+    "loc": [
+     -1,
+     45
+    ],
+    "size": [
+     94,
+     132
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "pnlListQuestion"
+   },
+   "lblQuestion3": {
+    "type": "Label",
+    "font": "new Font(\"Stencil\", 9.75F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)))",
+    "loc": [
+     3,
+     3
+    ],
+    "size": [
+     160,
+     32
+    ],
+    "text": "3) What does this flag\\r\\n mean for swimmers?",
+    "parent": "pnlListQuestion"
+   },
+   "pnlButtonsQuestion": {
+    "type": "Panel",
+    "backColor": "Color.White",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     510,
+     12
+    ],
+    "size": [
+     278,
+     122
+    ],
+    "parent": "frmQuiz"
+   },
+   "lblQuestion2": {
+    "type": "Label",
+    "font": "new Font(\"Stencil\", 9.75F)",
+    "loc": [
+     5,
+     13
+    ],
+    "size": [
+     274,
+     32
+    ],
+    "text": "2) What is the recommended minimum \\r\\ndepth for a pool dive in the UK?",
+    "parent": "pnlButtonsQuestion"
+   },
+   "btnCorrect": {
+    "type": "Button",
+    "backColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "font": "new Font(\"Stencil\", 9.75F)",
+    "loc": [
+     166,
+     77
+    ],
+    "size": [
+     94,
+     36
+    ],
+    "text": "1.5 metres",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlButtonsQuestion",
+    "handler": "btnCorrect_Click"
+   },
+   "btnIncorrect": {
+    "type": "Button",
+    "backColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "font": "new Font(\"Stencil\", 9.75F)",
+    "loc": [
+     8,
+     77
+    ],
+    "size": [
+     94,
+     36
+    ],
+    "text": "1 metre",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlButtonsQuestion",
+    "handler": "btnIncorrect_Click"
+   },
+   "pnlRadioQuestion": {
+    "type": "Panel",
+    "backColor": "SystemColors.Control",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     431,
+     140
+    ],
+    "size": [
+     357,
+     187
+    ],
+    "parent": "frmQuiz"
+   },
+   "gbQuestion4": {
+    "type": "GroupBox",
+    "backColor": "Color.White",
+    "font": "new Font(\"Stencil\", 9.75F)",
+    "loc": [
+     -1,
+     3
+    ],
+    "size": [
+     373,
+     183
+    ],
+    "text": "4) What should you do if you get caught in a rip current?",
+    "parent": "pnlRadioQuestion"
+   },
+   "btnCheck4": {
+    "type": "Button",
+    "backColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "font": "new Font(\"Stencil\", 9.75F)",
+    "loc": [
+     66,
+     140
+    ],
+    "size": [
+     77,
+     33
+    ],
+    "text": "Check",
+    "useVisualStyleBackColor": false,
+    "parent": "gbQuestion4",
+    "handler": "btnCheck4_Click"
+   },
+   "rbD": {
+    "type": "RadioButton",
+    "loc": [
+     13,
+     114
+    ],
+    "size": [
+     306,
+     20
+    ],
+    "text": "Dive underwater to escape the current",
+    "useVisualStyleBackColor": true,
+    "parent": "gbQuestion4"
+   },
+   "rbC": {
+    "type": "RadioButton",
+    "loc": [
+     13,
+     88
+    ],
+    "size": [
+     279,
+     20
+    ],
+    "text": "Signal for help by waving your arms",
+    "useVisualStyleBackColor": true,
+    "parent": "gbQuestion4"
+   },
+   "rbB": {
+    "type": "RadioButton",
+    "loc": [
+     13,
+     62
+    ],
+    "size": [
+     302,
+     20
+    ],
+    "text": "Stay calm and float to conserve energy",
+    "useVisualStyleBackColor": true,
+    "parent": "gbQuestion4"
+   },
+   "rbA": {
+    "type": "RadioButton",
+    "loc": [
+     13,
+     36
+    ],
+    "size": [
+     338,
+     20
+    ],
+    "text": "Swim against the current to reach the shore",
+    "useVisualStyleBackColor": true,
+    "parent": "gbQuestion4"
+   },
+   "pnlNumberQuestion": {
+    "type": "Panel",
+    "backColor": "Color.White",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     241,
+     333
+    ],
+    "size": [
+     547,
+     110
+    ],
+    "parent": "frmQuiz"
+   },
+   "btnCheck5": {
+    "type": "Button",
+    "backColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "font": "new Font(\"Stencil\", 9.75F)",
+    "loc": [
+     217,
+     61
+    ],
+    "size": [
+     78,
+     33
+    ],
+    "text": "Check",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlNumberQuestion",
+    "handler": "btnCheck5_Click"
+   },
+   "nudQuestion5": {
+    "type": "NumericUpDown",
+    "backColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "font": "new Font(\"Stencil\", 9.75F)",
+    "loc": [
+     23,
+     67
+    ],
+    "maximum": "new decimal(new int[] {\n            12,\n            0,\n            0,\n            0})",
+    "size": [
+     78,
+     23
+    ],
+    "parent": "pnlNumberQuestion"
+   },
+   "lblQuestion5": {
+    "type": "Label",
+    "font": "new Font(\"Stencil\", 9.75F)",
+    "loc": [
+     4,
+     6
+    ],
+    "size": [
+     488,
+     32
+    ],
+    "text": "5) What is the  recommended age that a child  should be able to swim \\r\\nwithout ad\" +\n    \"ult supervision?",
+    "parent": "pnlNumberQuestion"
+   },
+   "btnReturn": {
+    "type": "Button",
+    "backColor": "SystemColors.Window",
+    "font": "new Font(\"Stencil\", 9.75F)",
+    "loc": [
+     8,
+     361
+    ],
+    "size": [
+     97,
+     40
+    ],
+    "text": "Return",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlQuizScore",
+    "handler": "btnReturn_Click"
+   },
+   "pnlQuizScore": {
+    "type": "Panel",
+    "backColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     12,
+     12
+    ],
+    "size": [
+     213,
+     431
+    ],
+    "parent": "frmQuiz"
+   },
+   "btnHelpQuizScore": {
+    "type": "Button",
+    "backColor": "SystemColors.Window",
+    "font": "new Font(\"Stencil\", 9.75F)",
+    "loc": [
+     157,
+     361
+    ],
+    "size": [
+     40,
+     40
+    ],
+    "text": "?",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlQuizScore",
+    "handler": "btnHelpQuizScore_Click"
+   },
+   "lblComment": {
+    "type": "Label",
+    "font": "new Font(\"Stencil\", 11.25F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)))",
+    "loc": [
+     5,
+     113
+    ],
+    "size": [
+     182,
+     54
+    ],
+    "text": "It\\'s time to \\r\\ntest your water \\r\\nsafety awareness...",
+    "parent": "pnlQuizScore"
+   }
+  }
+ },
+ "frmReport": {
+  "size": [
+   800,
+   450
+  ],
+  "text": "frmReport",
+  "load": "frmReport_Load",
+  "controls": {
+   "dgvReport": {
+    "type": "DataGridView",
+    "loc": [
+     12,
+     52
+    ],
+    "size": [
+     776,
+     372
+    ],
+    "parent": "frmReport"
+   },
+   "cbxGroup": {
+    "type": "ComboBox",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     609,
+     126
+    ],
+    "size": [
+     144,
+     31
+    ],
+    "items": [
+     "All",
+     "Weak",
+     "Intermediate ",
+     "Advanced "
+    ],
+    "parent": "frmReport",
+    "handler": "cbxGroup_SelectedIndexChanged"
+   },
+   "cbxYear": {
+    "type": "ComboBox",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     609,
+     271
+    ],
+    "size": [
+     144,
+     31
+    ],
+    "items": [
+     "All",
+     "11",
+     "12",
+     "13",
+     "14"
+    ],
+    "parent": "frmReport",
+    "handler": "cbxYear_SelectedIndexChanged"
+   },
+   "btnClose": {
+    "type": "Button",
+    "backColor": "Color.LightCoral",
+    "font": "new Font(\"Sitka Banner\", 16F)",
+    "loc": [
+     609,
+     345
+    ],
+    "size": [
+     144,
+     56
+    ],
+    "text": "close",
+    "useVisualStyleBackColor": false,
+    "parent": "frmReport",
+    "handler": "btnClose_Click"
+   },
+   "lblGroup": {
+    "type": "Label",
+    "backColor": "Color.LemonChiffon",
+    "font": "new Font(\"Sitka Banner\", 16F)",
+    "loc": [
+     644,
+     82
+    ],
+    "size": [
+     69,
+     32
+    ],
+    "text": "Group",
+    "parent": "frmReport"
+   },
+   "lblYear": {
+    "type": "Label",
+    "backColor": "Color.LemonChiffon",
+    "font": "new Font(\"Sitka Banner\", 16F)",
+    "loc": [
+     644,
+     214
+    ],
+    "size": [
+     52,
+     32
+    ],
+    "text": "Year",
+    "parent": "frmReport"
+   },
+   "lblReportInstructions": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 16F)",
+    "loc": [
+     12,
+     9
+    ],
+    "size": [
+     471,
+     32
+    ],
+    "text": "Swimming Report: Click Column headings to sort data ",
+    "parent": "frmReport"
+   }
+  }
+ },
+ "frmTest": {
+  "size": [
+   800,
+   450
+  ],
+  "text": "frmTest",
+  "load": "frmTest_Load",
+  "controls": {
+   "pbx1": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     180,
+     162
+    ],
+    "size": [
+     86,
+     88
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbx12": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     514,
+     350
+    ],
+    "size": [
+     86,
+     88
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbx8": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     514,
+     256
+    ],
+    "size": [
+     86,
+     88
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbx4": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     514,
+     162
+    ],
+    "size": [
+     86,
+     88
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbx3": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     397,
+     162
+    ],
+    "size": [
+     86,
+     88
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbx7": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     397,
+     256
+    ],
+    "size": [
+     86,
+     88
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbx11": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     397,
+     350
+    ],
+    "size": [
+     86,
+     88
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbx10": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     290,
+     350
+    ],
+    "size": [
+     86,
+     88
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbx6": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     290,
+     256
+    ],
+    "size": [
+     86,
+     88
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbx2": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     290,
+     162
+    ],
+    "size": [
+     86,
+     88
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbx9": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     180,
+     350
+    ],
+    "size": [
+     86,
+     88
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbx5": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     180,
+     256
+    ],
+    "size": [
+     86,
+     88
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbxRed": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "image": "((Image)(resources.GetObject(\"pbxRed.Image\")))",
+    "loc": [
+     12,
+     319
+    ],
+    "size": [
+     144,
+     118
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbxWhiteandBlack": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "image": "((Image)(resources.GetObject(\"pbxWhiteandBlack.Image\")))",
+    "loc": [
+     12,
+     169
+    ],
+    "size": [
+     144,
+     118
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pbxYellowandRed": {
+    "type": "PictureBox",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "image": "((Image)(resources.GetObject(\"pbxYellowandRed.Image\")))",
+    "loc": [
+     12,
+     12
+    ],
+    "size": [
+     144,
+     118
+    ],
+    "sizeMode": "PictureBoxSizeMode.StretchImage",
+    "parent": "frmTest"
+   },
+   "pnlReactionTestStats": {
+    "type": "Panel",
+    "backColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "borderStyle": "BorderStyle.FixedSingle",
+    "loc": [
+     621,
+     12
+    ],
+    "size": [
+     174,
+     425
+    ],
+    "parent": "frmTest"
+   },
+   "lblSafeToSwimSprint": {
+    "type": "Label",
+    "font": "new Font(\"Broadway\", 30F, FontStyle.Bold)",
+    "foreColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "loc": [
+     158,
+     19
+    ],
+    "size": [
+     457,
+     46
+    ],
+    "text": "Safe to Swim Sprint",
+    "parent": "frmTest"
+   },
+   "lblInstructions": {
+    "type": "Label",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     176,
+     73
+    ],
+    "size": [
+     351,
+     69
+    ],
+    "text": "INSTRUCTIONS:\\r\\nQuickly click the flag that means that it is safe to swim.\\r\\nDo not\" +\n    \" click flags that mean it is not safe to swim.",
+    "parent": "frmTest"
+   },
+   "btnStart": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Broadway\", 20F)",
+    "foreColor": "Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))))",
+    "loc": [
+     14,
+     342
+    ],
+    "size": [
+     135,
+     43
+    ],
+    "text": "Start",
+    "useVisualStyleBackColor": false,
+    "parent": "pnlReactionTestStats",
+    "handler": "btnStart_Click"
+   },
+   "lblScore": {
+    "type": "Label",
+    "font": "new Font(\"Broadway\", 20F)",
+    "foreColor": "Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))))",
+    "loc": [
+     12,
+     265
+    ],
+    "size": [
+     91,
+     31
+    ],
+    "text": "Score",
+    "parent": "pnlReactionTestStats"
+   },
+   "lblTime": {
+    "type": "Label",
+    "font": "new Font(\"Broadway\", 20F)",
+    "foreColor": "Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))))",
+    "loc": [
+     3,
+     134
+    ],
+    "size": [
+     90,
+     31
+    ],
+    "text": "Time",
+    "parent": "pnlReactionTestStats"
+   },
+   "lblName": {
+    "type": "Label",
+    "font": "new Font(\"Broadway\", 20F)",
+    "foreColor": "Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))))",
+    "loc": [
+     3,
+     18
+    ],
+    "size": [
+     100,
+     31
+    ],
+    "text": "Name",
+    "parent": "pnlReactionTestStats"
+   },
+   "tmrSwap": {
+    "type": "Timer",
+    "interval": 500,
+    "handler": "tmrSwap_Tick"
+   },
+   "tmrCountdown": {
+    "type": "Timer",
+    "interval": 1000,
+    "handler": "tmrCountdown_Tick"
+   },
+   "btnHelpReactionTest": {
+    "type": "Button",
+    "backColor": "Color.LightBlue",
+    "font": "new Font(\"Sitka Banner\", 12F)",
+    "loc": [
+     545,
+     87
+    ],
+    "size": [
+     55,
+     43
+    ],
+    "text": "?",
+    "useVisualStyleBackColor": false,
+    "parent": "frmTest",
+    "handler": "btnHelpReactionTest_Click"
+   }
+  }
+ }
+}

@@ -1,0 +1,12 @@
+ch10#1-1	Check the parts this chapter needs
+ch10#2-1	A machine of your own
+ch10#2-2	Type the first line, the total and the first group
+ch10#2-3	Hand back the other two groups
+ch10#3-1	Stop if anything is not done yet
+ch10#3-2	Make room for three bands
+ch10#3-3	Give the quiz score a band
+ch10#3-4	Give the test score a band
+ch10#3-5	The last test band
+ch10#3-6	Give the average a band
+ch10#3-7	Ask for the group and grey out the panel
+ch10#4-1	Try your Calculate button

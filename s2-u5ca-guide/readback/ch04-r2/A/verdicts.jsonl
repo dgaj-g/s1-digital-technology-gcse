@@ -1,0 +1,3 @@
+{"path": "ch04#1-1", "verdict": "PASS", "readback": "I look at my Enter button's code and run it, tick what I have, and go to the stage it points me to for anything missing.", "words": [], "stuck": "no", "title": "YES", "why": ""}
+{"path": "ch04#2-1", "verdict": "PASS", "readback": "I double-click Enter and type a line that makes a blank text called errors, where every mistake will be added later.", "words": [], "stuck": "no", "title": "YES", "why": ""}
+{"path": "ch04#3-2", "verdict": "PASS", "readback": "I type the else part, which saves the surname, first name, gender and year group into Global.cs when nothing is wrong.", "words": [], "stuck": "no", "title": "YES", "why": ""}

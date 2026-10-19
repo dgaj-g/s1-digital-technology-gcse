@@ -1,0 +1,611 @@
+{
+ "id": "13",
+ "n": 13,
+ "of": 15,
+ "title": "Help buttons on every form",
+ "kind": "new",
+ "color": "#5C6BC0",
+ "one": "A question-mark button on each panel that says what to do.",
+ "prev": {
+  "id": "12",
+  "n": 12,
+  "title": "The report"
+ },
+ "next": {
+  "id": "14",
+  "n": 14,
+  "title": "Push yourself: optional extras"
+ },
+ "methods": [
+  [
+   "frmLogin",
+   "btnHelp1_Click"
+  ],
+  [
+   "frmDataEntry",
+   "btnHelpPupilDetails_Click"
+  ],
+  [
+   "frmDataEntry",
+   "btnHelpQuizResult_Click"
+  ],
+  [
+   "frmDataEntry",
+   "btnHelpReactionTest_Click"
+  ],
+  [
+   "frmDataEntry",
+   "btnHelpSwimLengths_Click"
+  ],
+  [
+   "frmDataEntry",
+   "btnHelpSwimmingGroup_Click"
+  ],
+  [
+   "frmQuiz",
+   "btnHelpQuizScore_Click"
+  ],
+  [
+   "frmTest",
+   "btnHelpReactionTest_Click"
+  ]
+ ],
+ "stages": [
+  {
+   "id": "1",
+   "title": "Check what you need first",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Check the parts this chapter needs",
+     "foot": "have",
+     "goal": "Before I start, I check that every panel and form has its own ? button.",
+     "blocks": [
+      {
+       "p": "This chapter uses work from earlier chapters. This screen checks that it is there."
+      },
+      {
+       "check": [
+        {
+         "id": "1-1.t1",
+         "what": "Does every panel on frmDataEntry have a ? button, with a name that starts btnHelp?",
+         "how": "Open frmDataEntry in the Design tab. Click each ? button and look at its Name.",
+         "fix": "Go to chapter 2, stage 3.",
+         "go": "#cw/02/3-1",
+         "expect": "have"
+        },
+        {
+         "id": "1-1.t2",
+         "what": "Does the login form have a ? button?",
+         "how": "Open frmLogin in the Design tab. Look for the ? button.",
+         "fix": "Go to chapter 1, stage 2.",
+         "go": "#cw/01/2-1",
+         "expect": "have"
+        },
+        {
+         "id": "1-1.t3",
+         "what": "Does the quiz form have a ? button in its score panel?",
+         "how": "Open frmQuiz in the Design tab. Look inside the score panel.",
+         "fix": "Go to chapter 6, stage 2.",
+         "go": "#cw/06/2-2",
+         "expect": "have"
+        },
+        {
+         "id": "1-1.t4",
+         "what": "Does the reaction test form have a ? button?",
+         "how": "Open frmTest in the Design tab. Look inside the score panel.",
+         "fix": "Go to chapter 9, stage 3.",
+         "go": "#cw/09/3-3",
+         "expect": "have"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "One help button",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Make the pupil details ? button speak",
+     "foot": "done",
+     "goal": "Clicking the ? in the pupil details panel shows a message that says what to do.",
+     "blocks": [
+      {
+       "p": "In the Design tab, double-click the ? button in the pupil details panel. Its click code opens in the code tab."
+      },
+      {
+       "code": {
+        "id": "2-1.c1",
+        "kind": "type",
+        "title": "The pupil details help button",
+        "where": "between the curly brackets of btnHelpPupilDetails_Click",
+        "form": "frmDataEntry",
+        "method": "btnHelpPupilDetails_Click",
+        "lang": "cs",
+        "from": 1,
+        "to": 5,
+        "text": "private void btnHelpPupilDetails_Click(object sender, EventArgs e)\n{\n    //displays help message if required by user\n    MessageBox.Show(\"Please enter ALL required details\");\n}",
+        "partLines": [
+         [
+          1,
+          2,
+          "Visual Studio wrote these two lines",
+          "Leave them as they are. Your code goes between the curly brackets.",
+          "given"
+         ],
+         [
+          3,
+          4,
+          "A note, then the message",
+          "The note does not run. MessageBox.Show opens a small box with the words between the quote marks."
+         ],
+         [
+          5,
+          5,
+          "Visual Studio wrote this line",
+          "This curly bracket is the end. Your code goes above it.",
+          "given"
+         ]
+        ],
+        "names": [],
+        "isense": []
+       }
+      },
+      {
+       "watch": "Say what to DO, not what went wrong. Please enter ALL required details tells the pupil the next step."
+      },
+      {
+       "yours": "MY message is Please enter ALL required details. Write YOUR message for YOUR panel, in one line."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "The rest of the help buttons",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Write the other four help messages on the data entry form",
+     "foot": "done",
+     "goal": "Each ? button on frmDataEntry shows its own message.",
+     "blocks": [
+      {
+       "p": "Each one has the same shape as the last screen. Only the button and the words change. Do one, then open the next box below."
+      },
+      {
+       "names": {
+        "title": "The names from MY example",
+        "form": "frmDataEntry",
+        "list": [
+         "btnHelpSwimLengths",
+         "btnHelpQuizResult",
+         "btnHelpReactionTest",
+         "btnHelpSwimmingGroup"
+        ]
+       }
+      },
+      {
+       "p": "In the Design tab, double-click the ? button in the attempts panel."
+      },
+      {
+       "code": {
+        "id": "3-1.c1",
+        "kind": "type",
+        "title": "The attempts help button",
+        "where": "between the curly brackets of btnHelpSwimLengths_Click",
+        "form": "frmDataEntry",
+        "method": "btnHelpSwimLengths_Click",
+        "lang": "cs",
+        "from": 1,
+        "to": 5,
+        "text": "private void btnHelpSwimLengths_Click(object sender, EventArgs e)\n{\n    //displays help message if required by user\n    MessageBox.Show(\"Please select 'calculate average' to work out the average number of swim lengths\");\n}",
+        "partLines": [
+         [
+          1,
+          2,
+          "Visual Studio wrote these two lines",
+          "Leave them as they are. Your code goes between the curly brackets.",
+          "given"
+         ],
+         [
+          3,
+          4,
+          "A note, then the message",
+          "The note does not run. MessageBox.Show opens a small box with the words between the quote marks."
+         ],
+         [
+          5,
+          5,
+          "Visual Studio wrote this line",
+          "This curly bracket is the end. Your code goes above it.",
+          "given"
+         ]
+        ],
+        "names": [],
+        "isense": []
+       }
+      },
+      {
+       "box": {
+        "title": "The quiz panel's ? button",
+        "fold": true,
+        "blocks": [
+         {
+          "p": "In the Design tab, double-click the ? button in the quiz panel."
+         },
+         {
+          "code": {
+           "id": "3-1.c2",
+           "kind": "type",
+           "title": "The quiz panel help button",
+           "where": "between the curly brackets of btnHelpQuizResult_Click",
+           "form": "frmDataEntry",
+           "method": "btnHelpQuizResult_Click",
+           "lang": "cs",
+           "from": 1,
+           "to": 5,
+           "text": "private void btnHelpQuizResult_Click(object sender, EventArgs e)\n{\n    //displays help message if required by user\n    MessageBox.Show(\"Select 'Take quiz' option to take quiz\");\n}",
+           "partLines": [
+            [
+             1,
+             2,
+             "Visual Studio wrote these two lines",
+             "Leave them as they are. Your code goes between the curly brackets.",
+             "given"
+            ],
+            [
+             3,
+             4,
+             "A note, then the message",
+             "The note does not run. MessageBox.Show opens a small box with the words between the quote marks."
+            ],
+            [
+             5,
+             5,
+             "Visual Studio wrote this line",
+             "This curly bracket is the end. Your code goes above it.",
+             "given"
+            ]
+           ],
+           "names": [],
+           "isense": []
+          }
+         }
+        ]
+       }
+      },
+      {
+       "box": {
+        "title": "The test panel's ? button",
+        "fold": true,
+        "blocks": [
+         {
+          "p": "In the Design tab, double-click the ? button in the test panel."
+         },
+         {
+          "code": {
+           "id": "3-1.c3",
+           "kind": "type",
+           "title": "The test panel help button",
+           "where": "between the curly brackets of btnHelpReactionTest_Click",
+           "form": "frmDataEntry",
+           "method": "btnHelpReactionTest_Click",
+           "lang": "cs",
+           "from": 1,
+           "to": 5,
+           "text": "private void btnHelpReactionTest_Click(object sender, EventArgs e)\n{\n    //displays help message if required by user\n    MessageBox.Show(\"Select 'Take test' option to take reaction test\");\n}",
+           "partLines": [
+            [
+             1,
+             2,
+             "Visual Studio wrote these two lines",
+             "Leave them as they are. Your code goes between the curly brackets.",
+             "given"
+            ],
+            [
+             3,
+             4,
+             "A note, then the message",
+             "The note does not run. MessageBox.Show opens a small box with the words between the quote marks."
+            ],
+            [
+             5,
+             5,
+             "Visual Studio wrote this line",
+             "This curly bracket is the end. Your code goes above it.",
+             "given"
+            ]
+           ],
+           "names": [],
+           "isense": []
+          }
+         }
+        ]
+       }
+      },
+      {
+       "box": {
+        "title": "The group panel's ? button",
+        "fold": true,
+        "blocks": [
+         {
+          "p": "In the Design tab, double-click the ? button in the group panel."
+         },
+         {
+          "code": {
+           "id": "3-1.c4",
+           "kind": "type",
+           "title": "The group panel help button",
+           "where": "between the curly brackets of btnHelpSwimmingGroup_Click",
+           "form": "frmDataEntry",
+           "method": "btnHelpSwimmingGroup_Click",
+           "lang": "cs",
+           "from": 1,
+           "to": 5,
+           "text": "private void btnHelpSwimmingGroup_Click(object sender, EventArgs e)\n{\n    //displays help message if required by user\n    MessageBox.Show(\"Please select 'calculate swimming group' option to see your swimming group\");\n}",
+           "partLines": [
+            [
+             1,
+             2,
+             "Visual Studio wrote these two lines",
+             "Leave them as they are. Your code goes between the curly brackets.",
+             "given"
+            ],
+            [
+             3,
+             4,
+             "A note, then the message",
+             "The note does not run. MessageBox.Show opens a small box with the words between the quote marks."
+            ],
+            [
+             5,
+             5,
+             "Visual Studio wrote this line",
+             "This curly bracket is the end. Your code goes above it.",
+             "given"
+            ]
+           ],
+           "names": [],
+           "isense": []
+          }
+         }
+        ]
+       }
+      },
+      {
+       "yours": "Write YOUR messages for YOUR panels, one line each. Each one says what to do in that panel."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Write the help messages on the login, quiz and test forms",
+     "foot": "done",
+     "goal": "The ? buttons on the login, quiz and test forms show their own messages.",
+     "blocks": [
+      {
+       "p": "Same shape again, on three other forms. Open each form in the Design tab first."
+      },
+      {
+       "names": {
+        "title": "The names from MY example",
+        "form": "frmLogin",
+        "list": [
+         "btnHelp1",
+         "btnHelpQuizScore",
+         "btnHelpReactionTest"
+        ]
+       }
+      },
+      {
+       "p": "Open frmLogin in the Design tab. Double-click its ? button."
+      },
+      {
+       "code": {
+        "id": "3-2.c1",
+        "kind": "type",
+        "title": "The login help button",
+        "where": "between the curly brackets of btnHelp1_Click",
+        "form": "frmLogin",
+        "method": "btnHelp1_Click",
+        "lang": "cs",
+        "from": 1,
+        "to": 5,
+        "text": "private void btnHelp1_Click(object sender, EventArgs e)\n{\n    //displays help message if required by user\n    MessageBox.Show(\"Please enter your username and password\");\n}",
+        "partLines": [
+         [
+          1,
+          2,
+          "Visual Studio wrote these two lines",
+          "Leave them as they are. Your code goes between the curly brackets.",
+          "given"
+         ],
+         [
+          3,
+          4,
+          "A note, then the message",
+          "The note does not run. MessageBox.Show opens a small box with the words between the quote marks."
+         ],
+         [
+          5,
+          5,
+          "Visual Studio wrote this line",
+          "This curly bracket is the end. Your code goes above it.",
+          "given"
+         ]
+        ],
+        "names": [],
+        "isense": []
+       }
+      },
+      {
+       "box": {
+        "title": "The quiz form's ? button",
+        "fold": true,
+        "blocks": [
+         {
+          "p": "Open frmQuiz in the Design tab. Double-click the ? button in the score panel."
+         },
+         {
+          "code": {
+           "id": "3-2.c2",
+           "kind": "type",
+           "title": "The quiz form help button",
+           "where": "between the curly brackets of btnHelpQuizScore_Click",
+           "form": "frmQuiz",
+           "method": "btnHelpQuizScore_Click",
+           "lang": "cs",
+           "from": 1,
+           "to": 5,
+           "text": "private void btnHelpQuizScore_Click(object sender, EventArgs e)\n{\n    //displays help message if required by user\n    MessageBox.Show(\"Please complete the quiz question by question\");\n}",
+           "partLines": [
+            [
+             1,
+             2,
+             "Visual Studio wrote these two lines",
+             "Leave them as they are. Your code goes between the curly brackets.",
+             "given"
+            ],
+            [
+             3,
+             4,
+             "A note, then the message",
+             "The note does not run. MessageBox.Show opens a small box with the words between the quote marks."
+            ],
+            [
+             5,
+             5,
+             "Visual Studio wrote this line",
+             "This curly bracket is the end. Your code goes above it.",
+             "given"
+            ]
+           ],
+           "names": [],
+           "isense": []
+          }
+         }
+        ]
+       }
+      },
+      {
+       "box": {
+        "title": "The test form's ? button",
+        "fold": true,
+        "blocks": [
+         {
+          "p": "Open frmTest in the Design tab. Double-click its ? button."
+         },
+         {
+          "code": {
+           "id": "3-2.c3",
+           "kind": "type",
+           "title": "The test form help button",
+           "where": "between the curly brackets of btnHelpReactionTest_Click",
+           "form": "frmTest",
+           "method": "btnHelpReactionTest_Click",
+           "lang": "cs",
+           "from": 1,
+           "to": 5,
+           "text": "private void btnHelpReactionTest_Click(object sender, EventArgs e)\n{\n    //displays help message if required by the user\n    MessageBox.Show(\"Read instructions and complete the reaction test\");\n}",
+           "partLines": [
+            [
+             1,
+             2,
+             "Visual Studio wrote these two lines",
+             "Leave them as they are. Your code goes between the curly brackets.",
+             "given"
+            ],
+            [
+             3,
+             4,
+             "A note, then the message",
+             "The note does not run. MessageBox.Show opens a small box with the words between the quote marks."
+            ],
+            [
+             5,
+             5,
+             "Visual Studio wrote this line",
+             "This curly bracket is the end. Your code goes above it.",
+             "given"
+            ]
+           ],
+           "names": [],
+           "isense": []
+          }
+         }
+        ]
+       }
+      },
+      {
+       "watch": "frmDataEntry and frmTest both have a btnHelpReactionTest. Each form keeps its own code, so the two do not clash."
+      },
+      {
+       "yours": "Write YOUR messages for YOUR forms, one line each."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Try every help button",
+     "foot": "chapter-done",
+     "goal": "I run the program and click every ? button, and a locked one does nothing.",
+     "blocks": [
+      {
+       "p": "Run your program. Then try each row."
+      },
+      {
+       "check": [
+        {
+         "id": "3-3.t1",
+         "what": "On the login form, click ?.",
+         "how": "YOUR login message shows. Click OK to close it.",
+         "fix": "Look at screen 3-2.",
+         "go": "#cw/13/3-2",
+         "expect": "must"
+        },
+        {
+         "id": "3-3.t2",
+         "what": "Log in. Click the ? in the pupil details panel.",
+         "how": "YOUR message for that panel shows.",
+         "fix": "Look at screen 2-1.",
+         "go": "#cw/13/2-1",
+         "expect": "must"
+        },
+        {
+         "id": "3-3.t3",
+         "what": "Work through the panels. Click each ? while its panel is on.",
+         "how": "Each panel shows its own message.",
+         "fix": "Look at screen 3-1.",
+         "go": "#cw/13/3-1",
+         "expect": "must"
+        },
+        {
+         "id": "3-3.t4",
+         "what": "Take the quiz and the test. Click the ? on each form.",
+         "how": "Each form shows its own message.",
+         "fix": "Look at screen 3-2.",
+         "go": "#cw/13/3-2",
+         "expect": "must"
+        },
+        {
+         "id": "3-3.t5",
+         "what": "Click Calculate in the group panel. When the group appears, the panel goes grey. Click its ? now.",
+         "how": "Nothing must happen, because the whole panel is switched off.",
+         "fix": "If a message shows, look at chapter 10, screen 3-7.",
+         "go": "#cw/10/3-7",
+         "expect": "mustnot"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

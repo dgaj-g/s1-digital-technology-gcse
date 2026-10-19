@@ -1,0 +1,3 @@
+ch04#1-1	I check that the Enter button has code, starts with string errors, lists what is missing, and switches the panels.
+ch04#2-1	The Enter button starts with an empty string called errors, so every problem found can be added to it.
+ch04#3-2	With no problems, the surname, first name, gender and year group each go into their line in Global.cs.

@@ -1,0 +1,15 @@
+ch12#1-1	Check the parts this chapter needs
+ch12#2-1	Add the report form
+ch12#2-2	Add the table and the two lists
+ch12#2-3	Add the Close button
+ch12#3-1	Let the report use files
+ch12#3-2	Make a table in memory
+ch12#4-1	Give the table seven columns
+ch12#4-2	Read every line of the file
+ch12#4-3	Put the pieces in a row
+ch12#4-4	No file? Say so. Then show the table
+ch12#5-1	Show only the group that is chosen
+ch12#5-2	Show only the year that is chosen
+ch12#5-3	The Close button
+ch12#5-4	Open the report from the data entry form
+ch12#6-1	Try your report
