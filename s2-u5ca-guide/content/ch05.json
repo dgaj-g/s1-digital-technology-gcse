@@ -115,9 +115,15 @@
          "Turn a number back into words, so a box can show it.",
          "3-1",
          true
+        ],
+        [
+         "Convert.ToInt32",
+         "Turn the words in a box into a whole number.",
+         "3-2",
+         true
         ]
        ],
-       "intro": "Five new things in this chapter. Click any marked word to see what it means."
+       "intro": "Six new things in this chapter. Click any marked word to see what it means."
       },
       {
        "steps": [
@@ -460,7 +466,7 @@
        "p": "Next, the average button notes the average is done. It saves the three attempts in Global.cs too."
       },
       {
-       "p": "Convert.ToInt32 turns the words in a box into a whole number."
+       "p": "[[Convert.ToInt32|5]] turns the words in a box into a whole number."
       },
       {
        "code": {

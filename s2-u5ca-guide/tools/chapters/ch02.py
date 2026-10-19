@@ -78,7 +78,10 @@ CH = {
    {"id": "2", "title": "Put the choices in the two drop-down lists", "foot": "done",
     "goal": "The year group list and the gender list each hold their choices, typed one per line in Items.",
     "blocks": [
-    {"p": "A drop-down list is empty until you give it its choices. They go in Items, one per line."},
+    {"p": "A drop-down list is empty until you give it its choices. They go in [[Items|0]], one per line."},
+    {"words": [
+      ["Items", "The choices in a drop-down list, one on each line.", "3-2", True]],
+     "intro": "One new thing in this chapter. Click the marked word to see what it means."},
     {"steps": [
      step("3-2.1", "In the Design tab, click the year group list once.",
           "Little squares appear round the year group list."),

@@ -437,7 +437,7 @@
         "lang": "cs",
         "from": 1,
         "to": 9,
-        "text": "private void frmReport_Load(object sender, EventArgs e)\n{\n    dt.Columns.Add(\"Forename\", typeof(string));\n    dt.Columns.Add(\"Surname\", typeof(string));\n    dt.Columns.Add(\"Year\", typeof(string));\n    dt.Columns.Add(\"Gender\", typeof(string));\n    dt.Columns.Add(\"Quiz Score\", typeof(string));\n    dt.Columns.Add(\"Reaction Score\", typeof(string));\n    dt.Columns.Add(\"Group\", typeof(string));",
+        "text": "private void frmReport_Load(object sender, EventArgs e)\n{\n    dt.Columns.Add(\"Surname\", typeof(string));\n    dt.Columns.Add(\"Forename\", typeof(string));\n    dt.Columns.Add(\"Year\", typeof(string));\n    dt.Columns.Add(\"Gender\", typeof(string));\n    dt.Columns.Add(\"Quiz Score\", typeof(string));\n    dt.Columns.Add(\"Reaction Score\", typeof(string));\n    dt.Columns.Add(\"Group\", typeof(string));",
         "partLines": [
          [
           1,
@@ -450,7 +450,7 @@
           3,
           6,
           "The first four columns",
-          "Forename, Surname, Year and Gender. typeof string means each column holds words."
+          "Surname, Forename, Year and Gender. typeof string means each column holds words."
          ],
          [
           7,
@@ -563,7 +563,7 @@
         "lang": "cs",
         "from": 17,
         "to": 27,
-        "text": "            dt.Rows.Add(\n                parts[0], //Forename\n                parts[1], //Surname\n                parts[3], //year\n                parts[4], //Gender\n                parts[2], //Quiz Score\n                parts[9], //Reaction Test Score\n                parts[10] //Assigned group\n             );\n        }\n    }",
+        "text": "            dt.Rows.Add(\n                parts[0], //Surname\n                parts[1], //Forename\n                parts[3], //year\n                parts[4], //Gender\n                parts[2], //Quiz Score\n                parts[9], //Reaction Test Score\n                parts[10] //Assigned group\n             );\n        }\n    }",
         "partLines": [
          [
           17,
