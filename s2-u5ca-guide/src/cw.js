@@ -68,6 +68,11 @@ function showPop(btn, word, meaning, screenKey, chId) {
 }
 document.addEventListener('click', e => { if (!e.target.closest('.wd') && !e.target.closest('.cw-pop')) closePop(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePop(); closeSheet(); } });
+// Hash links stay inside the page: the served page has <base target="_top">, which would send them to the sandbox frame's own address.
+document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a || e.defaultPrevented || e.ctrlKey || e.metaKey || e.shiftKey) return;
+  e.preventDefault(); location.hash = a.getAttribute('href');
+});
 function openSheet() {
   const ch = S.ch['00']; if (!ch) return;
   const scr = flat(ch).find(x => x.key === '3-1'); if (!scr) return;
