@@ -66,7 +66,7 @@
     <div class="bar"><span id="dots"></span><span class="n" id="n"></span></div>
     <div class="lines">
       <p>This is normal. It lets the guide remember your ticks so you can carry on next lesson.</p>
-      <p>If you see 'Google hasn't verified this app', choose Advanced. Then choose 'Go to OLS GCSE DT Coursework Guide'.</p>
+      <p>When Google shows tick boxes, tick Select all. Without it, the guide cannot save your ticks.</p>
     </div>
     <div class="foot"><a class="btn" id="go" href="#">OK, take me in</a></div>
   </div>
@@ -77,12 +77,12 @@
 var EXEC = 'https://script.google.com/a/macros/c2ken.net/s/AKfycbwlzp6XdiGJs0qKOsYIA9CGN1D0An3IQuw3lXx5ib53-gTmlWHR72f7A0VtPDk6eel3Jg/exec';
 var GO = EXEC + '?class=S2-26-27';
 var FRAMES = [
-  { img: 'content/img/cap/p1-1.png', alt: 'Google’s screen headed Authorization required, with the Review permissions button circled',
-    say: 'Google says Authorization required. Click Review permissions.' },
+  { img: 'content/img/cap/p1-1.png', alt: 'Google’s screen saying OLS GCSE DT Coursework Guide needs your permission, with the Review permissions button circled',
+    say: 'Google asks for your permission. Click Review permissions.' },
   { drawn: true, alt: 'Google’s account list, with a school account that ends in c2ken.net',
     say: 'Choose YOUR school account. It ends in c2ken.net.' },
-  { img: 'content/img/cap/p3-1.png', alt: 'OLS GCSE DT Coursework Guide wants to access your Google Account, with the Allow button circled',
-    say: 'Google says what the guide will keep. Click Allow.' }
+  { img: 'content/img/cap/p3-1.png', alt: 'Google’s list of what the guide can use, with Select all ticked and the Continue button circled',
+    say: 'Tick Select all. Then click Continue.' }
 ];
 var SEEN = 's2cw:popSeen';
 function seen() { try { return localStorage.getItem(SEEN) === '1'; } catch (e) { return false; } }
