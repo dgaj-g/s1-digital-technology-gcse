@@ -26,15 +26,18 @@
   {
    "id": "1",
    "title": "Check what your average button has",
+   "thing": "your average button so far",
+   "verb": "checking",
    "screens": [
     {
      "id": "1",
      "title": "Check what your average button already does",
      "foot": "have",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I check the average button has code, refuses letters, and shows 6 for 5, 6 and 7.",
      "blocks": [
       {
-       "p": "Your average button may have some code already. This screen checks what is there."
+       "p": "Your average button may already have some code, so this screen checks what is there."
       },
       {
        "check": [
@@ -42,7 +45,7 @@
          "id": "1-1.t1",
          "what": "In the Design tab, double-click the average button. Is there code between its curly brackets?",
          "how": "The code tab opens at btnCalculateAverage_Click. Lines between the curly brackets mean yes.",
-         "fix": "Go to stage 2.",
+         "fix": "Go to part 2.",
          "go": "#cw/05/2-1",
          "expect": "have"
         },
@@ -50,7 +53,7 @@
          "id": "1-1.t2",
          "what": "Run it. Type letters in an attempt box and press the button. Does a number only message appear?",
          "how": "Use the green Start arrow. Log in and fill in the details first.",
-         "fix": "Go to stage 2.",
+         "fix": "Go to part 2.",
          "go": "#cw/05/2-1",
          "expect": "have"
         },
@@ -58,7 +61,7 @@
          "id": "1-1.t3",
          "what": "Type 5, 6 and 7 and press the button. Does 6 appear and the quiz panel switch on?",
          "how": "The average shows in the box beside the button.",
-         "fix": "Go to stage 3.",
+         "fix": "Go to part 3.",
          "go": "#cw/05/3-1",
          "expect": "have"
         }
@@ -71,12 +74,30 @@
   {
    "id": "2",
    "title": "Check the three boxes",
+   "thing": "the three checks",
+   "verb": "making",
    "screens": [
     {
+     "id": "0",
+     "title": "Make the average button check the three boxes",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part gives the average button three checks. A bool called passValidation remembers if any check failed.",
+     "blocks": [
+      {
+       "open": {
+        "what": "Each box is checked for being empty, then for holding a letter. A failed check turns passValidation false.",
+        "does": "When it works, letters in a box bring a numbers only message. The three boxes are emptied."
+       }
+      }
+     ]
+    },
+    {
      "id": "1",
-     "title": "Start the average button by saying every box is right",
+     "title": "Open the code behind the average button",
      "foot": "done",
-     "goal": "The average button starts with a bool called passValidation set to true. Any failed check turns it false.",
+     "done": "the code tab is open at btnCalculateAverage_Click with your cursor between its curly brackets",
+     "goal": "I open the code behind the average button and meet the six new things in this chapter.",
      "blocks": [
       {
        "p": "The average button checks the three attempt boxes before it adds them up."
@@ -89,13 +110,13 @@
         [
          "!",
          "Not. It turns true into false.",
-         "2-3",
+         "2-4",
          true
         ],
         [
          ".All(char.IsDigit)",
          "Is every character a number from 0 to 9?",
-         "2-3",
+         "2-4",
          true
         ],
         [
@@ -133,12 +154,24 @@
          "see": "The code tab opens at btnCalculateAverage_Click."
         }
        ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Start by saying every box is right",
+     "foot": "done",
+     "done": "lines 3 to 3 are typed and the code has no red squiggles",
+     "goal": "The average button starts with a bool called passValidation set to true. Any failed check turns it false.",
+     "blocks": [
+      {
+       "p": "The first line of code makes passValidation, a bool that starts true."
       },
       {
        "code": {
         "id": "2-1.c1",
         "kind": "type",
-        "title": "The average button, part 1 of 8",
+        "title": "The average button: code 1 of 8",
         "where": "between the curly brackets of btnCalculateAverage_Click",
         "form": "frmDataEntry",
         "method": "btnCalculateAverage_Click",
@@ -175,9 +208,10 @@
      ]
     },
     {
-     "id": "2",
+     "id": "3",
      "title": "Turn passValidation false when a box is empty",
      "foot": "done",
+     "done": "lines 5 to 8 are typed and the code has no red squiggles",
      "goal": "If any of the three attempt boxes is empty, passValidation is set to false.",
      "blocks": [
       {
@@ -190,8 +224,8 @@
        "code": {
         "id": "2-2.c1",
         "kind": "type",
-        "title": "The average button, part 2 of 8",
-        "where": "under part 1, inside btnCalculateAverage_Click",
+        "title": "The average button: code 2 of 8",
+        "where": "under code 1, inside btnCalculateAverage_Click",
         "form": "frmDataEntry",
         "method": "btnCalculateAverage_Click",
         "lang": "cs",
@@ -229,9 +263,10 @@
      ]
     },
     {
-     "id": "3",
+     "id": "4",
      "title": "Turn passValidation false when attempt 1 holds a letter",
      "foot": "done",
+     "done": "lines 10 to 13 are typed and the code has no red squiggles",
      "goal": "If the first attempt box holds something that is not a number from 0 to 9, passValidation is set to false.",
      "blocks": [
       {
@@ -247,8 +282,8 @@
        "code": {
         "id": "2-3.c1",
         "kind": "type",
-        "title": "The average button, part 3 of 8",
-        "where": "under part 2, inside btnCalculateAverage_Click",
+        "title": "The average button: code 3 of 8",
+        "where": "under code 2, inside btnCalculateAverage_Click",
         "form": "frmDataEntry",
         "method": "btnCalculateAverage_Click",
         "lang": "cs",
@@ -284,20 +319,21 @@
      ]
     },
     {
-     "id": "4",
+     "id": "5",
      "title": "Do the same check for attempts 2 and 3",
      "foot": "done",
+     "done": "lines 15 to 23 are typed and the code has no red squiggles",
      "goal": "The same letter check is done for the second and third attempt boxes.",
      "blocks": [
       {
-       "p": "Now the same check for the other two boxes. Only the box name changes."
+       "p": "Now the same check for the other two boxes, where only the box name changes."
       },
       {
        "code": {
         "id": "2-4.c1",
         "kind": "type",
-        "title": "The average button, part 4 of 8",
-        "where": "under part 3, inside btnCalculateAverage_Click",
+        "title": "The average button: code 4 of 8",
+        "where": "under code 3, inside btnCalculateAverage_Click",
         "form": "frmDataEntry",
         "method": "btnCalculateAverage_Click",
         "lang": "cs",
@@ -334,20 +370,21 @@
      ]
     },
     {
-     "id": "5",
-     "title": "Show a message and empty the boxes if a check failed",
+     "id": "6",
+     "title": "Show a message if a check failed",
      "foot": "done",
+     "done": "lines 25 to 31 are typed and the code has no red squiggles",
      "goal": "If passValidation is false, a message asks for numbers only and the three boxes are emptied.",
      "blocks": [
       {
-       "p": "Now every check is done. If passValidation is false, something was wrong."
+       "p": "Every check is done now, so if passValidation is false something was wrong."
       },
       {
        "code": {
         "id": "2-5.c1",
         "kind": "type",
-        "title": "The average button, part 5 of 8",
-        "where": "under part 4, inside btnCalculateAverage_Click",
+        "title": "The average button: code 5 of 8",
+        "where": "under code 4, inside btnCalculateAverage_Click",
         "form": "frmDataEntry",
         "method": "btnCalculateAverage_Click",
         "lang": "cs",
@@ -389,15 +426,33 @@
   {
    "id": "3",
    "title": "Work out the average",
+   "thing": "the average",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Work out the average and move on to the quiz",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part adds the three attempts and divides by 3. It keeps the answer in Global.cs.",
+     "blocks": [
+      {
+       "open": {
+        "what": "else runs only when every box held a number. The average is rounded, kept, and shown in its box.",
+        "does": "When it works, 5, 6 and 7 show 6 in the box. The quiz panel switches on."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Add the three attempts, divide by 3 and round",
      "foot": "done",
+     "done": "lines 32 to 38 are typed and the code has no red squiggles",
      "goal": "The three attempts are added, divided by 3, rounded to 2 places, kept in Global.cs and shown in the box.",
      "blocks": [
       {
-       "p": "else runs when every box held a number. Now the average is worked out."
+       "p": "else runs when every box held a number, so now the average is worked out."
       },
       {
        "p": "A box holds words. [[Convert.ToDouble|2]] turns them into a number that can have a point."
@@ -409,8 +464,8 @@
        "code": {
         "id": "3-1.c1",
         "kind": "type",
-        "title": "The average button, part 6 of 8",
-        "where": "under part 5, inside the else",
+        "title": "The average button: code 6 of 8",
+        "where": "under code 5, inside the else",
         "form": "frmDataEntry",
         "method": "btnCalculateAverage_Click",
         "lang": "cs",
@@ -458,12 +513,13 @@
     },
     {
      "id": "2",
-     "title": "Save the three attempts in Global.cs and switch off the attempts panel",
+     "title": "Keep the three attempts in Global.cs",
      "foot": "done",
+     "done": "lines 40 to 45 are typed and the code has no red squiggles",
      "goal": "Global.cs notes the average is worked out and keeps the three attempts. The attempts panel switches off.",
      "blocks": [
       {
-       "p": "Next, the average button notes the average is done. It saves the three attempts in Global.cs too."
+       "p": "Next, the average button notes the average is done and keeps the three attempts in Global.cs."
       },
       {
        "p": "[[Convert.ToInt32|5]] turns the words in a box into a whole number."
@@ -472,8 +528,8 @@
        "code": {
         "id": "3-2.c1",
         "kind": "type",
-        "title": "The average button, part 7 of 8",
-        "where": "under part 6, inside the else",
+        "title": "The average button: code 7 of 8",
+        "where": "under code 6, inside the else",
         "form": "frmDataEntry",
         "method": "btnCalculateAverage_Click",
         "lang": "cs",
@@ -510,21 +566,30 @@
        }
       },
       {
-       "watch": "else opens with a curly bracket. Its closing curly bracket comes in part 8."
+       "watch": "else opens with a curly bracket. Its closing curly bracket comes in code 8."
       }
      ]
     },
     {
      "id": "3",
-     "title": "Switch on the quiz panel",
+     "title": "See the quiz panel switch on",
      "foot": "done",
-     "goal": "After the attempts are kept, the quiz panel switches on so the pupil can move on.",
+     "done": "you have watched the panels switch and read the line under the picture",
+     "goal": "I watch the attempts panel switch off and the quiz panel switch on.",
      "blocks": [
       {
        "p": "Last, the average button moves the pupil on to the quiz."
       },
       {
        "flow": {
+        "watch": "Watch the attempts panel go grey as the quiz panel wakes up",
+        "labels": {
+         "pnlPupilDetails": "pupil details",
+         "pnlSwimLengths": "the three attempts",
+         "pnlQuizResult": "the quiz score",
+         "pnlReactionTest": "the test score",
+         "pnlSwimmingGroup": "the group"
+        },
         "form": "frmDataEntry",
         "lit": [
          "pnlSwimLengths"
@@ -534,15 +599,27 @@
         ],
         "keep": false,
         "before": "The average is worked out. The button is pressed.",
-        "say": "The attempts panel goes grey and switches off. The quiz panel switches on."
+        "say": "The attempts panel goes grey. The quiz panel wakes up."
        }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Switch the panels over in code",
+     "foot": "done",
+     "done": "lines 47 to 48 are in place and the code has no red squiggles",
+     "goal": "After the attempts are kept, the quiz panel switches on so the pupil can move on.",
+     "blocks": [
+      {
+       "p": "The last lines switch the quiz panel on, so the pupil can move on."
       },
       {
        "code": {
         "id": "3-3.c1",
         "kind": "type",
-        "title": "The average button, part 8 of 8",
-        "where": "under part 7, inside the else",
+        "title": "The average button: code 8 of 8",
+        "where": "under code 7, inside the else",
         "form": "frmDataEntry",
         "method": "btnCalculateAverage_Click",
         "lang": "cs",
@@ -579,15 +656,18 @@
   {
    "id": "4",
    "title": "Try your average button",
+   "thing": "your average button",
+   "verb": "testing",
    "screens": [
     {
      "id": "1",
      "title": "Try every way through the average button",
      "foot": "chapter-done",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I run the program and try letters, 5 6 7, 5 6 8, and typing in the grey attempts panel.",
      "blocks": [
       {
-       "p": "Run your program, log in and fill in the details. Then try each row."
+       "p": "Run your program, log in, fill in the details, then try each row."
       },
       {
        "check": [
@@ -595,15 +675,15 @@
          "id": "4-1.t1",
          "what": "Type a letter in one attempt box. Fill in the rest. Press the average button.",
          "how": "A message asks for numbers only. The three boxes are empty.",
-         "fix": "Look at parts 3 to 5 on screens 2-3 to 2-5.",
-         "go": "#cw/05/2-3",
+         "fix": "Look at the code on screens 2-4 to 2-6.",
+         "go": "#cw/05/2-4",
          "expect": "must"
         },
         {
          "id": "4-1.t2",
          "what": "Type 5, 6 and 7. Press the average button.",
          "how": "The box beside the button shows 6.",
-         "fix": "Look at part 6 on screen 3-1.",
+         "fix": "Look at the code on screen 3-1.",
          "go": "#cw/05/3-1",
          "expect": "must"
         },
@@ -611,7 +691,7 @@
          "id": "4-1.t3",
          "what": "Run it again. Type 5, 6 and 8. Press the average button.",
          "how": "The box shows 6.33.",
-         "fix": "Look at the rounding in part 6 on screen 3-1.",
+         "fix": "Look at the rounding in the code on screen 3-1.",
          "go": "#cw/05/3-1",
          "expect": "must"
         },
@@ -619,7 +699,7 @@
          "id": "4-1.t4",
          "what": "After the average appears, click in an attempt box and try to type.",
          "how": "You must NOT be able to type in it.",
-         "fix": "If you can, look at part 7 on screen 3-2.",
+         "fix": "If you can, look at the code on screen 3-2.",
          "go": "#cw/05/3-2",
          "expect": "mustnot"
         }

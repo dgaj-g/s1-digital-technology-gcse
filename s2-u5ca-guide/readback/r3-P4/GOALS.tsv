@@ -1,0 +1,58 @@
+ch09#1-1	Before I start, I check Global.cs, the test panel on the data entry form and the data entry Load event.
+ch09#2-0	This part is where YOUR test becomes different from MINE. You choose the look, then save your pictures where the program can find them.
+ch09#2-1	The idea of the test stays the same, but the look of mine is my own choice.
+ch09#2-2	The idea of the test stays the same, but I choose my own shape, pictures, swapping boxes and timing.
+ch09#2-3	My two or three pictures are saved in a folder called Images inside bin and then Debug.
+ch09#3-0	This part adds frmTest and puts everything on it: twelve picture boxes, a score panel and two timers.
+ch09#3-1	A new form called frmTest is in Solution Explorer, with a title label and an instructions label.
+ch09#3-2	Twelve picture boxes sit on frmTest, named pbx1 to pbx12 in reading order, each stretching its picture.
+ch09#3-3	The score panel holds the Start button, the score, the time left, the pupil's name and the ? button.
+ch09#3-4	I know what tmrSwap and tmrCountdown are for before I add them.
+ch09#3-5	Two timers called tmrSwap and tmrCountdown sit in the grey strip under the form, each with Interval 1000.
+ch09#4-0	This part types two lines at the top of frmTest's code, then its Load event.
+ch09#4-1	Two lines at the top of frmTest's code make the countdown start at 10 and make room for a list of picture boxes.
+ch09#4-2	The Load event of frmTest shows the pupil's name and puts all twelve picture boxes into one list.
+ch09#5-0	This part makes PictureBox_Click. It runs when any of the twelve boxes is clicked.
+ch09#5-1	One piece of code, PictureBox_Click, runs for any of the twelve boxes, and it finds out which box was clicked.
+ch09#5-2	A click on the winning picture adds one to the score, any other picture takes one off, and the picture hides.
+ch09#6-0	This part types the code behind Start, tmrSwap and tmrCountdown. That is the whole test running.
+ch09#6-1	When Start is clicked, each of the twelve boxes is given its first picture, a mix of winners and losers.
+ch09#6-2	I see how one loop joins all twelve boxes to PictureBox_Click.
+ch09#6-3	A loop joins every box to PictureBox_Click, both timers start, and the Start button switches itself off.
+ch09#6-4	Each tick of tmrSwap turns a winning picture into a losing one, and a losing one into a winner.
+ch09#6-5	Each tick of tmrCountdown takes one off the seconds left and shows it, and at zero both timers stop.
+ch09#6-6	At zero, a message shows the score, Global.cs records that the test is taken, and the data entry form opens again.
+ch09#7-0	This part makes the Take test button open the test. Then you try the whole thing.
+ch09#7-1	The Take test button closes the data entry form and opens the reaction test form.
+ch09#7-2	I run the program and check the name, the swaps, the score, the countdown and the way back.
+ch10#1-1	Before I start, I check the Load event, the group panel, Global.cs and my task sheet.
+ch10#2-0	This part writes CalculateGroup by hand. It takes three bands in and hands one group back.
+ch10#2-1	I know what a method is and what makes one user-defined.
+ch10#2-2	I see CalculateGroup as a machine: three bands in, one group out.
+ch10#2-3	CalculateGroup takes in three whole numbers, adds them up, and hands back Weak when the total is 4 or less.
+ch10#2-4	A total of 7 or less hands back Intermediate, and anything more hands back Advanced.
+ch10#3-0	This part types the Calculate button's code in seven chunks. It bands each score, then asks CalculateGroup for the group.
+ch10#3-1	If the quiz, the test or the average is not done, or the details are not entered, a message shows and the code stops.
+ch10#3-2	When everything is done, three whole numbers start at 0, one for each band.
+ch10#3-3	A quiz score of 1 or less is band 1, 3 or less is band 2, and anything more is band 3.
+ch10#3-4	A test score of 1 or less is band 1, and 4 or less is band 2.
+ch10#3-5	Any other test score is band 3.
+ch10#3-6	An average under 4 is band 1, 7 or less is band 2, and anything more is band 3.
+ch10#3-7	I see the group panel go grey after the group is worked out.
+ch10#3-8	CalculateGroup turns the three bands into a group, Global.cs remembers it and the group panel goes grey.
+ch10#4-1	I run the program, do everything, and check the group, the grey panel and two sets of scores.
+ch11#1-1	Before I start, I check the group, the Save button and Global.cs.
+ch11#2-0	This part adds one line at the top of frmDataEntry's code, after four new words.
+ch11#2-1	I know the four new words before I type any of them.
+ch11#2-2	One line at the top of frmDataEntry's code lets this form use the file tools.
+ch11#3-1	The Save code only goes ahead when all five panels are grey.
+ch11#4-0	This part joins every detail into one line and puts it on the end of the file.
+ch11#4-1	All eleven details join into one line, with a ~ between each piece.
+ch11#4-2	I see the eleven pieces in order, with a fence between each.
+ch11#4-3	The line ends, goes on the end of the file and a message says it is saved.
+ch11#5-0	This part clears all fourteen names in Global.cs, closes the form and opens a fresh one.
+ch11#5-1	The first seven names in Global.cs go back to empty, ready for the next pupil.
+ch11#5-2	The other seven names are cleared, the form closes and a fresh data entry form opens.
+ch11#5-3	I see the file keep the line while the form starts fresh.
+ch11#6-1	If any panel is still on, a message shows and nothing is saved.
+ch11#7-1	I save two pupils, find the file and check it has two lines with fences.

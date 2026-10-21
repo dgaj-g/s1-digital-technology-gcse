@@ -26,15 +26,21 @@
   {
    "id": "1",
    "title": "Check what your login form has",
+   "thing": "your login form so far",
+   "verb": "checking",
    "screens": [
     {
      "id": "1",
      "title": "Check what your login form already has",
      "foot": "have",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I check my login form for its two boxes, the Login button, the star in the password box and the Login button's code.",
      "blocks": [
       {
-       "p": "Your login form may be partly made already. This screen checks what is there."
+       "p": "Your login form may be partly made already."
+      },
+      {
+       "p": "This screen checks what is there."
       },
       {
        "check": [
@@ -42,7 +48,7 @@
          "id": "1-1.t1",
          "what": "Open frmLogin in the Design tab. Does it have two text boxes, a Login button and two labels?",
          "how": "Solution Explorer is on the right. Double-click frmLogin to see it in the Design tab.",
-         "fix": "Go to stage 2.",
+         "fix": "Go to part 2.",
          "go": "#cw/01/2-1",
          "expect": "have"
         },
@@ -50,7 +56,7 @@
          "id": "1-1.t2",
          "what": "Click the password box once. In Properties, is PasswordChar a star?",
          "how": "Properties is on the right, under Solution Explorer. PasswordChar is in the list in A to Z order.",
-         "fix": "Go to stage 2, screen 3.",
+         "fix": "Go to part 2, screen 3.",
          "go": "#cw/01/2-3",
          "expect": "have"
         },
@@ -58,7 +64,7 @@
          "id": "1-1.t3",
          "what": "Double-click the Login button. Is there code between its two curly brackets?",
          "how": "The code tab opens at btnLogin_Click. Lines between the curly brackets mean yes.",
-         "fix": "Go to stage 3.",
+         "fix": "Go to part 3.",
          "go": "#cw/01/3-1",
          "expect": "have"
         },
@@ -66,7 +72,7 @@
          "id": "1-1.t4",
          "what": "Run it with the green Start arrow. Do wrong details give a message, and the right ones open the data entry form?",
          "how": "Type a wrong password first. Then type the right username and password.",
-         "fix": "Go to stage 3.",
+         "fix": "Go to part 3.",
          "go": "#cw/01/3-1",
          "expect": "have"
         }
@@ -86,21 +92,39 @@
   {
    "id": "2",
    "title": "The two boxes and the button",
+   "thing": "the login form's boxes and buttons",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Make the login form and its controls",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part puts the panel, the two boxes, the labels and the Login button on the login form, each with a name.",
+     "blocks": [
+      {
+       "open": {
+        "what": "You drag nine controls from the Toolbox onto the login form. Then you give each one its name in Properties.",
+        "does": "When it works, the form shows a title, two labelled boxes and a Login button. The password box shows a star for every letter."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Put the boxes, labels and buttons on the login form",
      "foot": "done",
+     "done": "all nine controls are on your login form in the order of the table",
      "goal": "My login form has a panel holding two text boxes, a Login button and their labels, plus a title and a ? button.",
      "blocks": [
       {
-       "p": "The login form holds a panel. The title, two labels, two boxes and the Login button go inside it."
+       "p": "Drag the nine controls in this table onto your login form, in order."
       },
       {
        "p": "The Toolbox is down the left side of Visual Studio. It lists the controls you can drag."
       },
       {
-       "p": "Drag each one from the Toolbox onto the form. Do them in the order of this table."
+       "p": "The panel goes on first. Everything from the title down to the Login button goes inside it."
       },
       {
        "controls": {
@@ -176,10 +200,11 @@
      "id": "2",
      "title": "Give every control its name",
      "foot": "done",
+     "done": "every control on your login form has a name of your own",
      "goal": "I name a control by clicking it once and typing its name beside Name near the top of Properties.",
      "blocks": [
       {
-       "p": "Every control you dragged on needs its name. The name is how your code finds it."
+       "p": "Every control you dragged on needs a name, so your code can find it."
       },
       {
        "frames": {
@@ -198,7 +223,7 @@
           "alt": "The Properties window with the Name line near the top",
           "w": 348,
           "h": 303,
-          "say": "In Properties, find the word Name. It is near the top of the list."
+          "say": "Find Name near the top of Properties and type the new name"
          },
          {
           "img": "img/cap/f2-3.png",
@@ -207,7 +232,8 @@
           "h": 303,
           "say": "Type the new name and press Enter."
          }
-        ]
+        ],
+        "watch": "Click the control first, then type its name"
        }
       },
       {
@@ -225,10 +251,14 @@
      "id": "3",
      "title": "Make the password show stars",
      "foot": "done",
+     "done": "a letter typed in the password box shows as a star",
      "goal": "Setting PasswordChar to a star on tbxPassword makes every letter typed in it show as a star.",
      "blocks": [
       {
-       "p": "Nobody should see a password as it is typed. One setting in Properties turns every letter into a star."
+       "p": "Nobody should see a password as it is typed."
+      },
+      {
+       "p": "One setting in Properties turns every letter into a star."
       },
       {
        "steps": [
@@ -267,46 +297,64 @@
   {
    "id": "3",
    "title": "The code behind the Login button",
+   "thing": "the Login button's code",
+   "verb": "making",
    "screens": [
     {
+     "id": "0",
+     "title": "Make the Login button check the details",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part types the code behind the Login button, so that it checks the username and password.",
+     "blocks": [
+      {
+       "open": {
+        "what": "The Login button's code asks three questions in turn. Is the username too long? Are the details right? Or is anything else wrong?",
+        "does": "When it works, a wrong login shows a message and empties the boxes. The right login opens the data entry form."
+       }
+      }
+     ]
+    },
+    {
      "id": "1",
-     "title": "Stop a username that is too long",
+     "title": "Open the code behind the Login button",
      "foot": "done",
+     "done": "the code tab is open at btnLogin_Click, empty between the curly brackets",
      "goal": "If the username is more than 15 letters, a message appears and both boxes are emptied.",
      "blocks": [
       {
-       "p": "The Login button checks what was typed. First it checks that the username is not too long."
+       "p": "The Login button's code checks what was typed, and it goes in the code tab."
       },
       {
        "words": [
         [
          ".Text",
          "The words it shows.",
-         "3-1",
+         "3-2",
          true
         ],
         [
          ".Length",
          "How many characters.",
-         "3-1",
+         "3-2",
          true
         ],
         [
          "==",
          "Is the same as.",
-         "3-2",
+         "3-3",
          true
         ],
         [
          "&&",
          "And.",
-         "3-2",
+         "3-3",
          true
         ],
         [
          "this.Hide()",
          "Hide this form but keep it.",
-         "3-2",
+         "3-3",
          true
         ]
        ],
@@ -350,6 +398,21 @@
          }
         ]
        }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Stop a username that is too long",
+     "foot": "done",
+     "done": "lines 3 to 10 are typed with no red squiggles",
+     "goal": "If the username is more than 15 letters, a message appears and both boxes are emptied.",
+     "blocks": [
+      {
+       "p": "First the code checks that the username is not too long."
+      },
+      {
+       "p": "First the code checks that the username is not too long."
       },
       {
        "p": "[[.Text|0]] is what was typed in a box. [[.Length|1]] counts its characters. .Clear() empties a box."
@@ -358,7 +421,7 @@
        "code": {
         "id": "3-1.c1",
         "kind": "type",
-        "title": "The Login button, part 1 of 3",
+        "title": "The Login button: code 1 of 3",
         "where": "between the curly brackets of btnLogin_Click, in frmLogin.cs",
         "form": "frmLogin",
         "method": "btnLogin_Click",
@@ -403,26 +466,24 @@
      ]
     },
     {
-     "id": "2",
+     "id": "3",
      "title": "Let the right username and password in",
      "foot": "done",
+     "done": "lines 11 to 18 are typed, using YOUR username and password",
      "goal": "If the username and password are both right, a message appears, the login form hides and the data entry form opens.",
      "blocks": [
       {
        "p": "Next the code asks: are the username and the password both right?"
       },
       {
-       "p": "else if means: if the first question was no, ask this question instead."
-      },
-      {
-       "p": "[[==|2]] asks if two things are the same. [[&&|3]] means both must be true."
+       "p": "else if means: if the first question was no, ask this one instead. [[==|2]] asks if two things are the same, and [[&&|3]] means both must be true."
       },
       {
        "code": {
         "id": "3-2.c1",
         "kind": "type",
-        "title": "The Login button, part 2 of 3",
-        "where": "under part 1, inside btnLogin_Click, in frmLogin.cs",
+        "title": "The Login button: code 2 of 3",
+        "where": "under code 1, inside btnLogin_Click, in frmLogin.cs",
         "form": "frmLogin",
         "method": "btnLogin_Click",
         "lang": "cs",
@@ -455,10 +516,7 @@
        }
       },
       {
-       "p": "[[this.Hide()|4]] hides the login form. The last line makes a new data entry form and shows it."
-      },
-      {
-       "p": "frmDataEntry is the data entry form. You make it in chapter 2. Until it is made, frmDataEntry has a red line under it."
+       "p": "[[this.Hide()|4]] hides the login form, and the last line opens a new data entry form. Until chapter 2 makes frmDataEntry, it has a red line under it."
       },
       {
        "watch": "Two equals signs, not one. One equals sign would try to change the box."
@@ -466,20 +524,24 @@
      ]
     },
     {
-     "id": "3",
+     "id": "4",
      "title": "Show Login incorrect when the details are wrong",
      "foot": "done",
+     "done": "lines 19 to 28 are typed above the last curly bracket",
      "goal": "If the details are anything else, a Login incorrect message appears and both boxes are emptied.",
      "blocks": [
       {
-       "p": "Last, the code deals with anything else. That means a wrong username or a wrong password."
+       "p": "Last, the code deals with anything else."
+      },
+      {
+       "p": "That means a wrong username or a wrong password."
       },
       {
        "code": {
         "id": "3-3.c1",
         "kind": "type",
-        "title": "The Login button, part 3 of 3",
-        "where": "under part 2, inside btnLogin_Click, in frmLogin.cs",
+        "title": "The Login button: code 3 of 3",
+        "where": "under code 2, inside btnLogin_Click, in frmLogin.cs",
         "form": "frmLogin",
         "method": "btnLogin_Click",
         "lang": "cs",
@@ -526,15 +588,21 @@
   {
    "id": "4",
    "title": "Try your login form",
+   "thing": "your login form",
+   "verb": "testing",
    "screens": [
     {
      "id": "1",
      "title": "Try every way into your login form",
      "foot": "chapter-done",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I run the program and try a long username, a wrong password, the right details and two empty boxes.",
      "blocks": [
       {
-       "p": "Run your program and try each row. Tick the rows that work. A row that fails tells you where to look."
+       "p": "Run your program and try each row of this table."
+      },
+      {
+       "p": "Tick the rows that work. A row that fails tells you where to look."
       },
       {
        "p": "No data entry form yet? The program will not start without it. Make it in chapter 2, then come back."
@@ -545,32 +613,32 @@
          "id": "4-1.t1",
          "what": "Type a username of 16 letters and press Login.",
          "how": "The message says the username has exceeded the maximum number of characters.",
-         "fix": "Look at part 1 on screen 3-1.",
-         "go": "#cw/01/3-1",
+         "fix": "Look at the code on screen 3-2.",
+         "go": "#cw/01/3-2",
          "expect": "must"
         },
         {
          "id": "4-1.t2",
          "what": "Type the right username and a wrong password. Press Login.",
          "how": "The message says Login incorrect. Both boxes are empty.",
-         "fix": "Look at part 3 on screen 3-3.",
-         "go": "#cw/01/3-3",
+         "fix": "Look at the code on screen 3-4.",
+         "go": "#cw/01/3-4",
          "expect": "must"
         },
         {
          "id": "4-1.t3",
          "what": "Type the right username and password. Press Login.",
          "how": "The login form goes and the data entry form opens.",
-         "fix": "Look at part 2 on screen 3-2.",
-         "go": "#cw/01/3-2",
+         "fix": "Look at the code on screen 3-3.",
+         "go": "#cw/01/3-3",
          "expect": "must"
         },
         {
          "id": "4-1.t4",
          "what": "Leave both boxes empty and press Login.",
          "how": "The data entry form must NOT open. The Login incorrect message appears.",
-         "fix": "If the data entry form opened, look at the question in part 2 on screen 3-2.",
-         "go": "#cw/01/3-2",
+         "fix": "If the data entry form opened, look at the question in the code on screen 3-3.",
+         "go": "#cw/01/3-3",
          "expect": "mustnot"
         }
        ]

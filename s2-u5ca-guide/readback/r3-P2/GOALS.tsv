@@ -1,0 +1,36 @@
+ch03#1-1	I check for a Global.cs file that says public class Global and holds all fourteen public static lines.
+ch03#2-0	This part adds one new file to your project. It is called Global.cs.
+ch03#2-1	I meet the words Global, variable and static before I use them.
+ch03#2-2	A form forgets everything when it closes, so Global.cs keeps what every form needs.
+ch03#2-3	I add a class called Global and put the word public in front of class.
+ch03#3-0	This part types fourteen lines into Global.cs. Each line keeps one thing about the pupil.
+ch03#3-1	Global.cs holds four string variables for the surname, first name, year group and gender, each starting empty.
+ch03#3-2	Global.cs holds three int attempts, a double average and a bool that says if the average is worked out.
+ch03#3-3	Global.cs holds the quiz score, the reaction test score, a bool for each saying it is taken, and the group.
+ch03#4-1	The project builds, and typing Global and a full stop in another form lists all fourteen names.
+ch04#1-1	I check that the Enter button has code, starts with string errors, lists what is missing, and switches the panels.
+ch04#2-0	This part gives the Enter button four checks. Each one adds a line to a list called errors.
+ch04#2-1	I open the code behind the Enter button and meet the six new things in this chapter.
+ch04#2-2	The Enter button starts with an empty string called errors, so every problem found can be added to it.
+ch04#2-3	If the surname box or the first name box is empty, a line saying so is added to errors.
+ch04#2-4	A name over 20 letters adds a too long line, and an empty drop-down list adds a must select line.
+ch04#3-0	This part shows every problem in one message. With no problems, it keeps the details and switches panels.
+ch04#3-1	If errors has anything in it, one message box shows every problem found.
+ch04#3-2	With no problems, the surname, first name, gender and year group each go into their line in Global.cs.
+ch04#3-3	I watch the details panel switch off and the attempts panel switch on.
+ch04#3-4	After the details are kept, the attempts panel switches on and the details panel switches off.
+ch04#4-1	I run the program and try empty boxes, a long surname, all four filled in, and typing in the grey panel.
+ch05#1-1	I check the average button has code, refuses letters, and shows 6 for 5, 6 and 7.
+ch05#2-0	This part gives the average button three checks. A bool called passValidation remembers if any check failed.
+ch05#2-1	I open the code behind the average button and meet the six new things in this chapter.
+ch05#2-2	The average button starts with a bool called passValidation set to true. Any failed check turns it false.
+ch05#2-3	If any of the three attempt boxes is empty, passValidation is set to false.
+ch05#2-4	If the first attempt box holds something that is not a number from 0 to 9, passValidation is set to false.
+ch05#2-5	The same letter check is done for the second and third attempt boxes.
+ch05#2-6	If passValidation is false, a message asks for numbers only and the three boxes are emptied.
+ch05#3-0	This part adds the three attempts and divides by 3. It keeps the answer in Global.cs.
+ch05#3-1	The three attempts are added, divided by 3, rounded to 2 places, kept in Global.cs and shown in the box.
+ch05#3-2	Global.cs notes the average is worked out and keeps the three attempts. The attempts panel switches off.
+ch05#3-3	I watch the attempts panel switch off and the quiz panel switch on.
+ch05#3-4	After the attempts are kept, the quiz panel switches on so the pupil can move on.
+ch05#4-1	I run the program and try letters, 5 6 7, 5 6 8, and typing in the grey attempts panel.

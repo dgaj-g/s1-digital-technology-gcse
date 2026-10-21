@@ -1,0 +1,47 @@
+ch12#1-1	Before I start, I check that two pupils are saved and that the View report button is there.
+ch12#2-0	This part adds frmReport with a big table, two lists, three labels and a Close button.
+ch12#2-1	I add a new form called frmReport.
+ch12#2-2	frmReport holds a big table, a group list, a year list and three labels.
+ch12#2-3	frmReport has a Close button called btnClose.
+ch12#3-0	This part meets six new words, then adds the using line and the dt line.
+ch12#3-1	I know the six new words before I type any of them.
+ch12#3-2	One line at the top of frmReport's code lets the report use the file tools.
+ch12#3-3	One line near the top makes a table called dt that the whole report can use.
+ch12#4-0	This part types frmReport_Load in four chunks: columns, read the file, fill the rows, show the table.
+ch12#4-1	When the report opens, the table gets seven columns, one for each thing it shows.
+ch12#4-2	If the file is there, every line is read, and each line is cut into pieces at each ~.
+ch12#4-3	I see one saved line cut at every ~ into pieces numbered from 0.
+ch12#4-4	Seven of the eleven pieces go into a new row of the table, in the order of the columns.
+ch12#4-5	With no file a message shows, and then the table appears in the grid on the form.
+ch12#5-0	This part gives the two lists their filters, then wires Close and View report.
+ch12#5-1	Choosing a group shows only the pupils in that group, and All shows everyone.
+ch12#5-2	Choosing a year shows only the pupils in that year, and All shows everyone.
+ch12#5-3	Close shuts the report and the data entry form is still there.
+ch12#5-4	The View report button opens the report and leaves the data entry form open.
+ch12#6-1	I open the report, try both lists and close it.
+ch13#1-1	Before I start, I check that every panel and form has its own ? button.
+ch13#2-1	Clicking the ? in the pupil details panel shows a message that says what to do.
+ch13#3-0	This part gives the attempts, quiz, test and group panels their own help messages.
+ch13#3-1	The ? in the attempts panel shows its own message.
+ch13#3-2	The ? in the quiz panel shows its own message.
+ch13#3-3	The ? in the test panel shows its own message.
+ch13#3-4	The ? in the group panel shows its own message.
+ch13#4-0	This part gives the login, quiz and test forms their help messages.
+ch13#4-1	The ? on the login form shows its own message.
+ch13#4-2	The ? on the quiz form shows its own message.
+ch13#4-3	The ? on the test form shows its own message.
+ch13#5-1	I run the program and click every ? button, and a locked one does nothing.
+ch14#1-1	Everything my program needs is done. I can pick any extra, or none.
+ch14#2-0	After three wrong passwords the Login button goes grey.
+ch14#2-1	One line at the top of the login code makes a counter called tries that starts at 0.
+ch14#2-2	On the third wrong try, a message shows and the Login button goes grey.
+ch14#2-3	I type a wrong password three times and the Login button goes grey.
+ch14#3-0	The reaction test gets harder towards the end.
+ch14#3-1	Every second the gap between swaps shrinks by a tenth of a second, down to 0.3 seconds.
+ch14#3-2	I take the test and the swaps get faster as the clock runs down.
+ch14#4-0	The attempts heading shows the biggest attempt as well as the average.
+ch14#4-1	After the average, the attempts heading also shows the biggest of the three attempts.
+ch14#4-2	I type three attempts and the heading shows the biggest one.
+ch14#5-0	The group panel takes a colour that matches the group.
+ch14#5-1	When the group appears, the group panel turns green, yellow or red.
+ch14#5-2	I work out a group and the panel turns its colour.

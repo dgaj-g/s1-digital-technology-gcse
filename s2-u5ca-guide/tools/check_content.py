@@ -81,7 +81,7 @@ for name in ["ch%s.json" % c["id"] for c in IDX0["chapters"] if c["built"]]:
             if not sc.get("goal", "").strip(): problems.append((name, sid, "no goal", ""))
             big = [k for b in sc["blocks"] for k in b if k in ("code", "frames", "controls") or (k == "steps" and (len(b[k]) > 1 or any(x.get("img") for x in b[k])))]
             if len(big) > 1: problems.append((name, sid, "two big blocks", " ".join(big)))
-            KNOWN = {"p", "watch", "words", "intro", "drawn", "flow", "frames", "isense", "names", "steps", "controls", "yours", "check", "box", "code"}
+            KNOWN = {"p", "watch", "words", "intro", "drawn", "flow", "frames", "isense", "names", "steps", "controls", "yours", "check", "box", "code", "open"}
             for b in sc["blocks"]:
                 if not (set(b) & KNOWN) or set(b) - KNOWN: problems.append((name, sid, "block the renderer does not draw", " ".join(sorted(set(b) - KNOWN)) or "empty"))
             for b in flat(sc["blocks"]):

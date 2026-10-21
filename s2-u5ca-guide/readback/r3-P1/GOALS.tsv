@@ -1,0 +1,38 @@
+ch00#1-0	My program is five forms joined by buttons, plus one text file that saves each pupil.
+ch00#1-1	I know what a form, a control, a property and IntelliSense are.
+ch00#1-2	My program is five forms joined by buttons, plus one text file that saves each pupil.
+ch00#1-3	Solution Explorer lists my forms, double-clicking one opens the Design tab, and View Code opens the code tab.
+ch00#1-4	The green Start arrow runs my program and the red square stops it.
+ch00#2-0	Every chapter has the same shape, and the home page shows me my next job.
+ch00#2-1	A chapter is a row of parts, each part is a few screens, and each screen has one job.
+ch00#2-2	The big button at the bottom ticks a screen off and moves me on.
+ch00#2-3	The home page lists every part in order, I tick what I have done, and I open the first part that is not ticked.
+ch00#3-0	Three rules run through every chapter of this guide.
+ch00#3-1	The guide shows the names Mr Gartland gave his controls, and I use the names I gave mine, found at the top of the Properties window.
+ch00#3-2	When I type the first letters of a name, IntelliSense lists the names in my program and Tab finishes it.
+ch00#3-3	I cannot copy code from the guide, I type it, and I read each line as I type it.
+ch00#3-4	I have tried to copy a line and seen the guide refuse.
+ch00#3-5	A red wiggly line means Visual Studio does not understand that line, and the Error List takes me to it.
+ch00#3-6	Build Solution checks every line, and Build succeeded at the bottom left means I can run it.
+ch01#1-1	I check my login form for its two boxes, the Login button, the star in the password box and the Login button's code.
+ch01#2-0	This part puts the panel, the two boxes, the labels and the Login button on the login form, each with a name.
+ch01#2-1	My login form has a panel holding two text boxes, a Login button and their labels, plus a title and a ? button.
+ch01#2-2	I name a control by clicking it once and typing its name beside Name near the top of Properties.
+ch01#2-3	Setting PasswordChar to a star on tbxPassword makes every letter typed in it show as a star.
+ch01#3-0	This part types the code behind the Login button, so that it checks the username and password.
+ch01#3-1	If the username is more than 15 letters, a message appears and both boxes are emptied.
+ch01#3-2	If the username is more than 15 letters, a message appears and both boxes are emptied.
+ch01#3-3	If the username and password are both right, a message appears, the login form hides and the data entry form opens.
+ch01#3-4	If the details are anything else, a Login incorrect message appears and both boxes are emptied.
+ch01#4-1	I run the program and try a long username, a wrong password, the right details and two empty boxes.
+ch02#1-1	I check my data entry form for its five panels, their names, the Save and View Report buttons and the year group list.
+ch02#2-0	This part shows the five panels of the data entry form, then you drag them on and name them.
+ch02#2-1	The data entry form holds five panels: pupil details, three attempts, the quiz, the reaction test and the group.
+ch02#2-2	I drag five panels onto the data entry form and give each one a name that starts with pnl.
+ch02#3-0	This part puts the right controls inside each of the five panels, one panel per screen.
+ch02#3-1	The pupil details panel holds a first name box, a surname box, a gender list, a year group list, an Enter button and a ? button.
+ch02#3-2	The year group list and the gender list each hold their choices, typed one per line in Items.
+ch02#3-3	The second panel holds three attempt boxes with labels, a Calculate Average button, a box for the average and a ? button.
+ch02#3-4	The quiz panel and the test panel each hold a heading, a not taken yet label, a Take button and a ? button.
+ch02#3-5	The group panel holds a heading, a box, a button and a ? button. Save Details, View Report, a title and a logo sit on the form.
+ch02#4-1	Every panel name starts pnl, every text box tbx, every button btn and every drop-down list cbx. None is a made-up name.

@@ -39,15 +39,21 @@
   {
    "id": "1",
    "title": "Check your quiz has what it needs",
+   "thing": "the quiz form you already have",
+   "verb": "checking",
    "screens": [
     {
      "id": "1",
-     "title": "Check your quiz has what it needs before you code the rest",
+     "title": "Check your quiz has what it needs",
      "foot": "have",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "Before I code the rest of the quiz, I check I have the question 4 and 5 panels, the Return button, question 3's code and the two things in Global.cs.",
      "blocks": [
       {
-       "p": "A few things need to be done before you can code the rest of the quiz. This screen checks them."
+       "p": "Before you code the rest of the quiz, tick each row you already have."
+      },
+      {
+       "p": "Open your project in Visual Studio, in the Programming Environment tab, and look. A row you have not got tells you where to go."
       },
       {
        "check": [
@@ -55,7 +61,7 @@
          "id": "1-1.t1",
          "what": "Open frmQuiz in the Design tab. Does question 4 have a group box, four radio buttons and a Check button?",
          "how": "In my example it is the panel on the right of the middle row. In yours, look for the panel with the radio buttons.",
-         "fix": "Go to chapter 6, stage 2.",
+         "fix": "Go to chapter 6, part 2.",
          "go": "#cw/06/2-1",
          "expect": "have"
         },
@@ -63,7 +69,7 @@
          "id": "1-1.t2",
          "what": "Does question 5 have a number box and a Check button?",
          "how": "In my example it is the wide panel along the bottom. Yours may be somewhere else. Look for the number box.",
-         "fix": "Go to chapter 6, stage 2.",
+         "fix": "Go to chapter 6, part 2.",
          "go": "#cw/06/2-1",
          "expect": "have"
         },
@@ -71,7 +77,7 @@
          "id": "1-1.t3",
          "what": "Is there a Return button in the score panel?",
          "how": "In my example it is near the bottom of the tall panel on the left. Yours is in your score panel.",
-         "fix": "Go to chapter 6, stage 2.",
+         "fix": "Go to chapter 6, part 2.",
          "go": "#cw/06/2-1",
          "expect": "have"
         },
@@ -79,7 +85,7 @@
          "id": "1-1.t4",
          "what": "Double-click question 3's Check button. Is there code between its two curly brackets?",
          "how": "The code tab opens at the code behind that button. Lines between the curly brackets mean yes.",
-         "fix": "Go to chapter 6, stage 5.",
+         "fix": "Go to chapter 6, part 5.",
          "go": "#cw/06/5-1",
          "expect": "have"
         },
@@ -87,7 +93,7 @@
          "id": "1-1.t5",
          "what": "Open Global.cs. Are quizScore and quizTaken in it? quizScore counts the right answers. quizTaken remembers whether the quiz has been done.",
          "how": "Solution Explorer is on the right. Double-click Global.cs to open it. Look for the two lines with those names.",
-         "fix": "Go to chapter 3, stage 3.",
+         "fix": "Go to chapter 3, part 3.",
          "go": "#cw/03/3-1",
          "expect": "have"
         }
@@ -107,18 +113,33 @@
   {
    "id": "2",
    "title": "Make only question 1 work when the quiz opens",
+   "thing": "what happens when the quiz opens",
+   "verb": "making",
    "screens": [
     {
-     "id": "1",
-     "title": "Meet the Load event: code that runs when the form opens",
+     "id": "0",
+     "title": "Make the quiz open with only question 1 working",
+     "opener": true,
      "foot": "next",
+     "goal": "This part gives the quiz a Load event, so that only question 1 can be clicked when the quiz opens.",
+     "blocks": [
+      {
+       "open": {
+        "what": "The Load event is code that runs by itself the moment the quiz form opens. Nobody clicks it.",
+        "does": "When it works, only question 1 can be clicked when the quiz opens. Questions 2 to 5 are grey and the Return button is hidden."
+       }
+      }
+     ]
+    },
+    {
+     "id": "1",
+     "title": "Meet the Load event",
+     "foot": "next",
+     "done": "you can say what a Load event is in your own words",
      "goal": "A Load event is code that runs by itself the moment the form opens, before anyone clicks anything.",
      "blocks": [
       {
-       "p": "The quiz has a problem right now. When it opens, all five questions can be clicked, in any order."
-      },
-      {
-       "p": "You want only question 1 to work at the start. For that you need code that runs the moment the form opens."
+       "p": "Right now the quiz opens with all five questions clickable, which the Load event fixes."
       },
       {
        "words": [
@@ -137,7 +158,7 @@
         [
          "return;",
          "Stop here. Nothing under this line runs.",
-         "3-3",
+         "3-4",
          true
         ],
         [
@@ -150,7 +171,22 @@
        "intro": "Four new things in this chapter. Click any marked word to see what it means."
       },
       {
-       "p": "That code is called a [[Load event|0]]. You have not met one yet. This is the first time you will use one."
+       "p": "A [[Load event|0]] runs by itself the moment the form opens. Nobody clicks it. You have not used one yet, and the quiz needs one."
+      },
+      {
+       "watch": "A Load event is not a button. Nobody clicks it. It runs by itself when the form opens."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "See what the Load event will do",
+     "foot": "next",
+     "done": "you know the Load event runs by itself, before any click",
+     "goal": "The Load event runs the moment the quiz form opens, before any click, and every form can have one.",
+     "blocks": [
+      {
+       "p": "Watch the quiz form open and its Load event run before anyone has clicked."
       },
       {
        "drawn": {
@@ -163,18 +199,19 @@
        "p": "Every form can have a Load event if you want one. The quiz needs one, so that is where you write your first."
       },
       {
-       "watch": "A Load event is not a button. Nobody clicks it. It runs by itself when the form opens."
+       "watch": "Nothing is clicked. The Load event runs by itself."
       }
      ]
     },
     {
-     "id": "2",
-     "title": "Make the Load event by double-clicking the form itself",
+     "id": "3",
+     "title": "Double-click the form to open its Load code",
      "foot": "done",
+     "done": "the code tab is open at frmQuiz_Load with your cursor between its curly brackets",
      "goal": "To make a Load event I double-click the form itself, not a control on it, and Visual Studio writes frmQuiz_Load for me.",
      "blocks": [
       {
-       "p": "Visual Studio makes the Load event for you. All you do is double-click the form itself."
+       "p": "Visual Studio makes the Load event for you when you double-click the form itself."
       },
       {
        "steps": [
@@ -225,9 +262,10 @@
      ]
     },
     {
-     "id": "3",
-     "title": "Only question 1 can be clicked when the quiz opens",
+     "id": "4",
+     "title": "See why only question 1 can be clicked",
      "foot": "next",
+     "done": "you can name the four panels the Load event switches off",
      "goal": "When the quiz opens, question 1 works and questions 2 to 5 are switched off and grey, so they get answered in order.",
      "blocks": [
       {
@@ -241,31 +279,38 @@
          "pnlTextQuestion"
         ],
         "then": [],
-        "say": "Question 1 is switched on. Questions 2, 3, 4 and 5 are switched off and grey. The score panel is on."
+        "labels": {
+         "pnlQuizScore": "the score",
+         "pnlTextQuestion": "question 1",
+         "pnlButtonsQuestion": "question 2",
+         "pnlListQuestion": "question 3",
+         "pnlRadioQuestion": "question 4",
+         "pnlNumberQuestion": "question 5"
+        },
+        "watch": "four grey panels, and no Return button",
+        "say": "Only question 1 and the score are on. The rest are grey."
        }
       },
       {
        "p": "Each question sits in its own panel. A switched-off panel goes grey, and nothing in it can be clicked."
       },
       {
-       "p": "So the Load event has one job. Switch off the four panels for questions 2, 3, 4 and 5."
+       "p": "So the Load event has two jobs. Switch off the four panels for questions 2 to 5. Hide the Return button until the quiz is over."
       },
       {
-       "p": "Later, when a question is answered, its panel switches off and the next one switches on. You code that in stages 3 and 4."
-      },
-      {
-       "watch": "Count them: four panels to switch off. The Return button gets hidden too, until the quiz is over."
+       "watch": "Count them: four panels to switch off, and one Return button to hide."
       }
      ]
     },
     {
-     "id": "4",
+     "id": "5",
      "title": "Type the code that switches off questions 2 to 5",
      "foot": "done",
+     "done": "lines 3 to 8 are typed and the code has no red squiggles",
      "goal": "In frmQuiz_Load I set Enabled to false on the four panels and Visible to false on the Return button.",
      "blocks": [
       {
-       "p": "Now you type the Load event's code: four panels switched off and one button hidden."
+       "p": "Now type the Load event's code: four panels switched off and one button hidden."
       },
       {
        "code": {
@@ -297,7 +342,7 @@
           8,
           8,
           "Hide the Return button",
-          "Visible = false hides the button. Stage 4 brings it back after question 5."
+          "Visible = false hides the button. Question 5's Check button brings it back at the end."
          ],
          [
           9,
@@ -354,7 +399,8 @@
              "h": 110,
              "say": "Press Tab. The name is typed for you, spelt right."
             }
-           ]
+           ],
+           "watch": "the list, then the name typed for you"
           }
          }
         ]
@@ -370,18 +416,33 @@
   {
    "id": "3",
    "title": "Mark question 4, the one with radio buttons",
+   "thing": "question 4's Check button",
+   "verb": "making",
    "screens": [
     {
-     "id": "1",
-     "title": "How your code can tell which radio button is chosen",
+     "id": "0",
+     "title": "Make question 4's Check button work",
+     "opener": true,
      "foot": "next",
+     "goal": "This part writes the code behind question 4's Check button: stop if nothing is chosen, mark the answer, move on to question 5.",
+     "blocks": [
+      {
+       "open": {
+        "what": "Question 4 has four radio buttons and a Check button. The code behind that Check button marks the answer.",
+        "does": "When it works, Check marks the answer, switches question 4 off and switches question 5 on. With no dot filled in, it shows a message instead."
+       }
+      }
+     ]
+    },
+    {
+     "id": "1",
+     "title": "See how code tells which radio button is chosen",
+     "foot": "next",
+     "done": "you can read rbB.Checked and !rbA.Checked out loud in words",
      "goal": "rbB.Checked is true when B's dot is filled in, and an exclamation mark in front means NOT.",
      "blocks": [
       {
-       "p": "Question 4 has four radio buttons. Only one can have its dot filled in."
-      },
-      {
-       "p": "Your code needs to know which one. Every radio button has [[.Checked|1]]. It is true when the dot is filled in."
+       "p": "Before you type, see how code asks a radio button whether its dot is filled in."
       },
       {
        "code": {
@@ -413,7 +474,7 @@
        }
       },
       {
-       "p": "In my example the radio buttons are called rbA, rbB, rbC and rbD. Yours have the names you gave them."
+       "p": "Every radio button has [[.Checked|1]]. It is true when the dot is filled in. In my example the radio buttons are rbA, rbB, rbC and rbD. Yours have the names you gave them."
       },
       {
        "watch": "An exclamation mark in front means NOT. Read !rbA.Checked as: A is not chosen."
@@ -422,12 +483,13 @@
     },
     {
      "id": "2",
-     "title": "Open the code behind question 4's Check button",
-     "foot": "done",
-     "goal": "Double-clicking a button in the Design tab opens the code behind that button.",
+     "title": "Find question 4's Check button on the form",
+     "foot": "next",
+     "done": "you can point to question 4's Check button in the Design tab",
+     "goal": "Question 4's code lives behind its Check button, and double-clicking that button in the Design tab opens the code.",
      "blocks": [
       {
-       "p": "Everything question 4 does happens when its Check button is clicked. So you write the code behind that button."
+       "p": "Everything question 4 does happens when its Check button is clicked, so first find that button."
       },
       {
        "frames": {
@@ -446,10 +508,23 @@
           "alt": "The code tab with a new empty btnCheck4_Click",
           "w": 808,
           "h": 122,
-          "say": "The code tab opens. Visual Studio writes the first and last lines for you, with nothing in between."
+          "say": "The code tab opens. Visual Studio wrote the first and last lines."
          }
-        ]
+        ],
+        "watch": "the pointer on the button, then the empty code"
        }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Double-click question 4's Check button",
+     "foot": "done",
+     "done": "the code tab is open at btnCheck4_Click, empty between the curly brackets",
+     "goal": "Double-clicking a button in the Design tab opens the code behind that button.",
+     "blocks": [
+      {
+       "p": "Now open the code behind question 4's Check button."
       },
       {
        "steps": [
@@ -466,22 +541,48 @@
      ]
     },
     {
-     "id": "3",
-     "title": "Stop if no radio button has been chosen",
-     "foot": "done",
-     "goal": "If none of the four dots is filled in, show a message and use return to stop, so nothing else runs.",
+     "id": "4",
+     "title": "See why the code must stop when nothing is chosen",
+     "foot": "next",
+     "done": "you can say what return does when no dot is filled in",
+     "goal": "If none of the four dots is filled in, the code shows a message and return stops it, so nothing else runs.",
      "blocks": [
       {
-       "p": "What if the pupil clicks Check without choosing an answer? An empty answer should not be marked."
+       "p": "Think about a pupil who clicks Check without choosing an answer."
       },
       {
-       "p": "So the first thing the Check button does is look at all four dots. If none is filled in, it shows a message and stops."
+       "p": "An empty answer should not be marked. So the first thing the Check button does is look at all four dots. If none is filled in, it shows a message and stops."
+      },
+      {
+       "drawn": {
+        "id": "stop-sign",
+        "alt": "A stop sign drops onto the return line of the code.",
+        "say": "The stop sign lands on return. Nothing under this line runs."
+       }
+      },
+      {
+       "p": "[[return;|2]] means stop here. When nothing is chosen, nothing under that line runs."
+      },
+      {
+       "watch": "Each && means AND. All four dots must be empty for the message to show."
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "Type the check for no radio button chosen",
+     "foot": "done",
+     "done": "lines 3 to 8 are typed with no red squiggles",
+     "goal": "I type the if that asks whether all four dots are empty, shows a message and returns.",
+     "blocks": [
+      {
+       "p": "Type the four-dot check: show a message and stop when no dot is filled in."
       },
       {
        "code": {
         "id": "3-3.c1",
         "kind": "type",
-        "title": "Question 4's Check button, part 1 of 3",
+        "title": "Question 4's Check button: code 1 of 3",
         "where": "between the curly brackets of btnCheck4_Click, in frmQuiz.cs",
         "form": "frmQuiz",
         "method": "btnCheck4_Click",
@@ -516,34 +617,25 @@
        }
       },
       {
-       "p": "[[return;|2]] means stop here. When nothing is chosen, nothing under that line runs."
-      },
-      {
-       "drawn": {
-        "id": "stop-sign",
-        "alt": "A stop sign drops onto the return line of the code.",
-        "say": "The stop sign lands on return. Nothing under this line runs."
-       }
-      },
-      {
-       "watch": "Each && means AND. All four dots must be empty for the message to show."
+       "watch": "In my example the dots are rbA, rbB, rbC and rbD. Use the names of YOUR four radio buttons."
       }
      ]
     },
     {
-     "id": "4",
+     "id": "6",
      "title": "Add 1 to the score if the answer is right",
      "foot": "done",
+     "done": "lines 9 to 19 are typed, using YOUR right radio button's name",
      "goal": "If the right radio button is chosen the score goes up by 1 and the group box turns green, otherwise it turns red.",
      "blocks": [
       {
-       "p": "Now the real marking. If the right dot is filled in, the score goes up by 1. If not, the box turns red."
+       "p": "Now type the marking: the right dot scores 1, any other dot turns the box red."
       },
       {
        "code": {
         "id": "3-4.c1",
         "kind": "type",
-        "title": "Question 4's Check button, part 2 of 3",
+        "title": "Question 4's Check button: code 2 of 3",
         "where": "between the curly brackets of btnCheck4_Click, in frmQuiz.cs",
         "form": "frmQuiz",
         "method": "btnCheck4_Click",
@@ -584,19 +676,20 @@
      ]
     },
     {
-     "id": "5",
-     "title": "Switch off question 4 and switch on question 5",
-     "foot": "next",
+     "id": "7",
+     "title": "Switch question 4 off and question 5 on",
+     "foot": "done",
+     "done": "lines 20 to 22 are typed above the last curly bracket",
      "goal": "After marking, question 4's panel is switched off and question 5's panel is switched on, whatever the answer was.",
      "blocks": [
       {
-       "p": "Question 4 is marked, so it should not be answered again. And question 5 should wake up now."
+       "p": "Question 4 is marked, so now switch its panel off and wake question 5 up."
       },
       {
        "code": {
         "id": "3-5.c1",
         "kind": "type",
-        "title": "Question 4's Check button, part 3 of 3",
+        "title": "Question 4's Check button: code 3 of 3",
         "where": "between the curly brackets of btnCheck4_Click, in frmQuiz.cs",
         "form": "frmQuiz",
         "method": "btnCheck4_Click",
@@ -634,13 +727,14 @@
      ]
     },
     {
-     "id": "6",
-     "title": "Run it and watch question 5 switch on",
-     "foot": "done",
-     "goal": "When I check question 4, its panel goes grey and question 5's panel wakes up.",
+     "id": "8",
+     "title": "Watch what question 4's Check button now does",
+     "foot": "next",
+     "done": "you have played the picture and seen question 5 light up",
+     "goal": "When question 4 is checked, its panel goes grey and question 5's panel wakes up.",
      "blocks": [
       {
-       "p": "Time to see it work. Question 4 goes grey, and question 5 wakes up."
+       "p": "Watch what happens to the panels when the right answer is checked."
       },
       {
        "flow": {
@@ -652,9 +746,33 @@
         "then": [
          "pnlNumberQuestion"
         ],
-        "before": "Question 4 is switched on. Watch what happens when the answer is right.",
+        "labels": {
+         "pnlQuizScore": "the score",
+         "pnlTextQuestion": "question 1",
+         "pnlButtonsQuestion": "question 2",
+         "pnlListQuestion": "question 3",
+         "pnlRadioQuestion": "question 4",
+         "pnlNumberQuestion": "question 5"
+        },
+        "watch": "question 4 going grey, then question 5 lighting up",
+        "before": "Question 4 is on. The right dot is filled in.",
         "say": "Question 4 switches off. Question 5 switches on."
        }
+      },
+      {
+       "watch": "Whatever the answer was, question 4 goes grey and question 5 wakes up."
+      }
+     ]
+    },
+    {
+     "id": "9",
+     "title": "Run your quiz and try question 4",
+     "foot": "done",
+     "done": "after Check, your question 4 is grey and question 5 is awake",
+     "goal": "When I check question 4 in my own quiz, its panel goes grey and question 5's panel wakes up.",
+     "blocks": [
+      {
+       "p": "Time to see it work in your own quiz."
       },
       {
        "steps": [
@@ -670,6 +788,9 @@
          ]
         }
        ]
+      },
+      {
+       "watch": "Question 5 still grey? Look again at the last three lines you typed."
       }
      ]
     }
@@ -678,18 +799,33 @@
   {
    "id": "4",
    "title": "Mark question 5, the one with the number box",
+   "thing": "question 5's Check button",
+   "verb": "making",
    "screens": [
     {
-     "id": "1",
-     "title": "Add 1 to the score if the number is right",
-     "foot": "done",
-     "goal": "nudQuestion5.Value is the number showing, and if it equals the right answer the score goes up by 1.",
+     "id": "0",
+     "title": "Make question 5's Check button work",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part writes the code behind question 5's Check button: mark the number, switch question 5 off, show the Return button.",
      "blocks": [
       {
-       "p": "Question 5 uses a number box. The pupil clicks the little arrows to pick a number."
-      },
+       "open": {
+        "what": "Question 5 is the last question. It has a number box with arrows and its own Check button.",
+        "does": "When it works, Check adds 1 to the score for the right number. The panel turns green or red, and the Return button appears."
+       }
+      }
+     ]
+    },
+    {
+     "id": "1",
+     "title": "Double-click question 5's Check button",
+     "foot": "done",
+     "done": "the code tab is open at btnCheck5_Click, empty between the curly brackets",
+     "goal": "Question 5's code lives behind its Check button, and its number is read with .Value.",
+     "blocks": [
       {
-       "p": "Your code reads that number with [[.Value|3]]. Then it checks: is it the right answer?"
+       "p": "Open the code behind question 5's Check button the same way as question 4's."
       },
       {
        "steps": [
@@ -701,10 +837,25 @@
        ]
       },
       {
+       "p": "Question 5 uses a number box. The pupil clicks the little arrows to pick a number. Your code reads that number with [[.Value|3]] and checks whether it is the right answer."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Add 1 to the score if the number is right",
+     "foot": "done",
+     "done": "lines 3 to 14 are typed with YOUR right number",
+     "goal": "nudQuestion5.Value is the number showing, and if it equals the right answer the score goes up by 1.",
+     "blocks": [
+      {
+       "p": "Type code 1 of 2 for question 5's Check button: the marking."
+      },
+      {
        "code": {
         "id": "4-1.c1",
         "kind": "type",
-        "title": "Question 5's Check button, part 1 of 2",
+        "title": "Question 5's Check button: code 1 of 2",
         "where": "between the curly brackets of btnCheck5_Click, in frmQuiz.cs",
         "form": "frmQuiz",
         "method": "btnCheck5_Click",
@@ -751,19 +902,20 @@
      ]
     },
     {
-     "id": "2",
+     "id": "3",
      "title": "Switch off question 5 and show the Return button",
      "foot": "done",
+     "done": "lines 15 to 17 are typed above the last curly bracket",
      "goal": "After question 5 is marked, its panel is switched off and the Return button is made visible.",
      "blocks": [
       {
-       "p": "Question 5 is the last one. After it is marked, the quiz is over and the Return button can appear."
+       "p": "Question 5 is the last one, so after it is marked the Return button can appear."
       },
       {
        "code": {
         "id": "4-2.c1",
         "kind": "type",
-        "title": "Question 5's Check button, part 2 of 2",
+        "title": "Question 5's Check button: code 2 of 2",
         "where": "between the curly brackets of btnCheck5_Click, in frmQuiz.cs",
         "form": "frmQuiz",
         "method": "btnCheck5_Click",
@@ -801,13 +953,14 @@
      ]
     },
     {
-     "id": "3",
-     "title": "Play the whole quiz",
-     "foot": "done",
-     "goal": "When I play the quiz, the questions open in order and the Return button appears after question 5.",
+     "id": "4",
+     "title": "See the quiz played from start to end",
+     "foot": "next",
+     "done": "you have seen the Return button appear after question 5",
+     "goal": "In a working quiz the questions open in order and the Return button appears after question 5.",
      "blocks": [
       {
-       "p": "Play your quiz from the start and watch the panels wake up one after another."
+       "p": "Before you play your own quiz, see mine played from the start to the Return button."
       },
       {
        "frames": {
@@ -819,24 +972,37 @@
           "alt": "The running quiz just opened: question 1 on, four grey panels, no Return button",
           "w": 794,
           "h": 447,
-          "say": "The quiz opens. Only question 1 is switched on. There is no Return button."
+          "say": "The quiz opens: only question 1 on, no Return button."
          },
          {
           "img": "img/cap/f14-2.png",
           "alt": "The running quiz with question 1 marked and grey, question 2 on",
           "w": 794,
           "h": 447,
-          "say": "Question 1 is marked and grey. Question 2 is switched on. The rest are still grey."
+          "say": "Question 1 is marked and grey. Question 2 is switched on."
          },
          {
           "img": "img/cap/f14-3.png",
           "alt": "The running quiz with all five marked, the score showing and the Return button visible",
           "w": 794,
           "h": 447,
-          "say": "All five are marked. The Return button has appeared in the score panel."
+          "say": "All five are marked. The Return button has appeared."
          }
-        ]
+        ],
+        "watch": "the panels waking up one after another, then Return"
        }
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "Play your own quiz",
+     "foot": "done",
+     "done": "the Return button appears after you check question 5 in your quiz",
+     "goal": "When I play my quiz, the questions open in order and the Return button appears after question 5.",
+     "blocks": [
+      {
+       "p": "Play your quiz from the start and watch the panels wake up one after another."
       },
       {
        "steps": [
@@ -857,21 +1023,33 @@
   {
    "id": "5",
    "title": "Send the score back to the data entry form",
+   "thing": "the Return button",
+   "verb": "making",
    "screens": [
     {
-     "id": "1",
-     "title": "Code the Return button",
-     "foot": "done",
-     "goal": "The Return button sets quizTaken to true in Global.cs, closes the quiz and opens a new data entry form.",
+     "id": "0",
+     "title": "Make the Return button work",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part writes the code behind the Return button: leave a note in Global.cs, close the quiz, open the data entry form.",
      "blocks": [
       {
-       "p": "The Return button takes the pupil back to the data entry form. But first it needs to leave a note."
-      },
+       "open": {
+        "what": "The Return button in the score panel takes the pupil back to the data entry form.",
+        "does": "When it works, Return leaves a note in Global.cs that the quiz is taken. Then it closes the quiz and opens the data entry form."
+       }
+      }
+     ]
+    },
+    {
+     "id": "1",
+     "title": "Double-click the Return button",
+     "foot": "done",
+     "done": "the code tab is open at btnReturn_Click, empty between the curly brackets",
+     "goal": "The Return button's code goes behind the button, and Global.cs is where a note survives the quiz closing.",
+     "blocks": [
       {
-       "p": "When a form closes, it forgets everything. Global.cs does not forget. It remembers things for the whole program."
-      },
-      {
-       "p": "Global.quizTaken is one thing in Global.cs. It is false until the quiz is taken. The Return button sets it to true."
+       "p": "Open the code behind the Return button in the score panel."
       },
       {
        "steps": [
@@ -881,6 +1059,21 @@
          "see": "The code tab opens at btnReturn_Click, empty between the curly brackets."
         }
        ]
+      },
+      {
+       "p": "When a form closes, it forgets everything. Global.cs does not forget. Global.quizTaken is one thing in Global.cs. It is false until the quiz is taken. The Return button sets it to true."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Type the code that sends the score back",
+     "foot": "done",
+     "done": "lines 3 to 6 are typed in that order",
+     "goal": "The Return button sets quizTaken to true in Global.cs, closes the quiz and opens a new data entry form.",
+     "blocks": [
+      {
+       "p": "Four lines: a note, mark the quiz as taken, close it, open the data entry form."
       },
       {
        "code": {
@@ -905,7 +1098,7 @@
          [
           3,
           6,
-          "Leave the note, close, go back",
+          "Note, quiz taken, close, go back",
           "Global.quizTaken becomes true. this.Close() closes the quiz form. The last line makes a new data entry form and shows it."
          ],
          [
@@ -931,16 +1124,17 @@
      ]
     },
     {
-     "id": "2",
+     "id": "3",
      "title": "Why the data entry form still says Quiz not taken",
      "foot": "next",
+     "done": "you know chapter 8 is where the data entry form reads the note",
      "goal": "After Return, the data entry form comes back fresh and has not read Global.cs yet, and chapter 8 fixes that.",
      "blocks": [
       {
-       "p": "Press Return and the data entry form comes back. Its quiz panel still says Quiz not taken yet. The name boxes are empty."
+       "p": "Press Return and the data entry form comes back saying Quiz not taken yet."
       },
       {
-       "p": "That is fine. Nothing is broken. The note is in Global.cs. The data entry form has not read it yet."
+       "p": "The name boxes are empty too. That is fine. Nothing is broken. The note is in Global.cs. The data entry form has not read it yet."
       },
       {
        "drawn": {
@@ -962,15 +1156,18 @@
   {
    "id": "6",
    "title": "Test the whole quiz",
+   "thing": "the whole quiz",
+   "verb": "testing",
    "screens": [
     {
      "id": "1",
      "title": "Test the whole quiz",
      "foot": "chapter-done",
+     "done": "all six rows are ticked",
      "goal": "I run the program and check each of the six things the quiz must do.",
      "blocks": [
       {
-       "p": "Run your program and try each row. Tick the rows that work. A row that fails tells you where to look."
+       "p": "Run your program and try each row, ticking the rows that work."
       },
       {
        "check": [
@@ -978,48 +1175,48 @@
          "id": "6-1.t1",
          "what": "Log in, type the details, work out the average, press Take Quiz.",
          "how": "Only question 1 can be clicked. The other four are grey.",
-         "fix": "Look at the Load event on screen 2-4.",
-         "go": "#cw/07/2-4",
+         "fix": "Open the Load event's code again.",
+         "go": "#cw/07/2-5",
          "expect": "must"
         },
         {
          "id": "6-1.t2",
          "what": "Answer questions 1 to 3. Then press question 4's Check with no dot filled in.",
          "how": "A message appears. Question 4 stays switched on.",
-         "fix": "Look at the stop part on screen 3-3.",
-         "go": "#cw/07/3-3",
+         "fix": "Open the no-dot check again.",
+         "go": "#cw/07/3-5",
          "expect": "must"
         },
         {
          "id": "6-1.t3",
          "what": "Choose the right radio button and press Check.",
          "how": "The group box turns green and the score goes up by 1.",
-         "fix": "Look at the marking on screen 3-4.",
-         "go": "#cw/07/3-4",
+         "fix": "Open the marking code again.",
+         "go": "#cw/07/3-6",
          "expect": "must"
         },
         {
          "id": "6-1.t4",
          "what": "Set the right number on question 5 and press Check.",
          "how": "The panel turns green and the Return button appears.",
-         "fix": "Look at screens 4-1 and 4-2.",
-         "go": "#cw/07/4-1",
+         "fix": "Open question 5's code again.",
+         "go": "#cw/07/4-2",
          "expect": "must"
         },
         {
          "id": "6-1.t5",
          "what": "Press Return.",
          "how": "The quiz closes and the data entry form comes back.",
-         "fix": "Look at the Return button on screen 5-1.",
-         "go": "#cw/07/5-1",
+         "fix": "Open the Return button's code again.",
+         "go": "#cw/07/5-2",
          "expect": "must"
         },
         {
          "id": "6-1.t6",
          "what": "Start the quiz again. Press question 5's Check before question 4 is answered.",
          "how": "Nothing happens, because question 5's panel is grey.",
-         "fix": "Look at the Load event on screen 2-4.",
-         "go": "#cw/07/2-4",
+         "fix": "Open the Load event's code again.",
+         "go": "#cw/07/2-5",
          "expect": "mustnot"
         }
        ]

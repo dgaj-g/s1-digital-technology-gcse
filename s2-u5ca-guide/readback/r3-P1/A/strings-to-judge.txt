@@ -1,0 +1,38 @@
+ch00#1-0	See what your program is, before you make it
+ch00#1-1	Meet the four words you will see a lot
+ch00#1-2	See the five forms and the one file
+ch00#1-3	See where your forms and your code live
+ch00#1-4	Start your program and stop it again
+ch00#2-0	See how a chapter works and where you are up to
+ch00#2-1	See what a chapter looks like
+ch00#2-2	Mark a screen done with the big button
+ch00#2-3	Open the first part that is not ticked
+ch00#3-0	Meet the three rules you keep all the way through
+ch00#3-1	Meet rule 1: my names are not your names
+ch00#3-2	Meet rule 2: let IntelliSense type the name
+ch00#3-3	Meet rule 3: you type every line yourself
+ch00#3-4	Try to copy a line from the guide
+ch00#3-5	See what a red line means
+ch00#3-6	Check your program builds before you run it
+ch01#1-1	Check what your login form already has
+ch01#2-0	Make the login form and its controls
+ch01#2-1	Put the boxes, labels and buttons on the login form
+ch01#2-2	Give every control its name
+ch01#2-3	Make the password show stars
+ch01#3-0	Make the Login button check the details
+ch01#3-1	Open the code behind the Login button
+ch01#3-2	Stop a username that is too long
+ch01#3-3	Let the right username and password in
+ch01#3-4	Show Login incorrect when the details are wrong
+ch01#4-1	Try every way into your login form
+ch02#1-1	Check what your data entry form already has
+ch02#2-0	See the five panels, then make them
+ch02#2-1	See the five panels on the data entry form
+ch02#2-2	Put on the five panels and name each one
+ch02#3-0	Fill each panel with its boxes and buttons
+ch02#3-1	Fill the pupil details panel
+ch02#3-2	Put the choices in the two drop-down lists
+ch02#3-3	Fill the three attempts panel
+ch02#3-4	Fill the quiz panel and the reaction test panel
+ch02#3-5	Fill the group panel and add the two big buttons
+ch02#4-1	Check every name on your data entry form

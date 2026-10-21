@@ -1,0 +1,47 @@
+ch12#1-1	Check the parts this chapter needs
+ch12#2-0	Make the report form with its table and lists
+ch12#2-1	Add the report form
+ch12#2-2	Add the table and the two lists
+ch12#2-3	Add the Close button
+ch12#3-0	Add two lines at the top of the report code
+ch12#3-1	Meet the six new words
+ch12#3-2	Add the file tools line at the top
+ch12#3-3	Make a table in memory
+ch12#4-0	Type the code that runs as the report opens
+ch12#4-1	Give the table seven columns
+ch12#4-2	Read every line of the file
+ch12#4-3	See one line cut into eleven pieces
+ch12#4-4	Put the pieces in a row
+ch12#4-5	Show the table, or say there is no file
+ch12#5-0	Make the two lists and the two buttons work
+ch12#5-1	Show only the group that is chosen
+ch12#5-2	Show only the year that is chosen
+ch12#5-3	Make the Close button shut the report
+ch12#5-4	Open the report from the data entry form
+ch12#6-1	Try your report
+ch13#1-1	Check the parts this chapter needs
+ch13#2-1	Make the pupil details ? button speak
+ch13#3-0	Make the other four data entry ? buttons speak
+ch13#3-1	Make the attempts ? button speak
+ch13#3-2	Make the quiz panel ? button speak
+ch13#3-3	Make the test panel ? button speak
+ch13#3-4	Make the group panel ? button speak
+ch13#4-0	Make the ? buttons on the other three forms speak
+ch13#4-1	Make the login ? button speak
+ch13#4-2	Make the quiz form ? button speak
+ch13#4-3	Make the test form ? button speak
+ch13#5-1	Try every help button
+ch14#1-1	Meet the four extras before you pick one
+ch14#2-0	Make the login stop after three wrong tries
+ch14#2-1	Add a counter for wrong tries
+ch14#2-2	Switch Login off on the third wrong try
+ch14#2-3	Try the three tries
+ch14#3-0	Make the pictures swap faster as the clock runs down
+ch14#3-1	Make the pictures swap faster each second
+ch14#3-2	Try the faster swaps
+ch14#4-0	Show the best of the three attempts
+ch14#4-1	Show the best of the three attempts
+ch14#4-2	Try the best attempt
+ch14#5-0	Turn the group panel green, yellow or red
+ch14#5-1	Turn the group panel green, yellow or red
+ch14#5-2	Try the coloured group

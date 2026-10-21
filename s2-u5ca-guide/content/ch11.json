@@ -26,15 +26,18 @@
   {
    "id": "1",
    "title": "Check what you need first",
+   "thing": "the parts this chapter needs",
+   "verb": "checking",
    "screens": [
     {
      "id": "1",
      "title": "Check the parts this chapter needs",
      "foot": "have",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "Before I start, I check the group, the Save button and Global.cs.",
      "blocks": [
       {
-       "p": "This chapter uses work from earlier chapters. This screen checks that it is there."
+       "p": "This chapter uses work from earlier chapters, so this screen checks that it is there."
       },
       {
        "check": [
@@ -50,7 +53,7 @@
          "id": "1-1.t2",
          "what": "Is there a Save button under the panels, named btnSaveDetails?",
          "how": "Open frmDataEntry in the Design tab. Click the Save button and look at its Name.",
-         "fix": "Go to chapter 2, stage 3.",
+         "fix": "Go to chapter 2, part 3.",
          "go": "#cw/02/3-1",
          "expect": "have"
         },
@@ -58,7 +61,7 @@
          "id": "1-1.t3",
          "what": "Does Global.cs have all fourteen names?",
          "how": "Double-click Global.cs in Solution Explorer. Count the lines that start with public static.",
-         "fix": "Go to chapter 3, stage 3.",
+         "fix": "Go to chapter 3, part 3.",
          "go": "#cw/03/3-1",
          "expect": "have"
         }
@@ -71,15 +74,77 @@
   {
    "id": "2",
    "title": "The file tools",
+   "thing": "the file tools line",
+   "verb": "making",
    "screens": [
     {
+     "id": "0",
+     "title": "Add the line that lets the form use files",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part adds one line at the top of frmDataEntry's code, after four new words.",
+     "blocks": [
+      {
+       "open": {
+        "what": "One line at the very top of frmDataEntry's code lets this form use File. Four new words come first.",
+        "does": "When it works, using System.IO sits under the other using lines and File is not red."
+       }
+      }
+     ]
+    },
+    {
      "id": "1",
-     "title": "Let the form use files",
+     "title": "Meet the four new words",
+     "foot": "next",
+     "done": "you have read the four words",
+     "goal": "I know the four new words before I type any of them.",
+     "blocks": [
+      {
+       "p": "Four new words come up in this chapter."
+      },
+      {
+       "words": [
+        [
+         "using System.IO",
+         "A line at the top that lets the form use the file tools.",
+         "2-2",
+         true
+        ],
+        [
+         "~",
+         "A wavy line. It sits between the pieces of a line, like a fence.",
+         "4-1",
+         true
+        ],
+        [
+         "Environment.NewLine",
+         "The end of a line. The next words start on a new line.",
+         "4-3",
+         true
+        ],
+        [
+         "File.AppendAllText",
+         "Adds words to the end of a file. It makes the file if it is not there.",
+         "4-3",
+         true
+        ]
+       ],
+       "intro": "Click a marked word to see what it means."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Add the file tools line at the top",
      "foot": "done",
+     "done": "using System.IO sits under the other using lines and is not red",
      "goal": "One line at the top of frmDataEntry's code lets this form use the file tools.",
      "blocks": [
       {
-       "p": "Open frmDataEntry's code. Scroll to the very top. The top lines start with the word using. Click at the end of the last one and press Enter."
+       "p": "Open frmDataEntry's code and scroll to the very top."
+      },
+      {
+       "p": "The top lines start with the word using. Click at the end of the last one and press Enter, so a new line waits."
       },
       {
        "code": {
@@ -108,35 +173,6 @@
        "p": "Without [[using System.IO|0]] the word File goes red."
       },
       {
-       "words": [
-        [
-         "using System.IO",
-         "A line at the top that lets the form use the file tools.",
-         "2-1",
-         true
-        ],
-        [
-         "~",
-         "A wavy line. It sits between the pieces of a line, like a fence.",
-         "4-1",
-         true
-        ],
-        [
-         "Environment.NewLine",
-         "The end of a line. The next words start on a new line.",
-         "4-2",
-         true
-        ],
-        [
-         "File.AppendAllText",
-         "Adds words to the end of a file. It makes the file if it is not there.",
-         "4-2",
-         true
-        ]
-       ],
-       "intro": "Four new words in this chapter. Click a marked word to see what it means."
-      },
-      {
        "box": {
         "title": "See where it goes",
         "fold": true,
@@ -153,7 +189,8 @@
              "h": 214,
              "say": "The new line sits under the other using lines."
             }
-           ]
+           ],
+           "watch": "Watch the new line sit under the other using lines"
           }
          }
         ]
@@ -166,21 +203,27 @@
   {
    "id": "3",
    "title": "Only when everything is done",
+   "thing": "the Save button's check",
+   "verb": "making",
    "screens": [
     {
      "id": "1",
-     "title": "Save only when all five panels are switched off",
+     "title": "Check all five panels are off before saving",
      "foot": "done",
+     "done": "lines 3 to 5 are typed and the code has no red squiggles",
      "goal": "The Save code only goes ahead when all five panels are grey.",
      "blocks": [
       {
-       "p": "In the Design tab, double-click the Save button. A panel is switched off when its part is done."
+       "p": "In the Design tab, double-click the Save button."
+      },
+      {
+       "p": "A panel is switched off when its part is done, so this if checks all five."
       },
       {
        "code": {
         "id": "3-1.c1",
         "kind": "type",
-        "title": "The Save button, part 1 of 6",
+        "title": "The Save button: code 1 of 6",
         "where": "between the curly brackets of btnSaveDetails_Click",
         "form": "frmDataEntry",
         "method": "btnSaveDetails_Click",
@@ -206,7 +249,7 @@
           4,
           6,
           "Room inside",
-          "A curly bracket, then two empty lines. The saving goes here later."
+          "A curly bracket, then two empty lines. Code 2 goes straight after them."
          ]
         ],
         "names": [
@@ -223,85 +266,46 @@
        "watch": "Line 3 is one long line. Keep it on one line in Visual Studio."
       }
      ]
-    },
-    {
-     "id": "2",
-     "title": "If a panel is still on, stop",
-     "foot": "done",
-     "goal": "If any panel is still on, a message shows and nothing is saved.",
-     "blocks": [
-      {
-       "p": "Click on the second empty line inside the if. The line numbers jump to 46, because the saving fills the gap later."
-      },
-      {
-       "code": {
-        "id": "3-2.c1",
-        "kind": "type",
-        "title": "The Save button, part 2 of 6",
-        "where": "under the two empty lines inside the if",
-        "form": "frmDataEntry",
-        "method": "btnSaveDetails_Click",
-        "lang": "cs",
-        "from": 46,
-        "to": 55,
-        "text": "\n\n    }\n    else\n    {\n        MessageBox.Show(\"Not all results or student data has been saved yet\");\n        return;\n    }\n\n}",
-        "partLines": [
-         [
-          46,
-          48,
-          "End the if",
-          "Two empty lines, then the curly bracket that ends the if."
-         ],
-         [
-          49,
-          53,
-          "Not done? Say so and stop",
-          "else runs when a panel is still on. A message shows and return stops the code."
-         ],
-         [
-          54,
-          54,
-          "An empty line",
-          "Leave one empty line here."
-         ],
-         [
-          55,
-          55,
-          "Visual Studio wrote this line",
-          "This curly bracket is the end. Your code goes above it.",
-          "given"
-         ]
-        ],
-        "names": [],
-        "isense": []
-       }
-      },
-      {
-       "watch": "The saving goes on the empty lines inside the if. The next screens fill them."
-      }
-     ]
     }
    ]
   },
   {
    "id": "4",
    "title": "Write the line to the file",
+   "thing": "the line that goes in the file",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Write one line to the file",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part joins every detail into one line and puts it on the end of the file.",
+     "blocks": [
+      {
+       "open": {
+        "what": "Two pieces of code join the details into one line and write it to the file.",
+        "does": "When it works, pupilStats.txt has one new line, with a ~ between each detail."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Join all the details into one line",
      "foot": "done",
+     "done": "lines 7 to 18 are typed and the code has no red squiggles",
      "goal": "All eleven details join into one line, with a ~ between each piece.",
      "blocks": [
       {
-       "p": "Click on the first empty line inside the if. Each [[~|1]] is a fence between two pieces."
+       "p": "Each [[~|1]] is a fence between two pieces of the line."
       },
       {
        "code": {
         "id": "4-1.c1",
         "kind": "type",
-        "title": "The Save button, part 3 of 6",
-        "where": "on the first empty line inside the if of btnSaveDetails_Click",
+        "title": "The Save button: code 2 of 6",
+        "where": "under code 1, inside the if of btnSaveDetails_Click",
         "form": "frmDataEntry",
         "method": "btnSaveDetails_Click",
         "lang": "cs",
@@ -344,6 +348,18 @@
         ],
         "isense": []
        }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "See the line that goes in the file",
+     "foot": "next",
+     "done": "you have looked at the picture and read the line under it",
+     "goal": "I see the eleven pieces in order, with a fence between each.",
+     "blocks": [
+      {
+       "p": "This picture shows the line that code 2 builds."
       },
       {
        "drawn": {
@@ -368,20 +384,21 @@
      ]
     },
     {
-     "id": "2",
-     "title": "End the line and write the file",
+     "id": "3",
+     "title": "Write the line to the file",
      "foot": "done",
+     "done": "lines 19 to 26 are typed and the code has no red squiggles",
      "goal": "The line ends, goes on the end of the file and a message says it is saved.",
      "blocks": [
       {
-       "p": "[[Environment.NewLine|2]] ends the line. [[File.AppendAllText|3]] adds it to the end of the file."
+       "p": "[[Environment.NewLine|2]] ends the line and [[File.AppendAllText|3]] adds it to the end of the file."
       },
       {
        "code": {
         "id": "4-2.c1",
         "kind": "type",
-        "title": "The Save button, part 4 of 6",
-        "where": "under part 3, inside the if of btnSaveDetails_Click",
+        "title": "The Save button: code 3 of 6",
+        "where": "under code 2, inside the if of btnSaveDetails_Click",
         "form": "frmDataEntry",
         "method": "btnSaveDetails_Click",
         "lang": "cs",
@@ -418,22 +435,46 @@
        }
       }
      ]
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "Clear Global.cs and start again",
+   "thing": "the fresh start for the next pupil",
+   "verb": "making",
+   "screens": [
+    {
+     "id": "0",
+     "title": "Make Global.cs empty and start again",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part clears all fourteen names in Global.cs, closes the form and opens a fresh one.",
+     "blocks": [
+      {
+       "open": {
+        "what": "Two pieces of code empty all fourteen names in Global.cs, then a fresh form opens.",
+        "does": "When it works, the form closes after a save and a brand new empty one opens."
+       }
+      }
+     ]
     },
     {
-     "id": "3",
-     "title": "Clear Global.cs, first half",
+     "id": "1",
+     "title": "Put the first seven names back to empty",
      "foot": "done",
+     "done": "lines 28 to 35 are typed and the code has no red squiggles",
      "goal": "The first seven names in Global.cs go back to empty, ready for the next pupil.",
      "blocks": [
       {
-       "p": "Global.cs still holds this pupil's details. Clear them, so the next pupil starts empty."
+       "p": "Global.cs still holds this pupil's details, so clear them for the next pupil."
       },
       {
        "code": {
         "id": "4-3.c1",
         "kind": "type",
-        "title": "The Save button, part 5 of 6",
-        "where": "under part 4, inside the if of btnSaveDetails_Click",
+        "title": "The Save button: code 4 of 6",
+        "where": "under code 3, inside the if of btnSaveDetails_Click",
         "form": "frmDataEntry",
         "method": "btnSaveDetails_Click",
         "lang": "cs",
@@ -449,9 +490,21 @@
          ],
          [
           29,
+          30,
+          "Two empty words",
+          "Surname and first name go back to two speech marks with nothing between."
+         ],
+         [
+          31,
+          31,
+          "Back to 0",
+          "The quiz score goes back to 0."
+         ],
+         [
+          32,
           33,
-          "Empty words",
-          "Words go back to two speech marks with nothing between them."
+          "Two more empty words",
+          "Year group and gender go back to empty."
          ],
          [
           34,
@@ -475,20 +528,21 @@
      ]
     },
     {
-     "id": "4",
-     "title": "Clear the rest and start again",
+     "id": "2",
+     "title": "Put the rest back and start again",
      "foot": "done",
+     "done": "lines 36 to 45 are typed and the code has no red squiggles",
      "goal": "The other seven names are cleared, the form closes and a fresh data entry form opens.",
      "blocks": [
       {
-       "p": "Each number goes back to 0. Each true or false goes back to false."
+       "p": "Each number goes back to 0 and each true or false goes back to false."
       },
       {
        "code": {
         "id": "4-4.c1",
         "kind": "type",
-        "title": "The Save button, part 6 of 6",
-        "where": "under part 5, inside the if of btnSaveDetails_Click",
+        "title": "The Save button: code 5 of 6",
+        "where": "under code 4, inside the if of btnSaveDetails_Click",
         "form": "frmDataEntry",
         "method": "btnSaveDetails_Click",
         "lang": "cs",
@@ -523,12 +577,24 @@
          "frmDataEntry"
         ]
        }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "See the fresh form for the next pupil",
+     "foot": "next",
+     "done": "you have looked at the picture and read the line under it",
+     "goal": "I see the file keep the line while the form starts fresh.",
+     "blocks": [
+      {
+       "p": "This picture shows the form after a save."
       },
       {
        "drawn": {
         "id": "fresh-screen",
         "alt": "The data entry form, fresh and empty, beside Global.cs.",
-        "say": "The file keeps the line. The form starts fresh for the next pupil."
+        "say": "The file keeps the line and the form starts fresh."
        }
       }
      ]
@@ -536,17 +602,95 @@
    ]
   },
   {
-   "id": "5",
+   "id": "6",
+   "title": "If a panel is still on, stop",
+   "thing": "the stop when a part is missing",
+   "verb": "making",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Stop and say so when a panel is still on",
+     "foot": "done",
+     "done": "lines 46 to 54 are typed and the code has no red squiggles",
+     "goal": "If any panel is still on, a message shows and nothing is saved.",
+     "blocks": [
+      {
+       "p": "When a panel is still on, this else shows a message and stops."
+      },
+      {
+       "code": {
+        "id": "3-2.c1",
+        "kind": "type",
+        "title": "The Save button: code 6 of 6",
+        "where": "under code 5, to end the if and add the else",
+        "form": "frmDataEntry",
+        "method": "btnSaveDetails_Click",
+        "lang": "cs",
+        "from": 46,
+        "to": 55,
+        "text": "\n\n    }\n    else\n    {\n        MessageBox.Show(\"Not all results or student data has been saved yet\");\n        return;\n    }\n\n}",
+        "partLines": [
+         [
+          46,
+          47,
+          "Two empty lines",
+          "Two empty lines after the line that opens the fresh form."
+         ],
+         [
+          48,
+          48,
+          "End the if",
+          "The curly bracket that ends the if. Visual Studio may have typed it already."
+         ],
+         [
+          49,
+          53,
+          "Not done? Say so and stop",
+          "else runs when a panel is still on. A message shows and return stops the code."
+         ],
+         [
+          54,
+          54,
+          "An empty line",
+          "Leave one empty line here."
+         ],
+         [
+          55,
+          55,
+          "Visual Studio wrote this line",
+          "This curly bracket is the end. Your code goes above it.",
+          "given"
+         ]
+        ],
+        "names": [],
+        "isense": []
+       }
+      },
+      {
+       "watch": "Visual Studio may already have a } under line 45. Press Enter twice at the end of line 45 to push it to line 48."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "7",
    "title": "Try it",
+   "thing": "your Save button",
+   "verb": "testing",
    "screens": [
     {
      "id": "1",
      "title": "Try your Save button",
      "foot": "chapter-done",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I save two pupils, find the file and check it has two lines with fences.",
      "blocks": [
       {
-       "p": "Run your program. Log in and do every part. Click Calculate. Then try each row. The Find the file box shows the Debug folder."
+       "p": "Run your program, log in and do every part, then click Calculate."
+      },
+      {
+       "p": "Then try each row. The Find the file box under the rows shows the Debug folder."
       },
       {
        "check": [
@@ -554,23 +698,23 @@
          "id": "5-1.t1",
          "what": "Click Save.",
          "how": "The saved message shows. Then a fresh data entry form opens.",
-         "fix": "Look at screens 4-2 and 4-4.",
-         "go": "#cw/11/4-2",
+         "fix": "Look at the code on screens 4-3 and 5-2.",
+         "go": "#cw/11/4-3",
          "expect": "must"
         },
         {
          "id": "5-1.t2",
          "what": "Stop the program. Find the Debug folder. Look for YOUR file.",
          "how": "YOUR file is there, next to the program.",
-         "fix": "Look at screen 4-2.",
-         "go": "#cw/11/4-2",
+         "fix": "Look at the code on screen 4-3.",
+         "go": "#cw/11/4-3",
          "expect": "must"
         },
         {
          "id": "5-1.t3",
          "what": "Double-click YOUR file. It opens in Notepad.",
          "how": "One line, with a ~ between each piece.",
-         "fix": "Look at screen 4-1.",
+         "fix": "Look at the code on screen 4-1.",
          "go": "#cw/11/4-1",
          "expect": "must"
         },
@@ -578,15 +722,15 @@
          "id": "5-1.t4",
          "what": "Run again and save a second pupil. Open the file again.",
          "how": "Two lines. The second pupil is on the second line.",
-         "fix": "Look at screen 4-2.",
-         "go": "#cw/11/4-2",
+         "fix": "Look at the code on screen 4-3.",
+         "go": "#cw/11/4-3",
          "expect": "must"
         },
         {
          "id": "5-1.t5",
          "what": "Log in and click Save straight away.",
          "how": "The not all results message shows. NO line is added to the file.",
-         "fix": "Look at screens 3-1 and 3-2.",
+         "fix": "Look at the code on screens 3-1 and 6-1.",
          "go": "#cw/11/3-1",
          "expect": "mustnot"
         }
@@ -623,7 +767,8 @@
              "h": 190,
              "say": "Double-click Debug."
             }
-           ]
+           ],
+           "watch": "Watch for the bin folder, then Debug inside it"
           }
          }
         ]
@@ -653,7 +798,8 @@
              "h": 184,
              "say": "One line, with a ~ between each piece."
             }
-           ]
+           ],
+           "watch": "Watch for the ~ between each piece"
           }
          }
         ]

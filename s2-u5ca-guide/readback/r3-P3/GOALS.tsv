@@ -1,0 +1,70 @@
+ch06#1-1	I check for the quiz form and its six panels, the Take quiz button, and the marking of questions 1, 2 and 3.
+ch06#2-0	This part makes the quiz form. It has one panel for the score and one for each question.
+ch06#2-1	I add a form called frmQuiz and put six panels on it.
+ch06#2-2	Each of the six panels is named for what it holds, so the questions can go in any order.
+ch06#2-3	The score panel holds the title, the score, a comment and two buttons, and question 1 holds a label, a box and Check.
+ch06#2-4	Question 2 holds a label and two answer buttons, and question 3 holds a label, a picture, a list and Check.
+ch06#2-5	Question 4 holds a group box with four round buttons and Check, and question 5 holds a label, a number box and Check.
+ch06#3-0	This part gives the Take quiz button six lines of code. They close one form and open the other.
+ch06#3-1	I meet the two new things the Take quiz button uses.
+ch06#3-2	I open the code behind the Take quiz button.
+ch06#3-3	Pressing Take quiz closes the data entry form and opens a new quiz form.
+ch06#4-0	This part marks question 1. The typed answer is compared with the right one in small letters.
+ch06#4-1	I open the code behind question 1's Check button and meet .ToLower() and BackColor.
+ch06#4-2	If the typed answer in small letters matches, the score goes up and the panel turns green, or else it turns red.
+ch06#4-3	I watch the question 1 panel switch off and the question 2 panel switch on.
+ch06#4-4	After question 1 is marked, its panel switches off and the question 2 panel switches on.
+ch06#5-0	This part marks questions 2 and 3. Question 2 has two buttons, and question 3 has a drop-down list.
+ch06#5-1	I open the code behind the right answer button of question 2.
+ch06#5-2	The right answer button adds 1 to the score, turns the panel green and switches on question 3.
+ch06#5-3	I open the code behind the wrong answer button of question 2.
+ch06#5-4	The wrong answer button turns the panel red, adds nothing, and still switches on question 3.
+ch06#5-5	I open the code behind question 3's Check button.
+ch06#5-6	If nothing is chosen in the question 3 list, a message asks the user to choose and nothing else happens.
+ch06#5-7	If the first item in the list is chosen, the score goes up and the panel turns green.
+ch06#5-8	Any other item turns the panel red, then question 3 switches off and question 4 switches on.
+ch06#6-1	I open the quiz, answer in capitals, answer wrongly, try both kinds of button, and press Check with nothing chosen.
+ch07#1-1	Before I code the rest of the quiz, I check I have the question 4 and 5 panels, the Return button, question 3's code and the two things in Global.cs.
+ch07#2-0	This part gives the quiz a Load event, so that only question 1 can be clicked when the quiz opens.
+ch07#2-1	A Load event is code that runs by itself the moment the form opens, before anyone clicks anything.
+ch07#2-2	The Load event runs the moment the quiz form opens, before any click, and every form can have one.
+ch07#2-3	To make a Load event I double-click the form itself, not a control on it, and Visual Studio writes frmQuiz_Load for me.
+ch07#2-4	When the quiz opens, question 1 works and questions 2 to 5 are switched off and grey, so they get answered in order.
+ch07#2-5	In frmQuiz_Load I set Enabled to false on the four panels and Visible to false on the Return button.
+ch07#3-0	This part writes the code behind question 4's Check button: stop if nothing is chosen, mark the answer, move on to question 5.
+ch07#3-1	rbB.Checked is true when B's dot is filled in, and an exclamation mark in front means NOT.
+ch07#3-2	Question 4's code lives behind its Check button, and double-clicking that button in the Design tab opens the code.
+ch07#3-3	Double-clicking a button in the Design tab opens the code behind that button.
+ch07#3-4	If none of the four dots is filled in, the code shows a message and return stops it, so nothing else runs.
+ch07#3-5	I type the if that asks whether all four dots are empty, shows a message and returns.
+ch07#3-6	If the right radio button is chosen the score goes up by 1 and the group box turns green, otherwise it turns red.
+ch07#3-7	After marking, question 4's panel is switched off and question 5's panel is switched on, whatever the answer was.
+ch07#3-8	When question 4 is checked, its panel goes grey and question 5's panel wakes up.
+ch07#3-9	When I check question 4 in my own quiz, its panel goes grey and question 5's panel wakes up.
+ch07#4-0	This part writes the code behind question 5's Check button: mark the number, switch question 5 off, show the Return button.
+ch07#4-1	Question 5's code lives behind its Check button, and its number is read with .Value.
+ch07#4-2	nudQuestion5.Value is the number showing, and if it equals the right answer the score goes up by 1.
+ch07#4-3	After question 5 is marked, its panel is switched off and the Return button is made visible.
+ch07#4-4	In a working quiz the questions open in order and the Return button appears after question 5.
+ch07#4-5	When I play my quiz, the questions open in order and the Return button appears after question 5.
+ch07#5-0	This part writes the code behind the Return button: leave a note in Global.cs, close the quiz, open the data entry form.
+ch07#5-1	The Return button's code goes behind the button, and Global.cs is where a note survives the quiz closing.
+ch07#5-2	The Return button sets quizTaken to true in Global.cs, closes the quiz and opens a new data entry form.
+ch07#5-3	After Return, the data entry form comes back fresh and has not read Global.cs yet, and chapter 8 fixes that.
+ch07#6-1	I run the program and check each of the six things the quiz must do.
+ch08#1-1	Before I start, I check the Enter button, the average button, the quiz Return button and three lines in Global.cs.
+ch08#2-0	This part explains why the data entry form must read Global.cs as it opens. Then it makes the Load event.
+ch08#2-1	Each time the data entry form opens it is brand new and empty, but Global.cs still holds everything.
+ch08#2-2	The Load event switches every panel off, asks Global.cs three questions, then fills the boxes and switches on the right panel.
+ch08#3-0	This part types the first lines of the Load event. They switch all five panels off.
+ch08#3-1	I see all five panels switched off, which is how the form starts.
+ch08#3-2	The first lines of the Load event switch off all five panels on the data entry form.
+ch08#4-0	This part asks Global.cs three questions: quiz taken, average worked out, test taken. Each yes fills boxes and switches on a panel.
+ch08#4-1	If the quiz has been taken, the score shows in black, Take quiz is hidden and the reaction test panel switches on.
+ch08#4-2	When the quiz has been taken, the surname, first name, gender and year group go back from Global.cs into their boxes.
+ch08#4-3	I see only the details panel switch on, for a pupil who has not taken the quiz.
+ch08#4-4	If the quiz is not taken, the details panel switches on and the quiz status says Quiz not taken yet in red.
+ch08#4-5	If the average is worked out, the three attempts and the average go back in their boxes and the average button hides.
+ch08#4-6	I see the test panel switch off and the group panel switch on.
+ch08#4-7	If the reaction test is taken, its score shows, Take test hides, its panel switches off and the group panel switches on.
+ch08#5-1	I run the program and check that only the details panel works at first, and that the quiz brings the details back.

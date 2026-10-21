@@ -1,0 +1,70 @@
+ch06#1-1	Check what your quiz already has
+ch06#2-0	Make the quiz form with its six panels and their controls
+ch06#2-1	Add the quiz form and its six panels
+ch06#2-2	See how the six panels are laid out
+ch06#2-3	Fill the score panel and the question 1 panel
+ch06#2-4	Fill the question 2 and question 3 panels
+ch06#2-5	Fill the question 4 and question 5 panels
+ch06#3-0	Make the Take quiz button open the quiz
+ch06#3-1	Meet the two new things for Take quiz
+ch06#3-2	Open the code behind the Take quiz button
+ch06#3-3	Type the six lines that swap the forms
+ch06#4-0	Make question 1's Check button mark a typed answer
+ch06#4-1	Open the code behind question 1's Check button
+ch06#4-2	Mark the typed answer right or wrong
+ch06#4-3	See question 2 switch on
+ch06#4-4	Switch off question 1 and switch on question 2
+ch06#5-0	Mark the answers to questions 2 and 3
+ch06#5-1	Open the code behind the right answer button
+ch06#5-2	Score a point when the right button is pressed
+ch06#5-3	Open the code behind the wrong answer button
+ch06#5-4	Turn question 2 red when the wrong button is pressed
+ch06#5-5	Open the code behind question 3's Check button
+ch06#5-6	Stop question 3 when nothing is chosen
+ch06#5-7	Score a point when the right item is chosen
+ch06#5-8	Turn question 3 red, then switch on question 4
+ch06#6-1	Try every way through questions 1, 2 and 3
+ch07#1-1	Check your quiz has what it needs
+ch07#2-0	Make the quiz open with only question 1 working
+ch07#2-1	Meet the Load event
+ch07#2-2	See what the Load event will do
+ch07#2-3	Double-click the form to open its Load code
+ch07#2-4	See why only question 1 can be clicked
+ch07#2-5	Type the code that switches off questions 2 to 5
+ch07#3-0	Make question 4's Check button work
+ch07#3-1	See how code tells which radio button is chosen
+ch07#3-2	Find question 4's Check button on the form
+ch07#3-3	Double-click question 4's Check button
+ch07#3-4	See why the code must stop when nothing is chosen
+ch07#3-5	Type the check for no radio button chosen
+ch07#3-6	Add 1 to the score if the answer is right
+ch07#3-7	Switch question 4 off and question 5 on
+ch07#3-8	Watch what question 4's Check button now does
+ch07#3-9	Run your quiz and try question 4
+ch07#4-0	Make question 5's Check button work
+ch07#4-1	Double-click question 5's Check button
+ch07#4-2	Add 1 to the score if the number is right
+ch07#4-3	Switch off question 5 and show the Return button
+ch07#4-4	See the quiz played from start to end
+ch07#4-5	Play your own quiz
+ch07#5-0	Make the Return button work
+ch07#5-1	Double-click the Return button
+ch07#5-2	Type the code that sends the score back
+ch07#5-3	Why the data entry form still says Quiz not taken
+ch07#6-1	Test the whole quiz
+ch08#1-1	Check the parts this chapter needs
+ch08#2-0	Make a Load event for the data entry form
+ch08#2-1	Why the form must read Global.cs as it opens
+ch08#2-2	Plan the Load event and make it
+ch08#3-0	Switch every panel off as the form opens
+ch08#3-1	See every panel switched off
+ch08#3-2	Switch off all five panels
+ch08#4-0	Ask Global.cs three questions and switch on the right panel
+ch08#4-1	Show the score when the quiz has been taken
+ch08#4-2	Put the pupil's details back in their boxes
+ch08#4-3	See the details panel switch on for a new pupil
+ch08#4-4	Switch on only the details panel
+ch08#4-5	Show the attempts when the average is worked out
+ch08#4-6	See the group panel switch on after the test
+ch08#4-7	Switch on the group panel when the test is taken
+ch08#5-1	Try the data entry form before and after the quiz

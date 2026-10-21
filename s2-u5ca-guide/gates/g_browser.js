@@ -4,10 +4,11 @@
  *   copy of content/ (gates/_ctl/g14: chapter 14 stubbed as built, so the hidden rule is exercised before it is written).
  *   Controls, which must FAIL:  G5  the `.ln [data-t]::before` rule removed, and the code planted as a text node
  *                               G14 chapter 14 with its hidden flag removed: 13 undone still opens it
- *                               G12 a screen padded 2400 px taller */
+ *                               G12 a screen padded 2400 px taller
+ *                               GFOLD 500 px planted above the first heavy block (EASE_SPEC 21 Oct 2026 §6: first heavy block top <= 700 px at 1366x768) */
 const puppeteer = require('puppeteer'); const fs = require('fs'); const path = require('path'); const { spawn } = require('child_process');
 const D = path.resolve(__dirname, '..'); const BASE = process.env.S2_BASE || 'http://127.0.0.1:8851';
-const CTL = process.argv.includes('--control'); const ONLY = process.argv.slice(2).filter((a) => /^G\d+$/.test(a));
+const CTL = process.argv.includes('--control'); const ONLY = process.argv.slice(2).filter((a) => /^G\w+$/.test(a));
 const want = (g) => !ONLY.length || ONLY.includes(g);
 const OWNER = 'dgartland021@c2ken.net', P = 'pupil8@c2ken.net';
 const IX = JSON.parse(fs.readFileSync(path.join(D, 'content', 'index.json'), 'utf8'));
@@ -69,7 +70,7 @@ async function klass(base, tag) { const cls = 'S2-G' + tag + '-' + (Date.now() %
       await go(page, '#cw/' + ch + '/' + key, `.cw-screen[data-key="${key}"]`); await settle(300); n++;
       if (CTL && n === 1) await page.evaluate(() => { document.querySelector('.cw-screen').appendChild(Object.assign(document.createElement('div'), { style: 'height:2400px' })); });
       const m = await page.evaluate(() => ({ h: Math.max(document.documentElement.scrollHeight, ...[...document.querySelectorAll('body *')].filter((e) => !e.closest('.cw-code') && /auto|scroll/.test(getComputedStyle(e).overflowY)).map((e) => e.scrollHeight)), code: !!document.querySelector('.cw-code'), inner: [...document.querySelectorAll('.cw-code .cbody')].some((b) => b.scrollHeight > b.clientHeight + 2) }));
-      const lim = m.code ? 2200 : 1900; tallest = Math.max(tallest, m.h);
+      const lim = m.code ? 1600 : 1300; tallest = Math.max(tallest, m.h);   // EASE_SPEC 21 Oct 2026 §6 (was 2200/1900)
       if (m.h > lim) bad.push(ch + '/' + key + ' ' + m.h + 'px > ' + lim);
       if (m.inner) bad.push(ch + '/' + key + ' a code card scrolls inside');
     }
@@ -79,6 +80,21 @@ async function klass(base, tag) { const cls = 'S2-G' + tag + '-' + (Date.now() %
     const ph = await page.evaluate(() => { const s = document.querySelector('.cw-screen'); return { doc: document.documentElement.scrollHeight, end: s.getBoundingClientRect().bottom + scrollY }; });
     if (ph.doc + 2 < ph.end) bad.push('at 390 px the page stops at ' + ph.doc + 'px but the screen ends at ' + Math.round(ph.end) + 'px');
     res('G12 sizes', !bad.length && n > 0, n + ' screens, tallest ' + tallest + 'px' + (bad.length ? '; ' + bad.slice(0, 4).join('; ') : ''));
+    await page.close();
+  }
+  // ---- GFOLD: at 1366x768 the first heavy block (what the pupil does) starts within 700 px of the top of every screen
+  if (want('GFOLD')) {
+    const cls = await klass(BASE, 'F'); const page = await open(browser, BASE, cls, '#cw', [1366, 768]); await page.waitForSelector('.cw-cards');
+    const bad = []; let n = 0, deepest = 0, none = 0;
+    for (const ch of built) for (const key of screensOf(ch)) {
+      await go(page, '#cw/' + ch + '/' + key, `.cw-screen[data-key="${key}"]`); await settle(250);
+      if (CTL && n === 0) await page.evaluate(() => { const h = document.querySelector('.cw-code,.cw-frames,.cw-flow,.cw-steps,.cw-check,.cw-controls,.cw-open'); if (h) h.parentNode.insertBefore(Object.assign(document.createElement('div'), { style: 'height:500px' }), h); });
+      const top = await page.evaluate(() => { document.querySelectorAll('*').forEach((e) => { if (e.scrollTop) e.scrollTop = 0; }); scrollTo(0, 0); const h = document.querySelector('.cw-code,.cw-frames,.cw-flow,.cw-steps,.cw-check,.cw-controls,.cw-open'); return h ? Math.round(h.getBoundingClientRect().top) : null; });
+      if (top === null) { none++; continue; }
+      n++; deepest = Math.max(deepest, top);
+      if (top > 700) bad.push(ch + '/' + key + ' first heavy block at ' + top + 'px');
+    }
+    res('GFOLD first action above the fold', !bad.length && n > 0, n + ' screens measured, ' + none + ' with no heavy block, deepest ' + deepest + 'px' + (bad.length ? '; ' + bad.length + ' over: ' + bad.slice(0, 4).join('; ') : ''));
     await page.close();
   }
   // ---- G14 hidden chapter 14, on a planted copy served by a second dev server

@@ -163,7 +163,7 @@ function bDrawn(d, ctx) {
     st.appendChild(el(`<div class="dw-fresh"><div class="sc"><div class="t">frmDataEntry, fresh</div><div class="l"></div><div class="l" style="width:70%"></div><div class="l" style="width:85%"></div></div><div class="ar">→</div><div class="sc new"><div class="t">Global.cs</div><div>quizScore = 4</div><div>quizTaken = true</div><div>reactionScore = 0</div></div></div>`));
   } else if (d.id === 'mini-chapter') {
     const st7 = (S.index.chapters.find(c => c.id === '07') || { stages: [] }).stages.slice(0, 3);
-    st.appendChild(el(`<div class="dw-mini">${st7.map((s, i) => `${i ? '<span class="ar">→</span>' : ''}<span class="st">${esc(s[1])}<br><small style="color:var(--mute)">${'● '.repeat(Math.max(1, s[2] - 1))}✓</small></span>`).join('')}<span class="ar">→</span><span class="st">…</span></div>`));
+    st.appendChild(el(`<div class="dw-mini">${st7.map((s, i) => `${i ? '<span class="ar">→</span>' : ''}<span class="st">${esc(s[3] || s[1])}<br><small style="color:var(--mute)">${'● '.repeat(Math.max(1, s[2] - 1))}✓</small></span>`).join('')}<span class="ar">→</span><span class="st">…</span></div>`));
   } else if (d.id === 'home-card') {
     const c = S.index.chapters.find(x => x.id === '07');
     const wrap = el(`<ul class="cw-cards" style="grid-template-columns:1fr;max-width:420px;margin:0 auto;pointer-events:none"></ul>`);
@@ -199,12 +199,15 @@ function bDrawn(d, ctx) {
 }
 function bFlow(f, ctx) {
   const form = S.controls[f.form]; const W = Math.min(420, Math.max(280, (innerWidth - 120))); const sc = W / form.size[0]; const H = form.size[1] * sc + 22;
-  const n = el(`<div class="cw-flow"><div class="form" style="width:${W}px;height:${H}px"><div class="tb">${esc(f.form)}</div></div><div class="key"><span class="o"><i></i>${esc(t('flow.open'))}</span><span class="l"><i></i>${esc(t('flow.locked'))}</span></div><p class="say"></p><p class="fixed">${esc(t('fixed.flow'))}</p><button class="btn sec again">${esc(t('flow.again'))}</button></div>`);
-  const box = $('.form', n), say = $('.say', n);
+  /* still start (EASE_SPEC §3): the caption sits ABOVE the form, every panel carries its plain name, nothing moves until she presses Play */
+  const n = el(`<div class="cw-flow">${f.watch ? `<p class="watch"><b>${esc(t('flow.watch'))}:</b> ${esc(f.watch)}</p>` : ''}<p class="say"></p><div class="form" style="width:${W}px;height:${H}px"><div class="tb">${esc(f.form)}</div><button type="button" class="play">${esc(t('flow.play'))}</button></div><div class="key"><span class="o"><i></i>${esc(t('flow.open'))}</span><span class="l"><i></i>${esc(t('flow.locked'))}</span></div><p class="fixed">${esc(t('fixed.flow'))}</p><button type="button" class="btn sec again" hidden>${esc(t('flow.again'))}</button></div>`);
+  const box = $('.form', n), say = $('.say', n), playBtn = $('.play', n), again = $('.again', n);
+  const labelOf = name => { if (f.labels && f.labels[name]) return f.labels[name]; const v = S.names[name]; const line = (typeof v === 'string' ? v : (v && v.line) || '').split(',')[0].trim(); return line && words(line) <= 5 ? line : ''; };
   const rooms = {}, order = [];
   Object.entries(form.controls).filter(([, c]) => (c.type === 'Panel' || c.type === 'GroupBox') && c.parent === f.form).sort((x, y) => x[1].loc[1] - y[1].loc[1] || x[1].loc[0] - y[1].loc[0]).forEach(([name, c]) => {
-    const r = el(`<div class="fp" data-n="${esc(name)}" style="left:${c.loc[0] * sc}px;top:${22 + c.loc[1] * sc}px;width:${c.size[0] * sc}px;height:${c.size[1] * sc}px">${esc(name)}<span class="k" aria-hidden="true">🔒</span></div>`);
-    rooms[name] = r; order.push(name); box.appendChild(r);
+    const lb = labelOf(name);
+    const r = el(`<div class="fp" data-n="${esc(name)}" style="left:${c.loc[0] * sc}px;top:${22 + c.loc[1] * sc}px;width:${c.size[0] * sc}px;height:${c.size[1] * sc}px"><span class="nm">${esc(name)}</span>${lb ? `<span class="lb">${esc(lb)}</span>` : ''}<span class="k" aria-hidden="true">🔒</span></div>`);
+    rooms[name] = r; order.push(name); box.insertBefore(r, playBtn);
   });
   /* map: a plain map of the form's panels, no switched on or off (ch02). Each panel lights in turn, then all stay lit */
   if (f.map) { $('.key', n).remove(); $('.fixed', n).remove(); n.querySelectorAll('.fp .k').forEach(k => k.remove()); }
@@ -214,59 +217,74 @@ function bFlow(f, ctx) {
   const endState = () => { const on = new Set(lit0); let active = lit0[lit0.length - 1]; then.forEach(k => { if (active && (f.keep === false || active !== lit0[0])) on.delete(active); on.add(k); active = k; }); return on; };
   let T = [];
   const at = (fn, ms) => T.push(later(fn, ms));
-  const play = () => {
+  const play = still => {
     T.forEach(clearTimeout); T = [];
+    if (!still) { playBtn.hidden = true; again.hidden = false; }
     if (f.map) {
       order.forEach(k => set(k, false, false)); say.textContent = f.before || f.say;
+      if (still) return;
       if (reduced()) { order.forEach(k => set(k, true, false)); say.textContent = f.say; return; }
       let ms = 500; order.forEach(k => { at(() => set(k, true, true), ms); ms += 450; });
       at(() => { say.textContent = f.say; }, ms); return;
     }
-    if (reduced()) { const on = endState(); order.forEach(k => set(k, on.has(k), false)); say.textContent = f.say; return; }
+    if (reduced() && !still) { const on = endState(); order.forEach(k => set(k, on.has(k), false)); say.textContent = f.say; return; }
     if (!then.length) {
       /* beat 1: every panel switched on, as the form would be without a Load event; beat 2: they switch off one at a time */
       order.forEach(k => set(k, true, false)); say.textContent = f.before || t('flow.allOn');
+      if (still) return;
       let ms = 1000;
       order.filter(k => lit0.indexOf(k) < 0).forEach(k => { at(() => set(k, false, true), ms); ms += 320; });
       at(() => { lit0.forEach(k => set(k, true, true)); say.textContent = f.say; }, ms + 150);
     } else {
       /* beat 1: the lit panels pulse on; beat 2: what the code does next, one swap at a time */
       order.forEach(k => set(k, lit0.indexOf(k) >= 0, false)); say.textContent = f.before || f.say;
+      if (still) return;
       at(() => lit0.forEach(k => set(k, true, true)), 300);
       let active = lit0[lit0.length - 1], ms = 1700;
       then.forEach(k => { at(() => { if (active && (f.keep === false || active !== lit0[0])) set(active, false, true); set(k, true, true); active = k; say.textContent = f.say; }, ms); ms += 1200; });
     }
   };
-  $('.again', n).addEventListener('click', play);
-  later(play, 450);
+  playBtn.addEventListener('click', () => play(false));
+  again.addEventListener('click', () => play(false));
+  play(true);
   return n;
 }
 function bFrames(fr, ctx) {
-  const n = el(`<div class="cw-frames" data-id="${esc(fr.id)}"><div class="ttl"><span>${esc(fr.title)}</span><span class="n"></span></div><div class="stage" tabindex="0"><div class="prog"></div></div><p class="say"></p><div class="bar"><span class="dots"></span><button class="btn sec">${esc(t('frames.replay'))}</button></div></div>`);
-  const stage = $('.stage', n), say = $('.say', n), dots = $('.dots', n), prog = $('.prog', n), nlab = $('.n', n), btn = $('.btn', n);
-  let i = 0, paused = false, timer;
-  fr.frames.forEach((_, k) => { const d = el(`<button class="fdot" aria-label="${esc(t('frames.of', { k: k + 1, t: fr.frames.length }))}"></button>`); d.addEventListener('click', e => { e.stopPropagation(); show(k, true); }); dots.appendChild(d); });
-  function show(k, manual) {
+  /* still start (EASE_SPEC §3): the first picture sits still with a Watch-for line and a Play button; nothing moves until she presses it */
+  const N = fr.frames.length;
+  const n = el(`<div class="cw-frames" data-id="${esc(fr.id)}"><div class="ttl"><span>${esc(fr.title)}</span><span class="n"></span></div>${fr.watch ? `<p class="watch"><b>${esc(t('frames.watch'))}:</b> ${esc(fr.watch)}</p>` : ''}<div class="stage" tabindex="0"><div class="prog"></div><button type="button" class="play">${esc(t(N > 1 ? 'frames.play' : 'frames.playOne', { t: N }))}</button></div><p class="say"></p><div class="bar"><span class="dots"></span><button type="button" class="btn sec" hidden>${esc(t('frames.replay'))}</button></div></div>`);
+  const stage = $('.stage', n), say = $('.say', n), dots = $('.dots', n), prog = $('.prog', n), nlab = $('.n', n), btn = $('.bar .btn', n), play = $('.play', n);
+  /* the box takes the shape of its pictures: natural size, never scaled up, never wider than 680 or taller than 425 (EASE 21 Oct 2026: a 294x32 toolbar strip sat in 350 px of empty box); one picture is a still, with no Play, dots or count */
+  const sized = fr.frames.filter(f => f.w && f.h), BW = sized.length ? Math.min(680, Math.max(...sized.map(f => f.w))) : 680;
+  const hs = fr.frames.map(f => (f.w && f.h) ? f.h * Math.min(1, BW / f.w) : BW * 10 / 16);
+  stage.style.maxWidth = BW + 'px'; stage.style.aspectRatio = BW + ' / ' + Math.round(Math.max(N > 1 ? 96 : 48, Math.min(425, Math.max(...hs))));
+  if (N === 1) n.classList.add('one');
+  let i = 0, paused = false, started = false, timer;
+  fr.frames.forEach((_, k) => { const d = el(`<button type="button" class="fdot" aria-label="${esc(t('frames.of', { k: k + 1, t: N }))}"></button>`); d.addEventListener('click', e => { e.stopPropagation(); started = true; play.hidden = true; btn.hidden = false; show(k, true); }); dots.appendChild(d); });
+  function show(k, manual, still) {
     clearTimeout(timer); i = k; const f = fr.frames[k];
     $$('.fdot', dots).forEach((d, j) => d.classList.toggle('on', j === k));
-    nlab.textContent = t('frames.of', { k: k + 1, t: fr.frames.length });
+    nlab.textContent = t('frames.of', { k: k + 1, t: N });
     $$('img,.ph', stage).forEach(x => x.remove());
     const img = new Image(); img.alt = f.alt; img.src = asset(f.img);
     img.onerror = () => { img.remove(); stage.appendChild(el(`<div class="ph">${esc(t('frames.missing'))}<small>${esc(f.alt)}</small></div>`)); };
     stage.appendChild(img);
     say.textContent = f.say;
     prog.classList.remove('run'); prog.style.width = '0';
+    if (still) return;
     if (paused && !manual) return;
     paused = false;
     const dur = reduced() ? 0 : 1600 + 350 * words(f.say);
     if (dur) { void prog.offsetWidth; prog.style.setProperty('--dur', dur + 'ms'); prog.classList.add('run'); }
-    if (dur && k + 1 < fr.frames.length) timer = setTimeout(() => show(k + 1), dur);
+    if (dur && k + 1 < N) timer = setTimeout(() => show(k + 1), dur);
     S.timers.push(timer);
   }
-  stage.addEventListener('click', () => { paused = !paused; if (paused) { clearTimeout(timer); prog.classList.remove('run'); prog.style.width = getComputedStyle(prog).width; btn.textContent = t('frames.replay'); } else show(i, true); });
+  const start = () => { started = true; paused = false; play.hidden = true; btn.hidden = false; show(0, true); };
+  play.addEventListener('click', e => { e.stopPropagation(); start(); });
+  stage.addEventListener('click', () => { if (!started) { start(); return; } paused = !paused; if (paused) { clearTimeout(timer); prog.classList.remove('run'); prog.style.width = getComputedStyle(prog).width; } else show(i, true); });
   stage.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); stage.click(); } });
-  btn.addEventListener('click', () => { paused = false; show(0, true); });
-  show(0, true);
+  btn.addEventListener('click', start);
+  show(0, true, true);
   return n;
 }
 function isenseFor(form, pick) {
@@ -344,14 +362,23 @@ function bBox(b, ctx) {
   return d;
 }
 function bCode(c, ctx) {
-  const lines = c.text.split('\n'); const from = c.from || 1; const total = c.to && c.from ? null : null;
+  const lines = c.text.split('\n'); const from = c.from || 1;
+  /* continuity (EASE_SPEC §3): code that carries on from the last step shows that step's last two lines in grey and says where to type */
+  let prevLines = [];
+  if (from > 1 && ctx.idx > 0) {
+    const pe = ctx.all.slice(0, ctx.idx).reverse().find(e => !e.sc.opener && (e.sc.blocks || []).some(b => b.code));
+    const pb = (((pe ? pe.sc.blocks : null) || []).find(b => b.code && b.code.form === c.form && b.code.method === c.method && b.code.to === from - 1) || {}).code;
+    if (pb) { const sl = pb.text.split('\n').slice(-2); prevLines = sl.map((ln, j) => [pb.to - sl.length + 1 + j, ln]); }
+  }
   const parts = (c.partLines || []).map(p => ({ from: p[0], to: p[1], h: p[2], m: p[3], given: p[4] === 'given' }));
   const partOf = n => parts.findIndex(p => n >= p.from && n <= p.to);
   const kind = c.kind === 'read' ? t('code.kindRead') : t('code.kindType');
   const card = el(`<section class="cw-code" data-id="${esc(c.id || '')}">
     <div class="ctop"><span class="kind ${c.kind}">${esc(kind)}</span><span class="t">${esc(c.title)}</span><span class="wh"><b>${esc(t('code.where'))}:</b> ${esc(c.where)}</span></div>
+    ${from > 1 ? `<p class="cont"><span class="ic" aria-hidden="true">↳</span><span>${esc(t('code.after', { n: from - 1 }))}</span></p>` : ''}
     <div class="cgrid"><div class="cbody"><span class="nocopy">${esc(t('code.typeIt'))}</span><pre class="cw-pre" aria-label="code"></pre></div><div class="parts"></div></div></section>`);
   const pre = $('.cw-pre', card), partsEl = $('.parts', card);
+  prevLines.forEach(([num, ln]) => pre.appendChild(el(`<span class="ln prev given" data-n="${num}" data-p="-1" title="${esc(t('code.before'))}">${hl(ln) || dt(' ')}</span>`)));
   lines.forEach((ln, i) => {
     const n = from + i, pi = partOf(n), given = pi >= 0 && parts[pi].given;
     pre.appendChild(el(`<span class="ln${given ? ' given' : ''}" data-n="${n}" data-p="${pi}">${hl(ln) || dt(' ')}</span>`));
@@ -364,7 +391,7 @@ function bCode(c, ctx) {
   const walk = el(`<div class="cwalk"><button class="btn sec w-on">${esc(t('code.walk'))}</button><button class="btn sec w-back" hidden>${esc(t('walk.back'))}</button><button class="btn w-next" hidden>${esc(t('walk.next'))}</button><button class="btn quiet w-off" hidden>${esc(t('code.walkOff'))}</button><button class="btn quiet w-again">${esc(t('code.replay'))}</button><span class="step"></span></div>`);
   card.querySelector('.cgrid').appendChild(walk);
   let wi = -1;
-  const lnEls = $$('.ln', pre), ptEls = $$('.part', partsEl);
+  const lnEls = $$('.ln:not(.prev)', pre), ptEls = $$('.part', partsEl);
   function setWalk(i) {
     wi = i; const on = i >= 0;
     lnEls.forEach(l => { const p = +l.dataset.p; l.classList.toggle('cur', on && p === i); l.classList.toggle('dim', on && p !== i); });
@@ -447,6 +474,7 @@ function renderBlocks(blocks, ctx) {
     else if (b.check) out.push(bCheck(b.check, ctx));
     else if (b.box) out.push(bBox(b.box, ctx));
     else if (b.code) bCode(b.code, ctx).forEach(n => out.push(n));
+    else if (b.open) out.push(bOpen(b.open, ctx));
   });
   return out;
 }
@@ -510,6 +538,25 @@ function home() {
 
 /* ---------- chapter and screen ---------- */
 function allMainDone() { const h = had(), d = done(); return S.index.chapters.filter(c => c.n >= 1 && c.n <= 13).every(c => d[c.id] || h[c.id]); }
+/* ---------- parts and steps: the words the thread, rail, strip and banner use (EASE_SPEC 21 Oct 2026 §3) ---------- */
+function stepsOf(st) { return st.screens.filter(x => !x.opener); }
+function stepNo(st, sc) { return stepsOf(st).indexOf(sc) + 1; }
+function thingOf(st) { return st.thing || st.title; }
+function partVerb(st) { return 'part.' + (['making', 'checking', 'testing', 'learning'].includes(st.verb) ? st.verb : 'making'); }
+function bannerText(st, sc) {
+  const n = stepsOf(st).length;
+  if (sc.opener) return `<b>${esc(t('opener.now'))}</b> ${esc(thingOf(st))}`;
+  if (n <= 1) return `<b>${esc(t(partVerb(st)))}</b> ${esc(thingOf(st))}`;
+  return `<b>${esc(t(partVerb(st)))}</b> ${esc(thingOf(st))} <span class="n">· ${esc(t('part.stepCap', { k: stepNo(st, sc), t: n }))}</span>`;
+}
+/* the opener screen of a part: what she is making, what it will do, and the steps in order */
+function bOpen(o, ctx) {
+  const st = ctx.cur.st, steps = stepsOf(st);
+  const n = el(`<div class="cw-open"><div class="row what"><b>${esc(t('opener.what'))}</b><p>${esc(o.what)}</p></div><div class="row does"><b>${esc(t('opener.does'))}</b><p>${esc(o.does)}</p></div><div class="row list"><b>${esc(t('opener.steps', { t: steps.length }))}</b><ol></ol></div></div>`);
+  const ol = $('ol', n);
+  steps.forEach((sc, i) => ol.appendChild(el(`<li><a href="#cw/${ctx.chId}/${st.id}-${sc.id}"><i>${i + 1}</i><span>${esc(sc.title)}</span></a></li>`)));
+  return n;
+}
 async function chapter(id, key) {
   const ixc = S.index.chapters.find(c => c.id === id);
   if (!ixc || !ixc.built || (ixc.hidden && !allMainDone())) { history.replaceState(null, '', '#cw'); return home(); }
@@ -528,29 +575,39 @@ async function chapter(id, key) {
   all.forEach(x => x.sc.blocks.forEach(b => { if (b.words) b.words.forEach(w => { wordsFirst[w[0]] = w[2]; }); }));
   const ctx = { chId: id, ch, key, all, idx, cur, words: wordsFirst };
   S.cur = ctx;
+  const st = cur.st, sc = cur.sc, nStep = stepsOf(st).length, kStep = stepNo(st, sc), thing = thingOf(st);
   document.body.className = 'sw-' + id; document.title = ch.title + ' · ' + t('app.title');
   const main = S.host; main.innerHTML = '';
-  const top = el(`<div><a class="cw-crumb" href="#cw">‹ ${esc(t('home.crumb'))}</a><div class="cw-top"><div class="num">${ch.n === 0 ? '★' : ch.n}</div><div><h1>${esc(ch.title)}</h1><p class="one">${esc(ch.one)}</p></div></div></div>`);
-  main.appendChild(top);
-  /* stage rail */
-  const rail = el(`<ol class="cw-stages"></ol>`);
-  ch.stages.forEach((st, si) => {
-    const ok = st.screens.every(sc => { const ids = idsOf(sc.blocks); return ids.length ? ids.every(i => tk[i]) : sn[st.id + '-' + sc.id]; });
-    rail.appendChild(el(`<li><a class="cw-pill${si === cur.si ? ' on' : ''}${ok && si !== cur.si ? ' ok' : ''}" href="#cw/${id}/${st.id}-${st.screens[0].id}"><i>${ok && si !== cur.si ? '' : si + 1}</i><span class="tt">${esc(st.title)}</span></a></li>`));
+  /* the thread (EASE_SPEC 21 Oct 2026 §3): one sticky line that always says chapter, part and step */
+  const stepWord = sc.opener ? t('part.startWord') : nStep <= 1 ? t('part.one') : t('part.step', { k: kStep, t: nStep });
+  main.appendChild(el(`<nav class="cw-thread"><a class="hm" href="#cw">‹ ${esc(t('home.crumb'))}</a><span class="sep">·</span><span class="ch">${esc(t('thread.chapter', { n: ch.n }))}</span><span class="sep">›</span><span class="pt">${esc(t('thread.part', { s: cur.si + 1, thing }))}</span><span class="sep">›</span><span class="st">${esc(stepWord)}</span></nav>`));
+  /* compact chapter head */
+  main.appendChild(el(`<div class="cw-top compact"><div class="num">${ch.n === 0 ? '★' : ch.n}</div><div><h1>${esc(ch.title)}</h1><p class="one">${esc(ch.one)}</p></div></div>`));
+  /* parts rail: one row of numbers; the part she is in is open with its name; a done part is a tick */
+  const rail = el(`<ol class="cw-rail" aria-label="${esc(t('rail.label'))}"></ol>`);
+  ch.stages.forEach((s, si) => {
+    const ok = s.screens.every(x => { const ids = idsOf(x.blocks); return ids.length ? ids.every(i => tk[i]) : sn[s.id + '-' + x.id]; });
+    const on = si === cur.si, th = thingOf(s);
+    const label = ok && !on ? t('rail.done', { s: si + 1, thing: th }) : t('rail.part', { s: si + 1, thing: th });
+    rail.appendChild(el(`<li><a class="cw-pill${on ? ' on' : ''}${ok && !on ? ' ok' : ''}" href="#cw/${id}/${s.id}-${s.screens[0].id}" title="${esc(label)}" aria-label="${esc(label)}"${on ? ' aria-current="true"' : ''}><i>${ok && !on ? '' : si + 1}</i>${on ? `<span class="tt">${esc(th)}</span>` : ''}</a></li>`));
   });
   main.appendChild(rail);
-  const dots = el(`<div class="cw-dots"></div>`);
-  cur.st.screens.forEach((sc, ki) => {
-    const k2 = cur.st.id + '-' + sc.id; const ids = idsOf(sc.blocks); const ok = ids.length ? ids.every(i => tk[i]) : sn[k2];
-    const b = el(`<button class="dot${ki === cur.ki ? ' on' : ''}${ok && ki !== cur.ki ? ' ok' : ''}" aria-label="${esc(t('stage.screen', { k: ki + 1, t: cur.st.screens.length }))}"></button>`);
-    b.addEventListener('click', () => { location.hash = '#cw/' + id + '/' + k2; }); dots.appendChild(b);
-  });
-  dots.appendChild(el(`<span class="lab">${esc(t('stage.screen', { k: cur.ki + 1, t: cur.st.screens.length }))}</span>`));
-  main.appendChild(dots);
-  /* the screen */
-  const scr = el(`<section class="cw-screen" data-key="${key}"><p class="cw-where">${esc(t('where.line', { c: ch.n, s: cur.si + 1, k: cur.ki + 1, t: cur.st.screens.length }))}</p><h2>${esc(cur.sc.title)}</h2></section>`);
-  const nodes = renderBlocks(cur.sc.blocks, ctx);
-  nodes.forEach(n => scr.appendChild(n));
+  /* step strip: a Start pill for the opener, a dot a step, the label says which step; a one-step part has no strip */
+  if (st.screens.length > 1) {
+    const strip = el(`<div class="cw-strip"></div>`);
+    st.screens.forEach((x, ki) => {
+      const k2 = st.id + '-' + x.id, ids = idsOf(x.blocks), ok = ids.length ? ids.every(i => tk[i]) : sn[k2];
+      const lab = x.opener ? t('part.startWord') + ' · ' + x.title : t('part.step', { k: stepNo(st, x), t: nStep }) + ' · ' + x.title;
+      const b = el(`<button type="button" class="dot${x.opener ? ' go' : ''}${ki === cur.ki ? ' on' : ''}${ok && ki !== cur.ki ? ' ok' : ''}" aria-label="${esc(lab)}" title="${esc(lab)}">${x.opener ? esc(t('part.startWord')) : ''}</button>`);
+      b.addEventListener('click', () => { location.hash = '#cw/' + id + '/' + k2; }); strip.appendChild(b);
+    });
+    strip.appendChild(el(`<span class="lab">${esc(stepWord)}</span>`));
+    main.appendChild(strip);
+  }
+  /* the screen: banner, title, blocks, the done-when line, foot */
+  const scr = el(`<section class="cw-screen${sc.opener ? ' is-open' : ''}" data-key="${key}"><p class="cw-banner">${bannerText(st, sc)}</p><h2>${esc(sc.title)}</h2></section>`);
+  renderBlocks(sc.blocks, ctx).forEach(n => scr.appendChild(n));
+  if (sc.done && !sc.opener) scr.appendChild(el(`<p class="cw-done"><b>${esc(t('done.when'))}:</b> <span>${esc(sc.done)}</span></p>`));
   scr.appendChild(foot(ctx));
   main.appendChild(scr);
   scrollTo(0, 0);
@@ -571,7 +628,7 @@ function foot(ctx) {
   const kind = sc.foot || 'next';
   const sw = getComputedStyle(document.body).getPropertyValue('--sw').trim();
   if (kind === 'next') {
-    const b = el(`<button class="btn big">${esc(t('foot.next'))}</button>`); b.addEventListener('click', () => go(ctx, 1)); f.appendChild(b);
+    const b = el(`<button class="btn big">${esc(t(sc.opener ? 'opener.start' : 'foot.next'))}</button>`); b.addEventListener('click', () => go(ctx, 1)); f.appendChild(b);
   } else if (kind === 'done' || kind === 'have') {
     if (all) { f.appendChild(el(`<span class="ticked">✓ ${esc(t('foot.ticked'))}</span>`)); const b = el(`<button class="btn sec">${esc(t('foot.next'))}</button>`); b.addEventListener('click', () => go(ctx, 1)); f.appendChild(b); }
     else { const b = el(`<button class="btn big">${esc(t(kind === 'have' ? 'foot.have' : 'foot.done'))}</button>`); b.addEventListener('click', () => { tickAll(ctx); b.disabled = true; b.textContent = '✓ ' + t('foot.ticked'); later(() => go(ctx, 1), 700); }); f.appendChild(b); }

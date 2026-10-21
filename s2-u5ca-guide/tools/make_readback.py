@@ -64,6 +64,7 @@ def block(b, lines):
             lines.append('  %s | %s (%s) | %s' % (r['toolbox'], r['name'], clean(nm), ', '.join(r['set']) or t('controls.nothing')))
         if x.get('done'): lines.append('  ' + t('step.see') + ' ' + clean(x['done']))
     elif 'names' in b: lines.append('[Names strip: %s]  %s' % (', '.join(b['names']['list']), t('fixed.names')))
+    elif 'open' in b: lines.append('[Opening screen of this part, one card]'); lines.append(clean(b['open']['what'])); lines.append(clean(b['open']['does']))
 FOOT = {'next': t('foot.next'), 'done': t('foot.done'), 'have': t('foot.have'), 'chapter-done': t('foot.chapterDone').replace('{n}', 'N')}
 rows, tr, goals = [], [], []
 CHS = os.environ.get('S2_RB_CH', 'ch00,ch07').split(',')   # S2_RB_CH=ch01 for one new chapter
@@ -71,14 +72,17 @@ for name in [c + '.json' for c in CHS]:
     ch = json.load(open(os.path.join(D, 'content', name)))
     tr.append('\n# Chapter %d. %s\nUnder the title: %s\nTop bar of every chapter screen: a gold button "%s" that goes back to the home page.\n' % (ch['n'], clean(ch['title']), clean(ch['one']), t('home.where')))
     for s in ch['stages']:
-        tr.append('\n## Stage %s. %s' % (s['id'], clean(s['title'])))
+        VB = {'making': 'You are making', 'checking': 'You are checking', 'testing': 'You are testing', 'learning': 'You are learning'}
+        tr.append('\n## Part %s of %d. %s\nBanner at the top of every screen in this part: "Part %s of %d. %s %s"' % (s['id'], len(ch['stages']), clean(s['title']), s['id'], len(ch['stages']), VB.get(s.get('verb', 'making')), clean(s.get('thing', ''))))
         for sc in s['screens']:
             key = '%s#%s-%s' % (name.replace('.json', ''), s['id'], sc['id'])
             if only and key not in only: continue
             tr.append('\n### Screen %s. %s' % (key, clean(sc['title'])))
             lines = []
             for b in sc['blocks']: block(b, lines)
-            tr.extend(lines); tr.append('[Big button at the foot: %s]' % FOOT.get(sc['foot'], sc['foot']).replace('Chapter N', 'Chapter %d' % ch['n']))
+            tr.extend(lines)
+            if sc.get('done'): tr.append('Line above the big button: Done when %s' % clean(sc['done']))
+            tr.append('[Big button at the foot: %s]' % FOOT.get(sc['foot'], sc['foot']).replace('Chapter N', 'Chapter %d' % ch['n']))
             rows.append((key, clean(sc['title']))); goals.append((key, sc.get('goal', '')))
 head = '''# What the reader sees
 This is the pupil-visible text of a login-gated web guide, read on a school PC beside Visual Studio 2019 (or in a browser tab beside the Programming Environment tab).
@@ -96,13 +100,17 @@ For EACH screen listed in strings-to-judge.txt, read that screen's full text in 
 2. WORDS. List every word or phrase on the screen that this pupil would not know, as it is written, other than the C# code itself and the control names in code font. The words in the transcript head are known. A word explained on the same screen, before or where it is used, is known. An empty list is the normal answer.
 3. STUCK. Is there a place on this screen where the pupil would not know what to do next? Name it in a few words, or write "no".
 4. TITLE. Does the title alone tell the pupil the goal of the screen, in words they use? YES or NO.
-A screen PASSES when the readback is a real sentence (not CAN'T SAY), WORDS is empty, STUCK is "no" and TITLE is YES. Otherwise REWRITE.
+5. PART. Which part of the program is this screen about? Copy the thing from the banner line. If the banner and the screen's text disagree, say so here.
+6. FIRST. What is the first thing you do on this screen, in a weak Year 12's own words? One short line, or "CAN'T SAY".
+7. DONE. How do you know you have finished this screen? Use the Done when line and the screen, or write "CAN'T SAY". An opening screen is done when read.
+A screen PASSES when the readback is a real sentence (not CAN'T SAY), WORDS is empty, STUCK is "no", TITLE is YES, and FIRST and DONE are not CAN'T SAY. Otherwise REWRITE.
 ''')
     open(os.path.join(d, 'PROMPT.txt'), 'w').write('''Register: a Year 12 pupil (15 or 16) in a very weak GCSE CCEA Digital Technology class with many absences, reading the guide beside Visual Studio 2019.
 Read the transcript head first, then every screen in strings-to-judge.txt (one screen per line: key TAB title) at its place in transcript.md.
 Judge each screen by COLD_READ_CHECKLIST.md. Do not guess what the author meant: judge only what is on the screen.
 Every readback is written by hand, one screen at a time, from that screen's own text. A readback must NOT repeat or paraphrase the title, must NOT be a template ("do what the screen says"), and must name the concrete thing the screen is about (which form or button, what the code does, what the pupil will see). Two screens with the same readback sentence make the whole file void and it is sent back. Do not generate readbacks with a script.
 Write verdicts.jsonl: one JSON object per screen, keys exactly: "path" (the key copied character for character), "verdict" ("PASS" or "REWRITE"), "readback" (your one line), "words" (list of strings), "stuck" (string), "title" ("YES" or "NO"), "why" (one line, empty when PASS).
+Add to each object the keys "part" (answer 5), "first" (answer 6) and "done_how" (answer 7), each a short string.
 Then write COLD_READ_REPORT.md: counts, then every REWRITE screen with its why, one line each.
 Reply with two lines: counts of PASS/REWRITE, and the path of verdicts.jsonl.
 ''')
