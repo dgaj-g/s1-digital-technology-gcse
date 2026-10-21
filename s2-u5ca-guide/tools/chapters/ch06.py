@@ -10,50 +10,58 @@ CH = {
  "next": {"id": "07", "n": 7, "title": "The quiz: questions 4 and 5, and the score"},
  "methods": [[D, "btnTakeQuiz_Click"], [Q, "btnCheck1_Click"], [Q, "btnCorrect_Click"], [Q, "btnIncorrect_Click"], [Q, "btnCheck3_Click"]],
  "stages": [
-  {"id": "1", "title": "Check what your quiz has", "screens": [
-   {"id": "1", "title": "Check what your quiz already has", "foot": "have",
+  {"id": "1", "title": "Check what your quiz has", "thing": "your quiz so far", "verb": "checking", "screens": [
+   {"id": "1", "title": "Check what your quiz already has", "foot": "have", "done": "every row is ticked, or you have gone where its link says",
     "goal": "I check for the quiz form and its six panels, the Take quiz button, and the marking of questions 1, 2 and 3.",
     "blocks": [
-    {"p": "Your quiz may be partly made already. This screen checks what is there."},
+    {"p": "Your quiz may be partly made already, so this screen checks what is there."},
     {"check": [
      have("1-1.t1", "Is frmQuiz in Solution Explorer? Does it hold a score panel and five question panels?",
-          "Double-click frmQuiz in Solution Explorer. It opens in the Design tab.", "Go to stage 2.", "#cw/06/2-1"),
+          "Double-click frmQuiz in Solution Explorer. It opens in the Design tab.", "Go to part 2.", "#cw/06/2-1"),
      have("1-1.t2", "Does question 4 have four round buttons and a Check button? Does question 5 have a number box?",
-          "Click each control once. Its name shows near the top of Properties.", "Go to stage 2, screen 4.", "#cw/06/2-4"),
+          "Click each control once. Its name shows near the top of Properties.", "Go to part 2, screen 5.", "#cw/06/2-5"),
      have("1-1.t3", "Run it. Does the Take quiz button open the quiz?",
-          "Use the green Start arrow. Log in and fill in the data entry form first.", "Go to stage 3.", "#cw/06/3-1"),
+          "Use the green Start arrow. Log in and fill in the data entry form first.", "Go to part 3.", "#cw/06/3-1"),
      have("1-1.t4", "Answer question 1 and press Check. Does its panel turn green or red?",
-          "Green means right. Red means wrong.", "Go to stage 4.", "#cw/06/4-1"),
+          "Green means right. Red means wrong.", "Go to part 4.", "#cw/06/4-1"),
      have("1-1.t5", "Do question 2's buttons and question 3's list mark the answer?",
-          "Try each one. The panel should turn green or red.", "Go to stage 5.", "#cw/06/5-1")]}
+          "Try each one. The panel should turn green or red.", "Go to part 5.", "#cw/06/5-1")]}
    ]}]},
-  {"id": "2", "title": "The quiz form: its panels and buttons", "screens": [
-   {"id": "1", "title": "Add the quiz form and its six panels", "foot": "done",
-    "goal": "I add a form called frmQuiz and put six panels on it, each named for what it holds.",
+  {"id": "2", "title": "The quiz form: its panels and buttons", "thing": "the quiz form", "verb": "making", "screens": [
+   opener("Make the quiz form with its six panels and their controls", "This part makes the quiz form. It has one panel for the score and one for each question.",
+           "Each panel is filled with its own controls: labels, boxes, buttons and a list.",
+           "When it works, frmQuiz shows six panels in the Design tab. Every control has its name."),
+   {"id": "1", "title": "Add the quiz form and its six panels", "foot": "done", "done": "frmQuiz is in Solution Explorer with six panels on it",
+    "goal": "I add a form called frmQuiz and put six panels on it.",
     "blocks": [
-    {"p": "The quiz is a form of its own. It holds a score panel and five question panels."},
+    {"p": "The quiz is a form of its own, with a score panel and five question panels."},
     {"steps": [
      step("2-1.1", "Click the Project menu along the top. Click the line that starts Add Form.",
           "A box opens with Form picked in its list.",
           None, [["I cannot see that line.", "Click your project's name in Solution Explorer first. Then open the Project menu again."]]),
      step("2-1.2", "In the Name box at the bottom, type frmQuiz.cs. Click Add.",
           "frmQuiz opens in the Design tab. It is empty."),
-     step("2-1.3", "Drag six panels from the Toolbox onto it. Name each one as the map shows.",
-          "Six panels, each with a name that starts with pnl.")]},
+     step("2-1.3", "Drag six panels from the Toolbox onto it. The next screen shows what to name them.",
+          "Six panels sit on the form, waiting for their names.")]},
     {"box": {"title": "See it in Visual Studio", "fold": True, "blocks": [
       frames("F5", "Add a new form", [
         ("f5-1", "The Project menu open, with Add Form in its list", "Open the Project menu. Click the line that starts Add Form."),
         ("f5-2", "The Add New Item box with Form picked and a name in the Name box", "Form is picked. Type the form's name in the Name box."),
         ("f5-3", "The new empty form in the Design tab", "Click Add. The new form opens in the Design tab. My picture says frmTemp. Yours shows the name you typed.")])]}},
-    {"flow": {"form": Q, "map": True,
+   ]},
+   {"id": "2", "title": "See how the six panels are laid out", "foot": "done", "done": "you have read the name of each panel on the picture",
+    "goal": "Each of the six panels is named for what it holds, so the questions can go in any order.",
+    "blocks": [
+    {"p": "This picture shows the quiz form with its six panels and their names."},
+    {"flow": {"watch": "Read the six names, one for the score and five for questions", "form": Q, "map": True,
               "lit": ["pnlQuizScore", "pnlTextQuestion", "pnlButtonsQuestion", "pnlListQuestion", "pnlRadioQuestion", "pnlNumberQuestion"], "then": [],
-              "say": "Six panels. One holds the score. Each of the other five holds one question."}},
+              "say": "Six panels: one for the score and one for each question."}},
     {"p": "Each panel is named for what is in it, not a number. So YOUR quiz can put its questions in any order."}
    ]},
-   {"id": "2", "title": "Fill the score panel and the question 1 panel", "foot": "done",
+   {"id": "3", "title": "Fill the score panel and the question 1 panel", "foot": "done", "done": "the score panel and the question 1 panel hold every control in the table",
     "goal": "The score panel holds the title, the score, a comment and two buttons, and question 1 holds a label, a box and Check.",
     "blocks": [
-    {"p": "Drag each control into its panel. Then give it its name and its Text."},
+    {"p": "Drag each control into its panel, then give it its name and its Text."},
     {"controls": {"form": Q, "rows": [
       {"toolbox": "Label", "name": "lblQuiz", "set": ["Text = Quiz"]},
       {"toolbox": "Label", "name": "lblComment", "set": ["Text = a line to start the quiz"]},
@@ -67,10 +75,10 @@ CH = {
      "done": "The first six sit inside pnlQuizScore. The last three sit inside pnlTextQuestion."}},
     {"yours": "MY questions are about water safety. Type YOUR five questions into the Text of each question label."}
    ]},
-   {"id": "3", "title": "Fill the question 2 and question 3 panels", "foot": "done",
+   {"id": "4", "title": "Fill the question 2 and question 3 panels", "foot": "done", "done": "the question 2 and question 3 panels hold every control in the table",
     "goal": "Question 2 holds a label and two answer buttons, and question 3 holds a label, a picture, a list and Check.",
     "blocks": [
-    {"p": "Question 2 is answered with one of two buttons. Question 3 is answered from a drop-down list."},
+    {"p": "Question 2 uses two buttons, and question 3 uses a drop-down list."},
     {"controls": {"form": Q, "rows": [
       {"toolbox": "Label", "name": "lblQuestion2", "set": ["Text = question 2"]},
       {"toolbox": "Button", "name": "btnCorrect", "set": ["Text = the right answer"]},
@@ -80,47 +88,69 @@ CH = {
       {"toolbox": "ComboBox", "name": "cbxQuestion3", "set": ["Items = the choices, one per line"]},
       {"toolbox": "Button", "name": "btnCheck3", "set": ["Text = Check"]}],
      "done": "The first three sit inside pnlButtonsQuestion. The last four sit inside pnlListQuestion."}},
-    {"p": "In the Toolbox, PictureBox makes a picture box. ComboBox makes a drop-down list."},
-    {"p": "For Image, click the three dots beside it. Click Import, pick YOUR picture, then click OK."},
-    {"p": "Items works as it did for the year group list in chapter 2."},
-    {"watch": "Put the RIGHT answer first in the Items list. The code on screen 5-4 looks for it there."}
+    {"p": "In the Toolbox, PictureBox makes a picture box and ComboBox makes a drop-down list."},
+    {"p": "For Image, click its three dots, then Import, then YOUR picture. Items works as it did in chapter 2."},
+    {"watch": "Put the RIGHT answer first in the Items list. The code on screen 5-7 looks for it there."}
    ]},
-   {"id": "4", "title": "Fill the question 4 and question 5 panels", "foot": "done",
-    "goal": "Question 4 holds a group box with four round buttons and Check, and question 5 holds a label, a number box and Check.",
+   {"id": "5", "title": "Fill the question 4 panel", "foot": "done", "done": "the question 4 panel holds the group box, four round buttons and the Check button",
+    "goal": "Question 4 holds a group box, with four round buttons and a Check button inside.",
     "blocks": [
-    {"p": "Question 4 has four answers. Only one can be picked. Question 5 is answered with a number."},
+    {"p": "Question 4 uses four round buttons, all inside one group box."},
+    {"p": "Drop the group box into the question 4 panel first. Then drop the four round buttons and btnCheck4 INSIDE the group box."},
     {"box": {"title": "See it in Visual Studio", "fold": True, "blocks": [
-      frames("F8", "Drag a group box, round buttons and a number box", [
+      frames("F8", "Drag a group box and four round buttons", watch="Watch the round buttons go inside the group box", fr=[
         ("f8-1", "The Toolbox with GroupBox shown", "Drag a GroupBox into the question 4 panel."),
-        ("f8-2", "Four RadioButtons dropped inside the group box", "Drag four RadioButtons INSIDE the group box."),
-        ("f8-3", "A NumericUpDown dropped into the question 5 panel", "Drag a NumericUpDown into the question 5 panel.")])]}},
+        ("f8-2", "Four RadioButtons dropped inside the group box", "Drag four RadioButtons INSIDE the group box.")])]}},
     {"controls": {"form": Q, "rows": [
       {"toolbox": "GroupBox", "name": "gbQuestion4", "set": ["Text = question 4"]},
       {"toolbox": "RadioButton", "name": "rbA", "set": ["Text = answer A"]},
       {"toolbox": "RadioButton", "name": "rbB", "set": ["Text = answer B"]},
       {"toolbox": "RadioButton", "name": "rbC", "set": ["Text = answer C"]},
       {"toolbox": "RadioButton", "name": "rbD", "set": ["Text = answer D"]},
-      {"toolbox": "Button", "name": "btnCheck4", "set": ["Text = Check"]},
+      {"toolbox": "Button", "name": "btnCheck4", "set": ["Text = Check"]}],
+     "done": "The group box sits in pnlRadioQuestion. The four round buttons and the Check button sit inside the group box."}},
+   ]},
+   {"id": "6", "title": "Fill the question 5 panel", "foot": "done", "done": "the question 5 panel holds the label, the number box and the Check button",
+    "goal": "Question 5 holds a label, a number box and a Check button.",
+    "blocks": [
+    {"p": "Question 5 takes a number, so it uses a number box with little arrows."},
+    {"p": "Drop the label, the number box and btnCheck5 into the question 5 panel."},
+    {"box": {"title": "See it in Visual Studio", "fold": True, "blocks": [
+      frames("F8b", "Drag a number box", fr=[
+        ("f8-3", "A NumericUpDown dropped into the question 5 panel", "Drag a NumericUpDown into the question 5 panel.")])]}},
+    {"controls": {"form": Q, "rows": [
       {"toolbox": "Label", "name": "lblQuestion5", "set": ["Text = question 5"]},
       {"toolbox": "NumericUpDown", "name": "nudQuestion5", "set": []},
       {"toolbox": "Button", "name": "btnCheck5", "set": ["Text = Check"]}],
-     "done": "The group box sits in pnlRadioQuestion, with the next five inside it. The last three sit inside pnlNumberQuestion."}},
-    {"watch": "The four round buttons and btnCheck4 go INSIDE the group box. Then only one round button can be picked."}
+     "done": "All three sit inside pnlNumberQuestion."}},
    ]}]},
-  {"id": "3", "title": "Getting to the quiz", "screens": [
-   {"id": "1", "title": "Open the quiz from the Take quiz button", "foot": "done",
-    "goal": "Pressing Take quiz closes the data entry form and opens a new quiz form.",
+  {"id": "3", "title": "Getting to the quiz", "thing": "the Take quiz button", "verb": "making", "screens": [
+   opener("Make the Take quiz button open the quiz", "This part gives the Take quiz button three lines of code. They close one form and open the other.",
+           "The data entry form closes, so its details must already be in Global.cs. Then the quiz form opens.",
+           "When it works, pressing Take quiz closes the data entry form. The quiz appears in its place."),
+   {"id": "1", "title": "Meet the two new things for Take quiz", "foot": "done", "done": "you have read what this.Close() and new frmQuiz().Show() mean",
+    "goal": "I meet the two new things the Take quiz button uses.",
     "blocks": [
-    {"p": "The Take quiz button is on the data entry form. It swaps that form for the quiz."},
+    {"p": "The Take quiz button sits on the data entry form and swaps it for the quiz."},
     {"words": [
-      ["this.Close()", "Close this form for good.", "3-1", True],
-      ["new frmQuiz().Show()", "Make a new quiz form and show it.", "3-1", True],
+      ["this.Close()", "Close this form for good.", "3-3", True],
+      ["new frmQuiz().Show()", "Make a new quiz form and show it.", "3-3", True],
       [".ToLower()", "Turn every letter into a small letter.", "4-1", True],
       ["BackColor", "The background colour of a control.", "4-1", True]],
      "intro": "Four new things in this chapter. Two are on this screen. Click one to see what it means."},
+   ]},
+   {"id": "2", "title": "Open the code behind the Take quiz button", "foot": "done", "done": "the code tab is open at btnTakeQuiz_Click with your cursor between its curly brackets",
+    "goal": "I open the code behind the Take quiz button.",
+    "blocks": [
+    {"p": "The picture shows what the button does: one form closes and the other opens."},
     {"drawn": {"id": "form-swap", "alt": "The data entry form fades away. The quiz form appears in its place.",
                "say": "The data entry form closes. The quiz form opens."}},
     {"steps": [step("3-1.1", "Open frmDataEntry in the Design tab. Double-click the Take quiz button.", "The code tab opens at btnTakeQuiz_Click.")]},
+   ]},
+   {"id": "3", "title": "Type the three lines that swap the forms", "foot": "done", "done": "lines 3 to 5 are typed and the code has no red squiggles",
+    "goal": "Pressing Take quiz closes the data entry form and opens a new quiz form.",
+    "blocks": [
+    {"p": "Three lines close the data entry form and open the quiz."},
     code("3-1.c1", "The Take quiz button", "between the curly brackets of btnTakeQuiz_Click", D, "btnTakeQuiz_Click", 1, 6,
          [given(1, 2),
           [3, 5, "Close this form, open the quiz", "A note for you. The data entry form closes. A new quiz form opens."],
@@ -129,40 +159,61 @@ CH = {
     {"p": "[[this.Close()|0]] closes the data entry form. [[new frmQuiz().Show()|1]] makes the quiz and shows it."},
     {"watch": "The data entry form forgets everything when it closes. So its details are kept in Global.cs."}
    ]}]},
-  {"id": "4", "title": "Question 1: a typed answer", "screens": [
-   {"id": "1", "title": "Mark the typed answer to question 1 right or wrong", "foot": "done",
-    "goal": "If the typed answer in small letters matches, the score goes up and the panel turns green, or else it turns red.",
+  {"id": "4", "title": "Question 1: a typed answer", "thing": "question 1", "verb": "making", "screens": [
+   opener("Make question 1's Check button mark a typed answer", "This part marks question 1. The typed answer is compared with the right one in small letters.",
+           "A match adds a point and turns the panel green. Anything else turns it red.",
+           "When it works, question 1 goes green or red. Then question 2 switches on."),
+   {"id": "1", "title": "Open the code behind question 1's Check button", "foot": "done", "done": "the code tab is open at btnCheck1_Click with your cursor between its curly brackets",
+    "goal": "I open the code behind question 1's Check button and meet .ToLower() and BackColor.",
     "blocks": [
-    {"p": "Question 1 is typed in a box. Its Check button marks it."},
+    {"p": "Question 1 is typed in a box, and its Check button marks it."},
     {"p": "[[.ToLower()|2]] turns every letter small. So EMERGENCY and Emergency both match."},
     {"p": "[[BackColor|3]] is the background colour of a panel. Green means right. Red means wrong."},
     {"steps": [step("4-1.1", "Open frmQuiz in the Design tab. Double-click the Check button of question 1.", "The code tab opens at btnCheck1_Click.")]},
-    code("4-1.c1", "Question 1's Check button, part 1 of 2", "between the curly brackets of btnCheck1_Click", Q, "btnCheck1_Click", 1, 12,
+   ]},
+   {"id": "2", "title": "Mark the typed answer right or wrong", "foot": "done", "done": "lines 3 to 12 are typed and the code has no red squiggles",
+    "goal": "If the typed answer in small letters matches, the score goes up and the panel turns green, or else it turns red.",
+    "blocks": [
+    {"p": "These lines compare the typed answer with the right one, in small letters."},
+    code("4-1.c1", "Question 1's Check button: code 1 of 2", "between the curly brackets of btnCheck1_Click", Q, "btnCheck1_Click", 1, 12,
          [given(1, 2),
           [3, 8, "Right?", "Is the answer, in small letters, emergency? Then add 1, turn the panel green and show the score."],
           [9, 12, "Wrong", "Any other answer turns the panel red."]],
          ["tbxQuestion1", "Global.quizScore", "pnlTextQuestion", "lblResult"], ["tbxQuestion1"],
          yours="MY answer is emergency. Type YOUR answer, all in small letters.")
    ]},
-   {"id": "2", "title": "Switch off question 1 and switch on question 2", "foot": "done",
-    "goal": "After question 1 is marked, its panel switches off and the question 2 panel switches on.",
+   {"id": "3", "title": "See question 2 switch on", "foot": "done", "done": "you have watched the panels switch and read the line under the picture",
+    "goal": "I watch the question 1 panel switch off and the question 2 panel switch on.",
     "blocks": [
-    {"p": "Right or wrong, the quiz moves on. Question 1 switches off. Question 2 switches on."},
-    {"flow": {"form": Q, "lit": ["pnlTextQuestion"], "then": ["pnlButtonsQuestion"], "keep": False,
+    {"p": "Right or wrong, the quiz moves on from question 1 to question 2."},
+    {"flow": {"watch": "Watch question 1 switch off as question 2 wakes up", "form": Q, "lit": ["pnlTextQuestion"], "then": ["pnlButtonsQuestion"], "keep": False,
               "before": "Question 1 is marked.",
               "say": "The question 1 panel switches off. The question 2 panel switches on."}},
-    code("4-2.c1", "Question 1's Check button, part 2 of 2", "under part 1, " + C1, Q, "btnCheck1_Click", 13, 16,
+   ]},
+   {"id": "4", "title": "Switch off question 1 and switch on question 2", "foot": "done", "done": "lines 13 to 14 are typed and the code has no red squiggles",
+    "goal": "After question 1 is marked, its panel switches off and the question 2 panel switches on.",
+    "blocks": [
+    {"p": "These two lines run after a right answer and after a wrong one."},
+    code("4-2.c1", "Question 1's Check button: code 2 of 2", "under code 1, " + C1, Q, "btnCheck1_Click", 13, 16,
          [[13, 14, "Move to the next question", "Question 1 switches off. Question 2 switches on."],
           given(15, 16)],
          ["pnlTextQuestion", "pnlButtonsQuestion"], ["pnlButtonsQuestion"]),
-    {"watch": "Type these two lines straight after the last line of part 1. They run for a right answer and a wrong one."}
+    {"watch": "Type these two lines straight after the last line of code 1. They run for a right answer and a wrong one."}
    ]}]},
-  {"id": "5", "title": "Questions 2 and 3", "screens": [
-   {"id": "1", "title": "Score a point when the right button is pressed", "foot": "done",
+  {"id": "5", "title": "Questions 2 and 3", "thing": "questions 2 and 3", "verb": "making", "screens": [
+   opener("Mark the answers to questions 2 and 3", "This part marks questions 2 and 3. Question 2 has two buttons, and question 3 has a drop-down list.",
+           "Each button of question 2 has its own code. The Check button of question 3 looks at which item is chosen.",
+           "When it works, each answer turns its panel green or red. Then the next question switches on."),
+   {"id": "1", "title": "Open the code behind the right answer button", "foot": "done", "done": "the code tab is open at btnCorrect_Click with your cursor between its curly brackets",
+    "goal": "I open the code behind the right answer button of question 2.",
+    "blocks": [
+    {"p": "Question 2 has two buttons with their own code, and only one adds a point."},
+    {"steps": [step("5-1.1", "In the Design tab, double-click the right answer button of question 2.", "The code tab opens at btnCorrect_Click.")]},
+   ]},
+   {"id": "2", "title": "Score a point when the right button is pressed", "foot": "done", "done": "lines 3 to 8 are typed and the code has no red squiggles",
     "goal": "The right answer button adds 1 to the score, turns the panel green and switches on question 3.",
     "blocks": [
-    {"p": "Question 2 has two buttons. Each button has its own code. Only the right button adds a point."},
-    {"steps": [step("5-1.1", "In the Design tab, double-click the right answer button of question 2.", "The code tab opens at btnCorrect_Click.")]},
+    {"p": "These lines add 1 to the score, turn the panel green and switch on question 3."},
     code("5-1.c1", "The right answer button", "between the curly brackets of btnCorrect_Click", Q, "btnCorrect_Click", 1, 9,
          [given(1, 2),
           [3, 5, "Add a point", "A note for you. Then 1 is added to the score, and the score is shown."],
@@ -171,11 +222,16 @@ CH = {
          ["Global.quizScore", "lblResult", "pnlButtonsQuestion", "pnlListQuestion"], ["pnlListQuestion"],
          yours="Which of YOUR two buttons is the right answer? Only that one scores.")
    ]},
-   {"id": "2", "title": "Turn question 2 red when the wrong button is pressed", "foot": "done",
+   {"id": "3", "title": "Open the code behind the wrong answer button", "foot": "done", "done": "the code tab is open at btnIncorrect_Click with your cursor between its curly brackets",
+    "goal": "I open the code behind the wrong answer button of question 2.",
+    "blocks": [
+    {"p": "The wrong button does the same with two changes: no point, and the panel turns red."},
+    {"steps": [step("5-2.1", "In the Design tab, double-click the wrong answer button of question 2.", "The code tab opens at btnIncorrect_Click.")]},
+   ]},
+   {"id": "4", "title": "Turn question 2 red when the wrong button is pressed", "foot": "done", "done": "lines 3 to 6 are typed and the code has no red squiggles",
     "goal": "The wrong answer button turns the panel red, adds nothing, and still switches on question 3.",
     "blocks": [
-    {"p": "The wrong button does the same, with two changes. It adds no point, and the panel turns red."},
-    {"steps": [step("5-2.1", "In the Design tab, double-click the wrong answer button of question 2.", "The code tab opens at btnIncorrect_Click.")]},
+    {"p": "These lines turn the panel red, add nothing, and still switch on question 3."},
     code("5-2.c1", "The wrong answer button", "between the curly brackets of btnIncorrect_Click", Q, "btnIncorrect_Click", 1, 7,
          [given(1, 2),
           [3, 6, "Red, then move on", "A note for you. The panel turns red. Question 2 switches off. Question 3 switches on."],
@@ -183,55 +239,60 @@ CH = {
          ["pnlButtonsQuestion", "pnlListQuestion"], ["pnlButtonsQuestion"]),
     {"watch": "Each button has its own curly brackets. Type this code in btnIncorrect_Click, not in btnCorrect_Click."}
    ]},
-   {"id": "3", "title": "Stop question 3 when nothing is chosen", "foot": "done",
-    "goal": "If nothing is chosen in the question 3 list, a message asks the user to choose and nothing else happens.",
+   {"id": "5", "title": "Open the code behind question 3's Check button", "foot": "done", "done": "the code tab is open at btnCheck3_Click with your cursor between its curly brackets",
+    "goal": "I open the code behind question 3's Check button.",
     "blocks": [
-    {"p": "Question 3 is a drop-down list. A user could press Check with nothing chosen."},
+    {"p": "Question 3 is a drop-down list, and a user could press Check with nothing chosen."},
     {"p": ".SelectedIndex == -1 asks if nothing is chosen. You met it in chapter 4."},
     {"steps": [step("5-3.1", "In the Design tab, double-click the Check button of question 3.", "The code tab opens at btnCheck3_Click.")]},
-    code("5-3.c1", "Question 3's Check button, part 1 of 3", "between the curly brackets of btnCheck3_Click", Q, "btnCheck3_Click", 1, 7,
+   ]},
+   {"id": "6", "title": "Stop question 3 when nothing is chosen", "foot": "done", "done": "lines 3 to 7 are typed and the code has no red squiggles",
+    "goal": "If nothing is chosen in the question 3 list, a message asks the user to choose and nothing else happens.",
+    "blocks": [
+    {"p": "These lines show a message when nothing is chosen, and do nothing else."},
+    code("5-3.c1", "Question 3's Check button: code 1 of 3", "between the curly brackets of btnCheck3_Click", Q, "btnCheck3_Click", 1, 7,
          [given(1, 2),
           [3, 7, "Nothing chosen?", "If nothing is chosen, a note for you, then a message asks the user to choose."]],
          ["cbxQuestion3"], ["cbxQuestion3"]),
     {"watch": "With nothing chosen, nothing else happens. The list stays switched on so the user can choose."}
    ]},
-   {"id": "4", "title": "Score a point when the right item is chosen", "foot": "done",
+   {"id": "7", "title": "Score a point when the right item is chosen", "foot": "done", "done": "lines 8 to 16 are typed and the code has no red squiggles",
     "goal": "If the first item in the list is chosen, the score goes up and the panel turns green.",
     "blocks": [
-    {"p": "else runs when something is chosen. Then the code asks: is it the right item?"},
+    {"p": "else runs when something is chosen, then asks if it is the right item."},
     {"p": "The items are counted from 0. So the first item is number 0."},
-    code("5-4.c1", "Question 3's Check button, part 2 of 3", "under part 1, " + C3, Q, "btnCheck3_Click", 8, 16,
+    code("5-4.c1", "Question 3's Check button: code 2 of 3", "under code 1, " + C3, Q, "btnCheck3_Click", 8, 16,
          [[8, 9, "Something is chosen", "else, then its curly bracket."],
           [10, 16, "Right?", "Is item 0 chosen? A note, then add 1, turn the panel green and show the score."]],
          ["cbxQuestion3", "Global.quizScore", "pnlListQuestion", "lblResult"], ["cbxQuestion3"],
          yours="MY right answer is the first item in the list, number 0. Count YOUR list from 0.")
    ]},
-   {"id": "5", "title": "Turn question 3 red, then switch on question 4", "foot": "done",
+   {"id": "8", "title": "Turn question 3 red, then switch on question 4", "foot": "done", "done": "lines 17 to 24 are typed and the code has no red squiggles",
     "goal": "Any other item turns the panel red, then question 3 switches off and question 4 switches on.",
     "blocks": [
-    {"p": "Last, a wrong item turns the panel red. Then the quiz moves on to question 4."},
-    code("5-5.c1", "Question 3's Check button, part 3 of 3", "under part 2, " + C3, Q, "btnCheck3_Click", 17, 26,
+    {"p": "Last, a wrong item turns the panel red, then the quiz moves on to question 4."},
+    code("5-5.c1", "Question 3's Check button: code 3 of 3", "under code 2, " + C3, Q, "btnCheck3_Click", 17, 26,
          [[17, 21, "Wrong", "Any other item. A note, then the panel turns red."],
           [22, 24, "Move to the next question", "A note. Question 3 switches off. Question 4 switches on."],
           given(25, 26)],
          ["pnlListQuestion", "pnlRadioQuestion"], ["pnlRadioQuestion"]),
-    {"watch": "The two move-on lines sit inside the else of part 2. They never run when nothing is chosen."}
+    {"watch": "The two move-on lines sit inside the else of code 2. They never run when nothing is chosen."}
    ]}]},
-  {"id": "6", "title": "Try your first three questions", "screens": [
-   {"id": "1", "title": "Try every way through questions 1, 2 and 3", "foot": "chapter-done",
+  {"id": "6", "title": "Try your first three questions", "thing": "questions 1 to 3", "verb": "testing", "screens": [
+   {"id": "1", "title": "Try every way through questions 1, 2 and 3", "foot": "chapter-done", "done": "every row is ticked, or you have gone where its link says",
     "goal": "I open the quiz, answer in capitals, answer wrongly, try both kinds of button, and press Check with nothing chosen.",
     "blocks": [
-    {"p": "Run your program and get to the Take quiz button. Then try each row."},
+    {"p": "Run your program, get to the Take quiz button, then try each row."},
     {"check": [
      tryit("6-1.t1", "Press Take quiz.",
-           "The data entry form closes. The quiz opens.", "Look at screen 3-1.", "#cw/06/3-1"),
+           "The data entry form closes. The quiz opens.", "Look at the code on screen 3-3.", "#cw/06/3-3"),
      tryit("6-1.t2", "Type YOUR question 1 answer in capitals. Press Check.",
-           "The panel goes green. The score shows 1.", "Look at part 1 on screen 4-1.", "#cw/06/4-1"),
+           "The panel goes green. The score shows 1.", "Look at the code on screen 4-2.", "#cw/06/4-2"),
      tryit("6-1.t3", "Run it again. Type a wrong answer for question 1. Press Check.",
-           "The panel goes red. Question 2 can be clicked.", "Look at part 2 on screen 4-2.", "#cw/06/4-2"),
+           "The panel goes red. Question 2 can be clicked.", "Look at the code on screen 4-4.", "#cw/06/4-4"),
      tryit("6-1.t4", "Press the right button for question 2.",
-           "The panel goes green and the score goes up by 1.", "Look at screen 5-1.", "#cw/06/5-1"),
+           "The panel goes green and the score goes up by 1.", "Look at the code on screen 5-2.", "#cw/06/5-2"),
      tryit("6-1.t5", "Choose nothing in the list and press Check.",
-           "A message asks you to choose. The quiz must NOT move on to question 4.", "If it moved on, look at screen 5-3.", "#cw/06/5-3", neg=True)]}
+           "A message asks you to choose. The quiz must NOT move on to question 4.", "If it moved on, look at the code on screen 5-6.", "#cw/06/5-6", neg=True)]}
    ]}]}
  ]}

@@ -42,15 +42,18 @@
   {
    "id": "1",
    "title": "Check what you need first",
+   "thing": "the parts this chapter needs",
+   "verb": "checking",
    "screens": [
     {
      "id": "1",
      "title": "Check the parts this chapter needs",
      "foot": "have",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "Before I start, I check that two pupils are saved and that the View report button is there.",
      "blocks": [
       {
-       "p": "This chapter uses work from earlier chapters. This screen checks that it is there."
+       "p": "This chapter uses work from earlier chapters, so this screen checks that it is there."
       },
       {
        "check": [
@@ -58,15 +61,15 @@
          "id": "1-1.t1",
          "what": "Is chapter 11 done, with at least two pupils saved in YOUR file?",
          "how": "Right-click the project in Solution Explorer. Click Open Folder in File Explorer. Open bin, then Debug. Open YOUR file and count the lines.",
-         "fix": "Go to chapter 11, stage 5.",
-         "go": "#cw/11/5-1",
+         "fix": "Go to chapter 11, part 5.",
+         "go": "#cw/11/7-1",
          "expect": "have"
         },
         {
          "id": "1-1.t2",
          "what": "Is there a View report button under the panels, named btnViewReport?",
          "how": "Open frmDataEntry in the Design tab. Click the button and look at its Name.",
-         "fix": "Go to chapter 2, stage 3.",
+         "fix": "Go to chapter 2, part 3.",
          "go": "#cw/02/3-1",
          "expect": "have"
         }
@@ -79,15 +82,33 @@
   {
    "id": "2",
    "title": "The report form: its table and lists",
+   "thing": "the report form",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Make the report form with its table and lists",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part adds frmReport with a big table, two lists, three labels and a Close button.",
+     "blocks": [
+      {
+       "open": {
+        "what": "The report is a form of its own. It holds a big table, two lists, three labels and a Close button.",
+        "does": "When it works, frmReport sits in Solution Explorer with every control named."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Add the report form",
      "foot": "done",
+     "done": "frmReport is open in the Design tab, empty",
      "goal": "I add a new form called frmReport.",
      "blocks": [
       {
-       "p": "The report is a form of its own. It shows every saved pupil in a table."
+       "p": "The report is a form of its own that shows every saved pupil in a table."
       },
       {
        "steps": [
@@ -140,7 +161,8 @@
              "h": 494,
              "say": "Click Add. The new form opens in the Design tab. My picture says frmTemp. Yours shows the name you typed."
             }
-           ]
+           ],
+           "watch": "Watch the Add Form line, then the Name box"
           }
          }
         ]
@@ -152,10 +174,14 @@
      "id": "2",
      "title": "Add the table and the two lists",
      "foot": "done",
+     "done": "the table, the two lists and the three labels are on frmReport and named",
      "goal": "frmReport holds a big table, a group list, a year list and three labels.",
      "blocks": [
       {
-       "p": "Drag each control onto frmReport and name it. Drag the corner of the table so it fills most of the form."
+       "p": "Drag each control onto frmReport and name it."
+      },
+      {
+       "p": "Drag the corner of the table so it fills most of the form."
       },
       {
        "controls": {
@@ -206,10 +232,7 @@
        }
       },
       {
-       "yours": "MY groups are Weak, Intermediate and Advanced. In Properties, click the three dots beside Items. Type All, then YOUR groups, one on each line."
-      },
-      {
-       "watch": "Leave no space at the end of a choice. Advanced with a space after it will not match."
+       "yours": "MY groups are Weak, Intermediate and Advanced. Click the three dots beside Items. Type All, then YOUR groups, one on each line. Leave no space at the end of a line."
       },
       {
        "box": {
@@ -235,7 +258,8 @@
              "h": 494,
              "say": "Add the two lists and their labels."
             }
-           ]
+           ],
+           "watch": "Watch the table grow to fill most of the form"
           }
          }
         ]
@@ -247,10 +271,11 @@
      "id": "3",
      "title": "Add the Close button",
      "foot": "done",
+     "done": "btnClose is on frmReport with the word Close on it",
      "goal": "frmReport has a Close button called btnClose.",
      "blocks": [
       {
-       "p": "One more control. The Close button takes the pupil back to the data entry form."
+       "p": "The Close button takes the pupil back to the data entry form."
       },
       {
        "controls": {
@@ -274,15 +299,89 @@
   {
    "id": "3",
    "title": "Two lines at the top of the report code",
+   "thing": "two lines at the top",
+   "verb": "making",
    "screens": [
     {
+     "id": "0",
+     "title": "Add two lines at the top of the report code",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part meets six new words, then adds the using line and the dt line.",
+     "blocks": [
+      {
+       "open": {
+        "what": "One line lets the report use files. One line makes an empty table called dt that the whole report fills.",
+        "does": "When it works, both new lines sit at the top of frmReport's code."
+       }
+      }
+     ]
+    },
+    {
      "id": "1",
-     "title": "Let the report use files",
+     "title": "Meet the six new words",
+     "foot": "next",
+     "done": "you have read the six words",
+     "goal": "I know the six new words before I type any of them.",
+     "blocks": [
+      {
+       "p": "Six new words come up in this chapter."
+      },
+      {
+       "words": [
+        [
+         "DataTable",
+         "A table kept in memory, with columns and rows.",
+         "3-3",
+         true
+        ],
+        [
+         "string[]",
+         "A list of words, one after another.",
+         "4-2",
+         true
+        ],
+        [
+         "for loop",
+         "Code that runs again and again, once for each thing in a list.",
+         "4-2",
+         false
+        ],
+        [
+         "Split('~')",
+         "Cuts one line into pieces at each ~.",
+         "4-2",
+         true
+        ],
+        [
+         "DataGridView",
+         "The table you can see on the form.",
+         "4-5",
+         true
+        ],
+        [
+         "RowFilter",
+         "Hides the rows that do not match. Empty words show every row.",
+         "5-1",
+         true
+        ]
+       ],
+       "intro": "Click a marked word to see what it means."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Add the file tools line at the top",
      "foot": "done",
+     "done": "using System.IO sits under the other using lines and is not red",
      "goal": "One line at the top of frmReport's code lets the report use the file tools.",
      "blocks": [
       {
-       "p": "Open frmReport's code. Scroll to the very top. The top lines start with the word using. Click at the end of the last one and press Enter."
+       "p": "Open frmReport's code and scroll to the very top."
+      },
+      {
+       "p": "The top lines start with the word using. Click at the end of the last one and press Enter, so a new line waits."
       },
       {
        "code": {
@@ -313,13 +412,14 @@
      ]
     },
     {
-     "id": "2",
+     "id": "3",
      "title": "Make a table in memory",
      "foot": "done",
+     "done": "the dt line sits above public frmReport() and has no red squiggles",
      "goal": "One line near the top makes a table called dt that the whole report can use.",
      "blocks": [
       {
-       "p": "A [[DataTable|0]] is a table kept in memory. The report fills it, then shows it."
+       "p": "A [[DataTable|0]] is a table kept in memory, which the report fills and then shows."
       },
       {
        "code": {
@@ -346,47 +446,6 @@
        }
       },
       {
-       "words": [
-        [
-         "DataTable",
-         "A table kept in memory, with columns and rows.",
-         "3-2",
-         true
-        ],
-        [
-         "string[]",
-         "A list of words, one after another.",
-         "4-2",
-         true
-        ],
-        [
-         "for loop",
-         "Code that runs again and again, once for each thing in a list.",
-         "4-2",
-         false
-        ],
-        [
-         "Split('~')",
-         "Cuts one line into pieces at each ~.",
-         "4-2",
-         true
-        ],
-        [
-         "DataGridView",
-         "The table you can see on the form.",
-         "4-4",
-         true
-        ],
-        [
-         "RowFilter",
-         "Hides the rows that do not match. Empty words show every row.",
-         "5-1",
-         true
-        ]
-       ],
-       "intro": "Six new words in this chapter. Click a marked word to see what it means."
-      },
-      {
        "box": {
         "title": "See where it goes",
         "fold": true,
@@ -403,7 +462,8 @@
              "h": 203,
              "say": "The line goes near the top, above public frmReport()."
             }
-           ]
+           ],
+           "watch": "Watch the dt line sit above public frmReport"
           }
          }
         ]
@@ -416,21 +476,42 @@
   {
    "id": "4",
    "title": "The Load event in four parts",
+   "thing": "the code as the report opens",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Type the code that runs as the report opens",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part types frmReport_Load in four chunks: columns, read the file, fill the rows, show the table.",
+     "blocks": [
+      {
+       "open": {
+        "what": "frmReport_Load has four chunks. It makes the columns, reads the file, fills the rows and shows the table.",
+        "does": "When it works, every saved pupil has a row in the table as the report opens."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Give the table seven columns",
      "foot": "done",
+     "done": "lines 3 to 9 are typed and the code has no red squiggles",
      "goal": "When the report opens, the table gets seven columns, one for each thing it shows.",
      "blocks": [
       {
-       "p": "In the Design tab, double-click the title bar of frmReport. frmReport_Load appears in the code tab."
+       "p": "In the Design tab, double-click the title bar of frmReport."
+      },
+      {
+       "p": "frmReport_Load appears in the code tab."
       },
       {
        "code": {
         "id": "4-1.c1",
         "kind": "type",
-        "title": "The Load event of frmReport, part 1 of 4",
+        "title": "The Load event of frmReport: code 1 of 4",
         "where": "between the curly brackets of frmReport_Load",
         "form": "frmReport",
         "method": "frmReport_Load",
@@ -472,17 +553,21 @@
      "id": "2",
      "title": "Read every line of the file",
      "foot": "done",
+     "done": "lines 10 to 16 are typed, with one red squiggle that screen 4-4 clears",
      "goal": "If the file is there, every line is read, and each line is cut into pieces at each ~.",
      "blocks": [
       {
-       "p": "File.Exists checks the file is there. Each [[string[]|1]] is a list of words. The [[for loop|2]] runs once for each line. [[Split('~')|3]] cuts it."
+       "p": "File.Exists checks the file is there, then the [[for loop|2]] runs once for each line."
+      },
+      {
+       "p": "Each [[string[]|1]] is a list of words, and [[Split('~')|3]] cuts a line into pieces."
       },
       {
        "code": {
         "id": "4-2.c1",
         "kind": "type",
-        "title": "The Load event of frmReport, part 2 of 4",
-        "where": "under part 1, inside frmReport_Load",
+        "title": "The Load event of frmReport: code 2 of 4",
+        "where": "under code 1, inside frmReport_Load",
         "form": "frmReport",
         "method": "frmReport_Load",
         "lang": "cs",
@@ -521,6 +606,21 @@
        }
       },
       {
+       "watch": "A red squiggle stays until screen 4-4 types the closing curly brackets. That is expected."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "See one line cut into eleven pieces",
+     "foot": "next",
+     "done": "you have looked at the picture and read the line under it",
+     "goal": "I see one saved line cut at every ~ into pieces numbered from 0.",
+     "blocks": [
+      {
+       "p": "This picture shows one saved line cut into its eleven pieces."
+      },
+      {
        "drawn": {
         "id": "record-line",
         "label": "parts",
@@ -544,20 +644,24 @@
      ]
     },
     {
-     "id": "3",
+     "id": "4",
      "title": "Put the pieces in a row",
      "foot": "done",
+     "done": "lines 17 to 27 are typed and the code has no red squiggles",
      "goal": "Seven of the eleven pieces go into a new row of the table, in the order of the columns.",
      "blocks": [
       {
-       "p": "Each row takes the pieces in the same order as the columns. The note on each line says which column."
+       "p": "Each row takes the pieces in the same order as the columns."
+      },
+      {
+       "p": "The note on each line says which column."
       },
       {
        "code": {
         "id": "4-3.c1",
         "kind": "type",
-        "title": "The Load event of frmReport, part 3 of 4",
-        "where": "under part 2, inside frmReport_Load",
+        "title": "The Load event of frmReport: code 3 of 4",
+        "where": "under code 2, inside frmReport_Load",
         "form": "frmReport",
         "method": "frmReport_Load",
         "lang": "cs",
@@ -600,20 +704,21 @@
      ]
     },
     {
-     "id": "4",
-     "title": "No file? Say so. Then show the table",
+     "id": "5",
+     "title": "Show the table, or say there is no file",
      "foot": "done",
+     "done": "lines 28 to 37 are typed and the code has no red squiggles",
      "goal": "With no file a message shows, and then the table appears in the grid on the form.",
      "blocks": [
       {
-       "p": "The [[DataGridView|4]] is the table you can see. It shows dt."
+       "p": "The [[DataGridView|4]] is the table you can see, and it shows dt."
       },
       {
        "code": {
         "id": "4-4.c1",
         "kind": "type",
-        "title": "The Load event of frmReport, part 4 of 4",
-        "where": "under part 3, inside frmReport_Load",
+        "title": "The Load event of frmReport: code 4 of 4",
+        "where": "under code 3, inside frmReport_Load",
         "form": "frmReport",
         "method": "frmReport_Load",
         "lang": "cs",
@@ -653,7 +758,8 @@
         ],
         "isense": [
          "dgvReport"
-        ]
+        ],
+        "isenseFull": true
        }
       }
      ]
@@ -663,15 +769,36 @@
   {
    "id": "5",
    "title": "The two lists and the two buttons",
+   "thing": "the two lists and the two buttons",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Make the two lists and the two buttons work",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part gives the two lists their filters, then wires Close and View report.",
+     "blocks": [
+      {
+       "open": {
+        "what": "Each list hides the rows that do not match. Close shuts the report, and View report opens it from the data entry form.",
+        "does": "When it works, a group or a year narrows the table, and Close takes you back."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Show only the group that is chosen",
      "foot": "done",
+     "done": "lines 3 to 10 are typed and the code has no red squiggles",
      "goal": "Choosing a group shows only the pupils in that group, and All shows everyone.",
      "blocks": [
       {
-       "p": "In the Design tab, double-click cbxGroup. cbxGroup_SelectedIndexChanged appears in the code tab. [[RowFilter|5]] picks which rows show."
+       "p": "In the Design tab, double-click cbxGroup."
+      },
+      {
+       "p": "cbxGroup_SelectedIndexChanged appears in the code tab, and [[RowFilter|5]] picks which rows show."
       },
       {
        "code": {
@@ -757,10 +884,14 @@
      "id": "2",
      "title": "Show only the year that is chosen",
      "foot": "done",
+     "done": "lines 3 to 10 are typed and the code has no red squiggles",
      "goal": "Choosing a year shows only the pupils in that year, and All shows everyone.",
      "blocks": [
       {
-       "p": "In the Design tab, double-click cbxYear. The code has the same shape, with Year in place of Group."
+       "p": "In the Design tab, double-click cbxYear."
+      },
+      {
+       "p": "The code has the same shape, with Year in place of Group."
       },
       {
        "code": {
@@ -817,6 +948,7 @@
      "id": "3",
      "title": "Make the Close button shut the report",
      "foot": "done",
+     "done": "line 3 is typed and the code has no red squiggles",
      "goal": "Close shuts the report and the data entry form is still there.",
      "blocks": [
       {
@@ -866,10 +998,11 @@
      "id": "4",
      "title": "Open the report from the data entry form",
      "foot": "done",
+     "done": "line 3 is typed and the code has no red squiggles",
      "goal": "The View report button opens the report and leaves the data entry form open.",
      "blocks": [
       {
-       "p": "Open frmDataEntry in the Design tab. Double-click the View report button."
+       "p": "Open frmDataEntry in the Design tab and double-click the View report button."
       },
       {
        "code": {
@@ -923,15 +1056,18 @@
   {
    "id": "6",
    "title": "Try it",
+   "thing": "your report",
+   "verb": "testing",
    "screens": [
     {
      "id": "1",
      "title": "Try your report",
      "foot": "chapter-done",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I open the report, try both lists and close it.",
      "blocks": [
       {
-       "p": "Run your program. Log in. Then try each row."
+       "p": "Run your program, log in and then try each row."
       },
       {
        "check": [
@@ -939,7 +1075,7 @@
          "id": "6-1.t1",
          "what": "Click View report.",
          "how": "Every saved pupil is in the table.",
-         "fix": "Look at screens 4-1 to 4-4.",
+         "fix": "Look at the code on screens 4-1 to 4-5.",
          "go": "#cw/12/4-1",
          "expect": "must"
         },
@@ -947,7 +1083,7 @@
          "id": "6-1.t2",
          "what": "Choose a group in the group list.",
          "how": "Only the pupils in that group stay.",
-         "fix": "Look at screen 5-1.",
+         "fix": "Look at the code on screen 5-1.",
          "go": "#cw/12/5-1",
          "expect": "must"
         },
@@ -955,7 +1091,7 @@
          "id": "6-1.t3",
          "what": "Choose All in the group list.",
          "how": "Everyone is back.",
-         "fix": "Look at screen 5-1.",
+         "fix": "Look at the code on screen 5-1.",
          "go": "#cw/12/5-1",
          "expect": "must"
         },
@@ -963,7 +1099,7 @@
          "id": "6-1.t4",
          "what": "Choose a year in the year list.",
          "how": "Only the pupils in that year stay.",
-         "fix": "Look at screen 5-2.",
+         "fix": "Look at the code on screen 5-2.",
          "go": "#cw/12/5-2",
          "expect": "must"
         },
@@ -971,7 +1107,7 @@
          "id": "6-1.t5",
          "what": "Click Close.",
          "how": "The report shuts. The data entry form is still there.",
-         "fix": "Look at screens 5-3 and 5-4.",
+         "fix": "Look at the code on screens 5-3 and 5-4.",
          "go": "#cw/12/5-3",
          "expect": "must"
         },
@@ -979,7 +1115,7 @@
          "id": "6-1.t6",
          "what": "Open the report again. Choose a group nobody is in.",
          "how": "The table shows NO rows, and no error appears.",
-         "fix": "If an error appears, look at screen 5-1.",
+         "fix": "If an error appears, look at the code on screen 5-1.",
          "go": "#cw/12/5-1",
          "expect": "mustnot"
         }
@@ -1002,7 +1138,8 @@
              "h": 447,
              "say": "One group is chosen. Only its pupils show."
             }
-           ]
+           ],
+           "watch": "Watch only one group's pupils stay in the table"
           }
          }
         ]

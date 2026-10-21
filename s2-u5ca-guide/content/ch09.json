@@ -46,15 +46,18 @@
   {
    "id": "1",
    "title": "Check what you need first",
+   "thing": "the parts this chapter needs",
+   "verb": "checking",
    "screens": [
     {
      "id": "1",
      "title": "Check the parts this chapter needs",
      "foot": "have",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "Before I start, I check Global.cs, the test panel on the data entry form and the data entry Load event.",
      "blocks": [
       {
-       "p": "This chapter uses work from earlier chapters. This screen checks that it is there."
+       "p": "This chapter uses work from earlier chapters, so this screen checks that it is there."
       },
       {
        "check": [
@@ -62,7 +65,7 @@
          "id": "1-1.t1",
          "what": "Does Global.cs have reactionTestScore and reactionTestTaken?",
          "how": "Double-click Global.cs in Solution Explorer.",
-         "fix": "Go to chapter 3, stage 3.",
+         "fix": "Go to chapter 3, part 3.",
          "go": "#cw/03/3-1",
          "expect": "have"
         },
@@ -70,7 +73,7 @@
          "id": "1-1.t2",
          "what": "On frmDataEntry, does the test panel have a Take test button and a status label?",
          "how": "Open frmDataEntry in the Design tab. Look inside the test panel.",
-         "fix": "Go to chapter 2, stage 3.",
+         "fix": "Go to chapter 2, part 3.",
          "go": "#cw/02/3-1",
          "expect": "have"
         },
@@ -91,21 +94,39 @@
   {
    "id": "2",
    "title": "Make yours look different",
+   "thing": "your look and your pictures",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Choose your own look and save your pictures",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part is where YOUR test becomes different from MINE. You choose the look, then save your pictures where the program can find them.",
+     "blocks": [
+      {
+       "open": {
+        "what": "Every reaction test works the same way underneath. The shape, the pictures and the timing are YOUR choices.",
+        "does": "When it works, your four choices are written down. Your pictures sit in the Images folder."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Choose how YOUR reaction test will look",
      "foot": "next",
-     "goal": "The idea of the test stays the same, but I choose my own shape, pictures, swapping boxes and timing.",
+     "done": "you have read all four cards",
+     "goal": "The idea of the test stays the same, but the look of mine is my own choice.",
      "blocks": [
       {
-       "p": "Every reaction test works the same way. The look of yours is YOUR choice."
+       "p": "Every reaction test works the same way, but the look of yours is YOUR choice."
       },
       {
        "drawn": {
         "id": "four-choices",
         "alt": "Four cards: shape, pictures, which boxes swap, time and speed. Each turns over to show other ideas.",
-        "say": "Each card shows MY choice first. Then it turns over to show other ideas.",
+        "say": "Each card shows MY choice first, then turns over to show other ideas.",
         "cards": [
          [
           "Shape",
@@ -147,20 +168,33 @@
       },
       {
        "p": "In MY example, the red and yellow flag scores a point. The red flag and the black and white flag lose one."
-      },
-      {
-       "yours": "Write YOUR four choices down now. The guide shows MY choices. You type YOURS. Do not use MY flag pictures."
       }
      ]
     },
     {
      "id": "2",
+     "title": "Write your four choices down",
+     "foot": "next",
+     "done": "your four choices are written down",
+     "goal": "The idea of the test stays the same, but I choose my own shape, pictures, swapping boxes and timing.",
+     "blocks": [
+      {
+       "p": "Decide four things: your shape, your pictures, which boxes swap, and your time and speed."
+      },
+      {
+       "yours": "Write YOUR four choices on paper now. MY choices are flags in a grid, swapping every second, for ten seconds. Do not use MY flag pictures."
+      }
+     ]
+    },
+    {
+     "id": "3",
      "title": "Put your pictures in the right folder",
      "foot": "done",
+     "done": "your pictures are inside Images, inside Debug, inside bin",
      "goal": "My two or three pictures are saved in a folder called Images inside bin and then Debug.",
      "blocks": [
       {
-       "p": "Your program looks for its pictures in one folder. This screen makes that folder."
+       "p": "This screen makes the one folder where your program looks for its pictures."
       },
       {
        "steps": [
@@ -246,15 +280,33 @@
   {
    "id": "3",
    "title": "The reaction test form: its pictures and buttons",
+   "thing": "the reaction test form",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Make the reaction test form",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part adds frmTest and puts everything on it: twelve picture boxes, a score panel and two timers. A timer is a clock that ticks in code.",
+     "blocks": [
+      {
+       "open": {
+        "what": "Nothing works yet. This part only lays the form out, the way you laid out the quiz form.",
+        "does": "When it works, frmTest has twelve picture boxes, a score panel and two timers under it."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Add the reaction test form",
      "foot": "done",
+     "done": "frmTest is in Solution Explorer with its two labels on it",
      "goal": "A new form called frmTest is in Solution Explorer, with a title label and an instructions label.",
      "blocks": [
       {
-       "p": "The reaction test gets a form of its own. You add it the way you added the quiz."
+       "p": "The reaction test gets a form of its own, added the way you added the quiz."
       },
       {
        "steps": [
@@ -321,10 +373,11 @@
      "id": "2",
      "title": "Add twelve picture boxes",
      "foot": "done",
+     "done": "twelve picture boxes named pbx1 to pbx12 sit on frmTest",
      "goal": "Twelve picture boxes sit on frmTest, named pbx1 to pbx12 in reading order, each stretching its picture.",
      "blocks": [
       {
-       "p": "Make one picture box with the right settings. Then make eleven more the same."
+       "p": "Make one picture box with the right settings, then make eleven more the same."
       },
       {
        "steps": [
@@ -396,10 +449,11 @@
      "id": "3",
      "title": "Add the score panel",
      "foot": "done",
+     "done": "the score panel holds every control in the table with its name set",
      "goal": "The score panel holds the Start button, the score, the time left, the pupil's name and the ? button.",
      "blocks": [
       {
-       "p": "Drag a panel onto the form. Then drag each control into it and set its name and Text."
+       "p": "Drag a panel onto the form, then drag each control in the table into it."
       },
       {
        "controls": {
@@ -456,12 +510,16 @@
     },
     {
      "id": "4",
-     "title": "Add two timers",
+     "title": "Meet the two timers and the new words",
      "foot": "done",
-     "goal": "Two timers called tmrSwap and tmrCountdown sit in the grey strip under the form, each with Interval 1000.",
+     "done": "you have read what the two timers do and seen the word list",
+     "goal": "I know what tmrSwap and tmrCountdown are for before I add them.",
      "blocks": [
       {
-       "p": "The test needs two clocks. One swaps the pictures. The other counts down the seconds."
+       "p": "The test needs two clocks: one swaps the pictures and the other counts the seconds down."
+      },
+      {
+       "p": "Below are the new words in this chapter, each with the screen it first appears on."
       },
       {
        "words": [
@@ -473,7 +531,7 @@
         ],
         [
          "Interval",
-         "The gap between ticks, in thousandths of a second.",
+         "The gap between ticks. 1000 means one second.",
          "3-4",
          false
         ],
@@ -522,17 +580,29 @@
         [
          "--",
          "Take one off.",
-         "6-4",
+         "6-5",
          true
         ],
         [
          ".Stop()",
          "Stop the timer ticking.",
-         "6-4",
+         "6-5",
          true
         ]
        ],
        "intro": "Eleven new things in this chapter. Click any marked word to see what it means."
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "Add two timers",
+     "foot": "done",
+     "done": "tmrSwap and tmrCountdown sit under the form with Interval 1000",
+     "goal": "Two timers called tmrSwap and tmrCountdown sit in the grey strip under the form, each with Interval 1000.",
+     "blocks": [
+      {
+       "p": "Timers live in the grey strip under the form, not on it."
       },
       {
        "steps": [
@@ -558,15 +628,33 @@
   {
    "id": "4",
    "title": "The code before any click",
+   "thing": "the code as the form opens",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Type the code that runs as the test form opens",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part types two lines at the top of frmTest's code, then its Load event. The Load event is the code that runs when the form opens.",
+     "blocks": [
+      {
+       "open": {
+        "what": "The Load event shows the pupil's name and puts all twelve picture boxes into one list. Later code uses that list.",
+        "does": "When it works, two new lines sit at the top and frmTest_Load has five new lines."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Type two lines at the top of the form's code",
      "foot": "done",
+     "done": "the two lines are typed above public frmTest() and have no red squiggles",
      "goal": "Two lines at the top of frmTest's code make the countdown start at 10 and make room for a list of picture boxes.",
      "blocks": [
       {
-       "p": "Double-click frmTest in Solution Explorer. Then click View along the top and click Code."
+       "p": "Double-click frmTest in Solution Explorer, then click View along the top and click Code."
       },
       {
        "code": {
@@ -629,12 +717,13 @@
     },
     {
      "id": "2",
-     "title": "Show the name and fill the list as the form opens",
+     "title": "Fill the list as the form opens",
      "foot": "done",
+     "done": "lines 3 to 7 are typed and the code has no red squiggles",
      "goal": "The Load event of frmTest shows the pupil's name and puts all twelve picture boxes into one list.",
      "blocks": [
       {
-       "p": "In the Design tab, double-click the title bar of frmTest. frmTest_Load appears in the code tab."
+       "p": "In the Design tab, double-click the title bar of frmTest to make frmTest_Load appear."
       },
       {
        "box": {
@@ -696,22 +785,12 @@
          "Global.firstname",
          "Global.surname",
          "pictureboxes",
-         "pbx1",
-         "pbx2",
-         "pbx3",
-         "pbx4",
-         "pbx5",
-         "pbx6",
-         "pbx7",
-         "pbx8",
-         "pbx9",
-         "pbx10",
-         "pbx11",
-         "pbx12"
+         "pbx1 to pbx12"
         ],
         "isense": [
          "lblName"
-        ]
+        ],
+        "isenseFull": true
        }
       }
      ]
@@ -721,15 +800,33 @@
   {
    "id": "5",
    "title": "What a click does",
+   "thing": "the click code",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Make one piece of code for every picture click",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part makes PictureBox_Click. It runs when any of the twelve boxes is clicked.",
+     "blocks": [
+      {
+       "open": {
+        "what": "Normally each button gets its own click code. Here one piece of code serves all twelve boxes.",
+        "does": "When it works, PictureBox_Click has 17 lines. A click scores a point or loses one, then hides the picture."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Type the first line of the click code yourself",
      "foot": "done",
+     "done": "lines 1 to 5 are typed and the code has no red squiggles",
      "goal": "One piece of code, PictureBox_Click, runs for any of the twelve boxes, and it finds out which box was clicked.",
      "blocks": [
       {
-       "p": "Until now, double-clicking a button wrote the first line for you. This first line you type yourself."
+       "p": "Until now a double-click wrote the first line for you, but this one you type yourself."
       },
       {
        "p": "[[sender as PictureBox|3]] is the box that was clicked. [[!=|4]] means is not."
@@ -738,7 +835,7 @@
        "code": {
         "id": "5-1.c1",
         "kind": "type",
-        "title": "The click code, part 1 of 2",
+        "title": "The click code: code 1 of 2",
         "where": "under the last curly bracket of frmTest_Load",
         "form": "frmTest",
         "method": "PictureBox_Click",
@@ -776,7 +873,7 @@
        }
       },
       {
-       "watch": "Type PictureBox_Click exactly. Screen 6-2 joins all twelve boxes to this name."
+       "watch": "Type PictureBox_Click exactly. Screen 6-3 joins all twelve boxes to this name."
       }
      ]
     },
@@ -784,17 +881,24 @@
      "id": "2",
      "title": "Score the click and hide the picture",
      "foot": "done",
+     "done": "lines 6 to 17 are typed and the code has no red squiggles",
      "goal": "A click on the winning picture adds one to the score, any other picture takes one off, and the picture hides.",
      "blocks": [
       {
-       "p": "[[ImageLocation|5]] is the path of the picture a box shows. The [[@ sign|6]] keeps the path exactly as typed."
+       "p": "A path is where a picture file lives, folder and file name together."
+      },
+      {
+       "p": "[[ImageLocation|5]] is the path of the picture a box shows."
+      },
+      {
+       "p": "The [[@ sign|6]] keeps the path exactly as typed."
       },
       {
        "code": {
         "id": "5-2.c1",
         "kind": "type",
-        "title": "The click code, part 2 of 2",
-        "where": "under part 1, inside PictureBox_Click",
+        "title": "The click code: code 2 of 2",
+        "where": "under code 1, inside PictureBox_Click",
         "form": "frmTest",
         "method": "PictureBox_Click",
         "lang": "cs",
@@ -839,28 +943,49 @@
   {
    "id": "6",
    "title": "Start, swap, count down",
+   "thing": "the Start button and two timers",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Make the Start button and the two timers work",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part types the code behind Start, tmrSwap and tmrCountdown. That is the whole test running.",
+     "blocks": [
+      {
+       "open": {
+        "what": "Start fills the boxes, joins the clicks and starts both clocks. One clock swaps pictures, the other counts down.",
+        "does": "When it works, the test runs for YOUR seconds, shows the score and goes back."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Give every box a starting picture",
      "foot": "done",
+     "done": "lines 3 to 14 are typed with YOUR twelve file names and no red squiggles",
      "goal": "When Start is clicked, each of the twelve boxes is given its first picture, a mix of winners and losers.",
      "blocks": [
       {
-       "p": "In the Design tab, double-click the Start button. The card shows six boxes. Type all twelve."
+       "p": "In the Design tab, double-click the Start button."
+      },
+      {
+       "p": "Each of the twelve boxes is told where its first picture lives, winners and losers mixed."
       },
       {
        "code": {
         "id": "6-1.c1",
         "kind": "type",
-        "title": "The Start button, part 1 of 2",
+        "title": "The Start button: code 1 of 2",
         "where": "between the curly brackets of btnStart_Click",
         "form": "frmTest",
         "method": "btnStart_Click",
         "lang": "cs",
         "from": 1,
-        "to": 8,
-        "text": "private void btnStart_Click(object sender, EventArgs e)\n{\n    pbx1.ImageLocation = @\"Images\\RedAndYellowFlag.jpeg\";\n    pbx2.ImageLocation = @\"Images\\BlackAndWhiteFlag.jpeg\";\n    pbx3.ImageLocation = @\"Images\\RedAndYellowFlag.jpeg\";\n    pbx4.ImageLocation = @\"Images\\RedFlag.jpeg\";\n    pbx5.ImageLocation = @\"Images\\RedAndYellowFlag.jpeg\";\n    pbx6.ImageLocation = @\"Images\\BlackAndWhiteFlag.jpeg\";",
+        "to": 14,
+        "text": "private void btnStart_Click(object sender, EventArgs e)\n{\n    pbx1.ImageLocation = @\"Images\\RedAndYellowFlag.jpeg\";\n    pbx2.ImageLocation = @\"Images\\BlackAndWhiteFlag.jpeg\";\n    pbx3.ImageLocation = @\"Images\\RedAndYellowFlag.jpeg\";\n    pbx4.ImageLocation = @\"Images\\RedFlag.jpeg\";\n    pbx5.ImageLocation = @\"Images\\RedAndYellowFlag.jpeg\";\n    pbx6.ImageLocation = @\"Images\\BlackAndWhiteFlag.jpeg\";\n    pbx7.ImageLocation = @\"Images\\RedAndYellowFlag.jpeg\";\n    pbx8.ImageLocation = @\"Images\\RedFlag.jpeg\";\n    pbx9.ImageLocation = @\"Images\\RedAndYellowFlag.jpeg\";\n    pbx10.ImageLocation = @\"Images\\BlackAndWhiteFlag.jpeg\";\n    pbx11.ImageLocation = @\"Images\\RedAndYellowFlag.jpeg\";\n    pbx12.ImageLocation = @\"Images\\RedFlag.jpeg\";",
         "partLines": [
          [
           1,
@@ -871,26 +996,16 @@
          ],
          [
           3,
-          8,
-          "The first six boxes",
-          "Each box gets the path of its first picture. Winners and losers are mixed."
+          14,
+          "All twelve boxes",
+          "Each box is told where its first picture lives. Winners and losers are mixed."
          ]
         ],
         "names": [
-         "pbx1",
-         "pbx2",
-         "pbx3",
-         "pbx4",
-         "pbx5",
-         "pbx6"
+         "pbx1 to pbx12"
         ],
         "isense": [
          "pbx1"
-        ],
-        "rest": [
-         9,
-         14,
-         "Now the other six, pbx7 to pbx12, the same way. Mix YOUR winners and losers."
         ],
         "yours": "MY pictures are three flags. Type YOUR file names, exactly as you saved them in Images."
        }
@@ -899,12 +1014,13 @@
     },
     {
      "id": "2",
-     "title": "Join the clicks and start the clocks",
+     "title": "See the loop join every box to the click code",
      "foot": "done",
-     "goal": "A loop joins every box to PictureBox_Click, both timers start, and the Start button switches itself off.",
+     "done": "you have looked at the picture and read the line under it",
+     "goal": "I see how one loop joins all twelve boxes to PictureBox_Click.",
      "blocks": [
       {
-       "p": "[[foreach|7]] does the same thing once for each box in the list. [[.Start()|8]] sets a timer ticking."
+       "p": "A loop is code that repeats, and [[foreach|7]] repeats once for each box in the list."
       },
       {
        "drawn": {
@@ -912,13 +1028,25 @@
         "alt": "A loop card on the left. One by one, each of the twelve boxes lights up with a spark.",
         "say": "The loop tells every box: when you are clicked, run PictureBox_Click."
        }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Join the clicks and start the clocks",
+     "foot": "done",
+     "done": "lines 15 to 22 are typed and the code has no red squiggles",
+     "goal": "A loop joins every box to PictureBox_Click, both timers start, and the Start button switches itself off.",
+     "blocks": [
+      {
+       "p": "[[.Start()|8]] sets a timer ticking, and then the Start button switches itself off."
       },
       {
        "code": {
         "id": "6-2.c1",
         "kind": "type",
-        "title": "The Start button, part 2 of 2",
-        "where": "under part 1, inside btnStart_Click",
+        "title": "The Start button: code 2 of 2",
+        "where": "under code 1, inside btnStart_Click",
         "form": "frmTest",
         "method": "btnStart_Click",
         "lang": "cs",
@@ -962,13 +1090,14 @@
      ]
     },
     {
-     "id": "3",
+     "id": "4",
      "title": "Swap the pictures every tick",
      "foot": "done",
+     "done": "lines 3 to 10 are typed and the code has no red squiggles",
      "goal": "Each tick of tmrSwap turns a winning picture into a losing one, and a losing one into a winner.",
      "blocks": [
       {
-       "p": "In the Design tab, double-click tmrSwap in the grey strip. Its tick code appears."
+       "p": "In the Design tab, double-click tmrSwap in the grey strip to open its tick code."
       },
       {
        "code": {
@@ -1014,19 +1143,23 @@
      ]
     },
     {
-     "id": "4",
+     "id": "5",
      "title": "Count down one second at a time",
      "foot": "done",
+     "done": "lines 3 to 8 are typed and the code has no red squiggles",
      "goal": "Each tick of tmrCountdown takes one off the seconds left and shows it, and at zero both timers stop.",
      "blocks": [
       {
-       "p": "In the Design tab, double-click tmrCountdown. [[--|9]] takes one off. [[.Stop()|10]] stops a timer."
+       "p": "In the Design tab, double-click tmrCountdown in the grey strip."
+      },
+      {
+       "p": "[[--|9]] takes one off, and [[.Stop()|10]] stops a timer."
       },
       {
        "code": {
         "id": "6-4.c1",
         "kind": "type",
-        "title": "The countdown timer, part 1 of 2",
+        "title": "The countdown timer: code 1 of 2",
         "where": "between the curly brackets of tmrCountdown_Tick",
         "form": "frmTest",
         "method": "tmrCountdown_Tick",
@@ -1067,25 +1200,26 @@
        }
       },
       {
-       "watch": "The curly bracket of the if stays open here. Part 2 closes it."
+       "watch": "The curly bracket of the if stays open here. Code 2 closes it."
       }
      ]
     },
     {
-     "id": "5",
-     "title": "Show the score and go back to the data entry form",
+     "id": "6",
+     "title": "Show the score and go back",
      "foot": "done",
+     "done": "lines 9 to 16 are typed and the code has no red squiggles",
      "goal": "At zero, a message shows the score, Global.cs records that the test is taken, and the data entry form opens again.",
      "blocks": [
       {
-       "p": "Still inside the if. These lines run once, when the seconds left reach zero."
+       "p": "Still inside the if, these lines run once, when the seconds left reach zero."
       },
       {
        "code": {
         "id": "6-5.c1",
         "kind": "type",
-        "title": "The countdown timer, part 2 of 2",
-        "where": "under part 1, inside tmrCountdown_Tick",
+        "title": "The countdown timer: code 2 of 2",
+        "where": "under code 1, inside tmrCountdown_Tick",
         "form": "frmTest",
         "method": "tmrCountdown_Tick",
         "lang": "cs",
@@ -1130,15 +1264,33 @@
   {
    "id": "7",
    "title": "Getting there, and Try it",
+   "thing": "the Take test button, then a try",
+   "verb": "testing",
    "screens": [
+    {
+     "id": "0",
+     "title": "Open the test from data entry, then try it",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part makes the Take test button open the test. Then you try the whole thing.",
+     "blocks": [
+      {
+       "open": {
+        "what": "Take test closes the data entry form and opens frmTest. Take quiz did the same in chapter 6.",
+        "does": "When it works, every row on the try screen is ticked."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Open the reaction test from the data entry form",
      "foot": "done",
+     "done": "lines 3 to 5 are typed and the code has no red squiggles",
      "goal": "The Take test button closes the data entry form and opens the reaction test form.",
      "blocks": [
       {
-       "p": "Open frmDataEntry in the Design tab. Double-click the Take test button."
+       "p": "Open frmDataEntry in the Design tab and double-click the Take test button."
       },
       {
        "code": {
@@ -1188,10 +1340,11 @@
      "id": "2",
      "title": "Try your reaction test",
      "foot": "chapter-done",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I run the program and check the name, the swaps, the score, the countdown and the way back.",
      "blocks": [
       {
-       "p": "Run your program, log in, enter the details and take the quiz. Then try each row."
+       "p": "Run your program, log in, enter the details, take the quiz, then try each row."
       },
       {
        "check": [
@@ -1199,7 +1352,7 @@
          "id": "7-2.t1",
          "what": "Click Take test.",
          "how": "The reaction test opens with your name on it.",
-         "fix": "Look at screens 7-1 and 4-2.",
+         "fix": "Look at the code on screens 7-1 and 4-2.",
          "go": "#cw/09/7-1",
          "expect": "must"
         },
@@ -1207,7 +1360,7 @@
          "id": "7-2.t2",
          "what": "Click Start.",
          "how": "Twelve pictures appear. The boxes you chose swap every tick.",
-         "fix": "Look at screens 6-1 and 6-3.",
+         "fix": "Look at the code on screens 6-1 and 6-4.",
          "go": "#cw/09/6-1",
          "expect": "must"
         },
@@ -1215,7 +1368,7 @@
          "id": "7-2.t3",
          "what": "Click a winning picture, then a losing one.",
          "how": "The score goes up by one, then down by one. Each picture hides.",
-         "fix": "Look at screen 5-2.",
+         "fix": "Look at the code on screen 5-2.",
          "go": "#cw/09/5-2",
          "expect": "must"
         },
@@ -1223,16 +1376,16 @@
          "id": "7-2.t4",
          "what": "Wait for the time to reach zero.",
          "how": "A message shows the score. The data entry form comes back.",
-         "fix": "Look at screen 6-5.",
-         "go": "#cw/09/6-5",
+         "fix": "Look at the code on screen 6-6.",
+         "go": "#cw/09/6-6",
          "expect": "must"
         },
         {
          "id": "7-2.t5",
          "what": "Run again. Click a picture before you click Start.",
          "how": "The score must NOT change.",
-         "fix": "If it changes, look at screen 6-2.",
-         "go": "#cw/09/6-2",
+         "fix": "If it changes, look at the code on screen 6-3.",
+         "go": "#cw/09/6-3",
          "expect": "mustnot"
         }
        ]

@@ -21,15 +21,21 @@
   {
    "id": "1",
    "title": "Check what your data entry form has",
+   "thing": "your data entry form so far",
+   "verb": "checking",
    "screens": [
     {
      "id": "1",
      "title": "Check what your data entry form already has",
      "foot": "have",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I check my data entry form for its five panels, their names, the Save and View Report buttons and the year group list.",
      "blocks": [
       {
-       "p": "Your data entry form may be partly made already. This screen checks what is there."
+       "p": "Your data entry form may be partly made already."
+      },
+      {
+       "p": "This screen checks what is there."
       },
       {
        "check": [
@@ -37,7 +43,7 @@
          "id": "1-1.t1",
          "what": "Open frmDataEntry in the Design tab. Does it have five panels?",
          "how": "They hold the pupil details, three attempts, the quiz, the reaction test and the group.",
-         "fix": "Go to stage 2.",
+         "fix": "Go to part 2.",
          "go": "#cw/02/2-1",
          "expect": "have"
         },
@@ -45,7 +51,7 @@
          "id": "1-1.t2",
          "what": "Click the edge of each panel once. In Properties, does its Name start with pnl?",
          "how": "The Name line is near the top of Properties.",
-         "fix": "Go to stage 2, screen 2.",
+         "fix": "Go to part 2, screen 2.",
          "go": "#cw/02/2-2",
          "expect": "have"
         },
@@ -53,7 +59,7 @@
          "id": "1-1.t3",
          "what": "Under the panels, are there two big buttons, Save Details and View Report?",
          "how": "They sit on the form itself, outside the five panels.",
-         "fix": "Go to stage 3, screen 5.",
+         "fix": "Go to part 3, screen 5.",
          "go": "#cw/02/3-5",
          "expect": "have"
         },
@@ -61,7 +67,7 @@
          "id": "1-1.t4",
          "what": "Click the year group list once. In Properties, click Items. Are the year groups in it?",
          "how": "Items opens a box with one choice on each line.",
-         "fix": "Go to stage 3, screen 2.",
+         "fix": "Go to part 3, screen 2.",
          "go": "#cw/02/3-2",
          "expect": "have"
         }
@@ -74,18 +80,47 @@
   {
    "id": "2",
    "title": "The five panels",
+   "thing": "the five panels",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "See the five panels, then make them",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part shows the five panels of the data entry form, then you drag them on and name them.",
+     "blocks": [
+      {
+       "open": {
+        "what": "The data entry form is where a user types in one pupil. Five panels split it into five jobs.",
+        "does": "When it works, your data entry form has five named panels. Each name starts with pnl."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "See the five panels on the data entry form",
      "foot": "next",
+     "done": "you can name the five panels and say what each one holds",
      "goal": "The data entry form holds five panels: pupil details, three attempts, the quiz, the reaction test and the group.",
      "blocks": [
       {
-       "p": "The data entry form is where a user types in one pupil. It holds five panels."
+       "p": "The data entry form is where a user types in one pupil."
+      },
+      {
+       "p": "It holds five panels."
       },
       {
        "flow": {
+        "watch": "Count the five panels and read each one's name",
+        "labels": {
+         "pnlPupilDetails": "pupil details",
+         "pnlSwimLengths": "the three attempts",
+         "pnlQuizResult": "the quiz score",
+         "pnlReactionTest": "the test score",
+         "pnlSwimmingGroup": "the group"
+        },
         "form": "frmDataEntry",
         "map": true,
         "lit": [
@@ -96,7 +131,7 @@
          "pnlSwimmingGroup"
         ],
         "then": [],
-        "say": "Five panels: pupil details, three attempts, the quiz, the reaction test and the group."
+        "say": "Five panels: pupil details, attempts, quiz, test and group."
        }
       },
       {
@@ -111,10 +146,14 @@
      "id": "2",
      "title": "Put on the five panels and name each one",
      "foot": "done",
+     "done": "five panels sit on your form, each named with pnl at the start",
      "goal": "I drag five panels onto the data entry form and give each one a name that starts with pnl.",
      "blocks": [
       {
-       "p": "Make the panels first. The boxes and buttons go inside them on the next screens."
+       "p": "Make the panels first."
+      },
+      {
+       "p": "The boxes and buttons go inside them on the next screens."
       },
       {
        "steps": [
@@ -193,18 +232,39 @@
   {
    "id": "3",
    "title": "Inside each panel",
+   "thing": "the boxes and buttons in each panel",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Fill each panel with its boxes and buttons",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part puts the right controls inside each of the five panels, one panel per screen.",
+     "blocks": [
+      {
+       "open": {
+        "what": "Each panel gets its own labels, boxes, lists and buttons. One screen does one panel, from a table.",
+        "does": "When it works, every panel holds its controls. The two big buttons sit under the panels."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Fill the pupil details panel",
      "foot": "done",
+     "done": "every row of the table sits inside the pupil details panel",
      "goal": "The pupil details panel holds a first name box, a surname box, a gender list, a year group list, an Enter button and a ? button.",
      "blocks": [
       {
-       "p": "The first panel holds the pupil's name, gender and year group. Drag each row INSIDE pnlPupilDetails."
+       "p": "The first panel holds the pupil's name, gender and year group."
       },
       {
-       "p": "A ComboBox is a drop-down list. DropDownList means the user can only pick. They cannot type their own."
+       "p": "Drag each row INSIDE pnlPupilDetails."
+      },
+      {
+       "p": "A ComboBox is a drop-down list that the user picks from."
       },
       {
        "controls": {
@@ -293,10 +353,14 @@
      "id": "2",
      "title": "Put the choices in the two drop-down lists",
      "foot": "done",
+     "done": "both drop-down lists hold their choices, one per line",
      "goal": "The year group list and the gender list each hold their choices, typed one per line in Items.",
      "blocks": [
       {
-       "p": "A drop-down list is empty until you give it its choices. They go in [[Items|0]], one per line."
+       "p": "A drop-down list is empty until you give it its choices."
+      },
+      {
+       "p": "They go in [[Items|0]], one per line."
       },
       {
        "words": [
@@ -340,7 +404,7 @@
        ]
       },
       {
-       "yours": "MY year group list holds 11, 12, 13 and 14. YOURS holds the choices YOUR task sheet gives you. So does YOUR gender list."
+       "watch": "MY year group list holds 11 to 14. YOURS holds the choices YOUR task sheet gives you."
       }
      ]
     },
@@ -348,10 +412,14 @@
      "id": "3",
      "title": "Fill the three attempts panel",
      "foot": "done",
+     "done": "every row of the table sits inside the three attempts panel",
      "goal": "The second panel holds three attempt boxes with labels, a Calculate Average button, a box for the average and a ? button.",
      "blocks": [
       {
-       "p": "The second panel holds three attempts and their average. Drag each row INSIDE pnlSwimLengths."
+       "p": "The second panel holds three attempts and their average."
+      },
+      {
+       "p": "Drag each row INSIDE pnlSwimLengths."
       },
       {
        "controls": {
@@ -432,10 +500,14 @@
      "id": "4",
      "title": "Fill the quiz panel and the reaction test panel",
      "foot": "done",
+     "done": "the first four rows sit in the quiz panel and the last four in the test panel",
      "goal": "The quiz panel and the test panel each hold a heading, a not taken yet label, a Take button and a ? button.",
      "blocks": [
       {
-       "p": "These two panels look alike. Each one has a heading, a line that says not taken yet, and two buttons."
+       "p": "These two panels look alike."
+      },
+      {
+       "p": "Each one has a heading, a line that says not taken yet, and two buttons."
       },
       {
        "controls": {
@@ -510,10 +582,11 @@
      "id": "5",
      "title": "Fill the group panel and add the two big buttons",
      "foot": "done",
+     "done": "the group panel is filled and the two big buttons sit on the form",
      "goal": "The group panel holds a heading, a box, a button and a ? button. Save Details, View Report, a title and a logo sit on the form.",
      "blocks": [
       {
-       "p": "The first four rows go INSIDE pnlSwimmingGroup. The rest sit on the form, outside every panel."
+       "p": "The first four rows go INSIDE pnlSwimmingGroup, and the rest sit on the form."
       },
       {
        "p": "A PictureBox shows a picture. StretchImage makes the picture fill the whole box."
@@ -581,13 +654,10 @@
        }
       },
       {
-       "p": "To put a picture in the logo, click the three dots beside Image in Properties."
+       "p": "For Image, click its three dots, then Import, then YOUR logo file."
       },
       {
-       "p": "Click Import and pick the logo picture saved in YOUR coursework folder. Then click OK."
-      },
-      {
-       "p": "Every ? button has a name that starts btnHelp. You make them all work in chapter 13."
+       "watch": "Every ? button's name starts btnHelp. They all start working in chapter 13."
       }
      ]
     }
@@ -596,15 +666,21 @@
   {
    "id": "4",
    "title": "Try it in the Design tab",
+   "thing": "every name on the form",
+   "verb": "checking",
    "screens": [
     {
      "id": "1",
      "title": "Check every name on your data entry form",
      "foot": "chapter-done",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "Every panel name starts pnl, every text box tbx, every button btn and every drop-down list cbx. None is a made-up name.",
      "blocks": [
       {
-       "p": "A wrong name stops your code finding a control later. Click each control once and read its Name."
+       "p": "A wrong name stops your code finding a control later."
+      },
+      {
+       "p": "Click each control once and read its Name."
       },
       {
        "check": [
@@ -612,7 +688,7 @@
          "id": "4-1.t1",
          "what": "Every panel's name starts with pnl.",
          "how": "Click the dotted edge of each panel once.",
-         "fix": "Go back to stage 2, screen 2.",
+         "fix": "Go back to part 2, screen 2.",
          "go": "#cw/02/2-2",
          "expect": "must",
          "on": "design"
@@ -621,7 +697,7 @@
          "id": "4-1.t2",
          "what": "Every text box's name starts with tbx.",
          "how": "Click each white box once.",
-         "fix": "Go back to stage 3.",
+         "fix": "Go back to part 3.",
          "go": "#cw/02/3-1",
          "expect": "must",
          "on": "design"
@@ -630,7 +706,7 @@
          "id": "4-1.t3",
          "what": "Every button's name starts with btn, and every drop-down list's name starts with cbx.",
          "how": "Click each button and each list once.",
-         "fix": "Go back to stage 3.",
+         "fix": "Go back to part 3.",
          "go": "#cw/02/3-1",
          "expect": "must",
          "on": "design"
@@ -639,7 +715,7 @@
          "id": "4-1.t4",
          "what": "Click any control once and read its Name.",
          "how": "It must NOT be a made-up name like textBox1 or panel3.",
-         "fix": "Give it a real name, as on stage 2, screen 2.",
+         "fix": "Give it a real name, as on part 2, screen 2.",
          "go": "#cw/02/2-2",
          "expect": "mustnot",
          "on": "design"

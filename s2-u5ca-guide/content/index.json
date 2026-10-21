@@ -18,27 +18,29 @@
    "color": "#4F2D9E",
    "built": true,
    "steps": [
-    "3-3.c1",
     "3-3.1"
    ],
    "stages": [
     [
      "1",
      "What you are making",
-     3
+     6,
+     "your whole program"
     ],
     [
      "2",
      "How this guide works",
-     2
+     3,
+     "how this guide works"
     ],
     [
      "3",
      "The three rules",
-     5
+     11,
+     "the three rules"
     ]
    ],
-   "screens": 10
+   "screens": 20
   },
   {
    "id": "01",
@@ -67,25 +69,29 @@
     [
      "1",
      "Check what your login form has",
-     1
+     1,
+     "your login form so far"
     ],
     [
      "2",
      "The two boxes and the button",
-     3
+     4,
+     "the login form's boxes and buttons"
     ],
     [
      "3",
      "The code behind the Login button",
-     3
+     4,
+     "the Login button's code"
     ],
     [
      "4",
      "Try your login form",
-     1
+     1,
+     "your login form"
     ]
    ],
-   "screens": 8
+   "screens": 10
   },
   {
    "id": "02",
@@ -116,22 +122,26 @@
     [
      "1",
      "Check what your data entry form has",
-     1
+     1,
+     "your data entry form so far"
     ],
     [
      "2",
      "The five panels",
-     2
+     2,
+     "the five panels"
     ],
     [
      "3",
      "Inside each panel",
-     5
+     5,
+     "the boxes and buttons in each panel"
     ],
     [
      "4",
      "Try it in the Design tab",
-     1
+     1,
+     "every name on the form"
     ]
    ],
    "screens": 9
@@ -162,25 +172,29 @@
     [
      "1",
      "Check what your Global.cs has",
-     1
+     1,
+     "your Global.cs so far"
     ],
     [
      "2",
      "Add the Global.cs file",
-     2
+     3,
+     "the Global.cs file"
     ],
     [
      "3",
      "The fourteen variables",
-     3
+     3,
+     "the fourteen variables"
     ],
     [
      "4",
      "Try it",
-     1
+     1,
+     "your Global.cs"
     ]
    ],
-   "screens": 7
+   "screens": 8
   },
   {
    "id": "04",
@@ -210,25 +224,29 @@
     [
      "1",
      "Check what your Enter button has",
-     1
+     1,
+     "your Enter button so far"
     ],
     [
      "2",
      "Collect every problem",
-     3
+     4,
+     "the four checks"
     ],
     [
      "3",
      "Show the problems or keep the details",
-     3
+     4,
+     "the message and the switch"
     ],
     [
      "4",
      "Try your Enter button",
-     1
+     1,
+     "your Enter button"
     ]
    ],
-   "screens": 8
+   "screens": 10
   },
   {
    "id": "05",
@@ -259,25 +277,29 @@
     [
      "1",
      "Check what your average button has",
-     1
+     1,
+     "your average button so far"
     ],
     [
      "2",
      "Check the three boxes",
-     5
+     6,
+     "the three checks"
     ],
     [
      "3",
      "Work out the average",
-     3
+     4,
+     "the average"
     ],
     [
      "4",
      "Try your average button",
-     1
+     1,
+     "your average button"
     ]
    ],
-   "screens": 10
+   "screens": 12
   },
   {
    "id": "06",
@@ -318,35 +340,41 @@
     [
      "1",
      "Check what your quiz has",
-     1
+     1,
+     "your quiz so far"
     ],
     [
      "2",
      "The quiz form: its panels and buttons",
-     4
+     6,
+     "the quiz form"
     ],
     [
      "3",
      "Getting to the quiz",
-     1
+     3,
+     "the Take quiz button"
     ],
     [
      "4",
      "Question 1: a typed answer",
-     2
+     4,
+     "question 1"
     ],
     [
      "5",
      "Questions 2 and 3",
-     5
+     8,
+     "questions 2 and 3"
     ],
     [
      "6",
      "Try your first three questions",
-     1
+     1,
+     "questions 1 to 3"
     ]
    ],
-   "screens": 14
+   "screens": 23
   },
   {
    "id": "07",
@@ -387,35 +415,41 @@
     [
      "1",
      "Check your quiz has what it needs",
-     1
+     1,
+     "the quiz form you already have"
     ],
     [
      "2",
      "Make only question 1 work when the quiz opens",
-     4
+     5,
+     "what happens when the quiz opens"
     ],
     [
      "3",
      "Mark question 4, the one with radio buttons",
-     6
+     9,
+     "question 4's Check button"
     ],
     [
      "4",
      "Mark question 5, the one with the number box",
-     3
+     5,
+     "question 5's Check button"
     ],
     [
      "5",
      "Send the score back to the data entry form",
-     2
+     3,
+     "the Return button"
     ],
     [
      "6",
      "Test the whole quiz",
-     1
+     1,
+     "the whole quiz"
     ]
    ],
-   "screens": 17
+   "screens": 24
   },
   {
    "id": "08",
@@ -446,30 +480,35 @@
     [
      "1",
      "Check what you need first",
-     1
+     1,
+     "the parts this chapter needs"
     ],
     [
      "2",
      "The problem and the plan",
-     2
+     2,
+     "the Load event"
     ],
     [
      "3",
      "Switch everything off first",
-     1
+     2,
+     "the switch-off lines"
     ],
     [
      "4",
      "Three questions for Global.cs",
-     5
+     7,
+     "the three questions for Global.cs"
     ],
     [
      "5",
      "Try your Load event",
-     1
+     1,
+     "your Load event"
     ]
    ],
-   "screens": 10
+   "screens": 13
   },
   {
    "id": "09",
@@ -515,40 +554,47 @@
     [
      "1",
      "Check what you need first",
-     1
+     1,
+     "the parts this chapter needs"
     ],
     [
      "2",
      "Make yours look different",
-     2
+     3,
+     "your look and your pictures"
     ],
     [
      "3",
      "The reaction test form: its pictures and buttons",
-     4
+     5,
+     "the reaction test form"
     ],
     [
      "4",
      "The code before any click",
-     2
+     2,
+     "the code as the form opens"
     ],
     [
      "5",
      "What a click does",
-     2
+     2,
+     "the click code"
     ],
     [
      "6",
      "Start, swap, count down",
-     5
+     6,
+     "the Start button and two timers"
     ],
     [
      "7",
      "Getting there, and Try it",
-     2
+     2,
+     "the Take test button, then a try"
     ]
    ],
-   "screens": 18
+   "screens": 21
   },
   {
    "id": "10",
@@ -580,25 +626,29 @@
     [
      "1",
      "Check what you need first",
-     1
+     1,
+     "the parts this chapter needs"
     ],
     [
      "2",
      "Your own piece of code, with a name you choose",
-     3
+     4,
+     "CalculateGroup, your own code"
     ],
     [
      "3",
      "The Calculate button",
-     7
+     8,
+     "the Calculate button"
     ],
     [
      "4",
      "Try it",
-     1
+     1,
+     "your Calculate button"
     ]
    ],
-   "screens": 12
+   "screens": 14
   },
   {
    "id": "11",
@@ -613,11 +663,11 @@
     "1-1.t3",
     "2-1.c1",
     "3-1.c1",
-    "3-2.c1",
     "4-1.c1",
     "4-2.c1",
     "4-3.c1",
     "4-4.c1",
+    "3-2.c1",
     "5-1.t1",
     "5-1.t2",
     "5-1.t3",
@@ -628,30 +678,47 @@
     [
      "1",
      "Check what you need first",
-     1
+     1,
+     "the parts this chapter needs"
     ],
     [
      "2",
      "The file tools",
-     1
+     2,
+     "the file tools line"
     ],
     [
      "3",
      "Only when everything is done",
-     2
+     1,
+     "the Save button's check"
     ],
     [
      "4",
      "Write the line to the file",
-     4
+     3,
+     "the line that goes in the file"
     ],
     [
      "5",
+     "Clear Global.cs and start again",
+     3,
+     "the fresh start for the next pupil"
+    ],
+    [
+     "6",
+     "If a panel is still on, stop",
+     1,
+     "the stop when a part is missing"
+    ],
+    [
+     "7",
      "Try it",
-     1
+     1,
+     "your Save button"
     ]
    ],
-   "screens": 9
+   "screens": 12
   },
   {
    "id": "12",
@@ -686,35 +753,41 @@
     [
      "1",
      "Check what you need first",
-     1
+     1,
+     "the parts this chapter needs"
     ],
     [
      "2",
      "The report form: its table and lists",
-     3
+     3,
+     "the report form"
     ],
     [
      "3",
      "Two lines at the top of the report code",
-     2
+     3,
+     "two lines at the top"
     ],
     [
      "4",
      "The Load event in four parts",
-     4
+     5,
+     "the code as the report opens"
     ],
     [
      "5",
      "The two lists and the two buttons",
-     4
+     4,
+     "the two lists and the two buttons"
     ],
     [
      "6",
      "Try it",
-     1
+     1,
+     "your report"
     ]
    ],
-   "screens": 15
+   "screens": 17
   },
   {
    "id": "13",
@@ -746,20 +819,35 @@
     [
      "1",
      "Check what you need first",
-     1
+     1,
+     "the parts this chapter needs"
     ],
     [
      "2",
      "One help button",
-     1
+     1,
+     "the first help button"
     ],
     [
      "3",
-     "The rest of the help buttons",
-     3
+     "The other help buttons on the data entry form",
+     4,
+     "the other four data entry help buttons"
+    ],
+    [
+     "4",
+     "The help buttons on the other three forms",
+     3,
+     "the login, quiz and test help buttons"
+    ],
+    [
+     "5",
+     "Try it",
+     1,
+     "your help buttons"
     ]
    ],
-   "screens": 5
+   "screens": 10
   },
   {
    "id": "14",
@@ -787,27 +875,32 @@
     [
      "1",
      "Read this first",
-     1
+     1,
+     "which extra to pick"
     ],
     [
      "2",
      "Login: three tries, then no more",
-     3
+     3,
+     "three tries at login"
     ],
     [
      "3",
      "Reaction test: the swaps speed up",
-     2
+     2,
+     "the faster swaps"
     ],
     [
      "4",
      "Data entry: the best attempt",
-     2
+     2,
+     "the best attempt"
     ],
     [
      "5",
      "Data entry: colour the group",
-     2
+     2,
+     "the coloured group"
     ]
    ],
    "screens": 10,

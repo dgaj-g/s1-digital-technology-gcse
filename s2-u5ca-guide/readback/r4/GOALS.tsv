@@ -1,0 +1,64 @@
+ch00#1-0	My program is five forms joined by buttons, plus one text file that saves each pupil.
+ch00#1-1	I know what a form, a control, a property and IntelliSense are.
+ch00#1-2	My program is five forms joined by buttons, plus one text file that saves each pupil.
+ch00#1-3	Solution Explorer lists my forms and Global.cs, on the right of Visual Studio.
+ch00#1-4	Double-clicking a form opens the Design tab, and View Code opens the code tab.
+ch00#1-5	The green Start arrow runs my program.
+ch00#1-6	The red square stops my program.
+ch00#2-0	Every chapter has the same shape, and the home page shows me my next job.
+ch00#2-1	A chapter is a row of parts, each part is a few screens, and each screen has one job.
+ch00#2-2	The big button at the bottom ticks a screen off and moves me on.
+ch00#2-3	The home page lists every part in order, I tick what I have done, and I open the first part that is not ticked.
+ch00#3-0	Three rules run through every chapter of this guide.
+ch00#3-1	The guide shows the names Mr Gartland gave his controls, and I use the names I gave mine.
+ch00#3-2	To find a control's name, I click it once in the Design tab.
+ch00#3-3	The name sits beside Name at the top of the Properties window.
+ch00#3-4	When I type the first letters of a name, IntelliSense lists the names in my program and Tab finishes it.
+ch00#3-5	I type the first letters of a name on a new line.
+ch00#3-6	The list pops up with every matching name in my program.
+ch00#3-7	Tab types the name for me, spelt right.
+ch00#3-8	I cannot copy code from the guide, I type it, and I read each line as I type it.
+ch00#3-9	I have tried to copy a line and seen the guide refuse.
+ch00#3-10	A red wiggly line means Visual Studio does not understand that line, and the Error List takes me to it.
+ch00#3-11	Build Solution checks every line, and Build succeeded at the bottom left means I can run it.
+ch09#1-1	Before I start, I check Global.cs, the test panel on the data entry form and the data entry Load event.
+ch09#2-0	This part is where YOUR test becomes different from MINE. You choose the look, then save your pictures where the program can find them.
+ch09#2-1	The idea of the test stays the same, but the look of mine is my own choice.
+ch09#2-2	The idea of the test stays the same, but I choose my own shape, pictures, swapping boxes and timing.
+ch09#2-3	My two or three pictures are saved in a folder called Images inside bin and then Debug.
+ch09#3-0	This part adds frmTest and puts everything on it: twelve picture boxes, a score panel and two timers.
+ch09#3-1	A new form called frmTest is in Solution Explorer, with a title label and an instructions label.
+ch09#3-2	Twelve picture boxes sit on frmTest, named pbx1 to pbx12 in reading order, each stretching its picture.
+ch09#3-3	The score panel holds the Start button, the score, the time left, the pupil's name and the ? button.
+ch09#3-4	I know what tmrSwap and tmrCountdown are for before I add them.
+ch09#3-5	Two timers called tmrSwap and tmrCountdown sit in the grey strip under the form, each with Interval 1000.
+ch09#4-0	This part types two lines at the top of frmTest's code, then its Load event.
+ch09#4-1	Two lines at the top of frmTest's code make the countdown start at 10 and make room for a list of picture boxes.
+ch09#4-2	The Load event of frmTest shows the pupil's name and puts all twelve picture boxes into one list.
+ch09#5-0	This part makes PictureBox_Click. It runs when any of the twelve boxes is clicked.
+ch09#5-1	One piece of code, PictureBox_Click, runs for any of the twelve boxes, and it finds out which box was clicked.
+ch09#5-2	A click on the winning picture adds one to the score, any other picture takes one off, and the picture hides.
+ch09#6-0	This part types the code behind Start, tmrSwap and tmrCountdown. That is the whole test running.
+ch09#6-1	When Start is clicked, each of the twelve boxes is given its first picture, a mix of winners and losers.
+ch09#6-2	I see how one loop joins all twelve boxes to PictureBox_Click.
+ch09#6-3	A loop joins every box to PictureBox_Click, both timers start, and the Start button switches itself off.
+ch09#6-4	Each tick of tmrSwap turns a winning picture into a losing one, and a losing one into a winner.
+ch09#6-5	Each tick of tmrCountdown takes one off the seconds left and shows it, and at zero both timers stop.
+ch09#6-6	At zero, a message shows the score, Global.cs records that the test is taken, and the data entry form opens again.
+ch09#7-0	This part makes the Take test button open the test. Then you try the whole thing.
+ch09#7-1	The Take test button closes the data entry form and opens the reaction test form.
+ch09#7-2	I run the program and check the name, the swaps, the score, the countdown and the way back.
+ch14#1-1	Everything my program needs is done. I can pick any extra, or none.
+ch14#2-0	After three wrong passwords the Login button goes grey.
+ch14#2-1	One line at the top of the login code makes a counter called tries that starts at 0.
+ch14#2-2	On the third wrong try, a message shows and the Login button goes grey.
+ch14#2-3	I type a wrong password three times and the Login button goes grey.
+ch14#3-0	The reaction test gets harder towards the end.
+ch14#3-1	Every second the gap between swaps shrinks by a tenth of a second, down to 0.3 seconds.
+ch14#3-2	I take the test and the swaps get faster as the clock runs down.
+ch14#4-0	The attempts heading shows the biggest attempt as well as the average.
+ch14#4-1	After the average, the attempts heading also shows the biggest of the three attempts.
+ch14#4-2	I type three attempts and the heading shows the biggest one.
+ch14#5-0	The group panel takes a colour that matches the group.
+ch14#5-1	When the group appears, the group panel turns green, yellow or red.
+ch14#5-2	I work out a group and the panel turns its colour.

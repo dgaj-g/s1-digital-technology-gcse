@@ -99,7 +99,7 @@ CWIX.chapters.filter((c) => c.built).forEach((c) => {
   chj.stages.forEach((st) => st.screens.forEach((sc) => idsOf(sc.blocks, ids)));
   if (new Set(ids).size !== ids.length) { console.error('ch' + c.id + ': a tick id twice'); process.exit(1); }
   c.steps = ids;
-  c.stages = chj.stages.map((st, i) => [String(i + 1), st.title, st.screens.length]);
+  c.stages = chj.stages.map((st) => [String(st.id), st.title, st.screens.filter((sc) => !sc.opener).length, st.thing || '']);   // same shape as tools/build_content.py (gate S11)
 });
 fs.writeFileSync(IXP, JSON.stringify(CWIX, null, 1) + '\n');
 // A pupil's ticks are a bitmap over server/cw-slots.json, which only ever grows: a retired row keeps its slot (shown as null in

@@ -19,10 +19,11 @@ ctl() {   # ctl <name> <cmd...>    must fail
 line "S2 gates $(date '+%d %b %Y %H:%M')${S2_SHIP:+  [ship check]}"
 gate build node s2-u5ca-guide/tools/build-s2.js   # the gates test the page as built from content/ and src/ now
 gate check_content python3 -I s2-u5ca-guide/tools/check_content.py
+gate G-SIGN python3 -I s2-u5ca-guide/tools/check_signposting.py
 for g in G1 G2 G4 G6 G7 G8b G11 G12s G13; do gate $g python3 -I s2-u5ca-guide/gates/gates.py $g; done
 gate G9  python3 -I s2-u5ca-guide/gates/g9_tokens.py
 gate G10 python3 -I s2-u5ca-guide/gates/g10_privacy.py
-gate G5+G12+G14 node s2-u5ca-guide/gates/g_browser.js
+gate G5+G12+G14+GFOLD node s2-u5ca-guide/gates/g_browser.js
 gate G15 node s2-u5ca-guide/gates/t-apicw.js
 cp "$G/T_REPORT.txt" "$OUT/T15.txt" 2>/dev/null
 cmp() { python3 -I s2-u5ca-guide/gates/plant.py $1 > /dev/null || return 0; }
@@ -32,8 +33,9 @@ for g in G3 G8; do cmp $g; ctl $g env S2_CONTENT="$G/_ctl/$g" python3 -I s2-u5ca
 cmp G11; ctl G11 env S2_SHIP=1 S2_CONTENT="$G/_ctl/G11" python3 -I s2-u5ca-guide/gates/gates.py G11
 ctl G9  python3 -I s2-u5ca-guide/gates/g9_tokens.py --control
 ctl G10 python3 -I s2-u5ca-guide/gates/g10_privacy.py --control
-for g in G5 G12 G14; do ctl $g node s2-u5ca-guide/gates/g_browser.js $g --control; done
+for g in G5 G12 G14 GFOLD; do ctl $g node s2-u5ca-guide/gates/g_browser.js $g --control; done
+for r in S1 S2 S3 S4 S5 S6 S7 S8 S9 S10 S11; do cmp SIGN$r; ctl SIGN$r env S2_CONTENT="$G/_ctl/SIGN$r" python3 -I s2-u5ca-guide/tools/check_signposting.py --only $r; done
 ctl G15 node s2-u5ca-guide/gates/t-apicw.js --control
 line "$([ $red = 0 ] && echo 'ALL GREEN, every control red' || echo 'RED: something above needs fixing')"
-{ cat "$R"; echo; echo '---- G15 server test'; cat "$OUT/T15.txt"; echo; echo '---- browser gates'; cat "$OUT/G5+G12+G14.log"; } > "$G/T_REPORT.txt"
+{ cat "$R"; echo; echo '---- G15 server test'; cat "$OUT/T15.txt"; echo; echo '---- browser gates'; cat "$OUT/G5+G12+G14+GFOLD.log"; } > "$G/T_REPORT.txt"
 exit $red

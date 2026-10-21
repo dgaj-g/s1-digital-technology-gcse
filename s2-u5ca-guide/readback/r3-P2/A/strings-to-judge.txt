@@ -1,0 +1,36 @@
+ch03#1-1	Check what your Global.cs already has
+ch03#2-0	Add a file called Global.cs that every form can read
+ch03#2-1	Meet the three new words
+ch03#2-2	See why the score goes into Global.cs
+ch03#2-3	Add Global.cs to your project
+ch03#3-0	Type the fourteen variables into Global.cs
+ch03#3-1	Keep the pupil's details in Global.cs
+ch03#3-2	Keep the three attempts and their average
+ch03#3-3	Keep the quiz, the reaction test and the group
+ch03#4-1	Check every form can find your fourteen variables
+ch04#1-1	Check what your Enter button already does
+ch04#2-0	Make the Enter button check the four boxes
+ch04#2-1	Open the code behind the Enter button
+ch04#2-2	Start an empty list of problems
+ch04#2-3	Add a problem when a name box is empty
+ch04#2-4	Add a problem for long names or empty lists
+ch04#3-0	Show the problems, or keep the details and move on
+ch04#3-1	Show every problem in one message
+ch04#3-2	Keep the four details in Global.cs
+ch04#3-3	See which panels switch when Enter is pressed
+ch04#3-4	Switch the panels over in code
+ch04#4-1	Try every way through the Enter button
+ch05#1-1	Check what your average button already does
+ch05#2-0	Make the average button check the three boxes
+ch05#2-1	Open the code behind the average button
+ch05#2-2	Start by saying every box is right
+ch05#2-3	Turn passValidation false when a box is empty
+ch05#2-4	Turn passValidation false when attempt 1 holds a letter
+ch05#2-5	Do the same check for attempts 2 and 3
+ch05#2-6	Show a message if a check failed
+ch05#3-0	Work out the average and move on to the quiz
+ch05#3-1	Add the three attempts, divide by 3 and round
+ch05#3-2	Keep the three attempts in Global.cs
+ch05#3-3	See the quiz panel switch on
+ch05#3-4	Switch the panels over in code
+ch05#4-1	Try every way through the average button

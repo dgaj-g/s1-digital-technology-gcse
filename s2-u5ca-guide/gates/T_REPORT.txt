@@ -1,6 +1,7 @@
-S2 gates 19 Oct 2026 09:36  [ship check]
+S2 gates 21 Oct 2026 22:21  [ship check]
 PASS  build
 PASS  check_content
+PASS  G-SIGN
 PASS  G1
 PASS  G2
 PASS  G4
@@ -12,7 +13,7 @@ PASS  G12s
 PASS  G13
 PASS  G9
 PASS  G10
-PASS  G5+G12+G14
+PASS  G5+G12+G14+GFOLD
 PASS  G15
 -- controls (each must be red)
 red   control G1
@@ -31,6 +32,18 @@ red   control G10
 red   control G5
 red   control G12
 red   control G14
+red   control GFOLD
+red   control SIGNS1
+red   control SIGNS2
+red   control SIGNS3
+red   control SIGNS4
+red   control SIGNS5
+red   control SIGNS6
+red   control SIGNS7
+red   control SIGNS8
+red   control SIGNS9
+red   control SIGNS10
+red   control SIGNS11
 red   control G15
 ALL GREEN, every control red
 
@@ -45,7 +58,7 @@ PASS T4 done sets d to the minute — d=500005
 PASS T7 had v:1 sets h and logs h — h=1 e=[500005,"h","07"]
 PASS T7 the class grid shows the chapter as had — {"k":["1-1.t1"],"o":1,"f":500000,"l":500000,"a":"6-3","d":500005,"c":2,"r":1,"h":1}
 PASS T7 had v:0 clears h and logs g — h=0 e=[500005,"g","07"]
-PASS T7 had on an unknown chapter refused with bad-key — {"ok":false,"error":"bad-key","v":"s2-2026-10-18-a36a5cfc"}
+PASS T7 had on an unknown chapter refused with bad-key — {"ok":false,"error":"bad-key","v":"s2-2026-10-21-1decb594"}
 PASS T4 the stale-build notice is logged once, a bad notice id refused — {"s2-guide":500005} bad-key
 PASS T5 staff grid refused before the passcode, a wrong passcode refused, the right one admits — not-staff,bad-pass,true
 PASS T6 unknown chapter, bad step, oversize payload, unknown file refused with bad-key — bad-key,bad-key,bad-key,bad-key,bad-key,bad-key,bad-key,bad-key
@@ -53,6 +66,7 @@ PASS T6 stored value length unchanged after the refusals — 275 → 275
 PASS T* each op touches the activity session (Last seen moves) — {"seen":500020,"last":[500020,500020,1,0]}
 
 ---- browser gates
-G5 no copy PASS — 82 code screens
-G12 sizes PASS — 162 screens, tallest 2200px
+G5 no copy PASS — 87 code screens
+G12 sizes PASS — 258 screens, tallest 1789px
+GFOLD first action above the fold PASS — 217 screens measured, 27 with no heavy block, deepest 698px
 G14 hidden 14 PASS — before {"hash":"#cw","card":false,"later":""} · home {"card":true,"later":["A bonus chapter has appeared. It is completely optional."]} · after {"hash":"#cw/14/1-1","screen":true}

@@ -16,24 +16,27 @@
   {
    "id": "1",
    "title": "Read this first",
+   "thing": "which extra to pick",
+   "verb": "learning",
    "screens": [
     {
      "id": "1",
-     "title": "Read this before you pick an extra",
+     "title": "Meet the four extras before you pick one",
      "foot": "next",
+     "done": "you have saved your project and picked an extra, or none",
      "goal": "Everything my program needs is done. I can pick any extra, or none.",
      "blocks": [
       {
-       "p": "Everything your program needs is done. This chapter is for fun."
+       "p": "Everything your program needs is done, so this chapter is for fun."
       },
       {
-       "p": "Pick any one. Skip any one. Nothing here is marked."
+       "p": "Four extras: three tries at login, faster swaps, the best attempt, a coloured group."
       },
       {
-       "p": "Each extra has two screens. The first gives the code. The second is its own Try it."
+       "p": "Pick any one, or none. Press the big button, then click the extra's number in the row of parts above."
       },
       {
-       "watch": "Save your project before you start an extra. Then you can always go back."
+       "watch": "Save your project before you start an extra, so you can always go back."
       }
      ]
     }
@@ -42,18 +45,36 @@
   {
    "id": "2",
    "title": "Login: three tries, then no more",
+   "thing": "three tries at login",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Make the login stop after three wrong tries",
+     "opener": true,
+     "foot": "next",
+     "goal": "After three wrong passwords the Login button goes grey.",
+     "blocks": [
+      {
+       "open": {
+        "what": "A counter remembers the wrong tries. On the third one a message shows and the Login button goes grey.",
+        "does": "When it works, nobody can keep guessing the password for ever."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Add a counter for wrong tries",
      "foot": "done",
+     "done": "line 1 is typed above public frmLogin and has no red squiggles",
      "goal": "One line at the top of the login code makes a counter called tries that starts at 0.",
      "blocks": [
       {
-       "p": "Open frmLogin's code. Two places change. This screen is the first."
+       "p": "Open frmLogin's code, where two places change."
       },
       {
-       "p": "Click the empty line above public frmLogin. Type the line below."
+       "p": "Click the empty line above public frmLogin and type the line below."
       },
       {
        "code": {
@@ -87,13 +108,17 @@
      "id": "2",
      "title": "Switch Login off on the third wrong try",
      "foot": "done",
+     "done": "lines 1 to 6 are typed and the code has no red squiggles",
      "goal": "On the third wrong try, a message shows and the Login button goes grey.",
      "blocks": [
       {
-       "p": "Find the Login incorrect message near the bottom of btnLogin_Click. Two lines below it, tbxPassword is cleared."
+       "p": "Find the Login incorrect message near the bottom of btnLogin_Click."
       },
       {
-       "p": "Click at the end of that tbxPassword line and press Enter. The new code goes there."
+       "p": "Two lines below it, tbxPassword is cleared."
+      },
+      {
+       "p": "Click at the end of that tbxPassword line and press Enter."
       },
       {
        "code": {
@@ -131,10 +156,11 @@
      "id": "3",
      "title": "Try the three tries",
      "foot": "done",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I type a wrong password three times and the Login button goes grey.",
      "blocks": [
       {
-       "p": "Run your program. Then try each row."
+       "p": "Run your program and then try each row."
       },
       {
        "check": [
@@ -142,7 +168,7 @@
          "id": "2-3.t1",
          "what": "Type a wrong password and click Login. Do it three times.",
          "how": "On the third try, the message shows. The Login button goes grey.",
-         "fix": "Look at screen 2-2.",
+         "fix": "Look at the code on screen 2-2.",
          "go": "#cw/14/2-2",
          "expect": "must"
         },
@@ -150,7 +176,7 @@
          "id": "2-3.t2",
          "what": "After the third wrong try, type the right username and password.",
          "how": "Login must NOT work, because the button is grey.",
-         "fix": "If it works, look at screen 2-2.",
+         "fix": "If it works, look at the code on screen 2-2.",
          "go": "#cw/14/2-2",
          "expect": "mustnot"
         }
@@ -163,15 +189,39 @@
   {
    "id": "3",
    "title": "Reaction test: the swaps speed up",
+   "thing": "the faster swaps",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Make the pictures swap faster as the clock runs down",
+     "opener": true,
+     "foot": "next",
+     "goal": "The reaction test gets harder towards the end.",
+     "blocks": [
+      {
+       "open": {
+        "what": "The reaction test swaps its pictures once a second. This extra makes the swaps speed up as the clock runs down.",
+        "does": "When it works, the test gets harder towards the end."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Make the pictures swap faster each second",
      "foot": "done",
+     "done": "lines 1 to 4 are typed and the code has no red squiggles",
      "goal": "Every second the gap between swaps shrinks by a tenth of a second, down to 0.3 seconds.",
      "blocks": [
       {
-       "p": "Open frmTest's code. Find tmrCountdown_Tick. Its first line takes 1 off CountdownValue. Click at the end of that line and press Enter."
+       "p": "Open frmTest's code and find tmrCountdown_Tick."
+      },
+      {
+       "p": "Its first line takes 1 off CountdownValue."
+      },
+      {
+       "p": "Click at the end of that line and press Enter."
       },
       {
        "code": {
@@ -211,10 +261,11 @@
      "id": "2",
      "title": "Try the faster swaps",
      "foot": "done",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I take the test and the swaps get faster as the clock runs down.",
      "blocks": [
       {
-       "p": "Run your program. Log in and take the test. Then try each row."
+       "p": "Run your program, log in and take the test, then try each row."
       },
       {
        "check": [
@@ -222,7 +273,7 @@
          "id": "3-2.t1",
          "what": "Watch the pictures as the clock counts down.",
          "how": "The swaps get faster each second.",
-         "fix": "Look at screen 3-1.",
+         "fix": "Look at the code on screen 3-1.",
          "go": "#cw/14/3-1",
          "expect": "must"
         },
@@ -230,7 +281,7 @@
          "id": "3-2.t2",
          "what": "Watch the last few seconds.",
          "how": "The pictures must NOT go too fast to click. They stay clear enough to click to the end.",
-         "fix": "If they go too fast, look at screen 3-1.",
+         "fix": "If they go too fast, look at the code on screen 3-1.",
          "go": "#cw/14/3-1",
          "expect": "mustnot"
         }
@@ -243,15 +294,36 @@
   {
    "id": "4",
    "title": "Data entry: the best attempt",
+   "thing": "the best attempt",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Show the best of the three attempts",
+     "opener": true,
+     "foot": "next",
+     "goal": "The attempts heading shows the biggest attempt as well as the average.",
+     "blocks": [
+      {
+       "open": {
+        "what": "The average button already works out the average. This extra also finds the biggest of the three attempts and shows it.",
+        "does": "When it works, the attempts heading shows the best attempt too."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Show the best of the three attempts",
      "foot": "done",
+     "done": "lines 1 to 10 are typed and the code has no red squiggles",
      "goal": "After the average, the attempts heading also shows the biggest of the three attempts.",
      "blocks": [
       {
-       "p": "Open frmDataEntry's code. Find btnCalculateAverage_Click. Click at the end of the line Global.attempt3 = and press Enter."
+       "p": "Open frmDataEntry's code and find btnCalculateAverage_Click."
+      },
+      {
+       "p": "Click at the end of the line Global.attempt3 = and press Enter."
       },
       {
        "code": {
@@ -307,10 +379,11 @@
      "id": "2",
      "title": "Try the best attempt",
      "foot": "done",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I type three attempts and the heading shows the biggest one.",
      "blocks": [
       {
-       "p": "Run your program. Log in and enter the details. Then try each row."
+       "p": "Run your program, log in and enter the details, then try each row."
       },
       {
        "check": [
@@ -318,7 +391,7 @@
          "id": "4-2.t1",
          "what": "Type 5, 6 and 8 as the attempts. Click the average button.",
          "how": "The heading says best: 8.",
-         "fix": "Look at screen 4-1.",
+         "fix": "Look at the code on screen 4-1.",
          "go": "#cw/14/4-1",
          "expect": "must"
         },
@@ -326,7 +399,7 @@
          "id": "4-2.t2",
          "what": "Run again. Type 5, 9 and 2. Click the average button.",
          "how": "The heading must NOT say best: 2. It says best: 9.",
-         "fix": "If it says 2, look at screen 4-1.",
+         "fix": "If it says 2, look at the code on screen 4-1.",
          "go": "#cw/14/4-1",
          "expect": "mustnot"
         }
@@ -339,15 +412,36 @@
   {
    "id": "5",
    "title": "Data entry: colour the group",
+   "thing": "the coloured group",
+   "verb": "making",
    "screens": [
     {
+     "id": "0",
+     "title": "Turn the group panel green, yellow or red",
+     "opener": true,
+     "foot": "next",
+     "goal": "The group panel takes a colour that matches the group.",
+     "blocks": [
+      {
+       "open": {
+        "what": "The group panel already shows the group. This extra turns the panel green, yellow or red to match the group.",
+        "does": "When it works, the group panel changes colour as the group appears."
+       }
+      }
+     ]
+    },
+    {
      "id": "1",
-     "title": "Colour the group panel by the group",
+     "title": "Turn the group panel green, yellow or red",
      "foot": "done",
+     "done": "lines 1 to 12 are typed and the code has no red squiggles",
      "goal": "When the group appears, the group panel turns green, yellow or red.",
      "blocks": [
       {
-       "p": "Open frmDataEntry's code. Find btnCalculateSwimmingGroup_Click. Click at the end of the line Global.assignedGroup = and press Enter."
+       "p": "Open frmDataEntry's code and find btnCalculateSwimmingGroup_Click."
+      },
+      {
+       "p": "Click at the end of the line Global.assignedGroup = and press Enter."
       },
       {
        "code": {
@@ -386,7 +480,7 @@
        }
       },
       {
-       "p": "The panel still turns grey after Calculate. It keeps its new colour."
+       "p": "After Calculate the panel is switched off as before, but it keeps its new colour."
       },
       {
        "yours": "MY groups are Advanced and Intermediate. Use the group names on YOUR task sheet, spelled the same as in chapter 10."
@@ -397,10 +491,11 @@
      "id": "2",
      "title": "Try the coloured group",
      "foot": "chapter-done",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I work out a group and the panel turns its colour.",
      "blocks": [
       {
-       "p": "Run your program. Do everything up to the group. Then try each row."
+       "p": "Run your program and do everything up to the group, then try each row."
       },
       {
        "check": [
@@ -408,7 +503,7 @@
          "id": "5-2.t1",
          "what": "Get all 5 quiz questions right. Click 6 winning pictures. Type 8, 8 and 8 as the attempts. Click Calculate.",
          "how": "YOUR top group shows. The group panel turns green.",
-         "fix": "Look at screen 5-1.",
+         "fix": "Look at the code on screen 5-1.",
          "go": "#cw/14/5-1",
          "expect": "must"
         },
@@ -416,7 +511,7 @@
          "id": "5-2.t2",
          "what": "Run again. Get 1 quiz question right. Click 1 winning picture. Type 2, 2 and 2 as the attempts. Click Calculate.",
          "how": "The panel must NOT be green. It turns light red.",
-         "fix": "If it is green, look at screen 5-1.",
+         "fix": "If it is green, look at the code on screen 5-1.",
          "go": "#cw/14/5-1",
          "expect": "mustnot"
         }

@@ -102,12 +102,16 @@ def g6():
             if c.get('form') == 'Global': t = re.sub(r'(static \w+ )(\w+)', r'\1Global.\2', t)   # in Global.cs a field IS Global.<field>
             have = {n for n in K if re.search(r'(?<![\w.])' + re.escape(n) + r'\b', t)}
             have -= {n for n in have if any(m != n and m.startswith(n + '.') and m in have for m in have)}
-            names = set(c.get('names', []))
+            names = set()
+            for n in c.get('names', []):   # a strip entry "pbx1 to pbx12" stands for the twelve names pbx1 .. pbx12
+                r = re.fullmatch(r'([A-Za-z]+?)(\d+) to \1(\d+)', n)
+                names |= {r.group(1) + str(i) for i in range(int(r.group(2)), int(r.group(3)) + 1)} if r else {n}
             if not names and have: out.append('%s %s: no names strip, though the code has names in it' % (cid, c['id']))
             out += ['%s %s: strip name %s is not a control, Global field or names.json entry' % (cid, c['id'], n) for n in names - K]
             out += ['%s %s: %s is in the code but not the strip' % (cid, c['id'], n) for n in sorted(have - names)
                     if not (n.startswith('frm') and n in CONTROLS and not re.search(r'new %s\b' % n, t))]
-            out += ['%s %s: strip name %s is not in the code' % (cid, c['id'], n) for n in sorted((names & K) - have)]
+            named = have | {n for n in names if re.search(r'(?<![\w.])' + re.escape(n) + r'_[A-Za-z]+\(', t)}   # btnHelp1_Click( names btnHelp1: Visual Studio names the method after the control
+            out += ['%s %s: strip name %s is not in the code' % (cid, c['id'], n) for n in sorted((names & K) - named)]
     return out
 
 def g7():

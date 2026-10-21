@@ -42,15 +42,18 @@
   {
    "id": "1",
    "title": "Check what your quiz has",
+   "thing": "your quiz so far",
+   "verb": "checking",
    "screens": [
     {
      "id": "1",
      "title": "Check what your quiz already has",
      "foot": "have",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I check for the quiz form and its six panels, the Take quiz button, and the marking of questions 1, 2 and 3.",
      "blocks": [
       {
-       "p": "Your quiz may be partly made already. This screen checks what is there."
+       "p": "Your quiz may be partly made already, so this screen checks what is there."
       },
       {
        "check": [
@@ -58,7 +61,7 @@
          "id": "1-1.t1",
          "what": "Is frmQuiz in Solution Explorer? Does it hold a score panel and five question panels?",
          "how": "Double-click frmQuiz in Solution Explorer. It opens in the Design tab.",
-         "fix": "Go to stage 2.",
+         "fix": "Go to part 2.",
          "go": "#cw/06/2-1",
          "expect": "have"
         },
@@ -66,15 +69,15 @@
          "id": "1-1.t2",
          "what": "Does question 4 have four round buttons and a Check button? Does question 5 have a number box?",
          "how": "Click each control once. Its name shows near the top of Properties.",
-         "fix": "Go to stage 2, screen 4.",
-         "go": "#cw/06/2-4",
+         "fix": "Go to part 2, screen 5.",
+         "go": "#cw/06/2-5",
          "expect": "have"
         },
         {
          "id": "1-1.t3",
          "what": "Run it. Does the Take quiz button open the quiz?",
          "how": "Use the green Start arrow. Log in and fill in the data entry form first.",
-         "fix": "Go to stage 3.",
+         "fix": "Go to part 3.",
          "go": "#cw/06/3-1",
          "expect": "have"
         },
@@ -82,7 +85,7 @@
          "id": "1-1.t4",
          "what": "Answer question 1 and press Check. Does its panel turn green or red?",
          "how": "Green means right. Red means wrong.",
-         "fix": "Go to stage 4.",
+         "fix": "Go to part 4.",
          "go": "#cw/06/4-1",
          "expect": "have"
         },
@@ -90,7 +93,7 @@
          "id": "1-1.t5",
          "what": "Do question 2's buttons and question 3's list mark the answer?",
          "how": "Try each one. The panel should turn green or red.",
-         "fix": "Go to stage 5.",
+         "fix": "Go to part 5.",
          "go": "#cw/06/5-1",
          "expect": "have"
         }
@@ -103,15 +106,33 @@
   {
    "id": "2",
    "title": "The quiz form: its panels and buttons",
+   "thing": "the quiz form",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Make the quiz form with its six panels and their controls",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part makes the quiz form. It has one panel for the score and one for each question.",
+     "blocks": [
+      {
+       "open": {
+        "what": "Each panel is filled with its own controls: labels, boxes, buttons and a list.",
+        "does": "When it works, frmQuiz shows six panels in the Design tab. Every control has its name."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Add the quiz form and its six panels",
      "foot": "done",
-     "goal": "I add a form called frmQuiz and put six panels on it, each named for what it holds.",
+     "done": "frmQuiz is in Solution Explorer with six panels on it",
+     "goal": "I add a form called frmQuiz and put six panels on it.",
      "blocks": [
       {
-       "p": "The quiz is a form of its own. It holds a score panel and five question panels."
+       "p": "The quiz is a form of its own, with a score panel and five question panels."
       },
       {
        "steps": [
@@ -133,8 +154,8 @@
         },
         {
          "id": "2-1.3",
-         "do": "Drag six panels from the Toolbox onto it. Name each one as the map shows.",
-         "see": "Six panels, each with a name that starts with pnl."
+         "do": "Drag six panels from the Toolbox onto it. The next screen shows what to name them.",
+         "see": "Six panels sit on the form, waiting for their names."
         }
        ]
       },
@@ -174,9 +195,22 @@
          }
         ]
        }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "See how the six panels are laid out",
+     "foot": "done",
+     "done": "you have read the name of each panel on the picture",
+     "goal": "Each of the six panels is named for what it holds, so the questions can go in any order.",
+     "blocks": [
+      {
+       "p": "This picture shows the quiz form with its six panels and their names."
       },
       {
        "flow": {
+        "watch": "Read the six names, one for the score and five for questions",
         "form": "frmQuiz",
         "map": true,
         "lit": [
@@ -188,7 +222,7 @@
          "pnlNumberQuestion"
         ],
         "then": [],
-        "say": "Six panels. One holds the score. Each of the other five holds one question."
+        "say": "Six panels: one for the score and one for each question."
        }
       },
       {
@@ -197,13 +231,14 @@
      ]
     },
     {
-     "id": "2",
+     "id": "3",
      "title": "Fill the score panel and the question 1 panel",
      "foot": "done",
+     "done": "the score panel and the question 1 panel hold every control in the table",
      "goal": "The score panel holds the title, the score, a comment and two buttons, and question 1 holds a label, a box and Check.",
      "blocks": [
       {
-       "p": "Drag each control into its panel. Then give it its name and its Text."
+       "p": "Drag each control into its panel, then give it its name and its Text."
       },
       {
        "controls": {
@@ -280,13 +315,14 @@
      ]
     },
     {
-     "id": "3",
+     "id": "4",
      "title": "Fill the question 2 and question 3 panels",
      "foot": "done",
+     "done": "the question 2 and question 3 panels hold every control in the table",
      "goal": "Question 2 holds a label and two answer buttons, and question 3 holds a label, a picture, a list and Check.",
      "blocks": [
       {
-       "p": "Question 2 is answered with one of two buttons. Question 3 is answered from a drop-down list."
+       "p": "Question 2 uses two buttons, and question 3 uses a drop-down list."
       },
       {
        "controls": {
@@ -346,27 +382,28 @@
        }
       },
       {
-       "p": "In the Toolbox, PictureBox makes a picture box. ComboBox makes a drop-down list."
+       "p": "In the Toolbox, PictureBox makes a picture box and ComboBox makes a drop-down list."
       },
       {
-       "p": "For Image, click the three dots beside it. Click Import, pick YOUR picture, then click OK."
+       "p": "For Image, click its three dots, then Import, then YOUR picture. Items works as it did in chapter 2."
       },
       {
-       "p": "Items works as it did for the year group list in chapter 2."
-      },
-      {
-       "watch": "Put the RIGHT answer first in the Items list. The code on screen 5-4 looks for it there."
+       "watch": "Put the RIGHT answer first in the Items list. The code on screen 5-7 looks for it there."
       }
      ]
     },
     {
-     "id": "4",
-     "title": "Fill the question 4 and question 5 panels",
+     "id": "5",
+     "title": "Fill the question 4 panel",
      "foot": "done",
-     "goal": "Question 4 holds a group box with four round buttons and Check, and question 5 holds a label, a number box and Check.",
+     "done": "the question 4 panel holds the group box, four round buttons and the Check button",
+     "goal": "Question 4 holds a group box, with four round buttons and a Check button inside.",
      "blocks": [
       {
-       "p": "Question 4 has four answers. Only one can be picked. Question 5 is answered with a number."
+       "p": "Question 4 uses four round buttons, all inside one group box."
+      },
+      {
+       "p": "Drop the group box into the question 4 panel first. Then drop the four round buttons and btnCheck4 INSIDE the group box."
       },
       {
        "box": {
@@ -376,7 +413,7 @@
          {
           "frames": {
            "id": "F8",
-           "title": "Drag a group box, round buttons and a number box",
+           "title": "Drag a group box and four round buttons",
            "frames": [
             {
              "img": "img/cap/f8-1.png",
@@ -391,15 +428,9 @@
              "w": 365,
              "h": 194,
              "say": "Drag four RadioButtons INSIDE the group box."
-            },
-            {
-             "img": "img/cap/f8-3.png",
-             "alt": "A NumericUpDown dropped into the question 5 panel",
-             "w": 559,
-             "h": 122,
-             "say": "Drag a NumericUpDown into the question 5 panel."
             }
-           ]
+           ],
+           "watch": "Watch the round buttons go inside the group box"
           }
          }
         ]
@@ -450,7 +481,53 @@
           "set": [
            "Text = Check"
           ]
-         },
+         }
+        ],
+        "done": "The group box sits in pnlRadioQuestion. The four round buttons and the Check button sit inside the group box."
+       }
+      }
+     ]
+    },
+    {
+     "id": "6",
+     "title": "Fill the question 5 panel",
+     "foot": "done",
+     "done": "the question 5 panel holds the label, the number box and the Check button",
+     "goal": "Question 5 holds a label, a number box and a Check button.",
+     "blocks": [
+      {
+       "p": "Question 5 takes a number, so it uses a number box with little arrows."
+      },
+      {
+       "p": "Drop the label, the number box and btnCheck5 into the question 5 panel."
+      },
+      {
+       "box": {
+        "title": "See it in Visual Studio",
+        "fold": true,
+        "blocks": [
+         {
+          "frames": {
+           "id": "F8b",
+           "title": "Drag a number box",
+           "frames": [
+            {
+             "img": "img/cap/f8-3.png",
+             "alt": "A NumericUpDown dropped into the question 5 panel",
+             "w": 559,
+             "h": 122,
+             "say": "Drag a NumericUpDown into the question 5 panel."
+            }
+           ]
+          }
+         }
+        ]
+       }
+      },
+      {
+       "controls": {
+        "form": "frmQuiz",
+        "rows": [
          {
           "toolbox": "Label",
           "name": "lblQuestion5",
@@ -471,11 +548,8 @@
           ]
          }
         ],
-        "done": "The group box sits in pnlRadioQuestion, with the next five inside it. The last three sit inside pnlNumberQuestion."
+        "done": "All three sit inside pnlNumberQuestion."
        }
-      },
-      {
-       "watch": "The four round buttons and btnCheck4 go INSIDE the group box. Then only one round button can be picked."
       }
      ]
     }
@@ -484,28 +558,46 @@
   {
    "id": "3",
    "title": "Getting to the quiz",
+   "thing": "the Take quiz button",
+   "verb": "making",
    "screens": [
     {
-     "id": "1",
-     "title": "Open the quiz from the Take quiz button",
-     "foot": "done",
-     "goal": "Pressing Take quiz closes the data entry form and opens a new quiz form.",
+     "id": "0",
+     "title": "Make the Take quiz button open the quiz",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part gives the Take quiz button three lines of code. They close one form and open the other.",
      "blocks": [
       {
-       "p": "The Take quiz button is on the data entry form. It swaps that form for the quiz."
+       "open": {
+        "what": "The data entry form closes, so its details must already be in Global.cs. Then the quiz form opens.",
+        "does": "When it works, pressing Take quiz closes the data entry form. The quiz appears in its place."
+       }
+      }
+     ]
+    },
+    {
+     "id": "1",
+     "title": "Meet the two new things for Take quiz",
+     "foot": "done",
+     "done": "you have read what this.Close() and new frmQuiz().Show() mean",
+     "goal": "I meet the two new things the Take quiz button uses.",
+     "blocks": [
+      {
+       "p": "The Take quiz button sits on the data entry form and swaps it for the quiz."
       },
       {
        "words": [
         [
          "this.Close()",
          "Close this form for good.",
-         "3-1",
+         "3-3",
          true
         ],
         [
          "new frmQuiz().Show()",
          "Make a new quiz form and show it.",
-         "3-1",
+         "3-3",
          true
         ],
         [
@@ -522,6 +614,18 @@
         ]
        ],
        "intro": "Four new things in this chapter. Two are on this screen. Click one to see what it means."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Open the code behind the Take quiz button",
+     "foot": "done",
+     "done": "the code tab is open at btnTakeQuiz_Click with your cursor between its curly brackets",
+     "goal": "I open the code behind the Take quiz button.",
+     "blocks": [
+      {
+       "p": "The picture shows what the button does: one form closes and the other opens."
       },
       {
        "drawn": {
@@ -538,6 +642,18 @@
          "see": "The code tab opens at btnTakeQuiz_Click."
         }
        ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Type the three lines that swap the forms",
+     "foot": "done",
+     "done": "lines 3 to 5 are typed and the code has no red squiggles",
+     "goal": "Pressing Take quiz closes the data entry form and opens a new quiz form.",
+     "blocks": [
+      {
+       "p": "Three lines close the data entry form and open the quiz."
       },
       {
        "code": {
@@ -578,7 +694,8 @@
         ],
         "isense": [
          "frmQuiz"
-        ]
+        ],
+        "isenseFull": true
        }
       },
       {
@@ -594,15 +711,33 @@
   {
    "id": "4",
    "title": "Question 1: a typed answer",
+   "thing": "question 1",
+   "verb": "making",
    "screens": [
     {
-     "id": "1",
-     "title": "Mark the typed answer to question 1 right or wrong",
-     "foot": "done",
-     "goal": "If the typed answer in small letters matches, the score goes up and the panel turns green, or else it turns red.",
+     "id": "0",
+     "title": "Make question 1's Check button mark a typed answer",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part marks question 1. The typed answer is compared with the right one in small letters.",
      "blocks": [
       {
-       "p": "Question 1 is typed in a box. Its Check button marks it."
+       "open": {
+        "what": "A match adds a point and turns the panel green. Anything else turns it red.",
+        "does": "When it works, question 1 goes green or red. Then question 2 switches on."
+       }
+      }
+     ]
+    },
+    {
+     "id": "1",
+     "title": "Open the code behind question 1's Check button",
+     "foot": "done",
+     "done": "the code tab is open at btnCheck1_Click with your cursor between its curly brackets",
+     "goal": "I open the code behind question 1's Check button and meet .ToLower() and BackColor.",
+     "blocks": [
+      {
+       "p": "Question 1 is typed in a box, and its Check button marks it."
       },
       {
        "p": "[[.ToLower()|2]] turns every letter small. So EMERGENCY and Emergency both match."
@@ -618,12 +753,24 @@
          "see": "The code tab opens at btnCheck1_Click."
         }
        ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Mark the typed answer right or wrong",
+     "foot": "done",
+     "done": "lines 3 to 12 are typed and the code has no red squiggles",
+     "goal": "If the typed answer in small letters matches, the score goes up and the panel turns green, or else it turns red.",
+     "blocks": [
+      {
+       "p": "These lines compare the typed answer with the right one, in small letters."
       },
       {
        "code": {
         "id": "4-1.c1",
         "kind": "type",
-        "title": "Question 1's Check button, part 1 of 2",
+        "title": "Question 1's Check button: code 1 of 2",
         "where": "between the curly brackets of btnCheck1_Click",
         "form": "frmQuiz",
         "method": "btnCheck1_Click",
@@ -667,16 +814,18 @@
      ]
     },
     {
-     "id": "2",
-     "title": "Switch off question 1 and switch on question 2",
+     "id": "3",
+     "title": "See question 2 switch on",
      "foot": "done",
-     "goal": "After question 1 is marked, its panel switches off and the question 2 panel switches on.",
+     "done": "you have watched the panels switch and read the line under the picture",
+     "goal": "I watch the question 1 panel switch off and the question 2 panel switch on.",
      "blocks": [
       {
-       "p": "Right or wrong, the quiz moves on. Question 1 switches off. Question 2 switches on."
+       "p": "Right or wrong, the quiz moves on from question 1 to question 2."
       },
       {
        "flow": {
+        "watch": "Watch question 1 switch off as question 2 wakes up",
         "form": "frmQuiz",
         "lit": [
          "pnlTextQuestion"
@@ -688,13 +837,25 @@
         "before": "Question 1 is marked.",
         "say": "The question 1 panel switches off. The question 2 panel switches on."
        }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Switch off question 1 and switch on question 2",
+     "foot": "done",
+     "done": "lines 13 to 14 are typed and the code has no red squiggles",
+     "goal": "After question 1 is marked, its panel switches off and the question 2 panel switches on.",
+     "blocks": [
+      {
+       "p": "These two lines run after a right answer and after a wrong one."
       },
       {
        "code": {
         "id": "4-2.c1",
         "kind": "type",
-        "title": "Question 1's Check button, part 2 of 2",
-        "where": "under part 1, inside btnCheck1_Click, in frmQuiz.cs",
+        "title": "Question 1's Check button: code 2 of 2",
+        "where": "under code 1, inside btnCheck1_Click, in frmQuiz.cs",
         "form": "frmQuiz",
         "method": "btnCheck1_Click",
         "lang": "cs",
@@ -726,7 +887,7 @@
        }
       },
       {
-       "watch": "Type these two lines straight after the last line of part 1. They run for a right answer and a wrong one."
+       "watch": "Type these two lines straight after the last line of code 1. They run for a right answer and a wrong one."
       }
      ]
     }
@@ -735,15 +896,33 @@
   {
    "id": "5",
    "title": "Questions 2 and 3",
+   "thing": "questions 2 and 3",
+   "verb": "making",
    "screens": [
     {
-     "id": "1",
-     "title": "Score a point when the right button is pressed",
-     "foot": "done",
-     "goal": "The right answer button adds 1 to the score, turns the panel green and switches on question 3.",
+     "id": "0",
+     "title": "Mark the answers to questions 2 and 3",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part marks questions 2 and 3. Question 2 has two buttons, and question 3 has a drop-down list.",
      "blocks": [
       {
-       "p": "Question 2 has two buttons. Each button has its own code. Only the right button adds a point."
+       "open": {
+        "what": "Each button of question 2 has its own code. The Check button of question 3 looks at which item is chosen.",
+        "does": "When it works, each answer turns its panel green or red. Then the next question switches on."
+       }
+      }
+     ]
+    },
+    {
+     "id": "1",
+     "title": "Open the code behind the right answer button",
+     "foot": "done",
+     "done": "the code tab is open at btnCorrect_Click with your cursor between its curly brackets",
+     "goal": "I open the code behind the right answer button of question 2.",
+     "blocks": [
+      {
+       "p": "Question 2 has two buttons with their own code, and only one adds a point."
       },
       {
        "steps": [
@@ -753,6 +932,18 @@
          "see": "The code tab opens at btnCorrect_Click."
         }
        ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Score a point when the right button is pressed",
+     "foot": "done",
+     "done": "lines 3 to 8 are typed and the code has no red squiggles",
+     "goal": "The right answer button adds 1 to the score, turns the panel green and switches on question 3.",
+     "blocks": [
+      {
+       "p": "These lines add 1 to the score, turn the panel green and switch on question 3."
       },
       {
        "code": {
@@ -809,13 +1000,14 @@
      ]
     },
     {
-     "id": "2",
-     "title": "Turn question 2 red when the wrong button is pressed",
+     "id": "3",
+     "title": "Open the code behind the wrong answer button",
      "foot": "done",
-     "goal": "The wrong answer button turns the panel red, adds nothing, and still switches on question 3.",
+     "done": "the code tab is open at btnIncorrect_Click with your cursor between its curly brackets",
+     "goal": "I open the code behind the wrong answer button of question 2.",
      "blocks": [
       {
-       "p": "The wrong button does the same, with two changes. It adds no point, and the panel turns red."
+       "p": "The wrong button does the same with two changes: no point, and the panel turns red."
       },
       {
        "steps": [
@@ -825,6 +1017,18 @@
          "see": "The code tab opens at btnIncorrect_Click."
         }
        ]
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Turn question 2 red when the wrong button is pressed",
+     "foot": "done",
+     "done": "lines 3 to 6 are typed and the code has no red squiggles",
+     "goal": "The wrong answer button turns the panel red, adds nothing, and still switches on question 3.",
+     "blocks": [
+      {
+       "p": "These lines turn the panel red, add nothing, and still switch on question 3."
       },
       {
        "code": {
@@ -875,13 +1079,14 @@
      ]
     },
     {
-     "id": "3",
-     "title": "Stop question 3 when nothing is chosen",
+     "id": "5",
+     "title": "Open the code behind question 3's Check button",
      "foot": "done",
-     "goal": "If nothing is chosen in the question 3 list, a message asks the user to choose and nothing else happens.",
+     "done": "the code tab is open at btnCheck3_Click with your cursor between its curly brackets",
+     "goal": "I open the code behind question 3's Check button.",
      "blocks": [
       {
-       "p": "Question 3 is a drop-down list. A user could press Check with nothing chosen."
+       "p": "Question 3 is a drop-down list, and a user could press Check with nothing chosen."
       },
       {
        "p": ".SelectedIndex == -1 asks if nothing is chosen. You met it in chapter 4."
@@ -894,12 +1099,24 @@
          "see": "The code tab opens at btnCheck3_Click."
         }
        ]
+      }
+     ]
+    },
+    {
+     "id": "6",
+     "title": "Stop question 3 when nothing is chosen",
+     "foot": "done",
+     "done": "lines 3 to 7 are typed and the code has no red squiggles",
+     "goal": "If nothing is chosen in the question 3 list, a message asks the user to choose and nothing else happens.",
+     "blocks": [
+      {
+       "p": "These lines show a message when nothing is chosen, and do nothing else."
       },
       {
        "code": {
         "id": "5-3.c1",
         "kind": "type",
-        "title": "Question 3's Check button, part 1 of 3",
+        "title": "Question 3's Check button: code 1 of 3",
         "where": "between the curly brackets of btnCheck3_Click",
         "form": "frmQuiz",
         "method": "btnCheck3_Click",
@@ -936,13 +1153,14 @@
      ]
     },
     {
-     "id": "4",
+     "id": "7",
      "title": "Score a point when the right item is chosen",
      "foot": "done",
+     "done": "lines 8 to 16 are typed and the code has no red squiggles",
      "goal": "If the first item in the list is chosen, the score goes up and the panel turns green.",
      "blocks": [
       {
-       "p": "else runs when something is chosen. Then the code asks: is it the right item?"
+       "p": "else runs when something is chosen, then asks if it is the right item."
       },
       {
        "p": "The items are counted from 0. So the first item is number 0."
@@ -951,8 +1169,8 @@
        "code": {
         "id": "5-4.c1",
         "kind": "type",
-        "title": "Question 3's Check button, part 2 of 3",
-        "where": "under part 1, inside btnCheck3_Click",
+        "title": "Question 3's Check button: code 2 of 3",
+        "where": "under code 1, inside btnCheck3_Click",
         "form": "frmQuiz",
         "method": "btnCheck3_Click",
         "lang": "cs",
@@ -988,20 +1206,21 @@
      ]
     },
     {
-     "id": "5",
+     "id": "8",
      "title": "Turn question 3 red, then switch on question 4",
      "foot": "done",
+     "done": "lines 17 to 24 are typed and the code has no red squiggles",
      "goal": "Any other item turns the panel red, then question 3 switches off and question 4 switches on.",
      "blocks": [
       {
-       "p": "Last, a wrong item turns the panel red. Then the quiz moves on to question 4."
+       "p": "Last, a wrong item turns the panel red, then the quiz moves on to question 4."
       },
       {
        "code": {
         "id": "5-5.c1",
         "kind": "type",
-        "title": "Question 3's Check button, part 3 of 3",
-        "where": "under part 2, inside btnCheck3_Click",
+        "title": "Question 3's Check button: code 3 of 3",
+        "where": "under code 2, inside btnCheck3_Click",
         "form": "frmQuiz",
         "method": "btnCheck3_Click",
         "lang": "cs",
@@ -1039,7 +1258,7 @@
        }
       },
       {
-       "watch": "The two move-on lines sit inside the else of part 2. They never run when nothing is chosen."
+       "watch": "The two move-on lines sit inside the else of code 2. They never run when nothing is chosen."
       }
      ]
     }
@@ -1048,15 +1267,18 @@
   {
    "id": "6",
    "title": "Try your first three questions",
+   "thing": "questions 1 to 3",
+   "verb": "testing",
    "screens": [
     {
      "id": "1",
      "title": "Try every way through questions 1, 2 and 3",
      "foot": "chapter-done",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I open the quiz, answer in capitals, answer wrongly, try both kinds of button, and press Check with nothing chosen.",
      "blocks": [
       {
-       "p": "Run your program and get to the Take quiz button. Then try each row."
+       "p": "Run your program, get to the Take quiz button, then try each row."
       },
       {
        "check": [
@@ -1064,40 +1286,40 @@
          "id": "6-1.t1",
          "what": "Press Take quiz.",
          "how": "The data entry form closes. The quiz opens.",
-         "fix": "Look at screen 3-1.",
-         "go": "#cw/06/3-1",
+         "fix": "Look at the code on screen 3-3.",
+         "go": "#cw/06/3-3",
          "expect": "must"
         },
         {
          "id": "6-1.t2",
          "what": "Type YOUR question 1 answer in capitals. Press Check.",
          "how": "The panel goes green. The score shows 1.",
-         "fix": "Look at part 1 on screen 4-1.",
-         "go": "#cw/06/4-1",
+         "fix": "Look at the code on screen 4-2.",
+         "go": "#cw/06/4-2",
          "expect": "must"
         },
         {
          "id": "6-1.t3",
          "what": "Run it again. Type a wrong answer for question 1. Press Check.",
          "how": "The panel goes red. Question 2 can be clicked.",
-         "fix": "Look at part 2 on screen 4-2.",
-         "go": "#cw/06/4-2",
+         "fix": "Look at the code on screen 4-4.",
+         "go": "#cw/06/4-4",
          "expect": "must"
         },
         {
          "id": "6-1.t4",
          "what": "Press the right button for question 2.",
          "how": "The panel goes green and the score goes up by 1.",
-         "fix": "Look at screen 5-1.",
-         "go": "#cw/06/5-1",
+         "fix": "Look at the code on screen 5-2.",
+         "go": "#cw/06/5-2",
          "expect": "must"
         },
         {
          "id": "6-1.t5",
          "what": "Choose nothing in the list and press Check.",
          "how": "A message asks you to choose. The quiz must NOT move on to question 4.",
-         "fix": "If it moved on, look at screen 5-3.",
-         "go": "#cw/06/5-3",
+         "fix": "If it moved on, look at the code on screen 5-6.",
+         "go": "#cw/06/5-6",
          "expect": "mustnot"
         }
        ]

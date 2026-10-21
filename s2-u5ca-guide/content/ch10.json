@@ -30,15 +30,18 @@
   {
    "id": "1",
    "title": "Check what you need first",
+   "thing": "the parts this chapter needs",
+   "verb": "checking",
    "screens": [
     {
      "id": "1",
      "title": "Check the parts this chapter needs",
      "foot": "have",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "Before I start, I check the Load event, the group panel, Global.cs and my task sheet.",
      "blocks": [
       {
-       "p": "This chapter uses work from earlier chapters. This screen checks that it is there."
+       "p": "This chapter uses work from earlier chapters, so this screen checks that it is there."
       },
       {
        "check": [
@@ -54,7 +57,7 @@
          "id": "1-1.t2",
          "what": "Does the group panel have a result box and a Calculate button?",
          "how": "Open frmDataEntry in the Design tab. Look inside the group panel.",
-         "fix": "Go to chapter 2, stage 3.",
+         "fix": "Go to chapter 2, part 3.",
          "go": "#cw/02/3-1",
          "expect": "have"
         },
@@ -62,7 +65,7 @@
          "id": "1-1.t3",
          "what": "Does Global.cs have assignedGroup?",
          "how": "Double-click Global.cs in Solution Explorer.",
-         "fix": "Go to chapter 3, stage 3.",
+         "fix": "Go to chapter 3, part 3.",
          "go": "#cw/03/3-1",
          "expect": "have"
         },
@@ -83,15 +86,36 @@
   {
    "id": "2",
    "title": "Your own piece of code, with a name you choose",
+   "thing": "CalculateGroup, your own code",
+   "verb": "making",
    "screens": [
     {
-     "id": "1",
-     "title": "Write your own code that picks the group",
+     "id": "0",
+     "title": "Make CalculateGroup, your own piece of code",
+     "opener": true,
      "foot": "next",
-     "goal": "I write a piece of code by hand, give it a name, and it turns three numbers into one group.",
+     "goal": "This part writes CalculateGroup by hand. It takes three bands in and hands one group back.",
      "blocks": [
       {
-       "p": "Until now, each [[method|0]] came from double-clicking a button. This one you write by hand."
+       "open": {
+        "what": "Until now every piece of code came from a double-click. This one you type from its first line, and you choose its name.",
+        "does": "When it works, CalculateGroup sits at the bottom of frmDataEntry's code, 18 lines long."
+       }
+      }
+     ]
+    },
+    {
+     "id": "1",
+     "title": "Meet the two new words",
+     "foot": "next",
+     "done": "you have read the two words",
+     "goal": "I know what a method is and what makes one user-defined.",
+     "blocks": [
+      {
+       "p": "Until now, each [[method|0]] came from double-clicking a button."
+      },
+      {
+       "p": "This one you write by hand."
       },
       {
        "p": "You choose its name. That makes it a [[user-defined method|1]]."
@@ -112,6 +136,21 @@
         ]
        ],
        "intro": "Two new words in this chapter. Click a marked word to see what it means."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "See three bands go in and one group come out",
+     "foot": "next",
+     "done": "you have looked at the picture and read the line under it",
+     "goal": "I see CalculateGroup as a machine: three bands in, one group out.",
+     "blocks": [
+      {
+       "p": "Each score earns a band, a small number, as the table on your task sheet shows."
+      },
+      {
+       "p": "This picture shows CalculateGroup at work."
       },
       {
        "drawn": {
@@ -128,24 +167,28 @@
        }
       },
       {
-       "watch": "The button code on stage 3 works out the three bands. Then it asks CalculateGroup for the group."
+       "watch": "The button code in part 3 works out the three bands. Then it asks CalculateGroup for the group."
       }
      ]
     },
     {
-     "id": "2",
+     "id": "3",
      "title": "Type the first line, the total and the first group",
      "foot": "done",
+     "done": "lines 1 to 8 are typed and the code has no red squiggles",
      "goal": "CalculateGroup takes in three whole numbers, adds them up, and hands back Weak when the total is 4 or less.",
      "blocks": [
       {
-       "p": "Scroll to the bottom of frmDataEntry's code. Click the empty line above the last two curly brackets."
+       "p": "Scroll to the bottom of frmDataEntry's code."
+      },
+      {
+       "p": "Click the empty line above the last two curly brackets."
       },
       {
        "code": {
         "id": "2-2.c1",
         "kind": "type",
-        "title": "CalculateGroup, part 1 of 2",
+        "title": "CalculateGroup: code 1 of 2",
         "where": "above the last two curly brackets of frmDataEntry's code",
         "form": "frmDataEntry",
         "method": "CalculateGroup",
@@ -190,9 +233,10 @@
      ]
     },
     {
-     "id": "3",
+     "id": "4",
      "title": "Hand back the other two groups",
      "foot": "done",
+     "done": "lines 9 to 18 are typed and the code has no red squiggles",
      "goal": "A total of 7 or less hands back Intermediate, and anything more hands back Advanced.",
      "blocks": [
       {
@@ -202,8 +246,8 @@
        "code": {
         "id": "2-3.c1",
         "kind": "type",
-        "title": "CalculateGroup, part 2 of 2",
-        "where": "under part 1, inside CalculateGroup",
+        "title": "CalculateGroup: code 2 of 2",
+        "where": "under code 1, inside CalculateGroup",
         "form": "frmDataEntry",
         "method": "CalculateGroup",
         "lang": "cs",
@@ -244,11 +288,29 @@
   {
    "id": "3",
    "title": "The Calculate button",
+   "thing": "the Calculate button",
+   "verb": "making",
    "screens": [
+    {
+     "id": "0",
+     "title": "Make the Calculate button work out the group",
+     "opener": true,
+     "foot": "next",
+     "goal": "This part types the Calculate button's code in seven chunks. It bands each score, then asks CalculateGroup for the group.",
+     "blocks": [
+      {
+       "open": {
+        "what": "A band is 1, 2 or 3. The quiz score, the test score and the average each get one from YOUR task sheet.",
+        "does": "When it works, Calculate shows the group in its box and the group panel goes grey."
+       }
+      }
+     ]
+    },
     {
      "id": "1",
      "title": "Stop if anything is not done yet",
      "foot": "done",
+     "done": "lines 3 to 12 are typed and the code has no red squiggles",
      "goal": "If the quiz, the test or the average is not done, or the details are not entered, a message shows and the code stops.",
      "blocks": [
       {
@@ -258,7 +320,7 @@
        "code": {
         "id": "3-1.c1",
         "kind": "type",
-        "title": "The Calculate button, part 1 of 7",
+        "title": "The Calculate button: code 1 of 7",
         "where": "between the curly brackets of btnCalculateSwimmingGroup_Click",
         "form": "frmDataEntry",
         "method": "btnCalculateSwimmingGroup_Click",
@@ -295,7 +357,8 @@
         ],
         "isense": [
          "pnlPupilDetails"
-        ]
+        ],
+        "isenseFull": true
        }
       },
       {
@@ -307,17 +370,18 @@
      "id": "2",
      "title": "Make room for three bands",
      "foot": "done",
+     "done": "lines 13 to 21 are typed and the code has no red squiggles",
      "goal": "When everything is done, three whole numbers start at 0, one for each band.",
      "blocks": [
       {
-       "p": "A band is 1, 2 or 3. Each score gets a band on the next screens."
+       "p": "A band is 1, 2 or 3, and each score gets one on the next screens."
       },
       {
        "code": {
         "id": "3-2.c1",
         "kind": "type",
-        "title": "The Calculate button, part 2 of 7",
-        "where": "under part 1, inside btnCalculateSwimmingGroup_Click",
+        "title": "The Calculate button: code 2 of 7",
+        "where": "under code 1, inside btnCalculateSwimmingGroup_Click",
         "form": "frmDataEntry",
         "method": "btnCalculateSwimmingGroup_Click",
         "lang": "cs",
@@ -358,17 +422,18 @@
      "id": "3",
      "title": "Give the quiz score a band",
      "foot": "done",
+     "done": "lines 22 to 33 are typed and the code has no red squiggles",
      "goal": "A quiz score of 1 or less is band 1, 3 or less is band 2, and anything more is band 3.",
      "blocks": [
       {
-       "p": "The same shape of question as in CalculateGroup. This time each answer is a band."
+       "p": "These ifs have the same shape as CalculateGroup, but this time each answer is a band."
       },
       {
        "code": {
         "id": "3-3.c1",
         "kind": "type",
-        "title": "The Calculate button, part 3 of 7",
-        "where": "under part 2, inside btnCalculateSwimmingGroup_Click",
+        "title": "The Calculate button: code 3 of 7",
+        "where": "under code 2, inside btnCalculateSwimmingGroup_Click",
         "form": "frmDataEntry",
         "method": "btnCalculateSwimmingGroup_Click",
         "lang": "cs",
@@ -409,17 +474,18 @@
      "id": "4",
      "title": "Give the test score a band",
      "foot": "done",
+     "done": "lines 34 to 43 are typed and the code has no red squiggles",
      "goal": "A test score of 1 or less is band 1, and 4 or less is band 2.",
      "blocks": [
       {
-       "p": "The test band has the same shape. This screen does bands 1 and 2."
+       "p": "The test band has the same shape, and this screen does bands 1 and 2."
       },
       {
        "code": {
         "id": "3-4.c1",
         "kind": "type",
-        "title": "The Calculate button, part 4 of 7",
-        "where": "under part 3, inside btnCalculateSwimmingGroup_Click",
+        "title": "The Calculate button: code 4 of 7",
+        "where": "under code 3, inside btnCalculateSwimmingGroup_Click",
         "form": "frmDataEntry",
         "method": "btnCalculateSwimmingGroup_Click",
         "lang": "cs",
@@ -458,19 +524,20 @@
     },
     {
      "id": "5",
-     "title": "The last test band",
+     "title": "Give the test score its last band",
      "foot": "done",
+     "done": "lines 44 to 50 are typed and the code has no red squiggles",
      "goal": "Any other test score is band 3.",
      "blocks": [
       {
-       "p": "The last part of the test band, then a note for the average."
+       "p": "These lines are the last part of the test band, then a note for the average."
       },
       {
        "code": {
         "id": "3-5.c1",
         "kind": "type",
-        "title": "The Calculate button, part 5 of 7",
-        "where": "under part 4, inside btnCalculateSwimmingGroup_Click",
+        "title": "The Calculate button: code 5 of 7",
+        "where": "under code 4, inside btnCalculateSwimmingGroup_Click",
         "form": "frmDataEntry",
         "method": "btnCalculateSwimmingGroup_Click",
         "lang": "cs",
@@ -503,17 +570,18 @@
      "id": "6",
      "title": "Give the average a band",
      "foot": "done",
+     "done": "lines 51 to 62 are typed and the code has no red squiggles",
      "goal": "An average under 4 is band 1, 7 or less is band 2, and anything more is band 3.",
      "blocks": [
       {
-       "p": "Look closely at the first line. It says less than 4, not 4 or less."
+       "p": "Look closely at the first line: it says less than 4, not 4 or less."
       },
       {
        "code": {
         "id": "3-6.c1",
         "kind": "type",
-        "title": "The Calculate button, part 6 of 7",
-        "where": "under part 5, inside btnCalculateSwimmingGroup_Click",
+        "title": "The Calculate button: code 6 of 7",
+        "where": "under code 5, inside btnCalculateSwimmingGroup_Click",
         "form": "frmDataEntry",
         "method": "btnCalculateSwimmingGroup_Click",
         "lang": "cs",
@@ -552,12 +620,24 @@
     },
     {
      "id": "7",
-     "title": "Ask for the group and grey out the panel",
+     "title": "See the group panel go grey",
      "foot": "done",
-     "goal": "CalculateGroup turns the three bands into a group, Global.cs remembers it and the group panel goes grey.",
+     "done": "you have looked at the picture and read the line under it",
+     "goal": "I see the group panel go grey after the group is worked out.",
      "blocks": [
       {
+       "p": "After the group appears, the group panel goes grey so Calculate cannot run twice."
+      },
+      {
        "flow": {
+        "watch": "Watch the group panel go grey once the group is worked out",
+        "labels": {
+         "pnlPupilDetails": "pupil details",
+         "pnlSwimLengths": "the three attempts",
+         "pnlQuizResult": "the quiz score",
+         "pnlReactionTest": "the test score",
+         "pnlSwimmingGroup": "the group"
+        },
         "form": "frmDataEntry",
         "lit": [
          "pnlSwimmingGroup"
@@ -566,13 +646,25 @@
         "keep": false,
         "say": "The group panel goes grey. Save comes next."
        }
+      }
+     ]
+    },
+    {
+     "id": "8",
+     "title": "Ask for the group and grey out the panel",
+     "foot": "done",
+     "done": "lines 63 to 69 are typed and the code has no red squiggles",
+     "goal": "CalculateGroup turns the three bands into a group, Global.cs remembers it and the group panel goes grey.",
+     "blocks": [
+      {
+       "p": "These lines ask CalculateGroup for the group, save it in Global.cs and grey the panel."
       },
       {
        "code": {
         "id": "3-7.c1",
         "kind": "type",
-        "title": "The Calculate button, part 7 of 7",
-        "where": "under part 6, inside btnCalculateSwimmingGroup_Click",
+        "title": "The Calculate button: code 7 of 7",
+        "where": "under code 6, inside btnCalculateSwimmingGroup_Click",
         "form": "frmDataEntry",
         "method": "btnCalculateSwimmingGroup_Click",
         "lang": "cs",
@@ -627,15 +719,21 @@
   {
    "id": "4",
    "title": "Try it",
+   "thing": "your Calculate button",
+   "verb": "testing",
    "screens": [
     {
      "id": "1",
      "title": "Try your Calculate button",
      "foot": "chapter-done",
+     "done": "every row is ticked, or you have gone where its link says",
      "goal": "I run the program, do everything, and check the group, the grey panel and two sets of scores.",
      "blocks": [
       {
-       "p": "Run your program. Log in, enter the details, the attempts, the quiz and the test. Then try each row."
+       "p": "Run your program and log in."
+      },
+      {
+       "p": "Enter the details, the attempts, the quiz and the test, then try each row."
       },
       {
        "check": [
@@ -643,15 +741,15 @@
          "id": "4-1.t1",
          "what": "Click Calculate.",
          "how": "A group appears in the box. The group panel goes grey.",
-         "fix": "Look at screen 3-7.",
-         "go": "#cw/10/3-7",
+         "fix": "Look at the code on screen 3-8.",
+         "go": "#cw/10/3-8",
          "expect": "must"
         },
         {
          "id": "4-1.t2",
          "what": "Run again. Get all 5 quiz questions right. Click 6 winning pictures. Type 8, 8 and 8 as the attempts.",
          "how": "Click Calculate. MY bands give Advanced. YOURS give YOUR top group.",
-         "fix": "Look at screens 3-3 to 3-6.",
+         "fix": "Look at the code on screens 3-3 to 3-6.",
          "go": "#cw/10/3-3",
          "expect": "must"
         },
@@ -659,16 +757,16 @@
          "id": "4-1.t3",
          "what": "Run again. Get 1 quiz question right. Click 1 winning picture. Type 2, 2 and 2 as the attempts.",
          "how": "Click Calculate. MY bands give Weak. YOURS give YOUR lowest group.",
-         "fix": "Look at screens 2-2 and 2-3.",
-         "go": "#cw/10/2-2",
+         "fix": "Look at the code on screens 2-3 and 2-4.",
+         "go": "#cw/10/2-3",
          "expect": "must"
         },
         {
          "id": "4-1.t4",
          "what": "After the group appears, click Calculate again.",
          "how": "Nothing must happen, because the panel is grey.",
-         "fix": "If something happens, look at screen 3-7.",
-         "go": "#cw/10/3-7",
+         "fix": "If something happens, look at the code on screen 3-8.",
+         "go": "#cw/10/3-8",
          "expect": "mustnot"
         }
        ]

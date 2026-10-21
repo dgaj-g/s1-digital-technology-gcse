@@ -1,0 +1,58 @@
+ch09#1-1	Check the parts this chapter needs
+ch09#2-0	Choose your own look and save your pictures
+ch09#2-1	Choose how YOUR reaction test will look
+ch09#2-2	Write your four choices down
+ch09#2-3	Put your pictures in the right folder
+ch09#3-0	Make the reaction test form
+ch09#3-1	Add the reaction test form
+ch09#3-2	Add twelve picture boxes
+ch09#3-3	Add the score panel
+ch09#3-4	Meet the two timers
+ch09#3-5	Add two timers
+ch09#4-0	Type the code that runs as the test form opens
+ch09#4-1	Type two lines at the top of the form's code
+ch09#4-2	Fill the list as the form opens
+ch09#5-0	Make one piece of code for every picture click
+ch09#5-1	Type the first line of the click code yourself
+ch09#5-2	Score the click and hide the picture
+ch09#6-0	Make the Start button and the two timers work
+ch09#6-1	Give every box a starting picture
+ch09#6-2	See the loop join every box to the click code
+ch09#6-3	Join the clicks and start the clocks
+ch09#6-4	Swap the pictures every tick
+ch09#6-5	Count down one second at a time
+ch09#6-6	Show the score and go back
+ch09#7-0	Open the test from data entry, then try it
+ch09#7-1	Open the reaction test from the data entry form
+ch09#7-2	Try your reaction test
+ch10#1-1	Check the parts this chapter needs
+ch10#2-0	Make CalculateGroup, your own piece of code
+ch10#2-1	Meet the two new words
+ch10#2-2	See three bands go in and one group come out
+ch10#2-3	Type the first line, the total and the first group
+ch10#2-4	Hand back the other two groups
+ch10#3-0	Make the Calculate button work out the group
+ch10#3-1	Stop if anything is not done yet
+ch10#3-2	Make room for three bands
+ch10#3-3	Give the quiz score a band
+ch10#3-4	Give the test score a band
+ch10#3-5	Give the test score its last band
+ch10#3-6	Give the average a band
+ch10#3-7	See the group panel go grey
+ch10#3-8	Ask for the group and grey out the panel
+ch10#4-1	Try your Calculate button
+ch11#1-1	Check the parts this chapter needs
+ch11#2-0	Add the line that lets the form use files
+ch11#2-1	Meet the four new words
+ch11#2-2	Add the file tools line at the top
+ch11#3-1	Check all five panels are off before saving
+ch11#4-0	Write one line to the file
+ch11#4-1	Join all the details into one line
+ch11#4-2	See the line that goes in the file
+ch11#4-3	Write the line to the file
+ch11#5-0	Make Global.cs empty and start again
+ch11#5-1	Put the first seven names back to empty
+ch11#5-2	Put the rest back and start again
+ch11#5-3	See the fresh form for the next pupil
+ch11#6-1	Stop and say so when a panel is still on
+ch11#7-1	Try your Save button

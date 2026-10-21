@@ -1,0 +1,8 @@
+Register: a Year 12 pupil (15 or 16) in a very weak GCSE CCEA Digital Technology class with many absences, reading the guide beside Visual Studio 2019.
+Read the transcript head first, then every screen in strings-to-judge.txt (one screen per line: key TAB title) at its place in transcript.md.
+Judge each screen by COLD_READ_CHECKLIST.md. Do not guess what the author meant: judge only what is on the screen.
+Every readback is written by hand, one screen at a time, from that screen's own text. A readback must NOT repeat or paraphrase the title, must NOT be a template ("do what the screen says"), and must name the concrete thing the screen is about (which form or button, what the code does, what the pupil will see). Two screens with the same readback sentence make the whole file void and it is sent back. Do not generate readbacks with a script.
+Write verdicts.jsonl: one JSON object per screen, keys exactly: "path" (the key copied character for character), "verdict" ("PASS" or "REWRITE"), "readback" (your one line), "words" (list of strings), "stuck" (string), "title" ("YES" or "NO"), "why" (one line, empty when PASS).
+Add to each object the keys "part" (answer 5), "first" (answer 6) and "done_how" (answer 7), each a short string.
+Then write COLD_READ_REPORT.md: counts, then every REWRITE screen with its why, one line each.
+Reply with two lines: counts of PASS/REWRITE, and the path of verdicts.jsonl.
