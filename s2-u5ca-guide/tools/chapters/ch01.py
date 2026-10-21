@@ -42,7 +42,7 @@ CH = {
       {"toolbox": "Label", "name": "lblSubtitle", "set": ["Text = Swimming club records"]},
       {"toolbox": "Button", "name": "btnHelp1", "set": ["Text = ?"]}],
      "done": "Every row from lblTitle to btnLogin sits inside the panel. lblSubtitle and the ? button sit outside it."}},
-    {"watch": "Drop every row from lblTitle down to btnLogin INSIDE the panel. lblSubtitle and btnHelp1 go outside it."}
+    {"watch": "Drop every row from lblTitle down to btnLogin INSIDE the panel. lblSubtitle and btnHelp1 go outside it. btnHelp1 does nothing until chapter 13."}
    ]},
    {"id": "2", "title": "Give a control its name", "foot": "done", "done": "the first control on your login form has a name of your own",
     "goal": "I name a control by clicking it once and typing its name beside Name near the top of Properties.",
@@ -56,7 +56,8 @@ CH = {
    {"id": "3", "title": "Name every control", "foot": "done", "done": "every control on your login form has a name of your own",
     "goal": "Every control gets a name of its own: three letters for its kind, then what it is, with no spaces.",
     "blocks": [
-    {"p": "Now do this for every row of the table on the screen before."},
+    {"p": "Now name all nine controls, in the order of the table."},
+    {"p": "In my example they are pnlLogin, lblTitle, lblUsername, tbxUsername, lblPassword, tbxPassword, btnLogin, lblSubtitle and btnHelp1."},
     {"p": "Give yours the names YOU choose. Start each name with three letters for its kind. pnl is a panel, lbl a label, tbx a text box, btn a button."},
     {"watch": "A name has no spaces. Two controls can never have the same name."}
    ]},
@@ -72,7 +73,6 @@ CH = {
           "PasswordChar shows *.",
           None, [["I cannot find PasswordChar.", "The list is in A to Z order. Scroll down to the letter P."],
                  ["I cannot find the star sign.", "Hold Shift and press the 8 key at the top of the keyboard."]])]},
-    {"p": "The ? button does nothing yet. You make it work in chapter 13."},
     {"watch": "Put the star on the PASSWORD box, not the username box."}
    ]}]},
   {"id": "3", "title": "The code behind the Login button", "thing": "the Login button's code", "verb": "making", "screens": [

@@ -68,7 +68,6 @@ ch7 = {
     "goal": "Before I code the rest of the quiz, I check I have the question 4 and 5 panels, the Return button, question 3's code and the two things in Global.cs.",
     "blocks": [
     {"p": "Before you code the rest of the quiz, tick each row you already have."},
-    {"p": "Open your project in Visual Studio and look. A row you have not got tells you where to go."},
     {"check": [
      have("1-1.t1", "Open frmQuiz in the Design tab. Does question 4 have a group box, four radio buttons and a Check button?",
           "In my example it is the panel on the right of the middle row. In yours, look for the panel with the radio buttons.", "Go to chapter 6, part 2.", "#cw/06/2-1"),

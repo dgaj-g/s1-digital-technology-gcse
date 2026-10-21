@@ -200,14 +200,14 @@ function bDrawn(d, ctx) {
 function bFlow(f, ctx) {
   const form = S.controls[f.form]; const W = Math.min(420, Math.max(280, (innerWidth - 120))); const sc = W / form.size[0]; const H = form.size[1] * sc + 22;
   /* still start (EASE_SPEC §3): the caption sits ABOVE the form, every panel carries its plain name, nothing moves until she presses Play */
-  const n = el(`<div class="cw-flow">${f.watch ? `<p class="watch"><b>${esc(t('flow.watch'))}:</b> ${esc(f.watch)}</p>` : ''}<p class="say"></p><div class="form" style="width:${W}px;height:${H}px"><div class="tb">${esc(f.form)}</div><button type="button" class="play">${esc(t('flow.play'))}</button></div><div class="key"><span class="o"><i></i>${esc(t('flow.open'))}</span><span class="l"><i></i>${esc(t('flow.locked'))}</span></div><p class="fixed">${esc(t('fixed.flow'))}</p><button type="button" class="btn sec again" hidden>${esc(t('flow.again'))}</button></div>`);
+  const n = el(`<div class="cw-flow">${f.watch ? `<p class="watch"><b>${esc(t('flow.watch'))}:</b> ${esc(f.watch)}</p>` : ''}<p class="say"></p><div class="form" style="width:${W}px;height:${H}px"><div class="tb">${esc(f.form)}</div></div><button type="button" class="play">${esc(t('flow.play'))}</button><div class="key"><span class="o"><i></i>${esc(t('flow.open'))}</span><span class="l"><i></i>${esc(t('flow.locked'))}</span></div><p class="fixed">${esc(t('fixed.flow'))}</p><button type="button" class="btn sec again" hidden>${esc(t('flow.again'))}</button></div>`);
   const box = $('.form', n), say = $('.say', n), playBtn = $('.play', n), again = $('.again', n);
   const labelOf = name => { if (f.labels && f.labels[name]) return f.labels[name]; const v = S.names[name]; const line = (typeof v === 'string' ? v : (v && v.line) || '').split(',')[0].trim(); return line && words(line) <= 5 ? line : ''; };
   const rooms = {}, order = [];
   Object.entries(form.controls).filter(([, c]) => (c.type === 'Panel' || c.type === 'GroupBox') && c.parent === f.form).sort((x, y) => x[1].loc[1] - y[1].loc[1] || x[1].loc[0] - y[1].loc[0]).forEach(([name, c]) => {
     const lb = labelOf(name);
-    const r = el(`<div class="fp" data-n="${esc(name)}" style="left:${c.loc[0] * sc}px;top:${22 + c.loc[1] * sc}px;width:${c.size[0] * sc}px;height:${c.size[1] * sc}px"><span class="nm">${esc(name)}</span>${lb ? `<span class="lb">${esc(lb)}</span>` : ''}<span class="k" aria-hidden="true">🔒</span></div>`);
-    rooms[name] = r; order.push(name); box.insertBefore(r, playBtn);
+    const r = el(`<div class="fp" data-n="${esc(name)}" style="left:${c.loc[0] * sc}px;top:${22 + c.loc[1] * sc}px;width:${c.size[0] * sc}px;height:${c.size[1] * sc}px"><span class="nm">${esc(name).replace(/([a-z0-9])([A-Z])/g, '$1<wbr>$2')}</span>${lb ? `<span class="lb">${esc(lb)}</span>` : ''}<span class="k" aria-hidden="true">🔒</span></div>`);
+    rooms[name] = r; order.push(name); box.appendChild(r);
   });
   /* map: a plain map of the form's panels, no switched on or off (ch02). Each panel lights in turn, then all stay lit */
   if (f.map) { $('.key', n).remove(); $('.fixed', n).remove(); n.querySelectorAll('.fp .k').forEach(k => k.remove()); }
@@ -252,7 +252,7 @@ function bFlow(f, ctx) {
 function bFrames(fr, ctx) {
   /* still start (EASE_SPEC §3): the first picture sits still with a Watch-for line and a Play button; nothing moves until she presses it */
   const N = fr.frames.length;
-  const n = el(`<div class="cw-frames" data-id="${esc(fr.id)}"><div class="ttl"><span>${esc(fr.title)}</span><span class="n"></span></div>${fr.watch ? `<p class="watch"><b>${esc(t('frames.watch'))}:</b> ${esc(fr.watch)}</p>` : ''}<div class="stage" tabindex="0"><div class="prog"></div><button type="button" class="play">${esc(t(N > 1 ? 'frames.play' : 'frames.playOne', { t: N }))}</button></div><p class="say"></p><div class="bar"><span class="dots"></span><button type="button" class="btn sec" hidden>${esc(t('frames.replay'))}</button></div></div>`);
+  const n = el(`<div class="cw-frames" data-id="${esc(fr.id)}"><div class="ttl"><span>${esc(fr.title)}</span><span class="n"></span></div>${fr.watch ? `<p class="watch"><b>${esc(t('frames.watch'))}:</b> ${esc(fr.watch)}</p>` : ''}<div class="stage" tabindex="0"><div class="prog"></div></div><button type="button" class="play">${esc(t(N > 1 ? 'frames.play' : 'frames.playOne', { t: N }))}</button><p class="say"></p><div class="bar"><span class="dots"></span><button type="button" class="btn sec" hidden>${esc(t('frames.replay'))}</button></div></div>`);
   const stage = $('.stage', n), say = $('.say', n), dots = $('.dots', n), prog = $('.prog', n), nlab = $('.n', n), btn = $('.bar .btn', n), play = $('.play', n);
   /* the box takes the shape of its pictures: natural size, never scaled up, never wider than 680 or taller than 425 (EASE 21 Oct 2026: a 294x32 toolbar strip sat in 350 px of empty box); one picture is a still, with no Play, dots or count */
   const sized = fr.frames.filter(f => f.w && f.h), BW = sized.length ? Math.min(680, Math.max(...sized.map(f => f.w))) : 680;
@@ -380,9 +380,9 @@ function bCode(c, ctx) {
   const partOf = n => parts.findIndex(p => n >= p.from && n <= p.to);
   const kind = c.kind === 'read' ? t('code.kindRead') : t('code.kindType');
   const card = el(`<section class="cw-code" data-id="${esc(c.id || '')}">
-    <div class="ctop"><span class="kind ${c.kind}">${esc(kind)}</span><span class="t">${esc(c.title)}</span><span class="wh"><b>${esc(t('code.where'))}:</b> ${esc(c.where)}</span></div>
+    <div class="ctop"><span class="kind ${c.kind}">${esc(kind)}</span><span class="t">${esc(c.title)}</span>${c.where ? `<span class="wh"><b>${esc(t('code.where'))}:</b> ${esc(c.where)}</span>` : ''}</div>
     ${from > 1 ? `<p class="cont"><span class="ic" aria-hidden="true">↳</span><span>${esc(t('code.after', { n: from - 1 }))}</span></p>` : ''}
-    <div class="cgrid"><div class="cbody"><span class="nocopy">${esc(t('code.typeIt'))}</span><pre class="cw-pre" aria-label="code"></pre></div><div class="parts"></div></div></section>`);
+    <div class="cgrid"><div class="cbody"><pre class="cw-pre" aria-label="code"></pre></div><div class="parts"></div></div></section>`);
   const pre = $('.cw-pre', card), partsEl = $('.parts', card);
   prevLines.forEach(([num, ln]) => pre.appendChild(el(`<span class="ln prev given" data-n="${num}" data-p="-1" title="${esc(t('code.before'))}">${hl(ln) || dt(' ')}</span>`)));
   lines.forEach((ln, i) => {

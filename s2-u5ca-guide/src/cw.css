@@ -291,7 +291,7 @@
 .cw-code .cwalk{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 0;grid-column:1/3}
 .cw-code .cwalk .btn{padding:8px 18px;font-size:16px}
 .cw-code .cwalk .step{color:var(--mute);font-weight:700;font-size:16px;margin-left:auto}
-.cw-code .cbody{position:relative}.cw-code .nocopy{position:absolute;right:14px;top:-13px;background:var(--accent);color:var(--gold-ink);font-weight:900;font-size:13px;border-radius:999px;padding:3px 10px;opacity:.9;pointer-events:none}
+.cw-code .cbody{position:relative}
 .cw-code .stacked .cgrid{grid-template-columns:1fr}
 .cw-yours{display:flex;gap:12px;align-items:flex-start;background:var(--accent);color:var(--gold-ink);border-radius:14px;padding:9px 14px;margin:10px 0 0;font-size:16px;line-height:1.4;grid-column:1/3}
 .cw-yours .pin{flex:none;font-size:22px;transform:rotate(-20deg)}
@@ -332,7 +332,7 @@
   .cw-check li{grid-template-columns:48px 1fr;gap:4px 10px}.cw-check .tk{width:42px;height:42px}.cw-check .what{font-size:18px}
   .cw-code .ctop{padding:10px 14px;gap:8px}.cw-code .ctop .wh{margin-left:0;width:100%}.cw-code .ctop .t{font-size:17px}
   .cw-pre{font-size:14px}.cw-pre .ln{padding-left:48px}.cw-pre .ln::before{left:8px;width:30px}
-  .cw-code .nocopy{display:none}
+  
   .cw-foot{gap:10px}.cw-foot .btn{margin-left:0;width:100%}.cw-foot .ticked{margin-left:0}.cw-foot .note{text-align:left}
   .cw-flow .fp{font-size:9px;padding:2px 3px}.cw-flow .fp .k{font-size:11px}
   .cw-isense .line{font-size:15px}.cw-isense .list{margin-left:0;width:100%;font-size:14px}
@@ -471,8 +471,8 @@ p.cw-done b{color:var(--ok);white-space:nowrap}
 .cw-open ol a i{font-style:normal;flex:none;width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:var(--sw-ink);color:var(--white);font-weight:900;font-size:14px}
 .cw-frames .watch,.cw-flow .watch{margin:0 0 10px;font-size:17px;font-weight:700;color:var(--ink);text-align:left}
 .cw-frames .watch b,.cw-flow .watch b{display:inline-block;background:var(--watch);border:1px solid var(--watch-edge);color:var(--gold-ink);border-radius:8px;padding:2px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.04em;margin-right:6px}
-.cw-frames .play,.cw-flow .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;background:var(--sw-ink);color:var(--white);border:0;border-radius:999px;padding:12px 26px;font:inherit;font-size:18px;font-weight:900;cursor:pointer;box-shadow:var(--shadow-lift)}
-.cw-frames .play:hover,.cw-flow .play:hover{transform:translate(-50%,-50%) scale(1.04)}
+.cw-frames .play,.cw-flow .play{display:block;margin:12px auto 0;background:var(--sw-ink);color:var(--white);border:0;border-radius:999px;padding:10px 26px;font:inherit;font-size:18px;font-weight:900;cursor:pointer;box-shadow:var(--shadow-lift)}
+.cw-frames .play:hover,.cw-flow .play:hover{transform:scale(1.04)}
 .cw-frames .play[hidden],.cw-flow .play[hidden],.cw-frames .bar .btn[hidden],.cw-flow .again[hidden]{display:none}
 .cw-flow .say{text-align:left;margin:0 0 10px;color:var(--ink)}
 .cw-flow .fp{flex-direction:column;gap:1px}
@@ -485,3 +485,6 @@ p.cw-done b{color:var(--ok);white-space:nowrap}
 .cw-thread::before{content:'';position:absolute;left:0;right:0;bottom:100%;height:20px;background:var(--bg)}
 @media (max-width:900px){.cw-thread{top:60px}.cw-thread::before{display:none}}   /* below 900px the page itself scrolls (style.css line 11), so the thread sits under the 60px bar */
 @media (max-width:600px){.cw-thread{top:54px;font-size:14px}.cw-thread .ch,.cw-thread .ch + .sep{display:none}.cw-rail .cw-pill .tt{max-width:200px}p.cw-banner{font-size:15px}}
+/* clarity pass 21 Oct 2026: a gap before a fold box that follows the Yours-will-be-different box; the two one-row drawings sit no taller than their row */
+.cw-yours + .cw-box{margin-top:12px}
+.cw-drawn[data-id="mini-chapter"] .stage,.cw-drawn[data-id="record-line"] .stage{min-height:0}

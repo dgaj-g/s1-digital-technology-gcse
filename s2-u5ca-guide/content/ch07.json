@@ -53,9 +53,6 @@
        "p": "Before you code the rest of the quiz, tick each row you already have."
       },
       {
-       "p": "Open your project in Visual Studio and look. A row you have not got tells you where to go."
-      },
-      {
        "check": [
         {
          "id": "1-1.t1",
