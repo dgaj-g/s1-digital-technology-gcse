@@ -26,7 +26,7 @@ elif g == 'G11':
     for root, _, fs in os.walk(os.path.join(out, 'img')):
         for f in fs:
             if f == 'f4-2.png': os.remove(os.path.join(root, f))
-elif g == 'G12s': screen('2-4')['blocks'].append(next(b for b in screen('3-2')['blocks'] if 'frames' in b))
+elif g == 'G12s': screen('3-5')['blocks'].append(next(b for b in screen('3-2')['blocks'] if 'frames' in b))
 elif g == 'G13': firstp('1-1')['p'] += ' Go to [Chapter 2](#cw/02/9-1).'
 elif g.startswith('SIGN'):   # G-SIGN controls, one per rule (EASE_SPEC §6); each is checked with --only <rule>
     r = g[4:]; allsc = [(st, sc) for st in ch['stages'] for sc in st['screens']]

@@ -68,7 +68,7 @@ ch7 = {
     "goal": "Before I code the rest of the quiz, I check I have the question 4 and 5 panels, the Return button, question 3's code and the two things in Global.cs.",
     "blocks": [
     {"p": "Before you code the rest of the quiz, tick each row you already have."},
-    {"p": "Open your project in Visual Studio, in the Programming Environment tab, and look. A row you have not got tells you where to go."},
+    {"p": "Open your project in Visual Studio and look. A row you have not got tells you where to go."},
     {"check": [
      have("1-1.t1", "Open frmQuiz in the Design tab. Does question 4 have a group box, four radio buttons and a Check button?",
           "In my example it is the panel on the right of the middle row. In yours, look for the panel with the radio buttons.", "Go to chapter 6, part 2.", "#cw/06/2-1"),
@@ -135,8 +135,8 @@ ch7 = {
     {"flow": {"form": "frmQuiz", "lit": ["pnlQuizScore", "pnlTextQuestion"], "then": [], "labels": QL,
               "watch": "four grey panels, and no Return button",
               "say": "Only question 1 and the score are on. The rest are grey."}},
-    {"p": "Each question sits in its own panel. A switched-off panel goes grey, and nothing in it can be clicked."},
-    {"p": "So the Load event has two jobs. Switch off the four panels for questions 2 to 5. Hide the Return button until the quiz is over."},
+    {"p": "Each question sits in its own panel. A switched-off panel goes grey and cannot be clicked."},
+    {"p": "The Load event does two jobs. Switch off panels 2 to 5. Hide the Return button."},
     {"watch": "Count them: four panels to switch off, and one Return button to hide."}
    ]},
    {"id": "5", "title": "Type the code that switches off questions 2 to 5", "foot": "done",
@@ -547,7 +547,6 @@ ch0 = {
     "goal": "I cannot copy code from the guide, I type it, and I read each line as I type it.",
     "blocks": [
     {"p": "You cannot copy code from this guide, so you type every line yourself."},
-    {"p": "Typing is how it sticks in your head."},
     {"p": "You do not type these anywhere yet. Read them and see how they look."},
     {"code": {"id": "3-3.c1", "kind": "read", "snippet": True, "title": "Three lines to try, for practice only",
               "where": "nowhere yet. This one is only for trying the rule.", "lang": "cs",
@@ -609,6 +608,13 @@ import glob
 BUILT = {0: ch0, 7: ch7}
 for f in sorted(glob.glob(os.path.join(HERE, 'chapters', 'ch[0-9][0-9].py'))):
     ns = dict(globals()); exec(compile(open(f).read(), f, 'exec'), ns); BUILT[int(ns['CH']['id'])] = ns['CH']
+for _ch in BUILT.values():   # a chapter's first code screen shows the whole IntelliSense picture; later code screens a one-line reminder with Show me
+    _full = False
+    for _s in _ch.get("stages", []):
+        for _sc in _s["screens"]:
+            for _b in _sc["blocks"]:
+                if not _full and "code" in _b and _b["code"].get("isense"):
+                    _b["code"]["isenseFull"] = True; _full = True
 
 # ------------------------------------------------------------------ index from the spec briefs
 SPEC = os.path.join(D, 'DESIGN_SPEC.md')

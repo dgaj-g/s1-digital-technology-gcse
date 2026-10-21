@@ -78,7 +78,7 @@ CH = {
    {"id": "4", "title": "Fill the question 2 and question 3 panels", "foot": "done", "done": "the question 2 and question 3 panels hold every control in the table",
     "goal": "Question 2 holds a label and two answer buttons, and question 3 holds a label, a picture, a list and Check.",
     "blocks": [
-    {"p": "Question 2 is answered with one of two buttons, and question 3 from a drop-down list."},
+    {"p": "Question 2 uses two buttons, and question 3 uses a drop-down list."},
     {"controls": {"form": Q, "rows": [
       {"toolbox": "Label", "name": "lblQuestion2", "set": ["Text = question 2"]},
       {"toolbox": "Button", "name": "btnCorrect", "set": ["Text = the right answer"]},
@@ -89,30 +89,40 @@ CH = {
       {"toolbox": "Button", "name": "btnCheck3", "set": ["Text = Check"]}],
      "done": "The first three sit inside pnlButtonsQuestion. The last four sit inside pnlListQuestion."}},
     {"p": "In the Toolbox, PictureBox makes a picture box and ComboBox makes a drop-down list."},
-    {"p": "For Image, click the three dots beside it. Click Import, pick YOUR picture, then click OK. Items works as it did for the year group list in chapter 2."},
+    {"p": "For Image, click its three dots, then Import, then YOUR picture. Items works as it did in chapter 2."},
     {"watch": "Put the RIGHT answer first in the Items list. The code on screen 5-7 looks for it there."}
    ]},
-   {"id": "5", "title": "Fill the question 4 and question 5 panels", "foot": "done", "done": "the question 4 and question 5 panels hold every control in the table",
-    "goal": "Question 4 holds a group box with four round buttons and Check, and question 5 holds a label, a number box and Check.",
+   {"id": "5", "title": "Fill the question 4 panel", "foot": "done", "done": "the question 4 panel holds the group box, four round buttons and the Check button",
+    "goal": "Question 4 holds a group box, with four round buttons and a Check button inside.",
     "blocks": [
-    {"p": "Question 4 has four answers, and question 5 is answered with a number."},
+    {"p": "Question 4 uses four round buttons, all inside one group box."},
+    {"p": "Drop the group box into the question 4 panel first. Then drop the four round buttons and btnCheck4 INSIDE the group box."},
     {"box": {"title": "See it in Visual Studio", "fold": True, "blocks": [
-      frames("F8", "Drag a group box, round buttons and a number box", watch="Watch the round buttons go inside the group box", fr=[
+      frames("F8", "Drag a group box and four round buttons", watch="Watch the round buttons go inside the group box", fr=[
         ("f8-1", "The Toolbox with GroupBox shown", "Drag a GroupBox into the question 4 panel."),
-        ("f8-2", "Four RadioButtons dropped inside the group box", "Drag four RadioButtons INSIDE the group box."),
-        ("f8-3", "A NumericUpDown dropped into the question 5 panel", "Drag a NumericUpDown into the question 5 panel.")])]}},
+        ("f8-2", "Four RadioButtons dropped inside the group box", "Drag four RadioButtons INSIDE the group box.")])]}},
     {"controls": {"form": Q, "rows": [
       {"toolbox": "GroupBox", "name": "gbQuestion4", "set": ["Text = question 4"]},
       {"toolbox": "RadioButton", "name": "rbA", "set": ["Text = answer A"]},
       {"toolbox": "RadioButton", "name": "rbB", "set": ["Text = answer B"]},
       {"toolbox": "RadioButton", "name": "rbC", "set": ["Text = answer C"]},
       {"toolbox": "RadioButton", "name": "rbD", "set": ["Text = answer D"]},
-      {"toolbox": "Button", "name": "btnCheck4", "set": ["Text = Check"]},
+      {"toolbox": "Button", "name": "btnCheck4", "set": ["Text = Check"]}],
+     "done": "The group box sits in pnlRadioQuestion. The four round buttons and the Check button sit inside the group box."}},
+   ]},
+   {"id": "6", "title": "Fill the question 5 panel", "foot": "done", "done": "the question 5 panel holds the label, the number box and the Check button",
+    "goal": "Question 5 holds a label, a number box and a Check button.",
+    "blocks": [
+    {"p": "Question 5 takes a number, so it uses a number box with little arrows."},
+    {"p": "Drop the label, the number box and btnCheck5 into the question 5 panel."},
+    {"box": {"title": "See it in Visual Studio", "fold": True, "blocks": [
+      frames("F8b", "Drag a number box", fr=[
+        ("f8-3", "A NumericUpDown dropped into the question 5 panel", "Drag a NumericUpDown into the question 5 panel.")])]}},
+    {"controls": {"form": Q, "rows": [
       {"toolbox": "Label", "name": "lblQuestion5", "set": ["Text = question 5"]},
       {"toolbox": "NumericUpDown", "name": "nudQuestion5", "set": []},
       {"toolbox": "Button", "name": "btnCheck5", "set": ["Text = Check"]}],
-     "done": "The group box sits in pnlRadioQuestion, with the next five inside it. The last three sit inside pnlNumberQuestion."}},
-    {"watch": "The four round buttons and btnCheck4 go INSIDE the group box. Then only one round button can be picked."}
+     "done": "All three sit inside pnlNumberQuestion."}},
    ]}]},
   {"id": "3", "title": "Getting to the quiz", "thing": "the Take quiz button", "verb": "making", "screens": [
    opener("Make the Take quiz button open the quiz", "This part gives the Take quiz button three lines of code. They close one form and open the other.",

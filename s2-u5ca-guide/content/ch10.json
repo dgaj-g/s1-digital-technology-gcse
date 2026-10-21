@@ -357,7 +357,8 @@
         ],
         "isense": [
          "pnlPupilDetails"
-        ]
+        ],
+        "isenseFull": true
        }
       },
       {

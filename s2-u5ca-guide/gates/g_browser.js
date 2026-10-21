@@ -70,7 +70,7 @@ async function klass(base, tag) { const cls = 'S2-G' + tag + '-' + (Date.now() %
       await go(page, '#cw/' + ch + '/' + key, `.cw-screen[data-key="${key}"]`); await settle(300); n++;
       if (CTL && n === 1) await page.evaluate(() => { document.querySelector('.cw-screen').appendChild(Object.assign(document.createElement('div'), { style: 'height:2400px' })); });
       const m = await page.evaluate(() => ({ h: Math.max(document.documentElement.scrollHeight, ...[...document.querySelectorAll('body *')].filter((e) => !e.closest('.cw-code') && /auto|scroll/.test(getComputedStyle(e).overflowY)).map((e) => e.scrollHeight)), code: !!document.querySelector('.cw-code'), inner: [...document.querySelectorAll('.cw-code .cbody')].some((b) => b.scrollHeight > b.clientHeight + 2) }));
-      const lim = m.code ? 1600 : 1300; tallest = Math.max(tallest, m.h);   // EASE_SPEC 21 Oct 2026 §6 (was 2200/1900)
+      const lim = m.code ? 1800 : 1400; tallest = Math.max(tallest, m.h);   // EASE_SPEC 21 Oct 2026 §6: one code block or one checklist per screen lands here at 1500x1000 (was 2200/1900)
       if (m.h > lim) bad.push(ch + '/' + key + ' ' + m.h + 'px > ' + lim);
       if (m.inner) bad.push(ch + '/' + key + ' a code card scrolls inside');
     }
@@ -79,7 +79,7 @@ async function klass(base, tag) { const cls = 'S2-G' + tag + '-' + (Date.now() %
     if (CTL) await page.evaluate(() => { document.querySelector('#app').style.cssText = 'height:100vh;overflow:hidden'; });
     const ph = await page.evaluate(() => { const s = document.querySelector('.cw-screen'); return { doc: document.documentElement.scrollHeight, end: s.getBoundingClientRect().bottom + scrollY }; });
     if (ph.doc + 2 < ph.end) bad.push('at 390 px the page stops at ' + ph.doc + 'px but the screen ends at ' + Math.round(ph.end) + 'px');
-    res('G12 sizes', !bad.length && n > 0, n + ' screens, tallest ' + tallest + 'px' + (bad.length ? '; ' + bad.slice(0, 4).join('; ') : ''));
+    res('G12 sizes', !bad.length && n > 0, n + ' screens, tallest ' + tallest + 'px' + (bad.length ? '; ' + bad.join('; ') : ''));
     await page.close();
   }
   // ---- GFOLD: at 1366x768 the first heavy block (what the pupil does) starts within 700 px of the top of every screen

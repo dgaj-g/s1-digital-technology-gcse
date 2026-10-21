@@ -46,7 +46,7 @@ CH = {
    {"id": "3", "title": "Put your pictures in the right folder", "foot": "done", "done": "your pictures are inside Images, inside Debug, inside bin",
     "goal": "My two or three pictures are saved in a folder called Images inside bin and then Debug.",
     "blocks": [
-    {"p": "Your program looks for its pictures in one folder, and this screen makes that folder."},
+    {"p": "This screen makes the one folder where your program looks for its pictures."},
     {"steps": [
      step("2-2.1", "In Solution Explorer, right-click your project's name. Click Open Folder in File Explorer.",
           "File Explorer opens on your project's folder."),
@@ -183,7 +183,7 @@ CH = {
           [3, 3, "The name", "The first name, a space, then the surname from Global.cs."],
           [4, 7, "The list", "A new list, and the twelve boxes inside its curly brackets."],
           given(8, 8)],
-         ["lblName", "Global.firstname", "Global.surname", "pictureboxes", "pbx1", "pbx2", "pbx3", "pbx4", "pbx5", "pbx6", "pbx7", "pbx8", "pbx9", "pbx10", "pbx11", "pbx12"], ["lblName"])
+         ["lblName", "Global.firstname", "Global.surname", "pictureboxes", "pbx1 to pbx12"], ["lblName"])
    ]}]},
   {"id": "5", "title": "What a click does", "thing": "the click code", "verb": "making", "screens": [
    opener("Make one piece of code for every picture click", "This part makes PictureBox_Click. It runs when any of the twelve boxes is clicked.",
@@ -226,7 +226,7 @@ CH = {
     code("6-1.c1", "The Start button: code 1 of 2", "between the curly brackets of btnStart_Click", T, "btnStart_Click", 1, 14,
          [given(1, 2),
           [3, 14, "All twelve boxes", "Each box is told where its first picture lives. Winners and losers are mixed."]],
-         ["pbx1", "pbx2", "pbx3", "pbx4", "pbx5", "pbx6", "pbx7", "pbx8", "pbx9", "pbx10", "pbx11", "pbx12"], ["pbx1"],
+         ["pbx1 to pbx12"], ["pbx1"],
          yours="MY pictures are three flags. Type YOUR file names, exactly as you saved them in Images.")
    ]},
    {"id": "2", "title": "See the loop join every box to the click code", "foot": "done", "done": "you have looked at the picture and read the line under it",

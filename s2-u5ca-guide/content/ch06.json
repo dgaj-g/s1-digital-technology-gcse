@@ -322,7 +322,7 @@
      "goal": "Question 2 holds a label and two answer buttons, and question 3 holds a label, a picture, a list and Check.",
      "blocks": [
       {
-       "p": "Question 2 is answered with one of two buttons, and question 3 from a drop-down list."
+       "p": "Question 2 uses two buttons, and question 3 uses a drop-down list."
       },
       {
        "controls": {
@@ -385,7 +385,7 @@
        "p": "In the Toolbox, PictureBox makes a picture box and ComboBox makes a drop-down list."
       },
       {
-       "p": "For Image, click the three dots beside it. Click Import, pick YOUR picture, then click OK. Items works as it did for the year group list in chapter 2."
+       "p": "For Image, click its three dots, then Import, then YOUR picture. Items works as it did in chapter 2."
       },
       {
        "watch": "Put the RIGHT answer first in the Items list. The code on screen 5-7 looks for it there."
@@ -394,13 +394,16 @@
     },
     {
      "id": "5",
-     "title": "Fill the question 4 and question 5 panels",
+     "title": "Fill the question 4 panel",
      "foot": "done",
-     "done": "the question 4 and question 5 panels hold every control in the table",
-     "goal": "Question 4 holds a group box with four round buttons and Check, and question 5 holds a label, a number box and Check.",
+     "done": "the question 4 panel holds the group box, four round buttons and the Check button",
+     "goal": "Question 4 holds a group box, with four round buttons and a Check button inside.",
      "blocks": [
       {
-       "p": "Question 4 has four answers, and question 5 is answered with a number."
+       "p": "Question 4 uses four round buttons, all inside one group box."
+      },
+      {
+       "p": "Drop the group box into the question 4 panel first. Then drop the four round buttons and btnCheck4 INSIDE the group box."
       },
       {
        "box": {
@@ -410,7 +413,7 @@
          {
           "frames": {
            "id": "F8",
-           "title": "Drag a group box, round buttons and a number box",
+           "title": "Drag a group box and four round buttons",
            "frames": [
             {
              "img": "img/cap/f8-1.png",
@@ -425,13 +428,6 @@
              "w": 365,
              "h": 194,
              "say": "Drag four RadioButtons INSIDE the group box."
-            },
-            {
-             "img": "img/cap/f8-3.png",
-             "alt": "A NumericUpDown dropped into the question 5 panel",
-             "w": 559,
-             "h": 122,
-             "say": "Drag a NumericUpDown into the question 5 panel."
             }
            ],
            "watch": "Watch the round buttons go inside the group box"
@@ -485,7 +481,53 @@
           "set": [
            "Text = Check"
           ]
-         },
+         }
+        ],
+        "done": "The group box sits in pnlRadioQuestion. The four round buttons and the Check button sit inside the group box."
+       }
+      }
+     ]
+    },
+    {
+     "id": "6",
+     "title": "Fill the question 5 panel",
+     "foot": "done",
+     "done": "the question 5 panel holds the label, the number box and the Check button",
+     "goal": "Question 5 holds a label, a number box and a Check button.",
+     "blocks": [
+      {
+       "p": "Question 5 takes a number, so it uses a number box with little arrows."
+      },
+      {
+       "p": "Drop the label, the number box and btnCheck5 into the question 5 panel."
+      },
+      {
+       "box": {
+        "title": "See it in Visual Studio",
+        "fold": true,
+        "blocks": [
+         {
+          "frames": {
+           "id": "F8b",
+           "title": "Drag a number box",
+           "frames": [
+            {
+             "img": "img/cap/f8-3.png",
+             "alt": "A NumericUpDown dropped into the question 5 panel",
+             "w": 559,
+             "h": 122,
+             "say": "Drag a NumericUpDown into the question 5 panel."
+            }
+           ]
+          }
+         }
+        ]
+       }
+      },
+      {
+       "controls": {
+        "form": "frmQuiz",
+        "rows": [
          {
           "toolbox": "Label",
           "name": "lblQuestion5",
@@ -506,11 +548,8 @@
           ]
          }
         ],
-        "done": "The group box sits in pnlRadioQuestion, with the next five inside it. The last three sit inside pnlNumberQuestion."
+        "done": "All three sit inside pnlNumberQuestion."
        }
-      },
-      {
-       "watch": "The four round buttons and btnCheck4 go INSIDE the group box. Then only one round button can be picked."
       }
      ]
     }
@@ -655,7 +694,8 @@
         ],
         "isense": [
          "frmQuiz"
-        ]
+        ],
+        "isenseFull": true
        }
       },
       {

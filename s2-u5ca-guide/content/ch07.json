@@ -53,7 +53,7 @@
        "p": "Before you code the rest of the quiz, tick each row you already have."
       },
       {
-       "p": "Open your project in Visual Studio, in the Programming Environment tab, and look. A row you have not got tells you where to go."
+       "p": "Open your project in Visual Studio and look. A row you have not got tells you where to go."
       },
       {
        "check": [
@@ -292,10 +292,10 @@
        }
       },
       {
-       "p": "Each question sits in its own panel. A switched-off panel goes grey, and nothing in it can be clicked."
+       "p": "Each question sits in its own panel. A switched-off panel goes grey and cannot be clicked."
       },
       {
-       "p": "So the Load event has two jobs. Switch off the four panels for questions 2 to 5. Hide the Return button until the quiz is over."
+       "p": "The Load event does two jobs. Switch off panels 2 to 5. Hide the Return button."
       },
       {
        "watch": "Count them: four panels to switch off, and one Return button to hide."
@@ -365,7 +365,8 @@
          "pnlRadioQuestion",
          "pnlNumberQuestion",
          "btnReturn"
-        ]
+        ],
+        "isenseFull": true
        }
       },
       {

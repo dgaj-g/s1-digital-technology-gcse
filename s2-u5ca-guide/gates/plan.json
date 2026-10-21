@@ -1,12 +1,12 @@
 {
  "00": {
   "stages": 3,
-  "screens": 10,
+  "screens": 23,
   "methods": []
  },
  "01": {
   "stages": 4,
-  "screens": 7,
+  "screens": 12,
   "methods": [
    [
     "frmLogin",
@@ -16,12 +16,12 @@
  },
  "02": {
   "stages": 4,
-  "screens": 8,
+  "screens": 11,
   "methods": []
  },
  "03": {
   "stages": 4,
-  "screens": 7,
+  "screens": 10,
   "methods": [
    [
     "Global",
@@ -31,7 +31,7 @@
  },
  "04": {
   "stages": 4,
-  "screens": 8,
+  "screens": 12,
   "methods": [
    [
     "frmDataEntry",
@@ -41,7 +41,7 @@
  },
  "05": {
   "stages": 4,
-  "screens": 10,
+  "screens": 14,
   "methods": [
    [
     "frmDataEntry",
@@ -51,7 +51,7 @@
  },
  "06": {
   "stages": 6,
-  "screens": 14,
+  "screens": 27,
   "methods": [
    [
     "frmDataEntry",
@@ -77,7 +77,7 @@
  },
  "07": {
   "stages": 6,
-  "screens": 17,
+  "screens": 28,
   "methods": [
    [
     "frmQuiz",
@@ -99,7 +99,7 @@
  },
  "08": {
   "stages": 5,
-  "screens": 10,
+  "screens": 16,
   "methods": [
    [
     "frmDataEntry",
@@ -109,7 +109,7 @@
  },
  "09": {
   "stages": 7,
-  "screens": 18,
+  "screens": 27,
   "methods": [
    [
     "frmDataEntry",
@@ -139,7 +139,7 @@
  },
  "10": {
   "stages": 4,
-  "screens": 12,
+  "screens": 16,
   "methods": [
    [
     "frmDataEntry",
@@ -153,7 +153,7 @@
  },
  "11": {
   "stages": 5,
-  "screens": 9,
+  "screens": 15,
   "methods": [
    [
     "frmDataEntry",
@@ -163,7 +163,7 @@
  },
  "12": {
   "stages": 6,
-  "screens": 15,
+  "screens": 21,
   "methods": [
    [
     "frmDataEntry",
@@ -189,7 +189,7 @@
  },
  "13": {
   "stages": 3,
-  "screens": 5,
+  "screens": 12,
   "methods": [
    [
     "frmLogin",
@@ -227,7 +227,7 @@
  },
  "14": {
   "stages": 5,
-  "screens": 10,
+  "screens": 14,
   "methods": []
  }
 }

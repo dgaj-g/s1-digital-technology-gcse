@@ -575,7 +575,8 @@
         ],
         "isense": [
          "frmDataEntry"
-        ]
+        ],
+        "isenseFull": true
        }
       }
      ]
@@ -690,7 +691,7 @@
        "p": "Run your program, log in and do every part, then click Calculate."
       },
       {
-       "p": "Then try each row. The Find the file box under the rows shows the Debug folder."
+       "p": "Then tick each row that works."
       },
       {
        "check": [

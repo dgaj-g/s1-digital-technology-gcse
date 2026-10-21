@@ -264,7 +264,7 @@
        "p": "Drag each row INSIDE pnlPupilDetails."
       },
       {
-       "p": "A ComboBox is a drop-down list. DropDownList means the user can only pick. They cannot type their own."
+       "p": "A ComboBox is a drop-down list that the user picks from."
       },
       {
        "controls": {
@@ -654,7 +654,7 @@
        }
       },
       {
-       "p": "To put a picture in the logo, click the three dots beside Image in Properties. Then click Import, pick the logo from YOUR coursework folder and click OK."
+       "p": "For Image, click its three dots, then Import, then YOUR logo file."
       },
       {
        "watch": "Every ? button's name starts btnHelp. They all start working in chapter 13."

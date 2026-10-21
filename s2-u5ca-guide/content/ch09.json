@@ -194,7 +194,7 @@
      "goal": "My two or three pictures are saved in a folder called Images inside bin and then Debug.",
      "blocks": [
       {
-       "p": "Your program looks for its pictures in one folder, and this screen makes that folder."
+       "p": "This screen makes the one folder where your program looks for its pictures."
       },
       {
        "steps": [
@@ -785,22 +785,12 @@
          "Global.firstname",
          "Global.surname",
          "pictureboxes",
-         "pbx1",
-         "pbx2",
-         "pbx3",
-         "pbx4",
-         "pbx5",
-         "pbx6",
-         "pbx7",
-         "pbx8",
-         "pbx9",
-         "pbx10",
-         "pbx11",
-         "pbx12"
+         "pbx1 to pbx12"
         ],
         "isense": [
          "lblName"
-        ]
+        ],
+        "isenseFull": true
        }
       }
      ]
@@ -1012,18 +1002,7 @@
          ]
         ],
         "names": [
-         "pbx1",
-         "pbx2",
-         "pbx3",
-         "pbx4",
-         "pbx5",
-         "pbx6",
-         "pbx7",
-         "pbx8",
-         "pbx9",
-         "pbx10",
-         "pbx11",
-         "pbx12"
+         "pbx1 to pbx12"
         ],
         "isense": [
          "pbx1"

@@ -37,10 +37,7 @@
      "goal": "I check my login form for its two boxes, the Login button, the star in the password box and the Login button's code.",
      "blocks": [
       {
-       "p": "Your login form may be partly made already."
-      },
-      {
-       "p": "This screen checks what is there."
+       "p": "Your login form may be partly made already, so this screen checks what is there."
       },
       {
        "check": [
@@ -77,13 +74,6 @@
          "expect": "have"
         }
        ]
-      },
-      {
-       "box": {
-        "title": "Not sure where to look?",
-        "fold": true,
-        "text": "Solution Explorer is on the right of Visual Studio 2019. It lists every form. Double-click frmLogin to see it in the Design tab."
-       }
       }
      ]
     }
@@ -122,9 +112,6 @@
       },
       {
        "p": "The Toolbox is down the left side of Visual Studio. It lists the controls you can drag."
-      },
-      {
-       "p": "The panel goes on first. Everything from the title down to the Login button goes inside it."
       },
       {
        "controls": {
@@ -198,9 +185,9 @@
     },
     {
      "id": "2",
-     "title": "Give every control its name",
+     "title": "Give a control its name",
      "foot": "done",
-     "done": "every control on your login form has a name of your own",
+     "done": "the first control on your login form has a name of your own",
      "goal": "I name a control by clicking it once and typing its name beside Name near the top of Properties.",
      "blocks": [
       {
@@ -235,12 +222,21 @@
         ],
         "watch": "Click the control first, then type its name"
        }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Name every control",
+     "foot": "done",
+     "done": "every control on your login form has a name of your own",
+     "goal": "Every control gets a name of its own: three letters for its kind, then what it is, with no spaces.",
+     "blocks": [
+      {
+       "p": "Now do this for every row of the table on the screen before."
       },
       {
-       "p": "Do this for every row of the table on the screen before. Give yours the names YOU choose."
-      },
-      {
-       "p": "Start each name with three letters for its kind. pnl is a panel, lbl a label, tbx a text box, btn a button."
+       "p": "Give yours the names YOU choose. Start each name with three letters for its kind. pnl is a panel, lbl a label, tbx a text box, btn a button."
       },
       {
        "watch": "A name has no spaces. Two controls can never have the same name."
@@ -248,7 +244,7 @@
      ]
     },
     {
-     "id": "3",
+     "id": "4",
      "title": "Make the password show stars",
      "foot": "done",
      "done": "a letter typed in the password box shows as a star",
@@ -412,9 +408,6 @@
        "p": "First the code checks that the username is not too long."
       },
       {
-       "p": "First the code checks that the username is not too long."
-      },
-      {
        "p": "[[.Text|0]] is what was typed in a box. [[.Length|1]] counts its characters. .Clear() empties a box."
       },
       {
@@ -457,7 +450,8 @@
         "isense": [
          "tbxUsername",
          "tbxPassword"
-        ]
+        ],
+        "isenseFull": true
        }
       },
       {

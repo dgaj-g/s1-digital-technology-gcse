@@ -11,8 +11,7 @@ CH = {
    {"id": "1", "title": "Check what your login form already has", "foot": "have", "done": "every row is ticked, or you have gone where its link says",
     "goal": "I check my login form for its two boxes, the Login button, the star in the password box and the Login button's code.",
     "blocks": [
-    {"p": "Your login form may be partly made already."},
-    {"p": "This screen checks what is there."},
+    {"p": "Your login form may be partly made already, so this screen checks what is there."},
     {"check": [
      have("1-1.t1", "Open frmLogin in the Design tab. Does it have two text boxes, a Login button and two labels?",
           "Solution Explorer is on the right. Double-click frmLogin to see it in the Design tab.", "Go to part 2.", "#cw/01/2-1"),
@@ -22,8 +21,6 @@ CH = {
           "The code tab opens at btnLogin_Click. Lines between the curly brackets mean yes.", "Go to part 3.", "#cw/01/3-1"),
      have("1-1.t4", "Run it with the green Start arrow. Do wrong details give a message, and the right ones open the data entry form?",
           "Type a wrong password first. Then type the right username and password.", "Go to part 3.", "#cw/01/3-1")]},
-    {"box": {"title": "Not sure where to look?", "fold": True,
-             "text": "Solution Explorer is on the right of Visual Studio 2019. It lists every form. Double-click frmLogin to see it in the Design tab."}}
    ]}]},
   {"id": "2", "title": "The two boxes and the button", "thing": "the login form's boxes and buttons", "verb": "making", "screens": [
    opener("Make the login form and its controls", "This part puts the panel, the two boxes, the labels and the Login button on the login form, each with a name.",
@@ -34,7 +31,6 @@ CH = {
     "blocks": [
     {"p": "Drag the nine controls in this table onto your login form, in order."},
     {"p": "The Toolbox is down the left side of Visual Studio. It lists the controls you can drag."},
-    {"p": "The panel goes on first. Everything from the title down to the Login button goes inside it."},
     {"controls": {"form": L, "rows": [
       {"toolbox": "Panel", "name": "pnlLogin", "set": []},
       {"toolbox": "Label", "name": "lblTitle", "set": ["Text = Login Form"]},
@@ -48,7 +44,7 @@ CH = {
      "done": "Every row from lblTitle to btnLogin sits inside the panel. lblSubtitle and the ? button sit outside it."}},
     {"watch": "Drop every row from lblTitle down to btnLogin INSIDE the panel. lblSubtitle and btnHelp1 go outside it."}
    ]},
-   {"id": "2", "title": "Give every control its name", "foot": "done", "done": "every control on your login form has a name of your own",
+   {"id": "2", "title": "Give a control its name", "foot": "done", "done": "the first control on your login form has a name of your own",
     "goal": "I name a control by clicking it once and typing its name beside Name near the top of Properties.",
     "blocks": [
     {"p": "Every control you dragged on needs a name, so your code can find it."},
@@ -56,11 +52,15 @@ CH = {
       ("f2-1", "A text box on the login form clicked once, with its handles showing", "Click the control once. Little squares appear round it."),
       ("f2-2", "The Properties window with the Name line near the top", "Find Name near the top of Properties and type the new name"),
       ("f2-3", "The Name line in Properties changed to tbxUsername", "Type the new name and press Enter.")]),
-    {"p": "Do this for every row of the table on the screen before. Give yours the names YOU choose."},
-    {"p": "Start each name with three letters for its kind. pnl is a panel, lbl a label, tbx a text box, btn a button."},
+   ]},
+   {"id": "3", "title": "Name every control", "foot": "done", "done": "every control on your login form has a name of your own",
+    "goal": "Every control gets a name of its own: three letters for its kind, then what it is, with no spaces.",
+    "blocks": [
+    {"p": "Now do this for every row of the table on the screen before."},
+    {"p": "Give yours the names YOU choose. Start each name with three letters for its kind. pnl is a panel, lbl a label, tbx a text box, btn a button."},
     {"watch": "A name has no spaces. Two controls can never have the same name."}
    ]},
-   {"id": "3", "title": "Make the password show stars", "foot": "done", "done": "a letter typed in the password box shows as a star",
+   {"id": "4", "title": "Make the password show stars", "foot": "done", "done": "a letter typed in the password box shows as a star",
     "goal": "Setting PasswordChar to a star on tbxPassword makes every letter typed in it show as a star.",
     "blocks": [
     {"p": "Nobody should see a password as it is typed."},
@@ -99,7 +99,6 @@ CH = {
    {"id": "2", "title": "Stop a username that is too long", "foot": "done", "done": "lines 3 to 10 are typed with no red squiggles",
     "goal": "If the username is more than 15 letters, a message appears and both boxes are emptied.",
     "blocks": [
-    {"p": "First the code checks that the username is not too long."},
     {"p": "First the code checks that the username is not too long."},
     {"p": "[[.Text|0]] is what was typed in a box. [[.Length|1]] counts its characters. .Clear() empties a box."},
     code("3-1.c1", "The Login button: code 1 of 3", "between the curly brackets of btnLogin_Click, in frmLogin.cs", L, "btnLogin_Click", 1, 10,

@@ -199,7 +199,8 @@
         ],
         "isense": [
          "bool"
-        ]
+        ],
+        "isenseFull": true
        }
       },
       {

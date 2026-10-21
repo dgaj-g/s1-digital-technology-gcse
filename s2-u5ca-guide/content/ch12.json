@@ -232,10 +232,7 @@
        }
       },
       {
-       "yours": "MY groups are Weak, Intermediate and Advanced. In Properties, click the three dots beside Items. Type All, then YOUR groups, one on each line."
-      },
-      {
-       "watch": "Leave no space at the end of a choice. Advanced with a space after it will not match."
+       "yours": "MY groups are Weak, Intermediate and Advanced. Click the three dots beside Items. Type All, then YOUR groups, one on each line. Leave no space at the end of a line."
       },
       {
        "box": {
@@ -761,7 +758,8 @@
         ],
         "isense": [
          "dgvReport"
-        ]
+        ],
+        "isenseFull": true
        }
       }
      ]

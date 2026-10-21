@@ -70,7 +70,7 @@ CH = {
     "blocks": [
     {"p": "The first panel holds the pupil's name, gender and year group."},
     {"p": "Drag each row INSIDE pnlPupilDetails."},
-    {"p": "A ComboBox is a drop-down list. DropDownList means the user can only pick. They cannot type their own."},
+    {"p": "A ComboBox is a drop-down list that the user picks from."},
     {"controls": {"form": D, "rows": [
       {"toolbox": "Label", "name": "lblPupilDetails", "set": ["Text = Pupil Details"]},
       {"toolbox": "Label", "name": "lblFirstName", "set": ["Text = First Name"]},
@@ -156,7 +156,7 @@ CH = {
       {"toolbox": "Label", "name": "lblTitle2", "set": ["Text = Pupil Data Input"]},
       {"toolbox": "PictureBox", "name": "pbxLogo3", "set": ["SizeMode = StretchImage"]}],
      "done": "Four rows sit inside the group panel. Two big buttons, the title and the logo sit on the form."}},
-    {"p": "To put a picture in the logo, click the three dots beside Image in Properties. Then click Import, pick the logo from YOUR coursework folder and click OK."},
+    {"p": "For Image, click its three dots, then Import, then YOUR logo file."},
     {"watch": "Every ? button's name starts btnHelp. They all start working in chapter 13."}
    ]}]},
   {"id": "4", "title": "Try it in the Design tab", "thing": "every name on the form", "verb": "checking", "screens": [

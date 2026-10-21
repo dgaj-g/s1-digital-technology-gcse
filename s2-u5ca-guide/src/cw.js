@@ -5,7 +5,7 @@
    with the S2 blocks of DESIGN_SPEC 6: p, watch, words, drawn, flow, frames, isense, names, steps, controls, yours, check, box, code, foot. */
 (function () {
 'use strict';
-const S = { host: null, api: {}, base: '../content/', T: {}, index: null, ch: {}, controls: null, names: null, typed: {}, isenseShown: {}, timers: [], fast: false };
+const S = { host: null, api: {}, base: '../content/', T: {}, index: null, ch: {}, controls: null, names: null, typed: {}, timers: [], fast: false };
 const K = 's2:';
 const store = (k, v) => { const was = load(k, null); try { localStorage.setItem(K + k, JSON.stringify(v)); } catch (e) {} sync(k, was, v); };
 function sync(k, was, v) {
@@ -315,8 +315,14 @@ function bIsense(is, ctx, auto) {
   if (auto) later(play, 500); else { tx.textContent = is.pick; list.classList.add('on'); sel(is.list.indexOf(is.pick)); }
   return n;
 }
+function bIsenseMini(is, ctx) {
+  const say = esc(t(is.typed === is.pick ? 'isense.miniSame' : 'isense.mini', { typed: '\u0001', pick: '\u0002' })).replace('\u0001', `<code>${esc(is.typed)}</code>`).replace('\u0002', `<code>${esc(is.pick)}</code>`);
+  const n = el(`<div class="cw-isense mini"><span class="ttl">${esc(t('isense.title'))}</span><span class="rem">${say}</span><button class="btn">${esc(t('isense.show'))}</button></div>`);
+  $('.btn', n).addEventListener('click', () => n.replaceWith(bIsense(is, ctx, true)));
+  return n;
+}
 function bNames(list, title, ctx, form) {
-  const n = el(`<div class="cw-names"><div class="ttl">${esc(title)}</div><ul>${list.map((x, i) => `<li style="--d:${450 + i * 140}ms"><code>${esc(x)}</code><span>${esc(S.names[x] || '')}</span></li>`).join('')}</ul><p class="fixed">${esc(t(form === 'Global' ? 'fixed.namesGlobal' : 'fixed.names'))}</p>${ctx.inSheet || form === 'Global' ? '' : `<button class="link how">${esc(t('fixed.howName'))}</button>`}</div>`);
+  const n = el(`<div class="cw-names"><div class="ttl">${esc(title)}</div><ul>${list.map((x, i) => `<li style="--d:${450 + i * 140}ms"><code>${esc(x)}</code><span>${esc(S.names[x] || '')}</span></li>`).join('')}</ul><div class="foot"><p class="fixed">${esc(t(form === 'Global' ? 'fixed.namesGlobal' : 'fixed.names'))}</p>${ctx.inSheet || form === 'Global' ? '' : `<button class="link how">${esc(t('fixed.howName'))}</button>`}</div></div>`);
   const h = $('.how', n); if (h) h.addEventListener('click', openSheet);
   return n;
 }
@@ -437,7 +443,7 @@ function bCode(c, ctx) {
   const out = [card];
   const names = c.names || [];
   if (names.length) out.push(bNames(names, t('code.namesTitle'), ctx, c.form));
-  if (c.isense && c.isense.length) { const auto = !S.isenseShown[ctx.chId]; S.isenseShown[ctx.chId] = true; out.push(bIsense(isenseFor(c.form || 'frmDataEntry', c.isense[0]), ctx, auto)); }
+  if (c.isense && c.isense.length) { const is = isenseFor(c.form || 'frmDataEntry', c.isense[0]); out.push(c.isenseFull ? bIsense(is, ctx, true) : bIsenseMini(is, ctx)); }
   if (c.continues) out.push(el(`<p class="cw-p" style="color:var(--mute);font-weight:700">${esc(t('code.continues'))}</p>`));
   return out;
 }
@@ -554,6 +560,7 @@ function bOpen(o, ctx) {
   const st = ctx.cur.st, steps = stepsOf(st);
   const n = el(`<div class="cw-open"><div class="row what"><b>${esc(t('opener.what'))}</b><p>${esc(o.what)}</p></div><div class="row does"><b>${esc(t('opener.does'))}</b><p>${esc(o.does)}</p></div><div class="row list"><b>${esc(t('opener.steps', { t: steps.length }))}</b><ol></ol></div></div>`);
   const ol = $('ol', n);
+  if (steps.length > 6) { ol.classList.add('two'); ol.style.setProperty('--rows', Math.ceil(steps.length / 2)); }   /* a long part lists its steps in two columns, down then across (EASE 21 Oct 2026: 11 steps ran 550 px down one side) */
   steps.forEach((sc, i) => ol.appendChild(el(`<li><a href="#cw/${ctx.chId}/${st.id}-${sc.id}"><i>${i + 1}</i><span>${esc(sc.title)}</span></a></li>`)));
   return n;
 }

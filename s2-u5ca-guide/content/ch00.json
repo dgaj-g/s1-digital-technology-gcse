@@ -592,9 +592,6 @@
        "p": "You cannot copy code from this guide, so you type every line yourself."
       },
       {
-       "p": "Typing is how it sticks in your head."
-      },
-      {
        "p": "You do not type these anywhere yet. Read them and see how they look."
       },
       {
@@ -621,7 +618,8 @@
         ],
         "isense": [
          "pnlPupilDetails"
-        ]
+        ],
+        "isenseFull": true
        }
       },
       {

@@ -263,7 +263,8 @@
         ],
         "isense": [
          "pnlReactionTest"
-        ]
+        ],
+        "isenseFull": true
        }
       },
       {

@@ -155,7 +155,7 @@ CH = {
     "goal": "I save two pupils, find the file and check it has two lines with fences.",
     "blocks": [
     {"p": "Run your program, log in and do every part, then click Calculate."},
-    {"p": "Then try each row. The Find the file box under the rows shows the Debug folder."},
+    {"p": "Then tick each row that works."},
     {"check": [
      tryit("5-1.t1", "Click Save.", "The saved message shows. Then a fresh data entry form opens.", "Look at the code on screens 4-3 and 5-2.", "#cw/11/4-3"),
      tryit("5-1.t2", "Stop the program. Find the Debug folder. Look for YOUR file.", "YOUR file is there, next to the program.", "Look at the code on screen 4-3.", "#cw/11/4-3"),

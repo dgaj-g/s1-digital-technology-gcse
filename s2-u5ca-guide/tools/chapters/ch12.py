@@ -54,8 +54,7 @@ CH = {
       {"toolbox": "ComboBox", "name": "cbxYear", "set": ["Items = All, 11, 12, 13, 14"]},
       {"toolbox": "Label", "name": "lblReportInstructions", "set": ["Text = a line that says how to use the report"]}],
      "done": "The table is big. The two lists and their labels sit above it or beside it."}},
-    {"yours": "MY groups are Weak, Intermediate and Advanced. In Properties, click the three dots beside Items. Type All, then YOUR groups, one on each line."},
-    {"watch": "Leave no space at the end of a choice. Advanced with a space after it will not match."},
+    {"yours": "MY groups are Weak, Intermediate and Advanced. Click the three dots beside Items. Type All, then YOUR groups, one on each line. Leave no space at the end of a line."},
     {"box": {"title": "See it in Visual Studio", "fold": True, "blocks": [
       frames("F13", "The table and the lists", [
         ("f13-1", "The Toolbox searched for DataGridView, next to frmReport in the Design tab", "Drag a DataGridView onto the form. Make it big."),

@@ -311,7 +311,8 @@
         ],
         "isense": [
          "string"
-        ]
+        ],
+        "isenseFull": true
        }
       },
       {
