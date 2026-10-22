@@ -133,6 +133,8 @@ app = swap('app.js', app, `  function cwApply(W) {
     });
   }`, `  function cwApply(W) {
     const done = {}, had = {};
+    // the server copy wins on open: a chapter the server no longer has (Clear my own record) is cleared here too
+    try { Object.keys(localStorage).forEach((k) => { const m = /^s2:(ticks|at):(\\d\\d)$/.exec(k); if (m && !(W && W[m[2]])) localStorage.removeItem(k); }); } catch (e) { }
     Object.keys(W || {}).forEach((ch) => {
       if (!/^\\d\\d$/.test(ch)) return;
       const c = W[ch], k = {};
@@ -181,6 +183,13 @@ staff = swap('staff.js', staff, "TAB = sel('tab') || 'live';", "TAB = sel('tab')
 staff = swap('staff.js', staff, "(w.d ? '✓ ' : '') + h(T('staff.cw.cell', { t, n })) + '</td>';",
   "(w.d ? '✓ ' + h(T('staff.cw.cell', { t, n })) : w.h ? '<span class=\"cwhad\">' + h(T('staff.cw.had')) + '</span>' : h(T('staff.cw.cell', { t, n }))) + '</td>';");
 staff = swap('staff.js', staff, "x: 'ev.cwClear', r: 'ev.cwNotice' }", "x: 'ev.cwClear', r: 'ev.cwNotice', h: 'ev.cwHad', g: 'ev.cwUnhad' }");
+// the owner can clear her own record from the chapter table too (A2 only had it on the papers table): a fresh demonstration
+staff = swap('staff.js', staff, `'</table></div><p class="note" style="margin-top:10px">' + h(T('staff.cw.legend')) + '</p>' : '');`,
+  `'</table></div><p class="note" style="margin-top:10px">' + h(T('staff.cw.legend')) + '</p>' + (rows.some((x) => x.pu.me) ? '<p style="margin-top:10px"><button class="btn ghost" data-clear>' + h(T('staff.clearMine')) + '</button></p>' : '') : '');`);
+staff = swap('staff.js', staff, `pane().querySelector('#cwsort').addEventListener('change', (e) => { keep('cwsort', e.target.value); cwPaint(); });`,
+  `pane().querySelector('#cwsort').addEventListener('change', (e) => { keep('cwsort', e.target.value); cwPaint(); });
+      const clr = pane().querySelector('[data-clear]');
+      if (clr) twoPress(clr, T('staff.clearConfirm', { name: CLS }), (reset) => call({ op: 'clearMine', name: CLS }).then(load, (e) => { reset(); fail(e); }));`);
 const scripts = [
   ['content.js', contentJs],
   ['lessonview.js', need(path.join(A2, 'platform', 'lessonview.js'))],
