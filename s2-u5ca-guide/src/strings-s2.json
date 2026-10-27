@@ -124,5 +124,6 @@
  "flow.watch": "Watch for",
  "flow.play": "▶ Play it",
  "code.after": "Type this straight after line {n}. Lines in grey are already typed.",
- "code.before": "Already typed"
+ "code.before": "Already typed",
+ "staff.tabTheory": "Unit 4 theory"
 }

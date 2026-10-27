@@ -1,0 +1,1097 @@
+{
+ "t": 1,
+ "title": "Contemporary trends in software development",
+ "everyday": "How programs are built, and what the tools do for the programmer.",
+ "weight": "About 7 marks of 120 in the exam.",
+ "swatch": "#0E8A7A",
+ "screens": [
+  {
+   "n": 1,
+   "title": "See what a program is made of",
+   "goal": "I can say what a procedure is and why a program is split into them.",
+   "blocks": [
+    {
+     "say": [
+      "A program is a list of instructions for the computer. It runs them in order, one after the other.",
+      "A long list gets messy fast. So programmers cut the list into named jobs. Each named job is a [[procedure|1]].",
+      "The main program calls a procedure by its name whenever that job is needed. This way of building a program is called [[procedural programming|1]].",
+      "Procedural programmers start big and work down. They take the whole problem and break it into smaller problems. That is called [[top-down design|1]]."
+     ]
+    },
+    {
+     "picture": {
+      "title": "A recipe card with mini recipes",
+      "lines": [
+       "Think of a recipe card for lasagne. The main card says: make the meat sauce, make the cheese sauce, build the layers, bake.",
+       "Each of those is its own mini recipe on its own card. The main card never explains how to make cheese sauce. It just says go and do it.",
+       "You can use the cheese sauce card again in a different meal. That is the whole point."
+      ],
+      "match": [
+       [
+        "The main recipe card",
+        "The main program"
+       ],
+       [
+        "One mini recipe, like Make cheese sauce",
+        "A procedure, also called a function or subroutine"
+       ],
+       [
+        "Saying go and make the cheese sauce",
+        "Calling the procedure by its name"
+       ],
+       [
+        "Reading the card from the top down",
+        "Step by step, in sequence"
+       ],
+       [
+        "Breaking the meal into mini recipes",
+        "Top-down design"
+       ]
+      ],
+      "breaks": "A real cook can skip ahead or guess. The computer never does. It runs every step in the order written."
+     }
+    },
+    {
+     "code": {
+      "title": "A procedure called by name",
+      "lang": "cs",
+      "lines": [
+       "static void Main(string[] args)",
+       "{",
+       "    int num1 = 4;",
+       "    int num2 = 7;",
+       "    int sum = CalculateSum(num1, num2);",
+       "    Console.WriteLine(\"The sum is \" + sum);",
+       "}",
+       "",
+       "static int CalculateSum(int a, int b)",
+       "{",
+       "    return a + b;",
+       "}"
+      ],
+      "parts": [
+       [
+        1,
+        7,
+        "The main program",
+        "Runs top to bottom. Line 5 calls the procedure by its name and keeps its answer."
+       ],
+       [
+        9,
+        12,
+        "The procedure",
+        "A self-contained block with one job. It adds two numbers and hands the total back."
+       ]
+      ],
+      "names": [
+       [
+        "Main",
+        "Where the program starts. The main recipe card."
+       ],
+       [
+        "CalculateSum",
+        "The procedure. One named job that can be called again and again."
+       ],
+       [
+        "return",
+        "Hands the answer back to whoever called the procedure."
+       ]
+      ]
+     }
+    },
+    {
+     "exam": {
+      "term": "Procedural programming",
+      "say": "An approach to developing a solution. The program operates on data and is organised in self-contained blocks called procedures. The logic of the program is actioned by calling the procedures.",
+      "src": "CCEA specification wording, used in the 2024 Q5(a) and 2025 Q7 mark schemes"
+     }
+    },
+    {
+     "exam": {
+      "term": "What the examiner wants to see",
+      "say": "Procedures or functions or subroutines. Step by step instructions. Top down design. Instructions carried out in a sequential manner. An example language such as C.",
+      "src": "2025 Q7 and 2024 Q5(a) mark schemes"
+     }
+    },
+    {
+     "try": {
+      "form": "mcq",
+      "stem": "In procedural programming, what is a procedure?",
+      "surface": {
+       "kind": "one",
+       "opts": [
+        "A self-contained block of code with one job, called by its name",
+        "A picture of the program drawn before coding starts",
+        "The data the program works on",
+        "A list of every error the program could make"
+       ]
+      },
+      "key": {
+       "answer": 0
+      },
+      "why": "A procedure is one named job. The main program calls it whenever that job is needed."
+     }
+    }
+   ]
+  },
+  {
+   "n": 2,
+   "title": "See why big programs are built from objects",
+   "goal": "I can say what an object is and why big programs use them.",
+   "blocks": [
+    {
+     "say": [
+      "One long recipe works for a small program. A big program has thousands of steps and hundreds of pieces of data.",
+      "Procedures help, but the data still sits in one big pile that any procedure can change. One wrong change breaks something far away.",
+      "So programmers bundle the data with the code that works on it. The bundle is called an [[object|2]]. An object owns its own data and its own actions.",
+      "Building a program out of objects is called [[object-oriented programming|2]]. The main program gets the objects to talk to each other."
+     ]
+    },
+    {
+     "picture": {
+      "title": "A school run as departments",
+      "lines": [
+       "Think of your school. The Science department owns its own kit, its own rooms and its own rota.",
+       "The office does not walk into the prep room and move the beakers. It asks the Science department to do it.",
+       "Each department keeps its own stuff and offers a few things it can do for others. The school runs because the departments cooperate."
+      ],
+      "match": [
+       [
+        "One department, with its own stuff and its own jobs",
+        "An object"
+       ],
+       [
+        "The department's kit and rota",
+        "The object's data, called its properties"
+       ],
+       [
+        "The jobs the department can do for others",
+        "The object's actions, called its methods"
+       ],
+       [
+        "The office asking Science to do something",
+        "The main program calling a method on the object"
+       ],
+       [
+        "Running the school through its departments",
+        "Object-oriented programming"
+       ]
+      ],
+      "breaks": "Real departments share staff and argue. Objects never do. Each one holds exactly the data it was given and nothing else."
+     }
+    },
+    {
+     "exam": {
+      "term": "Object-oriented programming",
+      "say": "An approach to developing a solution where the focus is on data rather than processes. The data is contained within a single object class. The methods that operate on that data are contained there too.",
+      "src": "CCEA specification wording, used in the 2025 Q7 mark scheme"
+     }
+    },
+    {
+     "exam": {
+      "term": "Object",
+      "say": "A self-contained element that contains the properties and methods needed to access and manipulate data values.",
+      "src": "CCEA specification glossary, textbook chapter 19"
+     }
+    },
+    {
+     "watch": "The 2024 paper had a gap for this exact idea. Object-oriented programming uses self-contained OBJECTS which contain both methods and the DATA being processed. Those two words earned two marks."
+    },
+    {
+     "try": {
+      "form": "fill-gaps",
+      "stem": "Complete the sentence using words from the list. Not all words are used.",
+      "surface": {
+       "kind": "gaps",
+       "bank": [
+        "OBJECTS",
+        "DATA",
+        "PROCEDURES",
+        "INFORMATION"
+       ],
+       "text": "Object-oriented programming uses self-contained {1} which contain both methods and the {2} being processed."
+      },
+      "key": {
+       "answer": [
+        "OBJECTS",
+        "DATA"
+       ]
+      },
+      "why": "Those are the 2024 Q5(a) mark scheme words. An object bundles its data with the methods that work on it."
+     }
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "title": "Tell a class from an object",
+   "goal": "I can say which is the class and which is the object, every time.",
+   "blocks": [
+    {
+     "say": [
+      "Before you can make an object, you need a plan for it. The plan says what data every object of that kind holds and what it can do.",
+      "That plan is called a [[class|3]]. A class is the blueprint. It is not a real thing yet.",
+      "An object is one real thing made from the class. You can make as many objects as you like from one class.",
+      "Making an object from a class is called creating an instance. In C# the word that does it is new."
+     ]
+    },
+    {
+     "picture": {
+      "title": "A biscuit cutter and its biscuits",
+      "lines": [
+       "A biscuit cutter is a shape. You cannot eat it. It only decides what every biscuit made with it will look like.",
+       "Press it into the dough and you get a biscuit. Press again and you get another. Every biscuit has the same shape but its own icing and its own sprinkles.",
+       "One cutter, many biscuits. One class, many objects."
+      ],
+      "match": [
+       [
+        "The biscuit cutter",
+        "The class, the blueprint"
+       ],
+       [
+        "One biscuit made with it",
+        "One object, an instance of the class"
+       ],
+       [
+        "The shape every biscuit shares",
+        "The properties and methods every object of that class has"
+       ],
+       [
+        "This biscuit's own icing colour",
+        "The values stored in this one object's properties"
+       ],
+       [
+        "Pressing the cutter into the dough",
+        "Creating the object with new"
+       ]
+      ],
+      "breaks": "A cutter only sets a shape. A class also sets what the object can do, its methods. Biscuits cannot do anything."
+     }
+    },
+    {
+     "code": {
+      "title": "One class, two objects",
+      "lang": "cs",
+      "lines": [
+       "class Shape",
+       "{",
+       "    public string Colour;",
+       "    public string ShapeName;",
+       "",
+       "    public string Describe()",
+       "    {",
+       "        return \"This is a \" + Colour + \" \" + ShapeName;",
+       "    }",
+       "}",
+       "",
+       "Shape shape1 = new Shape();",
+       "shape1.Colour = \"Red\";",
+       "shape1.ShapeName = \"Circle\";",
+       "",
+       "Shape shape2 = new Shape();",
+       "shape2.Colour = \"Green\";",
+       "shape2.ShapeName = \"Square\";",
+       "",
+       "Console.WriteLine(shape1.Describe());",
+       "Console.WriteLine(shape2.Describe());"
+      ],
+      "parts": [
+       [
+        1,
+        10,
+        "The class",
+        "The blueprint. Every Shape will have a Colour, a ShapeName and a Describe method."
+       ],
+       [
+        12,
+        18,
+        "Two objects",
+        "The word new makes a real Shape each time. Each one holds its own colour and name."
+       ],
+       [
+        20,
+        21,
+        "The objects at work",
+        "The screen shows This is a Red Circle, then This is a Green Square."
+       ]
+      ],
+      "names": [
+       [
+        "Shape",
+        "The class. The biscuit cutter."
+       ],
+       [
+        "shape1, shape2",
+        "Two objects made from the class. Two biscuits."
+       ],
+       [
+        "new Shape()",
+        "Makes one new object from the class."
+       ],
+       [
+        "Describe()",
+        "A method. Something every Shape object can do."
+       ]
+      ]
+     }
+    },
+    {
+     "exam": {
+      "term": "Class",
+      "say": "A template or blueprint for an object. It defines the properties and methods for a group of objects.",
+      "src": "CCEA specification glossary, textbook chapter 19"
+     }
+    },
+    {
+     "try": {
+      "form": "match",
+      "stem": "Match each thing to its programming word.",
+      "surface": {
+       "kind": "match",
+       "left": [
+        "The biscuit cutter",
+        "One biscuit",
+        "Pressing the cutter into the dough"
+       ],
+       "right": [
+        "Object",
+        "Creating the object with new",
+        "Class"
+       ]
+      },
+      "key": {
+       "answer": [
+        2,
+        0,
+        1
+       ]
+      },
+      "why": "The cutter is the class. Each biscuit is an object. Pressing the cutter is new."
+     }
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "title": "Name the properties and methods of an object",
+   "goal": "I can point at a property and a method in code and say which is which.",
+   "blocks": [
+    {
+     "say": [
+      "Every object knows some things and can do some things.",
+      "The things it knows are its [[properties|4]]. A property holds one piece of data about the object. Its name, its size, its colour.",
+      "The things it can do are its [[methods|4]]. A method is a block of code inside the object. It usually works on the object's own properties.",
+      "In code, a property is a name that holds a value. A method is a name followed by brackets, because you call it."
+     ]
+    },
+    {
+     "picture": {
+      "title": "A dog",
+      "lines": [
+       "Think of a dog. It has a name, a breed and an age. Those are facts about the dog.",
+       "It can sit, bark and fetch. Those are things it does.",
+       "Tell the dog to fetch and it uses its own legs and its own energy. You never reach in and move its legs for it."
+      ],
+      "match": [
+       [
+        "Name, breed, age",
+        "Properties, the data the object holds"
+       ],
+       [
+        "Sit, bark, fetch",
+        "Methods, the actions the object can do"
+       ],
+       [
+        "Saying Fetch to the dog",
+        "Calling the method, dog.Fetch()"
+       ],
+       [
+        "The dog using its own legs",
+        "The method working on the object's own properties"
+       ]
+      ],
+      "breaks": "A dog decides for itself. An object only ever does what its methods say, exactly as written."
+     }
+    },
+    {
+     "code": {
+      "title": "Two properties and one method",
+      "lang": "cs",
+      "lines": [
+       "class Room",
+       "{",
+       "    public double Width;",
+       "    public double Length;",
+       "",
+       "    public double Area()",
+       "    {",
+       "        return Width * Length;",
+       "    }",
+       "}",
+       "",
+       "Room kitchen = new Room();",
+       "kitchen.Width = 4;",
+       "kitchen.Length = 5;",
+       "Console.WriteLine(kitchen.Area());"
+      ],
+      "parts": [
+       [
+        3,
+        4,
+        "Two properties",
+        "Width and Length hold data. A name, a type, no brackets."
+       ],
+       [
+        6,
+        9,
+        "One method",
+        "Area() is an action. Brackets after the name. It works on the room's own Width and Length."
+       ],
+       [
+        12,
+        15,
+        "The object at work",
+        "A kitchen object is made. Its properties are set. Its method is called. The screen shows 20."
+       ]
+      ],
+      "names": [
+       [
+        "Width, Length",
+        "Properties. Data the object holds."
+       ],
+       [
+        "Area()",
+        "A method. Code the object can run. The brackets are the giveaway."
+       ],
+       [
+        "kitchen",
+        "One Room object."
+       ]
+      ]
+     }
+    },
+    {
+     "exam": {
+      "term": "Properties",
+      "say": "Contain code that facilitates reading and writing to the data within an object.",
+      "src": "CCEA specification glossary, textbook chapter 19"
+     }
+    },
+    {
+     "exam": {
+      "term": "Methods",
+      "say": "The behaviours that an object can perform.",
+      "src": "CCEA specification glossary, textbook chapter 19"
+     }
+    },
+    {
+     "try": {
+      "form": "tf",
+      "stem": "Property or method? Pick one for each line of the Room class.",
+      "surface": {
+       "kind": "tf",
+       "rows": [
+        "Width",
+        "Area()",
+        "Length"
+       ],
+       "vals": [
+        "Property",
+        "Method"
+       ]
+      },
+      "key": {
+       "answer": [
+        "Property",
+        "Method",
+        "Property"
+       ]
+      },
+      "why": "Width and Length hold data, so they are properties. Area() has brackets and does a job, so it is a method."
+     }
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "title": "Explain inheritance",
+   "goal": "I can explain inheritance in one sentence and spot it in code.",
+   "blocks": [
+    {
+     "say": [
+      "Often a new class is nearly the same as one you already have. A gingerbread man is a kind of biscuit. A circle is a kind of shape.",
+      "Instead of writing the new class from scratch, you build it on the old one. The new class gets every property and method the old one has.",
+      "That is [[inheritance|5]]. You only write the differences. Everything else comes for free.",
+      "The old class is called the parent, or base class. The new class is called the child, or derived class."
+     ]
+    },
+    {
+     "picture": {
+      "title": "A family recipe book",
+      "lines": [
+       "Think of a family recipe book handed down. The parent's page for shortbread is already written.",
+       "The child wants a chocolate shortbread. The child's page does not copy out the whole recipe. It says: start with the shortbread page, then add melted chocolate.",
+       "Change the parent's page and every child page changes with it. Nothing is written twice."
+      ],
+      "match": [
+       [
+        "The parent's shortbread page",
+        "The parent class, also called the base class or superclass"
+       ],
+       [
+        "The child's chocolate shortbread page",
+        "The child class, also called the derived class or subclass"
+       ],
+       [
+        "Start with the shortbread page",
+        "The child class inherits from the parent, written : Shape in C#"
+       ],
+       [
+        "Then add melted chocolate",
+        "The differences, the only code the child class needs"
+       ],
+       [
+        "Nothing written twice",
+        "Code reuse, the reason inheritance exists"
+       ]
+      ],
+      "breaks": "A child can tear up the parent's page. A child class cannot. It always keeps everything the parent has."
+     }
+    },
+    {
+     "code": {
+      "title": "A child class built on a parent",
+      "lang": "cs",
+      "lines": [
+       "class Shape",
+       "{",
+       "    public string Colour;",
+       "    public string Describe()",
+       "    {",
+       "        return \"This is a \" + Colour + \" shape\";",
+       "    }",
+       "}",
+       "",
+       "class Circle : Shape",
+       "{",
+       "    public double Radius;",
+       "    public double Area()",
+       "    {",
+       "        return 3.14 * Radius * Radius;",
+       "    }",
+       "}",
+       "",
+       "Circle c = new Circle();",
+       "c.Colour = \"Blue\";",
+       "c.Radius = 2;",
+       "Console.WriteLine(c.Describe());",
+       "Console.WriteLine(c.Area());"
+      ],
+      "parts": [
+       [
+        1,
+        8,
+        "The parent class",
+        "Shape has a Colour and a Describe method."
+       ],
+       [
+        10,
+        17,
+        "The child class",
+        "The : Shape part means Circle inherits everything Shape has. Circle only adds Radius and Area()."
+       ],
+       [
+        19,
+        23,
+        "The child at work",
+        "c has a Colour and Describe() it never wrote. They came from Shape. The screen shows This is a Blue shape, then 12.56."
+       ]
+      ],
+      "names": [
+       [
+        "Shape",
+        "The parent class, the base class."
+       ],
+       [
+        "Circle : Shape",
+        "Circle is a child of Shape. The colon means inherits from."
+       ],
+       [
+        "c.Describe()",
+        "A method Circle inherited. It is not written inside Circle."
+       ]
+      ]
+     }
+    },
+    {
+     "exam": {
+      "term": "Inheritance",
+      "say": "Enables the properties of one class to be copied to another. Only the differences between the classes need to be reprogrammed.",
+      "src": "CCEA specification glossary, textbook chapter 19, and the 2025 Q7 mark scheme feature list"
+     }
+    },
+    {
+     "try": {
+      "form": "mcq",
+      "stem": "In the code above, which line makes Circle inherit from Shape?",
+      "surface": {
+       "kind": "one",
+       "opts": [
+        "class Circle : Shape",
+        "public double Radius;",
+        "Circle c = new Circle();",
+        "return 3.14 * Radius * Radius;"
+       ]
+      },
+      "key": {
+       "answer": 0
+      },
+      "why": "The colon after Circle says this class is built on Shape. Everything Shape has, Circle now has too.",
+      "code": true
+     }
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "title": "Explain encapsulation and reuse",
+   "goal": "I can explain encapsulation and say why objects make code easier to reuse.",
+   "blocks": [
+    {
+     "say": [
+      "An object keeps its data to itself. Other parts of the program cannot reach in and change that data directly.",
+      "They have to use the object's methods. The methods are the only way in.",
+      "That is [[encapsulation|6]]. It is sometimes called information hiding. It stops one part of a program from quietly breaking another.",
+      "Because an object is sealed like this, it can be used in a different program. That is [[code reuse|6]]. Inheritance gives reuse too. Both save time."
+     ]
+    },
+    {
+     "picture": {
+      "title": "A vending machine",
+      "lines": [
+       "Think of a vending machine. You press a button and a drink drops out.",
+       "You never open the machine and move the cans yourself. The buttons are the only way in.",
+       "Because of that, the same machine can be wheeled into any building and it just works. Nobody has to rewire it."
+      ],
+      "match": [
+       [
+        "The cans and the coins inside",
+        "The object's data, kept private"
+       ],
+       [
+        "The buttons on the front",
+        "The object's public methods, the only way in"
+       ],
+       [
+        "Not being allowed to open the machine",
+        "Encapsulation, also called information hiding"
+       ],
+       [
+        "Wheeling the same machine into another building",
+        "Code reuse, the object works in a different program"
+       ]
+      ],
+      "breaks": "A vending machine can run out. An object's data only ever changes when one of its own methods changes it."
+     }
+    },
+    {
+     "exam": {
+      "term": "Encapsulation",
+      "say": "Hides an object's data. It can only be directly accessed by the methods within the object.",
+      "src": "CCEA specification glossary, textbook chapter 19"
+     }
+    },
+    {
+     "exam": {
+      "term": "Why object-oriented code is reused",
+      "say": "The code for an object can be programmed and maintained independently. The code for an object can be re-used in different programs by different developers. The details of an object's internal implementation are hidden from the outside world.",
+      "src": "Textbook chapter 19, advantages of object-oriented programming"
+     }
+    },
+    {
+     "watch": "Do not mix these two up. Inheritance is one class built on another. Encapsulation is one object hiding its data. The textbook warns this is a common mistake."
+    },
+    {
+     "try": {
+      "form": "tf",
+      "stem": "Inheritance or encapsulation? Pick one for each line.",
+      "surface": {
+       "kind": "tf",
+       "rows": [
+        "A Circle class gets everything the Shape class has",
+        "A Room object's Width can only be changed through its own methods",
+        "Only the differences between two classes need to be written"
+       ],
+       "vals": [
+        "Inheritance",
+        "Encapsulation"
+       ]
+      },
+      "key": {
+       "answer": [
+        "Inheritance",
+        "Encapsulation",
+        "Inheritance"
+       ]
+      },
+      "why": "One class built on another is inheritance. One object guarding its own data is encapsulation."
+     }
+    }
+   ]
+  },
+  {
+   "n": 7,
+   "title": "Compare procedural and object-oriented in exam words",
+   "goal": "I can describe both approaches, name three features of each, and say how they differ.",
+   "blocks": [
+    {
+     "say": [
+      "You now know both ways of building a program. The exam asks you to describe them and compare them.",
+      "Procedural programming is a list of steps cut into procedures. It starts from the big problem and works down.",
+      "Object-oriented programming is a set of objects. Each object bundles its data with its methods. Classes are the blueprints, and inheritance lets one class build on another.",
+      "The six-mark question wants both described, at least three features named, and one real comparison."
+     ]
+    },
+    {
+     "side": {
+      "left": {
+       "title": "Procedural",
+       "rows": [
+        "Organised in self-contained blocks called procedures or functions",
+        "The program works through the data step by step",
+        "Instructions run in a sequential manner",
+        "Built by top-down design, breaking the problem into smaller problems",
+        "Example languages: C, COBOL, FORTRAN"
+       ]
+      },
+      "right": {
+       "title": "Object-oriented",
+       "rows": [
+        "Built from objects that bundle data with the methods that use it",
+        "A class is the blueprint, an object is one instance of it",
+        "Properties hold the data, methods are the actions",
+        "Inheritance lets one class build on another",
+        "Encapsulation hides an object's data behind its methods"
+       ]
+      }
+     }
+    },
+    {
+     "say": [
+      "One comparison earns the last mark. Both let code be reused. Procedural reuses procedures, while object-oriented reuses whole objects and classes."
+     ]
+    },
+    {
+     "exam": {
+      "term": "Which is which, in one line",
+      "say": "Object-oriented programming uses classes and inheritance whereas procedural programming uses procedures and top-down design.",
+      "src": "2021 Q1(b) mark scheme, the correct option"
+     }
+    },
+    {
+     "exam": {
+      "term": "The six-mark answer, what it must contain",
+      "say": "Fully describes both object-oriented and procedural programming and makes reference to at least three features. Some comparison of the approaches is provided. Both allow for some level of code re-usability.",
+      "src": "2025 Q7 mark scheme, Level 3"
+     }
+    },
+    {
+     "watch": "Quality of written communication is marked in this question. Full sentences, capital letters, correct spellings of procedure, object, class and inheritance."
+    },
+    {
+     "try": {
+      "form": "mcq",
+      "stem": "Select the statement that is true about programming paradigms.",
+      "surface": {
+       "kind": "one",
+       "opts": [
+        "Object-oriented programming uses objects and methods whereas procedural programming uses classes and top-down design.",
+        "Object-oriented programming uses classes and methods whereas procedural programming uses procedures and objects.",
+        "Object-oriented programming uses classes and objects whereas procedural programming uses methods and inheritance.",
+        "Object-oriented programming uses classes and inheritance whereas procedural programming uses procedures and top-down design."
+       ]
+      },
+      "key": {
+       "answer": 3
+      },
+      "why": "This was 2021 Q1(b). Classes and inheritance belong to object-oriented. Procedures and top-down design belong to procedural. The other three mix them up.",
+      "verbatim": "2021 Q1(b)"
+     }
+    }
+   ]
+  },
+  {
+   "n": 8,
+   "title": "List what a software development environment does for you",
+   "goal": "I can list the editing features of a software development environment and what each is for.",
+   "blocks": [
+    {
+     "say": [
+      "You could write a program in Notepad. Nothing would help you. No colours, no line numbers, no warnings.",
+      "A [[software development environment|8]] is one program that holds every tool a programmer needs. You write the code, run it and fix it in the same window. Visual Studio is one.",
+      "The exam calls it a software development environment, or SDE. You may have heard IDE, for integrated development environment. Same thing.",
+      "The editing features are the ones the exam asks you to list. Learn the names exactly as the mark scheme spells them."
+     ]
+    },
+    {
+     "picture": {
+      "title": "A word processor for code",
+      "lines": [
+       "Think of what Word does for an essay. It underlines spelling mistakes in red. It finishes words you start typing. It shows page numbers so you can find your place.",
+       "A software development environment does the same for code. It colours the keywords, numbers the lines, finishes the names you type and underlines mistakes.",
+       "Then it goes further than Word. One button runs the program."
+      ],
+      "match": [
+       [
+        "Red underline under a misspelt word",
+        "Syntax error assistance, called IntelliSense in Visual Studio"
+       ],
+       [
+        "Word finishing a word as you type",
+        "Code completion tools, auto completion"
+       ],
+       [
+        "Page numbers to find your place",
+        "Line numbering"
+       ],
+       [
+        "Headings in a different colour",
+        "Colour coded text, keywords shown in colour"
+       ],
+       [
+        "Collapsing a long section of the essay",
+        "Collapsible code sections"
+       ],
+       [
+        "Copy and paste",
+        "Clipboard"
+       ]
+      ],
+      "breaks": "Word never runs your essay. A software development environment also translates and runs the code. That is the next screen."
+     }
+    },
+    {
+     "exam": {
+      "term": "Software development environment",
+      "say": "Software that provides programmers with an integrated set of programming tools. It is used to build an application from coding through to testing.",
+      "src": "CCEA specification glossary, and the 2021 Q2(a) mark scheme"
+     }
+    },
+    {
+     "exam": {
+      "term": "Editing features, the mark scheme list",
+      "say": "Clipboard. Colour coded text or colour coded functions. Collapsible code sections. Line numbering. Code completion tools. IntelliSense or syntax error assistance. Auto completion or auto indent.",
+      "src": "2019 Q1(d), 2022 Q3(b), 2025 Q3(c)(i) and 2023 Q8 mark schemes"
+     }
+    },
+    {
+     "watch": "The 2022 mark scheme says: do not accept colour coding on its own. Write colour coded text or colour coded keywords. The 2025 question banned colour coding altogether, so have two other features ready."
+    },
+    {
+     "try": {
+      "form": "list-n",
+      "stem": "Apart from colour coding of keywords, list two editing features of a software development environment.",
+      "surface": {
+       "kind": "list",
+       "n": 2
+      },
+      "key": {
+       "accept": [
+        [
+         "clipboard",
+         "copy and paste",
+         "cut and paste",
+         "copy paste"
+        ],
+        [
+         "collapsible code",
+         "collapsible sections",
+         "collapse code",
+         "code folding",
+         "collapsable code"
+        ],
+        [
+         "line numbering",
+         "line numbers",
+         "numbered lines"
+        ],
+        [
+         "code completion",
+         "auto completion",
+         "autocomplete",
+         "auto complete",
+         "auto-complete",
+         "autocompletion"
+        ],
+        [
+         "intellisense",
+         "syntax error assistance",
+         "error underlining",
+         "underlines errors",
+         "syntax errors underlined"
+        ],
+        [
+         "auto indent",
+         "auto-indent",
+         "automatic indentation",
+         "auto indentation"
+        ]
+       ],
+       "reject": [
+        "colour coded",
+        "colour coding",
+        "color coded",
+        "color coding",
+        "syntax highlighting"
+       ]
+      },
+      "why": "Any two from the mark scheme list. Clipboard, collapsible code sections, line numbering, code completion tools. IntelliSense or syntax error assistance. Auto completion or auto indent."
+     }
+    }
+   ]
+  },
+  {
+   "n": 9,
+   "title": "Explain why code is translated and what a compiler does",
+   "goal": "I can say why code is translated, what a compiler does, and spot an interpreter.",
+   "blocks": [
+    {
+     "say": [
+      "The code you write is called [[source code|9]]. It is in a high-level language like C#, with words a person can read.",
+      "The processor cannot read words. It only runs [[machine code|9]], instructions made of 0s and 1s.",
+      "So the source code must be translated into machine code before the computer can run it. The program that does the translating is a [[compiler|9]].",
+      "A compiler translates the whole program at once. It saves the machine code in its own file. An [[interpreter|9]] translates one line, runs it, then moves on. It does this every time the program runs."
+     ]
+    },
+    {
+     "picture": {
+      "title": "A translated book and a live interpreter",
+      "lines": [
+       "You write a book in English. A reader only reads Irish. Someone has to translate it.",
+       "A book translator takes the whole book away and hands back a finished Irish copy. The reader can then read it as often as they like. No translator needs to be there. That is the compiler.",
+       "An interpreter at a meeting translates each sentence as you say it. The listener hears it at once, but the interpreter has to be there every single time. That is the interpreter."
+      ],
+      "match": [
+       [
+        "The English book",
+        "Source code, high-level, readable by people"
+       ],
+       [
+        "The Irish copy",
+        "Machine code, 0s and 1s, readable by the processor"
+       ],
+       [
+        "The book translator doing the whole book first",
+        "A compiler, whole program at once, before it runs"
+       ],
+       [
+        "The finished Irish copy kept as its own book",
+        "The machine code stored in a separate file from the source"
+       ],
+       [
+        "The translator listing every mistake found",
+        "The compiler reporting all syntax errors after trying to compile"
+       ],
+       [
+        "The live interpreter at the meeting",
+        "An interpreter, line by line, while the program runs"
+       ]
+      ],
+      "breaks": "A human translator fixes your mistakes. A compiler never does. If one word of the source code is wrong, it stops and tells you. Nothing runs."
+     }
+    },
+    {
+     "say": [
+      "The compiler does its work in five steps. The exam asks you to list or describe them. Learn these five in this order."
+     ]
+    },
+    {
+     "picture": {
+      "title": "What the compiler does, in order",
+      "lines": [
+       "First it checks the syntax of every statement. One spelling mistake and it stops and reports it.",
+       "Then it pastes in any ready-made library code the program uses. Then it cuts each line into its words, which are called tokens. That is lexical analysis. Then it checks the lines make sense together, like matching data types and declared variables. That is semantic analysis.",
+       "Last, it generates the machine code and saves it as a file the computer can run."
+      ],
+      "match": [
+       [
+        "Check the spelling and grammar of every line",
+        "Syntax analysis, syntax errors identified"
+       ],
+       [
+        "Paste in the pre-written pages the book refers to",
+        "Library code included, pre-processing"
+       ],
+       [
+        "Cut each sentence into its words",
+        "Lexical analysis, the code becomes tokens"
+       ],
+       [
+        "Check the sentences make sense together",
+        "Semantic analysis, data types and declared variables checked"
+       ],
+       [
+        "Print the finished copy",
+        "Machine code generated"
+       ]
+      ],
+      "breaks": "A human translator can guess and work by feel. The compiler never guesses. Its five steps run in the same order every time. If the syntax check fails, no machine code is made."
+     }
+    },
+    {
+     "exam": {
+      "term": "Why source code must be translated",
+      "say": "The program must be turned into machine code. Machine code is 0s and 1s, binary. The computer can then understand it and execute it.",
+      "src": "2019 Q1(e)(i) and 2021 Q2(b)(i) mark schemes"
+     }
+    },
+    {
+     "exam": {
+      "term": "What happens during translation",
+      "say": "Syntax analysis, errors identified. Library code is included. Lexical analysis. Semantic analysis. Machine code is generated.",
+      "src": "2021 Q2(b)(ii) and 2019 Q1(e)(ii) mark schemes"
+     }
+    },
+    {
+     "exam": {
+      "term": "Compiler against interpreter",
+      "say": "Translators can be either compilers or interpreters. A compiler translates the whole program at once. It reports all syntax errors after attempting to compile. The machine code version is stored in a separate file from the source code. An interpreter translates the program line by line.",
+      "src": "2024 Q5(b) mark scheme, the four TRUE or FALSE statements"
+     }
+    },
+    {
+     "watch": "The 2024 paper tried to trick you by swapping the two. It said interpreters do the whole program at once. That is FALSE. Compilers do the whole program at once. Interpreters go line by line. Say it the right way round out loud now."
+    },
+    {
+     "try": {
+      "form": "tf",
+      "stem": "Pick TRUE or FALSE for each statement about high-level code translation.",
+      "surface": {
+       "kind": "tf",
+       "rows": [
+        "Translators can be either compilers or interpreters",
+        "Interpreters translate the whole program at once whilst compilers translate the program line by line",
+        "A compiler reports all syntax errors after attempting to compile the program",
+        "After compiling, the machine code is stored in a separate file from the source code"
+       ],
+       "vals": [
+        "TRUE",
+        "FALSE"
+       ]
+      },
+      "key": {
+       "answer": [
+        "TRUE",
+        "FALSE",
+        "TRUE",
+        "TRUE"
+       ]
+      },
+      "why": "This was 2024 Q5(b). Only the second statement is false. It has compiler and interpreter the wrong way round.",
+      "verbatim": "2024 Q5(b)"
+     }
+    }
+   ]
+  }
+ ]
+}

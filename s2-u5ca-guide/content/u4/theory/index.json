@@ -1,0 +1,62 @@
+{
+ "unit": "Unit 4 · Digital Development Concepts",
+ "topics": [
+  {
+   "t": 1,
+   "title": "Contemporary trends in software development",
+   "everyday": "How programs are organised, and what turns your code into something the computer can run.",
+   "weight": 7,
+   "swatch": "#0E8A7A",
+   "screens": 9,
+   "file": "t1.json"
+  },
+  {
+   "t": 2,
+   "title": "Digital data",
+   "everyday": "How numbers, letters and pictures are stored as 0s and 1s.",
+   "weight": 25,
+   "swatch": "#3B4FD8",
+   "screens": 0
+  },
+  {
+   "t": 3,
+   "title": "Digital design principles",
+   "everyday": "Planning a program before you write it: flowcharts, pseudocode, breaking a job into parts.",
+   "weight": 10,
+   "swatch": "#8E2F8A",
+   "screens": 0
+  },
+  {
+   "t": 4,
+   "title": "Programming constructs",
+   "everyday": "The building blocks of code: variables, choices, loops, lists and text.",
+   "weight": 44,
+   "swatch": "#D1601A",
+   "screens": 0
+  },
+  {
+   "t": 5,
+   "title": "Simple error handling",
+   "everyday": "Stopping bad input and catching things that go wrong while a program runs.",
+   "weight": 15,
+   "swatch": "#C0263B",
+   "screens": 0
+  },
+  {
+   "t": 6,
+   "title": "Testing",
+   "everyday": "Checking a program works, using chosen test data and a test plan.",
+   "weight": 12,
+   "swatch": "#2F7D32",
+   "screens": 0
+  },
+  {
+   "t": 7,
+   "title": "Evaluation",
+   "everyday": "Judging a finished program against what was asked for.",
+   "weight": 8,
+   "swatch": "#4A6072",
+   "screens": 0
+  }
+ ]
+}
