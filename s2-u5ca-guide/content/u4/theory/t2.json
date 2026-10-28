@@ -1,0 +1,1120 @@
+{
+ "t": 2,
+ "title": "Digital data",
+ "everyday": "How numbers, letters and pictures are stored as 0s and 1s.",
+ "weight": 25,
+ "swatch": "#3B4FD8",
+ "screens": [
+  {
+   "n": 1,
+   "title": "Say what a bit, a nibble and a byte are",
+   "goal": "I can name a bit, a nibble and a byte and count their bits.",
+   "blocks": [
+    {
+     "say": [
+      "Inside a computer, everything is stored by tiny switches. A switch is either off or on.",
+      "Off is written as 0. On is written as 1. One switch, one 0 or 1, is a [[bit|1]].",
+      "A bit is the smallest thing a computer can store. Nothing is smaller than off or on.",
+      "Eight bits side by side make a [[byte|1]]. One byte can hold one character, like the letter A.",
+      "Half a byte is four bits. Four bits together is called a [[nibble|1]]. Yes, that really is the word."
+     ]
+    },
+    {
+     "picture": {
+      "title": "A wall plate with eight light switches",
+      "lines": [
+       "Picture a wall plate with eight light switches in a row. Each switch is up or down, nothing in between.",
+       "That plate is a byte. One switch on its own is a bit. Four switches together make a nibble.",
+       "A computer holds billions of these plates. Every photo, song and message is stored as switches."
+      ],
+      "match": [
+       [
+        "One light switch, up or down",
+        "A bit, 0 or 1"
+       ],
+       [
+        "Four switches on the plate",
+        "A nibble, 4 bits"
+       ],
+       [
+        "The whole plate of eight switches",
+        "A byte, 8 bits"
+       ],
+       [
+        "Switch up",
+        "1"
+       ],
+       [
+        "Switch down",
+        "0"
+       ]
+      ],
+      "breaks": "Real switches are big and slow. The switches in a chip are smaller than a germ. They flip billions of times a second.",
+      "heads": [
+       "In the picture",
+       "In the computer"
+      ]
+     }
+    },
+    {
+     "play": {
+      "kind": "bits",
+      "title": "Flip the eight switches",
+      "lead": "Tap any switch to flip it. Count how many are on. Four switches is one nibble, eight is one byte.",
+      "show": [
+       "count"
+      ]
+     }
+    },
+    {
+     "exam": {
+      "term": "Bit",
+      "say": "A bit is a binary digit. It can only take on the values 0 or 1. It is the smallest unit of storage in a computer system.",
+      "src": "2023 Q7(a) mark scheme"
+     }
+    },
+    {
+     "try": {
+      "form": "tf",
+      "stem": "Pick TRUE or FALSE for each statement.",
+      "surface": {
+       "kind": "tf",
+       "rows": [
+        "A byte holds eight bits.",
+        "A nibble is two bits.",
+        "A bit can be 0, 1 or 2.",
+        "Half a byte is called a nibble."
+       ],
+       "vals": [
+        "TRUE",
+        "FALSE"
+       ]
+      },
+      "key": {
+       "answer": [
+        "TRUE",
+        "FALSE",
+        "FALSE",
+        "TRUE"
+       ]
+      },
+      "why": "A nibble is four bits, half a byte. A bit is only ever 0 or 1."
+     }
+    }
+   ]
+  },
+  {
+   "n": 2,
+   "title": "Turn a binary pattern into a denary number",
+   "goal": "I can read an 8-bit binary pattern and say what denary number it is, with working.",
+   "blocks": [
+    {
+     "say": [
+      "The numbers you count with every day are [[denary|1]] numbers. Denary uses ten digits, 0 to 9.",
+      "A computer counts with only two digits, 0 and 1. That is [[binary|1]].",
+      "Each bit in a byte has a value. From the right, the values are 1, 2, 4, 8, 16, 32, 64 and 128.",
+      "Every value is double the one before it. Write them above the bits as headings, biggest on the left.",
+      "To read a byte, add up the headings above every 1. Ignore the headings above every 0.",
+      "So 10010011 means 128 + 16 + 2 + 1. That is 147."
+     ]
+    },
+    {
+     "picture": {
+      "title": "A ruler with eight marks",
+      "lines": [
+       "Picture a ruler where the marks are not evenly spaced. The marks read 128, 64, 32, 16, 8, 4, 2 and 1.",
+       "Under each mark is a switch. Turn a switch on and you add that mark to the total.",
+       "With all eight switches on you get 255. With all off you get 0. Every number between has its own pattern."
+      ],
+      "match": [
+       [
+        "A mark on the ruler",
+        "A place value, also called a heading"
+       ],
+       [
+        "A switch turned on under a mark",
+        "A 1 in that place"
+       ],
+       [
+        "Adding up the marks you switched on",
+        "Converting binary to denary"
+       ],
+       [
+        "All eight switches on, 255",
+        "The biggest number one byte can hold"
+       ]
+      ],
+      "breaks": "A real ruler is evenly spaced. This one doubles at every mark, and that doubling is what makes binary work.",
+      "heads": [
+       "In the picture",
+       "In binary"
+      ]
+     }
+    },
+    {
+     "play": {
+      "kind": "bits",
+      "title": "Make the number",
+      "lead": "Flip switches until the readout says 147. Then try 85, then 255.",
+      "show": [
+       "den"
+      ],
+      "target": 147
+     }
+    },
+    {
+     "exam": {
+      "term": "Converting binary to denary",
+      "say": "Write the place values 128, 64, 32, 16, 8, 4, 2, 1 above the bits. Add the place values that have a 1 beneath them. Show the working, because the working earns a mark.",
+      "src": "2021 Q6(b) mark scheme: conversion work, addition of results, 251"
+     }
+    },
+    {
+     "try": {
+      "form": "mcq",
+      "stem": "What is the binary pattern 01011010 in denary?",
+      "surface": {
+       "kind": "one",
+       "opts": [
+        [
+         "A",
+         "90"
+        ],
+        [
+         "B",
+         "89"
+        ],
+        [
+         "C",
+         "106"
+        ],
+        [
+         "D",
+         "45"
+        ]
+       ]
+      },
+      "key": {
+       "answer": 0
+      },
+      "why": "The 1s sit under 64, 16, 8 and 2. Added up, 64 + 16 + 8 + 2 = 90."
+     }
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "title": "Turn a denary number into an 8-bit pattern",
+   "goal": "I can turn any denary number up to 255 into eight bits and show my working.",
+   "blocks": [
+    {
+     "say": [
+      "Going the other way is a game of take away. Start with the biggest heading, 128.",
+      "Ask: does 128 fit into my number? If it does, write a 1 and take 128 away.",
+      "If it does not fit, write a 0 and move on. Then ask the same of 64, 32, 16 and so on.",
+      "Keep going until you reach 1. Whatever is left over must be 0.",
+      "Try 117. 128 does not fit, so 0. 64 fits, so 1, and 53 is left.",
+      "32 fits, so 1, and 21 is left. 16 fits, so 1, and 5 is left. 8 does not fit, so 0.",
+      "4 fits, so 1, and 1 is left. 2 does not fit, so 0. 1 fits, so 1. Nothing is left.",
+      "So 117 is 01110101. Always write all eight bits, even the leading zeros. The paper asks for 8-bit patterns."
+     ]
+    },
+    {
+     "picture": {
+      "title": "Paying with coins that come in eight sizes",
+      "lines": [
+       "Imagine coins worth 128, 64, 32, 16, 8, 4, 2 and 1. You own exactly one of each.",
+       "To pay 117, start with the biggest coin that fits. Hand over 64, then 32, then 16, then 4, then 1.",
+       "Write a 1 for every coin you handed over. Write a 0 for every coin you kept."
+      ],
+      "match": [
+       [
+        "A coin you hand over",
+        "A 1 in that place"
+       ],
+       [
+        "A coin you keep",
+        "A 0 in that place"
+       ],
+       [
+        "Starting from the biggest coin",
+        "Starting from 128 on the left"
+       ],
+       [
+        "The money still owed after each coin",
+        "The number still left to make"
+       ]
+      ],
+      "breaks": "With real coins you may hand over two of the same size. In binary each place holds one coin at most.",
+      "heads": [
+       "In the picture",
+       "In binary"
+      ]
+     }
+    },
+    {
+     "watch": "A pattern with fewer than eight bits can lose a mark. The 2022 paper gave one mark for 7 bits, not two. Write all eight."
+    },
+    {
+     "play": {
+      "kind": "bits",
+      "title": "Make 199 with the switches",
+      "lead": "Start from 128 on the left and work right. Does it fit? Switch on. Does it not? Leave it off.",
+      "show": [
+       "den"
+      ],
+      "target": 199
+     }
+    },
+    {
+     "exam": {
+      "term": "Converting denary to binary",
+      "say": "Show conversion work. Divide by two or use place value, either is accepted. Then write the full 8-bit pattern.",
+      "src": "2022 Q6(a)(ii) and 2025 Q4(a)(i) mark schemes"
+     }
+    },
+    {
+     "try": {
+      "form": "mcq",
+      "stem": "Which 8-bit pattern is the denary number 53?",
+      "surface": {
+       "kind": "one",
+       "opts": [
+        [
+         "A",
+         "00110101"
+        ],
+        [
+         "B",
+         "00110011"
+        ],
+        [
+         "C",
+         "01010011"
+        ],
+        [
+         "D",
+         "00101101"
+        ]
+       ]
+      },
+      "key": {
+       "answer": 0
+      },
+      "why": "53 is 32 + 16 + 4 + 1. Switch on 32, 16, 4 and 1 and you get 00110101."
+     }
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "title": "Put the units of storage in order",
+   "goal": "I can name the storage units from bit to terabyte, in order.",
+   "blocks": [
+    {
+     "say": [
+      "A byte is tiny. One phone photo is about three million bytes. So bigger units are needed.",
+      "A [[kilobyte|1]] is 1,024 bytes. A [[megabyte|1]] is 1,024 kilobytes.",
+      "A [[gigabyte|1]] is 1,024 megabytes. A [[terabyte|1]] is 1,024 gigabytes.",
+      "Why 1,024 and not 1,000? Because 1,024 is 2 multiplied by itself ten times. Computers like doubling.",
+      "In rough working, 1,000 is close enough and the paper accepts it. So 2 terabytes is about 2,000 gigabytes."
+     ]
+    },
+    {
+     "picture": {
+      "title": "A staircase of boxes",
+      "lines": [
+       "Picture a staircase. On the bottom step sits a bit. One step up, four bits make a nibble, then eight make a byte.",
+       "Each step above holds 1,024 of the step below. Kilobyte, megabyte, gigabyte, terabyte.",
+       "A text message sits on the kilobyte step. A song is a few megabytes. A film is a few gigabytes. A hard disk is terabytes."
+      ],
+      "match": [
+       [
+        "The bottom step",
+        "Bit"
+       ],
+       [
+        "Half of the byte step",
+        "Nibble, 4 bits"
+       ],
+       [
+        "The byte step",
+        "Byte, 8 bits"
+       ],
+       [
+        "Each step up",
+        "1,024 times bigger"
+       ],
+       [
+        "The top step here",
+        "Terabyte"
+       ]
+      ],
+      "breaks": "The staircase does not stop at terabyte. Petabytes and more exist, but the GCSE paper stops here.",
+      "heads": [
+       "In the picture",
+       "Unit of storage"
+      ]
+     }
+    },
+    {
+     "play": {
+      "kind": "ladder",
+      "title": "Climb the storage staircase",
+      "lead": "Tap a step to see how big it is and what fits on it.",
+      "steps": [
+       [
+        "Bit",
+        "0 or 1",
+        "A single switch"
+       ],
+       [
+        "Nibble",
+        "4 bits",
+        "Half a byte, one hex digit"
+       ],
+       [
+        "Byte",
+        "8 bits",
+        "One character, like the letter A"
+       ],
+       [
+        "Kilobyte",
+        "1,024 bytes",
+        "A short text message"
+       ],
+       [
+        "Megabyte",
+        "1,024 kilobytes",
+        "One minute of music"
+       ],
+       [
+        "Gigabyte",
+        "1,024 megabytes",
+        "A film"
+       ],
+       [
+        "Terabyte",
+        "1,024 gigabytes",
+        "A whole hard disk"
+       ]
+      ]
+     }
+    },
+    {
+     "exam": {
+      "term": "Units of storage",
+      "say": "Smallest to largest: bit, nibble, byte, kilobyte, megabyte, gigabyte, terabyte. A nibble is 4 bits. A byte is 8 bits.",
+      "src": "2025 Q4(c) and 2024 Q4(a) mark schemes"
+     }
+    },
+    {
+     "try": {
+      "form": "match",
+      "stem": "Match each unit to its size.",
+      "surface": {
+       "kind": "match",
+       "left": [
+        "Nibble",
+        "Byte",
+        "Kilobyte",
+        "Gigabyte"
+       ],
+       "right": [
+        "4 bits",
+        "8 bits",
+        "1,024 bytes",
+        "1,024 megabytes"
+       ],
+       "heads": [
+        "Unit of storage",
+        "How big it is"
+       ]
+      },
+      "key": {
+       "answer": [
+        0,
+        1,
+        2,
+        3
+       ]
+      },
+      "why": "Four bits, eight bits, then 1,024 of the step below at every step up."
+     }
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "title": "Say what hexadecimal is and where it is used",
+   "goal": "I can say what hex is, how it maps to bits and where it is used.",
+   "blocks": [
+    {
+     "say": [
+      "Long binary patterns are hard to read and easy to miscopy. So people use [[hexadecimal|1]], hex for short.",
+      "Hex counts in sixteens. It has sixteen digits: 0 to 9, then A, B, C, D, E and F.",
+      "A stands for 10, B for 11 and C for 12. D is 13, E is 14 and F is 15.",
+      "Here is the trick. One hex digit stands for exactly one nibble, four bits.",
+      "So a byte is just two hex digits. 10010011 becomes 93. Much shorter and easier to read.",
+      "Hex is used for colour codes on web pages, memory addresses and some character codes. It takes fewer digits than binary."
+     ]
+    },
+    {
+     "picture": {
+      "title": "A nickname for every nibble",
+      "lines": [
+       "Think of each nibble as a person with a long full name, like 1011. Hex gives that person a one-letter nickname, B.",
+       "Sixteen nibbles, sixteen nicknames. 0000 is 0, 1001 is 9, 1010 is A, 1111 is F.",
+       "A web colour like #FF6600 is three bytes written as nicknames. FF is full red, 66 is some green, 00 is no blue."
+      ],
+      "match": [
+       [
+        "A nibble's long full name",
+        "Four bits, like 1011"
+       ],
+       [
+        "Its one-letter nickname",
+        "One hex digit, like B"
+       ],
+       [
+        "Two nicknames side by side",
+        "One byte written in hex"
+       ],
+       [
+        "#FF6600 on a web page",
+        "Three bytes of colour, written in hex"
+       ]
+      ],
+      "breaks": "A nickname can be anything you like. A hex digit always stands for the same four bits, in every computer, everywhere.",
+      "heads": [
+       "In the picture",
+       "In hexadecimal"
+      ]
+     }
+    },
+    {
+     "play": {
+      "kind": "bits",
+      "title": "Watch the hex readout",
+      "lead": "Flip switches and watch the hex readout. Each hex digit watches only its own four switches.",
+      "show": [
+       "den",
+       "hex"
+      ]
+     }
+    },
+    {
+     "exam": {
+      "term": "Hexadecimal",
+      "say": "Uses of hexadecimal: colour codes, memory addresses, Unicode characters, assembly language. Advantage over binary: large numbers can be represented using fewer digits. It is more readable than binary patterns.",
+      "src": "2019 Q8(c) and 2023 Q7(c)(ii) mark schemes"
+     }
+    },
+    {
+     "try": {
+      "form": "match",
+      "stem": "Match each nibble to its hex digit.",
+      "surface": {
+       "kind": "match",
+       "left": [
+        "1010",
+        "1111",
+        "0011",
+        "1100"
+       ],
+       "right": [
+        "A",
+        "F",
+        "3",
+        "C"
+       ],
+       "heads": [
+        "Four bits",
+        "Hex digit"
+       ]
+      },
+      "key": {
+       "answer": [
+        0,
+        1,
+        2,
+        3
+       ]
+      },
+      "why": "1010 is 10, which is A. 1111 is 15, which is F. 0011 is 3. 1100 is 12, which is C."
+     }
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "title": "Convert between hex, binary and denary",
+   "goal": "I can convert between binary, hex and denary and show my working.",
+   "blocks": [
+    {
+     "say": [
+      "Binary to hex: split the byte into two nibbles. Give each nibble its hex digit.",
+      "11001001 splits into 1100 and 1001. 1100 is 12, which is C. 1001 is 9. So the answer is C9.",
+      "Hex to binary: write each hex digit as four bits. 5A is 0101 and 1010, so 01011010.",
+      "Denary to hex: go through binary first. 52 is 00110100. Split it: 0011 is 3 and 0100 is 4. So 52 is 34 in hex.",
+      "Hex to denary: the left digit is worth 16, the right digit is worth 1. 2B is 2 times 16 plus 11, which is 43.",
+      "Always show the split and both nibble values. The mark scheme gives a mark for each one."
+     ]
+    },
+    {
+     "picture": {
+      "title": "An abacus with two columns",
+      "lines": [
+       "Picture an abacus with two columns of beads. The right column holds ones. The left column holds sixteens.",
+       "Each column can show up to 15 beads, so each column is one hex digit. Fifteen beads is F.",
+       "Nine beads on the left and eleven on the right is 9B. That is 9 times 16 plus 11, which is 155."
+      ],
+      "match": [
+       [
+        "Beads in the right column",
+        "The hex digit worth 1 each"
+       ],
+       [
+        "Beads in the left column",
+        "The hex digit worth 16 each"
+       ],
+       [
+        "Fifteen beads in one column",
+        "F"
+       ],
+       [
+        "One column of beads",
+        "One nibble, four bits"
+       ]
+      ],
+      "breaks": "A real abacus column carries after ten beads. A hex column holds fifteen before it carries.",
+      "heads": [
+       "In the picture",
+       "In hexadecimal"
+      ]
+     }
+    },
+    {
+     "watch": "Hex letters can be big or small. 9b and 9B are the same answer. But never mix a hex digit into denary working, or the examiner cannot follow it."
+    },
+    {
+     "exam": {
+      "term": "Converting with hex",
+      "say": "Split the bit pattern into two nibbles. Convert each nibble to one hex digit. For denary to hex, show base 16 or binary conversion, then each hex digit.",
+      "src": "2021 Q6(c) and Q6(d) mark schemes"
+     }
+    },
+    {
+     "try": {
+      "form": "mcq",
+      "stem": "What is the byte 10101100 in hexadecimal?",
+      "surface": {
+       "kind": "one",
+       "opts": [
+        [
+         "A",
+         "AC"
+        ],
+        [
+         "B",
+         "CA"
+        ],
+        [
+         "C",
+         "A12"
+        ],
+        [
+         "D",
+         "172"
+        ]
+       ]
+      },
+      "key": {
+       "answer": 0
+      },
+      "why": "Split it: 1010 is 10, which is A, and 1100 is 12, which is C. So AC."
+     }
+    }
+   ]
+  },
+  {
+   "n": 7,
+   "title": "Add two bytes and spot overflow",
+   "goal": "I can add two bytes with carries and say what overflow does to the answer.",
+   "blocks": [
+    {
+     "say": [
+      "Adding binary works like adding denary, column by column from the right. There are four facts to know.",
+      "0 plus 0 is 0. 0 plus 1 is 1. 1 plus 1 is 10, so write 0 and carry 1.",
+      "1 plus 1 plus 1 is 11, so write 1 and carry 1.",
+      "Write the carry above the next column to the left, exactly as you do in denary.",
+      "A byte has only eight places. If the last column carries, a ninth bit appears. That ninth bit is [[overflow|1]].",
+      "The computer has nowhere to put the ninth bit. It is dropped. So the stored result is wrong.",
+      "Overflow means the real answer is bigger than 255, the biggest number eight bits can hold."
+     ]
+    },
+    {
+     "picture": {
+      "title": "A car's mileage counter rolling over",
+      "lines": [
+       "An old car has a mileage counter with six digit wheels. It can show up to 999999.",
+       "Drive one more mile and every wheel rolls to 0. The counter says 000000. The car did not go back in time.",
+       "The million was lost because there was no seventh wheel. A byte has eight wheels, and the ninth bit is that lost million."
+      ],
+      "match": [
+       [
+        "Six digit wheels",
+        "Eight bits in a byte"
+       ],
+       [
+        "The counter rolling past 999999",
+        "The sum going past 255"
+       ],
+       [
+        "The missing seventh wheel",
+        "The ninth bit, which is overflow"
+       ],
+       [
+        "The counter showing a tiny number",
+        "A result that is incorrect"
+       ]
+      ],
+      "breaks": "A mileage counter rolls over quietly. The exam wants you to circle the overflow bit so the examiner sees you spotted it.",
+      "heads": [
+       "In the picture",
+       "In the byte"
+      ]
+     }
+    },
+    {
+     "play": {
+      "kind": "adder",
+      "title": "Add two bytes live",
+      "lead": "Tap any bit in the two top rows to flip it. Watch the carry row, the result and the ninth bit.",
+      "a": "10010011",
+      "b": "11101111"
+     }
+    },
+    {
+     "exam": {
+      "term": "Overflow",
+      "say": "The magnitude of the number exceeds the range. The value from the addition is outside the range the bit pattern can store. The overflow digit is dropped, ignored or lost. The result may be incorrect.",
+      "src": "2019 Q8(d)(ii) and (iii), 2021 Q6(e)(i) mark schemes"
+     }
+    },
+    {
+     "try": {
+      "form": "fill-gaps",
+      "stem": "Fill the gaps using the word bank.",
+      "surface": {
+       "kind": "gaps",
+       "bank": [
+        "nine",
+        "overflow",
+        "lost",
+        "incorrect",
+        "eight",
+        "carry",
+        "kept",
+        "correct"
+       ],
+       "text": "When 11111111 and 00000001 are added, the result needs {1} bits. The extra bit is called {2}. It is {3}, so the stored result is {4}."
+      },
+      "key": {
+       "answer": [
+        "nine",
+        "overflow",
+        "lost",
+        "incorrect"
+       ]
+      },
+      "why": "255 plus 1 is 256, which needs nine bits. The ninth bit is overflow, it is lost, and the byte shows 0."
+     }
+    }
+   ]
+  },
+  {
+   "n": 8,
+   "title": "Tell ASCII from Unicode",
+   "goal": "I can say what ASCII is, how many characters it holds and why Unicode was needed.",
+   "blocks": [
+    {
+     "say": [
+      "Letters, digits and symbols are called characters. A computer stores each character as a number.",
+      "The first big agreed list of these numbers was [[ASCII|1]]. It stands for American Standard Code for Information Interchange.",
+      "The original ASCII used 7 bits for each character. That gives 128 characters: letters, digits and punctuation.",
+      "Later an eighth bit was added. 8-bit ASCII, also called extended ASCII, has 256 characters.",
+      "Capital A is 65, which is 01000001 in binary. Capital B is 66. Lower case a is 97.",
+      "256 characters cannot hold Chinese, Arabic, Greek and emoji. So [[Unicode|1]] was made. It holds over 65,000 characters.",
+      "Unicode uses 16 bits or more for each character. Every ASCII code sits inside Unicode with the same number.",
+      "In exam words, ASCII is a subset of Unicode. Unicode is a superset of ASCII."
+     ]
+    },
+    {
+     "picture": {
+      "title": "Two phone books",
+      "lines": [
+       "ASCII is a thin phone book for one small town. Every person has a number, and there is room for 256 names.",
+       "Unicode is the phone book for the whole world. Every letter in every language has its own number, emoji too.",
+       "The world book kept every number from the town book. Look up A and you get 65 in both."
+      ],
+      "match": [
+       [
+        "The thin town phone book",
+        "ASCII, 128 or 256 characters"
+       ],
+       [
+        "The whole-world phone book",
+        "Unicode, over 65,000 characters"
+       ],
+       [
+        "A person's phone number",
+        "The code number for a character"
+       ],
+       [
+        "The town book sitting inside the world book",
+        "ASCII is a subset of Unicode"
+       ]
+      ],
+      "breaks": "A phone book is printed once. Unicode keeps growing, with new emoji added most years.",
+      "heads": [
+       "In the picture",
+       "Character codes"
+      ]
+     }
+    },
+    {
+     "play": {
+      "kind": "chars",
+      "title": "Type a character, see its code",
+      "lead": "Type a letter, a digit or an emoji. See the number the computer stores for it."
+     }
+    },
+    {
+     "exam": {
+      "term": "ASCII and Unicode",
+      "say": "ASCII stands for American Standard Code for Information Interchange. 7-bit ASCII represents 128 characters and 8-bit ASCII represents 256. Unicode represents more than 65,000 characters and supports many languages and emojis. It uses 16 or more bits and requires more storage than ASCII. ASCII is a subset of Unicode.",
+      "src": "2019 Q7, 2021 Q6(f) and 2025 Q4(d) mark schemes"
+     }
+    },
+    {
+     "try": {
+      "form": "tf",
+      "stem": "Pick TRUE or FALSE for each statement about character codes.",
+      "surface": {
+       "kind": "tf",
+       "rows": [
+        "The original ASCII table used seven bits for each character.",
+        "8-bit ASCII can represent 128 characters.",
+        "Unicode was created to represent more characters than ASCII.",
+        "ASCII can represent emojis."
+       ],
+       "vals": [
+        "TRUE",
+        "FALSE"
+       ]
+      },
+      "key": {
+       "answer": [
+        "TRUE",
+        "FALSE",
+        "TRUE",
+        "FALSE"
+       ]
+      },
+      "why": "8-bit ASCII has 256 characters, not 128. Emoji need Unicode."
+     }
+    }
+   ]
+  },
+  {
+   "n": 9,
+   "title": "Pick the right data type",
+   "goal": "I can name the data types and choose the right one for any variable.",
+   "blocks": [
+    {
+     "say": [
+      "Every piece of data in a program has a [[data type|1]]. The type tells the computer what kind of thing it is holding.",
+      "An [[integer|1]] is a whole number, positive or negative, with no decimal part. A count of goals is an integer.",
+      "A [[real|1]] number can have a decimal part. A price like 1.99 is real. Programmers also say double or float.",
+      "A [[character|1]] is one single letter, digit or symbol, like the grade B.",
+      "A [[string|1]] is a run of characters, like a name or a postcode. A postcode with digits in it is still a string.",
+      "A [[Boolean|1]] holds only true or false. Has the pupil passed? True or false.",
+      "A [[date/time|1]] type holds a date, a time, or both. The computer can then add days or compare two times."
+     ]
+    },
+    {
+     "picture": {
+      "title": "Labelled jars on a shelf",
+      "lines": [
+       "Picture a shelf of jars, each with a label saying what goes inside. One jar says whole numbers only.",
+       "Another says numbers with decimal points. Another says one letter only. Another says words.",
+       "One jar holds a single coin, heads or tails. One holds a calendar page. Put a price in the whole numbers jar and the pennies fall off."
+      ],
+      "match": [
+       [
+        "The whole numbers jar",
+        "Integer"
+       ],
+       [
+        "The decimals jar",
+        "Real, also called double or float"
+       ],
+       [
+        "The one letter jar",
+        "Character, also called char"
+       ],
+       [
+        "The words jar",
+        "String"
+       ],
+       [
+        "The heads or tails coin",
+        "Boolean, true or false"
+       ],
+       [
+        "The calendar page",
+        "Date/time"
+       ]
+      ],
+      "breaks": "You could force a word into a real jar. The computer refuses to put a word into an integer and shows an error instead.",
+      "heads": [
+       "In the picture",
+       "Data type"
+      ]
+     }
+    },
+    {
+     "code": {
+      "title": "Six variables, six data types",
+      "lang": "cs",
+      "lines": [
+       "string studentName = \"Aoife Quinn\";",
+       "double courseworkMark = 67.5;",
+       "char courseworkGrade = 'B';",
+       "bool passFail = true;",
+       "int goalsScored = 3;",
+       "DateTime examDate = new DateTime(2027, 5, 14);"
+      ],
+      "parts": [
+       [
+        1,
+        1,
+        "A string",
+        "Text in double quotes. Any run of characters."
+       ],
+       [
+        2,
+        2,
+        "A real number",
+        "C# calls it double. It keeps the decimal part."
+       ],
+       [
+        3,
+        3,
+        "A character",
+        "One symbol in single quotes."
+       ],
+       [
+        4,
+        4,
+        "A Boolean",
+        "Only true or false, nothing else."
+       ],
+       [
+        5,
+        5,
+        "An integer",
+        "A whole number. No decimal point allowed."
+       ],
+       [
+        6,
+        6,
+        "A date",
+        "A date and a time held in one value."
+       ]
+      ],
+      "names": [
+       [
+        "string",
+        "The data type for text. The exam word is string."
+       ],
+       [
+        "double",
+        "C# for a real number."
+       ],
+       [
+        "char",
+        "C# for a character."
+       ],
+       [
+        "bool",
+        "C# for a Boolean."
+       ],
+       [
+        "int",
+        "C# for an integer."
+       ],
+       [
+        "DateTime",
+        "C# for a date and time."
+       ]
+      ]
+     }
+    },
+    {
+     "exam": {
+      "term": "Data types",
+      "say": "Integer: a whole number. Real, double or float: a number with a decimal part. Character or char: one character. String: text. Boolean or bool: true or false. Date/time: a date and a time.",
+      "src": "2019 Q1(a), 2022 Q4(b)(ii) and 2025 Q3(b) mark schemes"
+     }
+    },
+    {
+     "try": {
+      "form": "match",
+      "stem": "Match each variable to the best data type.",
+      "surface": {
+       "kind": "match",
+       "left": [
+        "numberOfCupcakes",
+        "valid",
+        "surname",
+        "price"
+       ],
+       "right": [
+        "Integer",
+        "Boolean",
+        "String",
+        "Real"
+       ],
+       "heads": [
+        "Variable",
+        "Data type"
+       ]
+      },
+      "key": {
+       "answer": [
+        0,
+        1,
+        2,
+        3
+       ]
+      },
+      "why": "A count is an integer. Valid is true or false. A surname is text. A price has pence, so it is real."
+     }
+    }
+   ]
+  },
+  {
+   "n": 10,
+   "title": "Fill in a truth table",
+   "goal": "I can work out AND, OR, NOT and XOR and fill in a truth table.",
+   "blocks": [
+    {
+     "say": [
+      "Computers make decisions with three little words: AND, OR and NOT. Each one is a rule about 1s and 0s.",
+      "A [[truth table|1]] lists every possible input and the output the rule gives. Two inputs means four rows: 00, 01, 10, 11.",
+      "[[AND|1]] gives 1 only when every input is 1. One 0 anywhere and the output is 0.",
+      "[[OR|1]] gives 1 when at least one input is 1. It is 0 only when every input is 0.",
+      "[[NOT|1]] takes one input and flips it. NOT 0 is 1. NOT 1 is 0.",
+      "[[XOR|1]] means exclusive or. It gives 1 when the inputs are different and 0 when they match.",
+      "In a bigger table, work one column at a time, left to right. Use the columns you have already filled."
+     ]
+    },
+    {
+     "picture": {
+      "title": "Two switches and a lamp",
+      "lines": [
+       "A lamp is wired to two wall switches, A and B.",
+       "Wired as AND, the lamp lights only when both switches are on. Wired as OR, either switch alone lights it.",
+       "Wired as XOR, the lamp lights when exactly one switch is on. Flip both and it goes dark, like a landing light with two switches.",
+       "NOT is a single switch wired backwards. Push it on and the lamp goes off."
+      ],
+      "match": [
+       [
+        "Switch A and switch B",
+        "The inputs, 1 for on and 0 for off"
+       ],
+       [
+        "The lamp",
+        "The output"
+       ],
+       [
+        "Lamp lit only with both switches on",
+        "AND"
+       ],
+       [
+        "Lamp lit with either switch on",
+        "OR"
+       ],
+       [
+        "Lamp lit with exactly one switch on",
+        "XOR"
+       ],
+       [
+        "Every way the switches can be set",
+        "The rows of the truth table"
+       ]
+      ],
+      "breaks": "A real lamp can be dim or flickering. A Boolean output is only ever exactly 1 or exactly 0.",
+      "heads": [
+       "In the picture",
+       "In the truth table"
+      ]
+     }
+    },
+    {
+     "play": {
+      "kind": "logic",
+      "title": "Two switches, one lamp",
+      "lead": "Pick a rule, then flip switch A and switch B. Watch the lamp and the truth table row light up.",
+      "gates": [
+       "AND",
+       "OR",
+       "XOR",
+       "NOT"
+      ]
+     }
+    },
+    {
+     "watch": "The paper may write NOT, then A AND B inside brackets. Work out the brackets first, then flip the answer. When A is 1 and B is 1, A AND B is 1. NOT turns that into 0."
+    },
+    {
+     "exam": {
+      "term": "Truth tables",
+      "say": "AND: the output is 1 only when all inputs are 1. OR: the output is 1 when any input is 1. NOT: the output is the opposite of the input. Fill every empty cell. Each cell or column earns its own mark.",
+      "src": "2019 Q8(e), 2023 Q1(c) and 2024 Q4(e) mark schemes"
+     }
+    },
+    {
+     "try": {
+      "form": "tf",
+      "stem": "A = 1 and B = 0. Pick TRUE or FALSE for each line.",
+      "surface": {
+       "kind": "tf",
+       "rows": [
+        "A AND B gives 1.",
+        "A OR B gives 1.",
+        "NOT A gives 0.",
+        "A XOR B gives 1."
+       ],
+       "vals": [
+        "TRUE",
+        "FALSE"
+       ]
+      },
+      "key": {
+       "answer": [
+        "FALSE",
+        "TRUE",
+        "TRUE",
+        "TRUE"
+       ]
+      },
+      "why": "AND needs both on. OR needs one on. NOT flips 1 to 0. XOR is on because the inputs differ."
+     }
+    }
+   ]
+  }
+ ]
+}
