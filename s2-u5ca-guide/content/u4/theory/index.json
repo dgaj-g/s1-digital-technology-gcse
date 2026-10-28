@@ -16,7 +16,8 @@
    "everyday": "How numbers, letters and pictures are stored as 0s and 1s.",
    "weight": 25,
    "swatch": "#3B4FD8",
-   "screens": 0
+   "screens": 10,
+   "file": "t2.json"
   },
   {
    "t": 3,

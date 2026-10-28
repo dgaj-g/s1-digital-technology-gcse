@@ -211,18 +211,29 @@ function Surface(spec, o) {
   var change = o.onChange || function () {};
 
   if (kind === "one") {
-    var opts = spec.opts.map(function (op, i) { return Array.isArray(op) ? { L: op[0], text: op[1] } : { L: letters(i), text: op }; });
-    var disp = order(opts.length, seed), shown = {}, chosen = null, btns = {};
+    var opts = spec.opts.map(function (op, i) { return Array.isArray(op) ? { L: op[0], text: op[1], table: op[2] } : { L: letters(i), text: op }; });
+    var pick = spec.pick || 0, disp = order(opts.length, seed), shown = {}, chosen = null, picked = [], btns = {};
     disp.forEach(function (oi, di) { shown[opts[oi].L] = letters(di); });
     api.label = function (L) { return shown[L] || L; };
-    var wrap = el("div.opts"); root.appendChild(wrap);
+    var wrap = el("div.opts" + (pick ? ".pickn" : "")); root.appendChild(wrap);
+    function paintOne() { Object.keys(btns).forEach(function (k) { var on = pick ? picked.indexOf(k) >= 0 : k === chosen; btns[k].classList.toggle("on", on); btns[k].setAttribute("aria-pressed", on ? "true" : "false"); }); }
     disp.forEach(function (oi) {
-      var op = opts[oi]; var b = el("button.opt", { type: "button", on: { click: function () { if (locked) return; chosen = op.L; Object.keys(btns).forEach(function (k) { btns[k].classList.toggle("on", k === chosen); }); change(); } } }, [el("span.l", { text: shown[op.L] }), el("span", { text: op.text })]);
+      var op = opts[oi], body = el("span.optbody");
+      if (op.text) body.appendChild(el("span", { text: op.text }));
+      if (op.table) { var ot = el("table.optt"); if (op.table.head) { var otr = el("tr"); op.table.head.forEach(function (h) { otr.appendChild(el("th", { text: h })); }); ot.appendChild(otr); } (op.table.rows || []).forEach(function (r) { var tr2 = el("tr"); r.forEach(function (c) { tr2.appendChild(el("td", { text: String(c) })); }); ot.appendChild(tr2); }); body.appendChild(ot); }
+      var b = el("button.opt", { type: "button", attr: { "aria-pressed": "false" }, on: { click: function () { if (locked) return; if (pick) { var ix = picked.indexOf(op.L); if (ix >= 0) picked.splice(ix, 1); else if (picked.length < pick) picked.push(op.L); else { toast(fmt("pick.hint", { n: pick })); return; } } else chosen = op.L; paintOne(); change(); } } }, [el("span.l", { text: shown[op.L] }), body]);
       btns[op.L] = b; wrap.appendChild(b);
     });
-    api.get = function () { return chosen || ""; };
-    api.set = function (v) { chosen = v || null; Object.keys(btns).forEach(function (k) { btns[k].classList.toggle("on", k === chosen); }); };
-    api.verdict = function (res, rv) { var ok = res.cells && res.cells[0] === 1; if (chosen && btns[chosen]) btns[chosen].classList.add(ok ? "right" : "wrong"); var ans = rv && rv.ansKey; if (ans && btns[ans]) btns[ans].classList.add("right"); return ok; };
+    if (pick) root.appendChild(el("p.hint", { text: fmt("pick.hint", { n: pick }) }));
+    function sortedPicked() { return opts.map(function (o) { return o.L; }).filter(function (L) { return picked.indexOf(L) >= 0; }); }
+    api.get = function () { return pick ? sortedPicked().join(",") : (chosen || ""); };
+    api.complete = function () { return pick ? picked.length >= pick : !!chosen; };
+    api.set = function (v) { if (pick) picked = String(v || "").split(",").filter(function (x) { return !!x && !!btns[x]; }); else chosen = v || null; paintOne(); };
+    api.verdict = function (res, rv) { var ans = rv && rv.ansKey, ansArr = ans == null ? [] : [].concat(ans), ok;
+      if (pick) { ok = ansArr.length ? (ansArr.every(function (L) { return picked.indexOf(L) >= 0; }) && picked.length <= pick) : (res.cells || []).every(function (c) { return c === 1; });
+        picked.forEach(function (L) { if (btns[L]) btns[L].classList.add(ansArr.length ? (ansArr.indexOf(L) >= 0 ? "right" : "wrong") : (ok ? "right" : "wrong")); }); }
+      else { ok = !!(res.cells && res.cells[0] === 1); if (chosen && btns[chosen]) btns[chosen].classList.add(ok ? "right" : "wrong"); }
+      ansArr.forEach(function (L) { if (btns[L]) btns[L].classList.add("right"); }); return ok; };
     api.clearMarks = function () { Object.keys(btns).forEach(function (k) { btns[k].classList.remove("right", "wrong"); }); };
   }
 
@@ -244,22 +255,30 @@ function Surface(spec, o) {
   }
 
   else if (kind === "gaps") {
-    var nGaps = (spec.text.match(/\{\d+\}/g) || []).length, filled = [], gapEls = [], chips = [], sel = null;
+    var nGaps = (spec.text.match(/\{\d+\}/g) || []).length, filled = [], gapEls = [], gapIns = [], chips = [], sel = null, typed = !(spec.bank && spec.bank.length);
     for (var gi = 0; gi < nGaps; gi++) filled.push("");
-    var txt = el("p.text"); var parts = spec.text.split(/(\{\d+\})/);
-    parts.forEach(function (pc) { var mm = /^\{(\d+)\}$/.exec(pc); if (!mm) { txt.appendChild(document.createTextNode(pc)); return; } var idx = parseInt(mm[1], 10) - 1; var g = el("span.gap", { attr: { "data-i": idx, role: "button", tabindex: "0" }, on: { click: function () { gapClick(idx); }, keydown: function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); gapClick(idx); } } } }, [el("span.w", { text: "" }), el("span.fix")]); gapEls[idx] = g; txt.appendChild(g); });
+    var txt = el("p.text" + (typed ? ".typed" : "")); var parts = spec.text.split(/(\{\d+\})/);
+    parts.forEach(function (pc) { var mm = /^\{(\d+)\}$/.exec(pc);
+      if (!mm) { pc.split("\n").forEach(function (sg, si) { if (si) txt.appendChild(el("br")); if (sg) txt.appendChild(document.createTextNode(sg)); }); return; }
+      var idx = parseInt(mm[1], 10) - 1, g;
+      if (typed) { var inp = el("input.gapin", { type: "text", attr: { maxlength: "40", autocomplete: "off", spellcheck: "false", autocapitalize: "off", "aria-label": fmt("aria.gap", { n: idx + 1 }) }, on: { input: function () { filled[idx] = inp.value.trim(); g.classList.toggle("filled", !!filled[idx]); change(); } } }); gapIns[idx] = inp; g = el("span.gap.typed", {}, [inp, el("span.fix")]); }
+      else g = el("span.gap", { attr: { "data-i": idx, role: "button", tabindex: "0" }, on: { click: function () { gapClick(idx); }, keydown: function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); gapClick(idx); } } } }, [el("span.w", { text: "" }), el("span.fix")]);
+      gapEls[idx] = g; txt.appendChild(g); });
     root.appendChild(txt);
-    var bank = el("div.bank"); bank.appendChild(el("div.h", { text: S["part.gaps.bank"] })); var bankOrder = order(spec.bank.length, seed);
-    bankOrder.forEach(function (bi) { var w = spec.bank[bi]; var c = el("button.chip", { type: "button", text: w, on: { click: function () { if (locked || c.classList.contains("used")) return; sel = (sel === c) ? null : c; chips.forEach(function (x) { x.classList.toggle("sel", x === sel); }); target(); } } }); chips.push(c); bank.appendChild(c); });
-    root.appendChild(bank); root.appendChild(el("p.hint", { text: S["part.gaps.hint"] }));
+    if (!typed) { var bank = el("div.bank"); bank.appendChild(el("div.h", { text: S["part.gaps.bank"] })); var bankOrder = order(spec.bank.length, seed);
+      bankOrder.forEach(function (bi) { var w = spec.bank[bi]; var c = el("button.chip", { type: "button", text: w, on: { click: function () { if (locked || c.classList.contains("used")) return; sel = (sel === c) ? null : c; chips.forEach(function (x) { x.classList.toggle("sel", x === sel); }); target(); } } }); chips.push(c); bank.appendChild(c); });
+      root.appendChild(bank); }
+    root.appendChild(el("p.hint", { text: typed ? S["gaps.typed"] : S["part.gaps.hint"] }));
     function target() { var first = -1; for (var i = 0; i < nGaps; i++) if (!filled[i]) { first = i; break; } gapEls.forEach(function (g, i) { g.classList.toggle("target", !!sel && i === first); }); }
-    function paint() { gapEls.forEach(function (g, i) { g.classList.toggle("filled", !!filled[i]); g.querySelector(".w").textContent = filled[i] || ""; }); var used = {}; filled.forEach(function (w) { if (w) used[w] = (used[w] || 0) + 1; }); chips.forEach(function (c) { var w = c.textContent; if (used[w]) { used[w]--; c.classList.add("used"); c.classList.remove("sel"); if (sel === c) sel = null; } else c.classList.remove("used"); }); target(); }
+    function paint() { if (typed) { gapIns.forEach(function (inp, i) { if (inp.value.trim() !== filled[i]) inp.value = filled[i]; gapEls[i].classList.toggle("filled", !!filled[i]); }); return; }
+      gapEls.forEach(function (g, i) { g.classList.toggle("filled", !!filled[i]); g.querySelector(".w").textContent = filled[i] || ""; }); var used = {}; filled.forEach(function (w) { if (w) used[w] = (used[w] || 0) + 1; }); chips.forEach(function (c) { var w = c.textContent; if (used[w]) { used[w]--; c.classList.add("used"); c.classList.remove("sel"); if (sel === c) sel = null; } else c.classList.remove("used"); }); target(); }
     function gapClick(i) { if (locked) return; if (sel) { filled[i] = sel.textContent; sel = null; } else if (filled[i]) { filled[i] = ""; } paint(); change(); }
     api.get = function () { return filled.every(function (w) { return !w; }) ? "" : filled.join("|"); };
     api.complete = function () { return filled.every(function (w) { return !!w; }); };
     api.set = function (v) { var a = (v || "").split("|"); for (var i = 0; i < nGaps; i++) filled[i] = a[i] || ""; paint(); };
-    api.verdict = function (res, rv) { var all = true; gapEls.forEach(function (g, i) { var ok = res.cells && res.cells[i] === 1; if (!ok) all = false; g.classList.add(ok ? "right" : "wrong"); var fx = g.querySelector(".fix"); fx.textContent = (!ok && rv && rv.ansKey && rv.ansKey[i]) ? rv.ansKey[i] : ""; }); return all; };
+    api.verdict = function (res, rv) { var all = true; gapEls.forEach(function (g, i) { var ok = res.cells && res.cells[i] === 1; if (!ok) all = false; g.classList.add(ok ? "right" : "wrong"); var fx = g.querySelector(".fix"); fx.textContent = (!ok && rv && rv.ansKey && rv.ansKey[i]) ? String(rv.ansKey[i]).split("|")[0] : ""; }); return all; };
     api.clearMarks = function () { gapEls.forEach(function (g) { g.classList.remove("right", "wrong"); g.querySelector(".fix").textContent = ""; }); };
+    api.disable = function (b) { lock(b); gapIns.forEach(function (inp) { inp.disabled = !!b; }); };
   }
 
   else if (kind === "sort") {
@@ -379,18 +398,54 @@ function Surface(spec, o) {
   }
 
   else if (kind === "truth") {
-    var thd = spec.head, tin = spec.inputs, nIn = tin[0].length, nOut = thd.length - nIn, tvals = spec.vals || ["0", "1"], tv = tin.map(function () { var a = []; for (var j = 0; j < nOut; j++) a.push(""); return a; }), tbtn = [];
+    var thd = spec.head, tin = spec.inputs, nIn = tin[0].length, nOut = thd.length - nIn, tvals = spec.vals || ["0", "1"], tgv = spec.given || [], tbtn = [];
+    function isGiven(r, j) { return !!(tgv[r] && tgv[r][j] != null); }
+    var tv = tin.map(function (_, r) { var a = []; for (var j = 0; j < nOut; j++) a.push(isGiven(r, j) ? String(tgv[r][j]) : ""); return a; });
     var xt = el("table.truth"), xhr = el("tr"); thd.forEach(function (h, i) { xhr.appendChild(el("th" + (i >= nIn ? ".out" : ""), { text: h })); }); var xth = el("thead"); xth.appendChild(xhr); xt.appendChild(xth); var xtb = el("tbody"); xt.appendChild(xtb);
     tin.forEach(function (row, r) { var tr = el("tr"); tbtn.push([]); row.forEach(function (v) { tr.appendChild(el("td.in", { text: v })); });
-      for (var j = 0; j < nOut; j++) (function (j) { var b = el("button.tcell", { type: "button", text: "", attr: { "aria-label": fmt("aria.cell", { r: r + 1, c: nIn + j + 1 }) }, on: { click: function () { if (locked) return; var ix = tvals.indexOf(tv[r][j]); tv[r][j] = tvals[(ix + 1) % tvals.length]; paintT(); change(); } } }); tbtn[r].push(b); var td = el("td.out"); td.appendChild(b); tr.appendChild(td); })(j);
+      for (var j = 0; j < nOut; j++) (function (j) { if (isGiven(r, j)) { tbtn[r].push(null); tr.appendChild(el("td.out.given", { text: tv[r][j], attr: { "aria-label": fmt("aria.cell", { r: r + 1, c: nIn + j + 1 }) } })); return; }
+        var b = el("button.tcell", { type: "button", text: "", attr: { "aria-label": fmt("aria.cell", { r: r + 1, c: nIn + j + 1 }) }, on: { click: function () { if (locked) return; var ix = tvals.indexOf(tv[r][j]); tv[r][j] = tvals[(ix + 1) % tvals.length]; paintT(); change(); } } }); tbtn[r].push(b); var td = el("td.out"); td.appendChild(b); tr.appendChild(td); })(j);
       xtb.appendChild(tr); });
-    root.appendChild(xt); root.appendChild(el("p.hint", { text: S["part.truth.hint"] }));
-    function paintT() { tbtn.forEach(function (row, r) { row.forEach(function (b, j) { b.textContent = tv[r][j]; b.classList.toggle("set", !!tv[r][j]); }); }); }
-    api.get = function () { return tv.some(function (row) { return row.some(function (x) { return !!x; }); }) ? tv.map(function (row) { return row.slice(); }) : ""; };
+    root.appendChild(xt); root.appendChild(el("p.hint", { text: S["part.truth.hint"] })); if (spec.given) root.appendChild(el("p.hint", { text: S["truth.given"] }));
+    function paintT() { tbtn.forEach(function (row, r) { row.forEach(function (b, j) { if (!b) return; b.textContent = tv[r][j]; b.classList.toggle("set", !!tv[r][j]); }); }); }
+    api.get = function () { var any = false; tbtn.forEach(function (row, r) { row.forEach(function (b, j) { if (b && tv[r][j]) any = true; }); }); return any ? tv.map(function (row) { return row.slice(); }) : ""; };
     api.complete = function () { return tv.every(function (row) { return row.every(function (x) { return !!x; }); }); };
-    api.set = function (v) { var rows = Array.isArray(v) ? v : []; tv = tin.map(function (_, r) { var a = []; for (var j = 0; j < nOut; j++) a.push(String((rows[r] || [])[j] || "")); return a; }); paintT(); };
-    api.verdict = function (res) { var k = 0, all = true; tbtn.forEach(function (row) { row.forEach(function (b) { var ok = res.cells && res.cells[k++] === 1; if (!ok) all = false; b.classList.add(ok ? "right" : "wrong"); }); }); return all; };
-    api.clearMarks = function () { tbtn.forEach(function (row) { row.forEach(function (b) { b.classList.remove("right", "wrong"); }); }); };
+    api.set = function (v) { var rows = Array.isArray(v) ? v : []; tv = tin.map(function (_, r) { var a = []; for (var j = 0; j < nOut; j++) a.push(isGiven(r, j) ? String(tgv[r][j]) : String((rows[r] || [])[j] || "")); return a; }); paintT(); };
+    api.verdict = function (res) { var k = 0, all = true; tbtn.forEach(function (row) { row.forEach(function (b) { if (!b) return; var ok = res.cells && res.cells[k++] === 1; if (!ok) all = false; b.classList.add(ok ? "right" : "wrong"); }); }); return all; };
+    api.clearMarks = function () { tbtn.forEach(function (row) { row.forEach(function (b) { if (b) b.classList.remove("right", "wrong"); }); }); };
+  }
+
+  else if (kind === "add") {
+    var agv = spec.given || null, hasCarry = !!(spec.carry || (agv && agv.carry)), hasOvf = !!(spec.overflow || (agv && agv.overflow)), acells = { carry: [], result: [], overflow: [] }, ains = [], avk = {};
+    var atab = el("table.addt"), athead = el("thead"), ahr = el("tr"); ahr.appendChild(el("th", { text: "" })); ahr.appendChild(el("th.ovf", { text: hasOvf ? S["add.overflow"] : "" })); [128, 64, 32, 16, 8, 4, 2, 1].forEach(function (v) { ahr.appendChild(el("th.plv", { text: String(v) })); }); ahr.appendChild(el("th", { text: "" })); athead.appendChild(ahr); atab.appendChild(athead); var atb = el("tbody"); atab.appendChild(atb);
+    function gchar(name, i) { if (!agv) return "_"; var str = String(agv[name] == null ? "" : agv[name]); return str.length > i ? str.charAt(i) : "_"; }
+    function mkCell(name, i) { var g = gchar(name, i); if (g === ".") { acells[name][i] = { none: true }; return el("td.none"); } if (g !== "_") { acells[name][i] = { given: g }; return el("td.given", { text: g }); }
+      var inp = el("input", { type: "text", attr: { maxlength: "1", inputmode: "numeric", autocomplete: "off", "aria-label": fmt("add.aria", { row: S["add." + name], c: name === "overflow" ? 1 : i + 1 }) }, on: { input: function () { var v = inp.value.replace(/[^01]/g, "").slice(0, 1); inp.value = v; inp.classList.toggle("typed", !!v); if (v) { var nx = ains[ains.indexOf(inp) + 1]; if (nx && nx.parentNode.parentNode === inp.parentNode.parentNode) nx.focus(); } change(); },
+        keydown: function (ev) { var k = ains.indexOf(inp); if (ev.key === "ArrowLeft" && ains[k - 1]) { ains[k - 1].focus(); ev.preventDefault(); } if (ev.key === "ArrowRight" && ains[k + 1]) { ains[k + 1].focus(); ev.preventDefault(); } if (ev.key === "Backspace" && !inp.value && ains[k - 1]) ains[k - 1].focus(); } } });
+      ains.push(inp); acells[name][i] = { inp: inp }; var td = el("td"); td.appendChild(inp); return td; }
+    function addRow(cls, label, lead, cells) { var tr = el("tr." + cls); tr.appendChild(el("th", { text: label })); tr.appendChild(lead); cells.forEach(function (c) { tr.appendChild(c); }); var vk = el("td.vk"); avk[cls] = vk; tr.appendChild(vk); atb.appendChild(tr); }
+    if (hasCarry) { var cc = []; for (var ci = 0; ci < 8; ci++) cc.push(mkCell("carry", ci)); addRow("carry", S["add.carry"], el("td"), cc); }
+    addRow("opa", S["add.a"], el("td"), String(spec.a).split("").map(function (d) { return el("td.fixed", { text: d }); }));
+    addRow("opb", S["add.b"], el("td.plus", { text: "+" }), String(spec.b).split("").map(function (d) { return el("td.fixed", { text: d }); }));
+    var rc = []; for (var ri = 0; ri < 8; ri++) rc.push(mkCell("result", ri));
+    var ovfCell = hasOvf ? mkCell("overflow", 0) : el("td"); ovfCell.classList.add("ovf"); addRow("result", S["add.result"], ovfCell, rc);
+    root.appendChild(el("div.addwrap", {}, [atab])); root.appendChild(el("p.hint", { text: S["add.hint"] }));
+    function strOf(name, n) { var out = ""; for (var i = 0; i < n; i++) { var c = acells[name][i]; out += !c ? "_" : c.none ? "." : c.given != null ? c.given : (c.inp.value || "_"); } return out; }
+    api.get = function () { var o = { result: strOf("result", 8) }; if (hasOvf) o.overflow = strOf("overflow", 1); if (hasCarry) o.carry = strOf("carry", 8); return ains.some(function (i) { return !!i.value; }) ? o : ""; };
+    api.complete = function () { if (agv) return ains.every(function (i) { return !!i.value; }); return acells.result.every(function (c) { return c.given != null || !!c.inp.value; }) && (!hasOvf || !acells.overflow[0].inp || !!acells.overflow[0].inp.value); };
+    api.set = function (v) { v = v || {}; ["carry", "result", "overflow"].forEach(function (nm) { var str = String(v[nm] == null ? "" : v[nm]); acells[nm].forEach(function (c, i) { if (c && c.inp) { var ch = str.charAt(i); c.inp.value = /^[01]$/.test(ch) ? ch : ""; c.inp.classList.toggle("typed", !!c.inp.value); } }); }); };
+    api.verdict = function (res, rv) { var cells = res.cells || [], k = 0, all = true, key = (rv && rv.ansKey) || {};
+      function paintVk(cls, ok, nm) { var vk = avk[cls]; if (!vk) return; clear(vk).appendChild(el("span.vk" + (ok ? ".ok" : ".no"), { text: ok ? "\u2713" : "\u2717" })); if (!ok && key[nm] != null) vk.appendChild(el("span.fix", { text: String(key[nm]) })); }
+      function markRow(nm) { var okRow = true, any = false; acells[nm].forEach(function (c) { if (!c || !c.inp) return; any = true; var ok = cells[k++] === 1; if (!ok) okRow = false; c.inp.classList.add(ok ? "right" : "wrong"); }); return { ok: okRow, any: any }; }
+      if (agv) { var rC = markRow("carry"), rR = markRow("result"), rO = markRow("overflow"); if (rC.any) { if (!rC.ok) all = false; paintVk("carry", rC.ok, "carry"); }
+        if (rR.any || rO.any) { var ok2 = (!rR.any || rR.ok) && (!rO.any || rO.ok); if (!ok2) all = false; paintVk("result", ok2, rR.any && !rR.ok ? "result" : "overflow"); } }
+      else { var rr = cells[k++] === 1; acells.result.forEach(function (c) { if (c.inp) c.inp.classList.add(rr ? "right" : "wrong"); }); if (!rr) all = false; var resNm = "result", resOk = rr;
+        if (hasOvf) { var ro = cells[k++] === 1; if (acells.overflow[0].inp) acells.overflow[0].inp.classList.add(ro ? "right" : "wrong"); if (!ro) { all = false; if (resOk) { resOk = false; resNm = "overflow"; } } }
+        paintVk("result", resOk, resNm);
+        if (hasCarry) { var rcOk = cells[k++] === 1; acells.carry.forEach(function (c) { if (c.inp) c.inp.classList.add(rcOk ? "right" : "wrong"); }); if (!rcOk) all = false; paintVk("carry", rcOk, "carry"); } }
+      return all; };
+    api.clearMarks = function () { ains.forEach(function (i) { i.classList.remove("right", "wrong"); }); Object.keys(avk).forEach(function (c) { clear(avk[c]); }); };
+    api.disable = function (b) { lock(b); ains.forEach(function (i) { i.disabled = !!b; }); };
   }
 
   else if (kind === "code") {
@@ -431,11 +486,12 @@ function Surface(spec, o) {
 /* what the right answer is, in words, for the strings that need one */
 function answerWords(spec, rv, sf) {
   if (!rv) return "";
-  if (spec.kind === "one") return sf ? sf.label(rv.ansKey) : rv.ansKey;
+  if (spec.kind === "one") return [].concat(rv.ansKey).map(function (L) { return sf ? sf.label(L) : L; }).join(", ");
   if (spec.kind === "tf" || spec.kind === "sort") return rv.ansKey.join(", ");
-  if (spec.kind === "gaps") return rv.ansKey.join(", ");
+  if (spec.kind === "gaps") return rv.ansKey.map(function (a) { return String(a).split("|")[0]; }).join(", ");
   if (spec.kind === "match") return rv.ansKey.map(function (p) { return (p[0] + 1) + " with " + spec.right[p[1]].replace(/\s+/g, " "); }).join(". ");
   if (spec.kind === "number") return rv.ansKey;
+  if (spec.kind === "add") return rv.ansKey && rv.ansKey.result != null ? String(rv.ansKey.result) : "";
   if (spec.kind === "output") return rv.ansKey.join(", ");
   if (rv.points) return rv.points.join(". ");
   return "";
@@ -476,7 +532,8 @@ function learnTry(tr, t, n, onRight) {
   var box = el("div.blk.try" + (tr.code ? ".codeopts" : "")); box.appendChild(el("div.head", { text: S["learn.head.try"] }));
   if (tr.verbatim) { var vm = /^(\d{4})\s+Q(\S+)$/.exec(tr.verbatim); box.appendChild(el("p.src", { text: vm ? fmt("learn.try.from", { year: vm[1], label: "Question " + vm[2] }) : tr.verbatim })); }
   box.appendChild(el("p.stem", { text: tr.stem }));
-  var sf = Surface(tr.surface, { seed: "try:" + ME.first + ":" + t + ":" + n, leftHead: S["learn.match.left"], rightHead: S["learn.match.right"] }); box.appendChild(sf.el);
+  var hd = (tr.surface && tr.surface.heads) || [S["learn.match.left"], S["learn.match.right"]];
+  var sf = Surface(tr.surface, { seed: "try:" + ME.first + ":" + t + ":" + n, leftHead: hd[0], rightHead: hd[1] }); box.appendChild(sf.el);
   var out = el("div.verdict.hidden"), btn = el("button.btn", { text: S["learn.try.check"], on: { click: check } });
   box.appendChild(el("div.acts", {}, [btn])); box.appendChild(out);
   function check() {
@@ -495,6 +552,64 @@ function learnTry(tr, t, n, onRight) {
   }
   return box;
 }
+function learnPlay(pl) {
+  var box = el("div.blk.play"); box.appendChild(el("div.head", { text: S["learn.head.play"] }));
+  if (pl.title) box.appendChild(el("h4", { text: pl.title })); if (pl.lead) box.appendChild(el("p.lead", { html: termHtml(pl.lead) }));
+  var PV = [128, 64, 32, 16, 8, 4, 2, 1];
+  function state(on) { return on ? S["play.on"] : S["play.off"]; }
+  function den(bits) { var n = 0; bits.forEach(function (b, i) { n += b * PV[i]; }); return n; }
+  function hex(n) { var h = n.toString(16).toUpperCase(); return h.length < 2 ? "0" + h : h; }
+  function swLabel(i, on, rowName) { return rowName ? fmt("play.adder.bit", { v: PV[i], row: rowName, state: state(on) }) : fmt("play.bits.switch", { v: PV[i], state: state(on) }); }
+  function bitRow(bits, onFlip, rowName) { var row = el("div.sws"); bits.forEach(function (b, i) { var btn = el("button.swt", { type: "button", attr: { "aria-pressed": b ? "true" : "false", "aria-label": swLabel(i, b, rowName) }, on: { click: function () { bits[i] = bits[i] ? 0 : 1; btn.setAttribute("aria-pressed", bits[i] ? "true" : "false"); btn.setAttribute("aria-label", swLabel(i, bits[i], rowName)); btn.querySelector(".bitv").textContent = String(bits[i]); onFlip(); } } }, [el("span.plv", { text: String(PV[i]) }), el("span.knob"), el("span.bitv", { text: String(b) })]); row.appendChild(btn); }); row.repaint = function () { [].slice.call(row.querySelectorAll(".swt")).forEach(function (btn, i) { btn.setAttribute("aria-pressed", bits[i] ? "true" : "false"); btn.setAttribute("aria-label", swLabel(i, bits[i], rowName)); btn.querySelector(".bitv").textContent = String(bits[i]); }); }; return row; }
+  if (pl.kind === "bits") {
+    var bits = [0, 0, 0, 0, 0, 0, 0, 0], show = pl.show || ["den"], read = el("div.readout", { attr: { "aria-live": "polite" } }), hit = el("p.okline.hidden");
+    if (pl.target) box.appendChild(el("p.target", { text: fmt("play.bits.target", { n: pl.target }) }));
+    function paintBits() { clear(read); var n = den(bits); if (show.indexOf("count") >= 0) read.appendChild(el("div", { text: fmt("play.bits.count", { n: bits.filter(function (b) { return b; }).length }) })); if (show.indexOf("den") >= 0) read.appendChild(el("div", { text: fmt("play.bits.den", { n: n }) })); if (show.indexOf("hex") >= 0) read.appendChild(el("div", { text: fmt("play.bits.hex", { h: hex(n) }) })); var ok = !!pl.target && n === pl.target; hit.classList.toggle("hidden", !ok); if (ok) hit.textContent = fmt("play.bits.hit", { n: n }); }
+    var row = bitRow(bits, paintBits); box.appendChild(row); box.appendChild(read); box.appendChild(hit);
+    box.appendChild(el("div.acts", {}, [el("button.btn.sec", { type: "button", text: S["play.bits.reset"], on: { click: function () { for (var i = 0; i < 8; i++) bits[i] = 0; row.repaint(); paintBits(); } } })]));
+    paintBits();
+  }
+  else if (pl.kind === "ladder") {
+    var steps = pl.steps || [], lad = el("div.lad"), lread = el("div.readout", { text: S["play.ladder.tap"], attr: { "aria-live": "polite" } }), sbtns = [];
+    steps.forEach(function (st, i) { var b = el("button.ladstep", { type: "button", attr: { "aria-pressed": "false" }, on: { click: function () { sbtns.forEach(function (x, j) { x.classList.toggle("on", j === i); x.setAttribute("aria-pressed", j === i ? "true" : "false"); }); clear(lread); lread.appendChild(el("div", { text: fmt("play.ladder.is", { name: st[0], eq: st[1] }) })); lread.appendChild(el("div.small", { text: fmt("play.ladder.eg", { eg: st[2] }) })); } } }, [el("b", { text: st[0] }), el("span", { text: st[1] })]); b.style.width = (52 + i * 8) + "%"; sbtns.push(b); lad.appendChild(b); });
+    box.appendChild(lad); box.appendChild(lread);
+  }
+  else if (pl.kind === "adder") {
+    var ab = String(pl.a || "00000000").split("").map(Number), bb = String(pl.b || "00000000").split("").map(Number), atab2 = el("table.addt.live"), atb2 = el("tbody"), aread = el("div.readout", { attr: { "aria-live": "polite" } }), carryTds = [], resTds = [], ovfTd = el("td.ovf.res");
+    var hr0 = el("tr"); hr0.appendChild(el("th", { text: "" })); hr0.appendChild(el("th.ovf", { text: S["add.overflow"] })); PV.forEach(function (v) { hr0.appendChild(el("th.plv", { text: String(v) })); }); var th0 = el("thead"); th0.appendChild(hr0); atab2.appendChild(th0); atab2.appendChild(atb2);
+    function mkRow(cls, label, lead, cells) { var tr = el("tr." + cls); tr.appendChild(el("th", { text: label })); tr.appendChild(lead); cells.forEach(function (c) { tr.appendChild(c); }); atb2.appendChild(tr); }
+    function bitBtns(bits, rowName) { return PV.map(function (v, i) { var b = el("button.bitb", { type: "button", text: String(bits[i]), attr: { "aria-pressed": bits[i] ? "true" : "false", "aria-label": swLabel(i, bits[i], rowName) }, on: { click: function () { bits[i] = bits[i] ? 0 : 1; b.textContent = String(bits[i]); b.setAttribute("aria-pressed", bits[i] ? "true" : "false"); b.setAttribute("aria-label", swLabel(i, bits[i], rowName)); calc(); } } }); var td = el("td"); td.appendChild(b); return td; }); }
+    mkRow("carry", S["play.adder.carry"], el("td"), PV.map(function () { var td = el("td.auto"); carryTds.push(td); return td; }));
+    mkRow("opa", S["play.adder.rowa"], el("td"), bitBtns(ab, S["play.adder.rowa"])); mkRow("opb", S["play.adder.rowb"], el("td.plus", { text: "+" }), bitBtns(bb, S["play.adder.rowb"]));
+    mkRow("result", S["play.adder.result"], ovfTd, PV.map(function () { var td = el("td.res"); resTds.push(td); return td; }));
+    function calc() { var carry = 0, res = [], carries = []; for (var i = 7; i >= 0; i--) { var sm = ab[i] + bb[i] + carry; res[i] = sm % 2; carry = sm > 1 ? 1 : 0; carries[i] = carry; }
+      for (var j = 0; j < 8; j++) { var cin = j < 7 ? carries[j + 1] : 0; carryTds[j].textContent = cin ? "1" : ""; carryTds[j].classList.toggle("on", !!cin); resTds[j].textContent = String(res[j]); }
+      ovfTd.textContent = carry ? "1" : ""; ovfTd.classList.toggle("on", !!carry);
+      var da = den(ab), db = den(bb); clear(aread); aread.appendChild(el("div", { text: fmt("play.adder.sum", { a: da, b: db, c: da + db }) })); aread.appendChild(el("div" + (carry ? ".warn" : ".okline"), { text: carry ? S["play.adder.over"] : S["play.adder.ok"] })); }
+    box.appendChild(el("div.addwrap", {}, [atab2])); box.appendChild(aread); calc();
+  }
+  else if (pl.kind === "chars") {
+    var cin2 = el("input.charin", { type: "text", attr: { maxlength: "4", autocomplete: "off", spellcheck: "false", "aria-label": S["play.chars.label"] } }), cread = el("div.readout", { text: S["play.chars.empty"], attr: { "aria-live": "polite" } });
+    cin2.addEventListener("input", function () { var chars = Array.from ? Array.from(cin2.value) : cin2.value.split(""), c = chars[0]; if (!c) { cread.textContent = S["play.chars.empty"]; return; } if (chars.length > 1) cin2.value = c;
+      var cp = c.codePointAt ? c.codePointAt(0) : c.charCodeAt(0); if (cp < 128) { var b = cp.toString(2); while (b.length < 8) b = "0" + b; cread.textContent = fmt("play.chars.out", { c: c, d: cp, b: b }); } else { var u = cp.toString(16).toUpperCase(); while (u.length < 4) u = "0" + u; cread.textContent = fmt("play.chars.non", { u: "U+" + u }); } });
+    box.appendChild(el("label.h", { text: S["play.chars.label"] })); box.appendChild(cin2); box.appendChild(cread);
+  }
+  else if (pl.kind === "logic") {
+    var gates = pl.gates || ["AND", "OR", "XOR", "NOT"], gate = gates[0], sa = 0, sb = 0, grow = el("div.gates"), gbtns = [], lamp = el("div.lamp", { attr: { "aria-live": "polite" } }), rule = el("p.rule"), ltt = el("table.ltt"), lrows = [];
+    function out(a, b, g) { return g === "AND" ? (a && b ? 1 : 0) : g === "OR" ? (a || b ? 1 : 0) : g === "XOR" ? (a !== b ? 1 : 0) : (a ? 0 : 1); }
+    gates.forEach(function (g) { var b = el("button.gateb", { type: "button", text: g, attr: { "aria-pressed": g === gate ? "true" : "false" }, on: { click: function () { gate = g; gbtns.forEach(function (x, j) { x.setAttribute("aria-pressed", gates[j] === gate ? "true" : "false"); }); buildTable(); paintL(); } } }); gbtns.push(b); grow.appendChild(b); });
+    function mkSwitch(name, get, set) { var b = el("button.swt.big", { type: "button", attr: { "aria-pressed": "false" } }, [el("span.plv", { text: name }), el("span.knob"), el("span.bitv", { text: "0" })]); b.addEventListener("click", function () { set(get() ? 0 : 1); paintL(); }); b.paint = function () { var v = get(); b.setAttribute("aria-pressed", v ? "true" : "false"); b.setAttribute("aria-label", fmt("play.logic.sw", { name: name, state: state(v) })); b.querySelector(".bitv").textContent = String(v); }; return b; }
+    var swA = mkSwitch(S["play.logic.a"], function () { return sa; }, function (v) { sa = v; }), swB = mkSwitch(S["play.logic.b"], function () { return sb; }, function (v) { sb = v; });
+    function buildTable() { clear(ltt); lrows = []; var isNot = gate === "NOT", hr = el("tr"); hr.appendChild(el("th", { text: "A" })); if (!isNot) hr.appendChild(el("th", { text: "B" })); hr.appendChild(el("th.o", { text: S["play.logic.lamp"] })); ltt.appendChild(hr);
+      var combos = isNot ? [[0], [1]] : [[0, 0], [0, 1], [1, 0], [1, 1]];
+      combos.forEach(function (cb) { var tr = el("tr"); cb.forEach(function (x) { tr.appendChild(el("td", { text: String(x) })); }); var v = out(cb[0], isNot ? 0 : cb[1], gate); tr.appendChild(el("td.o", { text: String(v) })); tr.setAttribute("aria-label", fmt("play.logic.row", { a: cb[0], b: isNot ? "" : cb[1], v: v })); lrows.push({ tr: tr, cb: cb }); ltt.appendChild(tr); });
+      swB.classList.toggle("hidden", isNot); }
+    function paintL() { var isNot = gate === "NOT", v = out(sa, sb, gate); swA.paint(); swB.paint(); lamp.classList.toggle("on", !!v); lamp.textContent = fmt("play.logic.out", { v: state(v) }); rule.textContent = S["play.logic.rule." + gate]; lrows.forEach(function (r) { r.tr.classList.toggle("on", r.cb[0] === sa && (isNot || r.cb[1] === sb)); }); }
+    box.appendChild(el("div.h", { text: S["play.logic.gate"] })); box.appendChild(grow); box.appendChild(rule);
+    box.appendChild(el("div.logicrow", {}, [swA, swB, lamp, ltt])); buildTable(); paintL();
+  }
+  return box;
+}
 function renderLearn(t, n) {
   setBody("is-th");
   Promise.all([refresh(t), loadLearn(t)]).then(function (rr) {
@@ -510,7 +625,7 @@ function renderLearn(t, n) {
     scr.blocks.forEach(function (b) {
       if (b.say) { var sb = el("div.blk.say"); if (!saidHead) { sb.appendChild(el("div.head", { text: S["learn.head.means"] })); saidHead = true; } b.say.forEach(function (ln) { sb.appendChild(el("p", { html: termHtml(ln) })); }); sc.appendChild(sb); }
       else if (b.picture) { var pc = b.picture, pb = el("div.blk.pic"); pb.appendChild(el("div.head", { text: S["learn.head.picture"] })); if (pc.title) pb.appendChild(el("h4", { text: pc.title })); arr(pc.lines).forEach(function (ln) { pb.appendChild(el("p", { html: termHtml(ln) })); });
-        if (pc.match && pc.match.length) { var tb = el("table.pmatch"); var hr = el("tr"); hr.appendChild(el("th", { text: S["learn.match.left"] })); hr.appendChild(el("th.arrow", { text: "" })); hr.appendChild(el("th", { text: S["learn.match.right"] })); tb.appendChild(hr); pc.match.forEach(function (pr) { var tr = el("tr"); tr.appendChild(el("td", { text: pr[0] })); tr.appendChild(el("td.arrow", { text: "→" })); tr.appendChild(el("td", { html: termHtml(pr[1]) })); tb.appendChild(tr); }); pb.appendChild(tb); }
+        if (pc.match && pc.match.length) { var tb = el("table.pmatch"); var hr = el("tr"); var hds = pc.heads || [S["learn.match.left"], S["learn.match.right"]]; hr.appendChild(el("th", { text: hds[0] })); hr.appendChild(el("th.arrow", { text: "" })); hr.appendChild(el("th", { text: hds[1] })); tb.appendChild(hr); pc.match.forEach(function (pr) { var tr = el("tr"); tr.appendChild(el("td", { text: pr[0] })); tr.appendChild(el("td.arrow", { text: "→" })); tr.appendChild(el("td", { html: termHtml(pr[1]) })); tb.appendChild(tr); }); pb.appendChild(tb); }
         if (arr(pc.breaks).length) { var bk = el("div.breaks"); bk.appendChild(el("div.h", { text: S["learn.head.breaks"] })); arr(pc.breaks).forEach(function (ln) { bk.appendChild(el("p", { html: termHtml(ln) })); }); pb.appendChild(bk); }
         sc.appendChild(pb); }
       else if (b.code) { var cd = b.code, cbk = el("div.blk.codeblk"); if (cd.title) cbk.appendChild(el("div.head", { text: cd.title })); var box = codeBlock(cd); cbk.appendChild(box);
@@ -522,6 +637,7 @@ function renderLearn(t, n) {
       else if (b.exam) { var ex = b.exam, eb = el("div.blk.exam"); eb.appendChild(el("div.head", { text: S["learn.head.exam"] })); eb.appendChild(el("div.term", { text: ex.term })); eb.appendChild(el("p.def", { text: ex.say })); if (ex.src) eb.appendChild(el("div.src", { text: fmt("learn.exam.src", { src: ex.src }) })); sc.appendChild(eb); }
       else if (b.watch) { sc.appendChild(el("div.blk.watch", {}, [el("span.ic", { text: "!" }), el("div", {}, [el("div.lab", { text: S["learn.head.watch"] }), el("p", { html: termHtml(b.watch) })])])); }
       else if (b.side) { var sd = b.side, sb2 = el("div.blk.side"); [sd.left, sd.right].forEach(function (col) { if (!col) return; var c = el("div.col"); c.appendChild(el("h4", { text: col.title })); var ul = el("ul"); arr(col.rows).forEach(function (r) { ul.appendChild(el("li", { html: termHtml(r) })); }); c.appendChild(ul); sb2.appendChild(c); }); sc.appendChild(sb2); }
+      else if (b.play) { sc.appendChild(learnPlay(b.play)); }
       else if (b.try) { sc.appendChild(learnTry(b.try, t, n, function () { tick().then(paintFoot); })); }
     });
     var foot = el("div.foot"); sc.appendChild(foot);
