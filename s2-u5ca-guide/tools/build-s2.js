@@ -70,7 +70,7 @@ style = swap('style.css', lines.join('\n'), 'read on the A2 SSD platform', 'read
 // the S2 look goes after A2's, so it wins where both style the same thing; the code font is served from Pages
 const shell = swap('src/style.css', need(path.join(S2, 'src', 'style.css')), 'url(fonts/', 'url(' + FONTS);
 const s2css = need(path.join(S2, 'src', 'tokens-s2.css')) + '\n' + shell + '\n/* ---- cw.css: the coursework guide ---- */\n' + need(path.join(S2, 'src', 'cw.css'));
-const css = style + '\n/* ---- the S2 look (DESIGN_SPEC 7) ---- */\n' + s2css;
+const css = style + '\n/* ---- the S2 look (DESIGN_SPEC 7) ---- */\n' + s2css + '\n/* ---- th.css: Unit 4 theory ---- */\n' + need(path.join(S2, 'src', 'th.css'));
 fs.mkdirSync(path.join(S2, 'platform'), { recursive: true });
 fs.writeFileSync(path.join(S2, 'platform', 'style.css'), css);
 
@@ -119,8 +119,8 @@ fs.writeFileSync(SLOTP, JSON.stringify(SLOTS, null, 1) + '\n');
 
 // ---- 3. the page scripts
 let app = need(path.join(A2, 'platform', 'app.js'));
-// the checklist IS the home (SPEC 3.3): every route that is not a chapter goes to #cw
-app = swap('app.js', app, "    else vHome();\n", "    else { history.replaceState(null, '', '#cw'); vCw(); return; }\n");
+// the home is two doors (Unit 5 coursework, Unit 4 theory); #home and #th/... are the theory side (th.js)
+app = swap('app.js', app, "    else vHome();\n", "    else if (k === 'home' || k === 'th') { vTh(); return; }\n    else { history.replaceState(null, '', '#home'); vTh(); return; }\n");
 app = swap('app.js', app, 'for (let i = 0; i <= 12; i++) {', 'for (let i = 0; i <= 14; i++) {');
 // the server record is kept in the renderer's own keys (s2:ticks:<ch> {id: true}, s2:done, s2:had, s2:at:<ch>)
 app = swap('app.js', app, `  function cwApply(W) {
@@ -148,7 +148,17 @@ app = swap('app.js', app, `  function cwApply(W) {
   }`);
 // the S2 header: the guide's name, "Where am I up to?" (hidden on the checklist by the S2 look) and who is signed in
 const [vA, vB] = cut('app.js', app, '  function vCw() {', '  // ---------- SQL map ----------');
-app = vA + `  function vCw() {
+app = vA + `  let thOn = false;
+  function vTh() {
+    if (!thOn) { thOn = true; window.TH.mount({ base: (window.A2_CW || '') + 'u4/', cls: ME.cls, staffUrl: (window.OLS_BOOT || {}).baseUrl || '#home' }); }
+    frame(null, '', 'work');
+    const bar = app.querySelector('header.bar'), U = window.U4_STRINGS || {};
+    if (bar) bar.outerHTML = '<header class="bar"><a class="logo" href="#home" aria-label="' + h(U['nav.home'] || '') + '">DT</a>' +
+      '<div class="title"><a href="#home" id="appTitle">' + h(U['home.title'] || '') + '</a></div><span class="who" id="thWho"></span></header>';
+    window.TH.show(app.querySelector('main'), app.querySelector('#thWho'));
+  }
+  function vCw() {
+    if (window.TH) window.TH.stop();
     const send = (req) => { call('apiCw', req).catch(() => {}); };
     if (!cwHost) {
       cwHost = document.createElement('div'); cwHost.id = 'cw';
@@ -160,7 +170,7 @@ app = vA + `  function vCw() {
     }
     frame(null, '', 'work');
     const bar = app.querySelector('header.bar');
-    if (bar) bar.outerHTML = '<header class="bar"><a class="logo" href="#cw" aria-label="' + h(T('cw.crumbHome')) + '">U5</a>' +
+    if (bar) bar.outerHTML = '<header class="bar"><a class="logo" href="#home" aria-label="' + h(T('cw.crumbHome')) + '">U5</a>' +
       '<div class="title"><a href="#cw" id="appTitle">' + h(T('app.title')) + '</a></div>' +
       '<a class="where" href="#cw" id="whereBtn" aria-label="' + h(T('home.where')) + '"><span class="ic" aria-hidden="true">&#9776;</span><span class="tx"><b>' + h(T('home.where')) + '</b><small>' + h(T('home.whereSub')) + '</small></span></a>' +
       (ME.cls ? '<span class="who">' + h(REC.n || ME.name) + ' · ' + h(ME.cls) + '</span>' : '') + '</header>';
@@ -176,6 +186,8 @@ app = swap('app.js', app, "const NOTICE = { id: 'guide-2026-10', at: 417240, sec
 let staff = need(path.join(A2, 'platform', 'staff.js'));
 staff = swap('staff.js', staff, "['papers', 'staff.tabPapers'], ['live', 'staff.tabLive'], ", '');
 staff = swap('staff.js', staff, "TAB = 'live', CLS", "TAB = 'coursework', CLS");
+staff = swap('staff.js', staff, "['coursework', 'staff.tabCoursework'], ", "['coursework', 'staff.tabCoursework'], ['theory', 'staff.tabTheory'], ");
+staff = swap('staff.js', staff, "coursework: vCoursework, ", "coursework: vCoursework, theory: () => window.TH.staff(pane(), CLS), ");
 // S2 tick ids are <stage>-<screen>.<step>, as AS's: group the drawer's squares by stage
 staff = swap('staff.js', staff, "const s = id.split('.')[1];", "const s = id.split('-')[0];");
 staff = swap('staff.js', staff, "TAB = sel('tab') || 'live';", "TAB = sel('tab') || 'coursework'; if (TAB === 'papers' || TAB === 'live') TAB = 'coursework';");
@@ -197,12 +209,13 @@ const scripts = [
   ['editor.js', need(path.join(A2, 'platform', 'editor.js'))],
   ['lesson.js', need(path.join(A2, 'platform', 'lesson.js'))],
   ['cw.js', need(path.join(S2, 'src', 'cw.js'))],
+  ['th.js', need(path.join(S2, 'src', 'th.js'))],
   ['app.js', app],
   ['staff.js', staff],
 ];
 
 // ---- the server
-const APIS = ['apiBoot', 'apiName', 'apiState', 'apiMark', 'apiAnswer', 'apiTwin', 'apiTwinMark', 'apiFlag', 'apiEval', 'apiPing', 'apiKv', 'apiCw', 'apiStaff'];
+const APIS = ['apiBoot', 'apiName', 'apiState', 'apiMark', 'apiAnswer', 'apiTwin', 'apiTwinMark', 'apiFlag', 'apiEval', 'apiPing', 'apiKv', 'apiCw', 'apiStaff', 'apiTheory', 'apiPair'];
 const shim = `window.OLS_TRANSPORT = {
   call: function (fn, req) {
     return new Promise(function (resolve, reject) {
@@ -223,7 +236,16 @@ tpl = swap('Code.gs.template', tpl, "var CW_OPS = ['open', 'screen', 'tick', 'co
 tpl = swap('Code.gs.template', tpl, "a: str_(c.a), d: num_(c.d), c: num_(c.c), r: num_(c.r) };", "a: str_(c.a), d: num_(c.d), c: num_(c.c), r: num_(c.r), h: num_(c.h) ? 1 : 0 };");
 tpl = swap('Code.gs.template', tpl, "      else if (op === 'reveal') c.r = num_(c.r) + 1;\n",
   "      else if (op === 'reveal') c.r = num_(c.r) + 1;\n      else if (op === 'had') { var hv = num_(req.v) ? 1 : 0; if ((num_(c.h) ? 1 : 0) !== hv) ev = [now, hv ? 'h' : 'g', ch]; c.h = hv; }\n");
-const BUILD = CONTENT.BUILD + '-' + hashOf(css + index + scripts.map((s) => s[1]).join('\n') + tpl + JSON.stringify(CWMETA)).slice(0, 8);
+tpl = swap('Code.gs.template', tpl, "  if (!realClass_(name)) return err_('unknown-class');\n", "  if (!realClass_(name)) return err_('unknown-class');\n  if (/^theory/.test(op)) return u4Staff_(req, email, name);\n");
+const U4 = process.env.U4_DIR || '/Users/damiengartland/Desktop/Claude Work/S2 U5CA Guide/_unit4_theory';
+const u4server = ['build/server/u4.gs', 'proto/bank.js', 'proto/rounds.js', 'proto/judge.js'].map((f) => '/* ---- ' + f + ' ---- */\n' + need(path.join(U4, f))).join('\n\n');
+const U4_DB = process.env.U4_DB || (u4server.match(/var U4_LIVE = '([^']+)'/) || [])[1];
+if (!U4_DB) { console.error('u4.gs: no U4_LIVE'); process.exit(1); }
+const u4strings = need(path.join(U4, 'strings-u4.json')), u4index = need(path.join(U4, 'theory', 'index.json'));
+// the public Learn it content: only the topic files and the index (never rounds, bank or judge)
+fs.mkdirSync(path.join(S2, 'content', 'u4', 'theory'), { recursive: true });
+fs.readdirSync(path.join(U4, 'theory')).filter((f) => /^(index|t\d+)\.json$/.test(f)).forEach((f) => fs.copyFileSync(path.join(U4, 'theory', f), path.join(S2, 'content', 'u4', 'theory', f)));
+const BUILD = CONTENT.BUILD + '-' + hashOf(css + index + scripts.map((s) => s[1]).join('\n') + tpl + JSON.stringify(CWMETA) + u4server + u4strings + u4index).slice(0, 8);
 const salt = crypto.randomBytes(16).toString('hex');
 const hash = crypto.createHash('sha256').update(salt + crypto.randomBytes(32).toString('hex'), 'utf8').digest('hex');
 const filled = tpl.replace("'@@OWNER_EMAIL@@'", JSON.stringify(OWNER_EMAIL)).replace("'@@STAFF_SALT@@'", JSON.stringify(salt))
@@ -232,7 +254,7 @@ if (/@@[A-Z_]+@@/.test(filled)) { console.error('Code.gs.template: unfilled plac
 const META = { papers: {}, order: [], twinOrder: {}, clusterTwins: {} };
 const code = asciiJs(['/* OLS GCSE DT Coursework Guide - Code.gs - build ' + BUILD + ' - built by s2-u5ca-guide/tools/build-s2.js from the A2 template. Never commit. */',
   '/* The S2 guide has no SQL past papers: no answers, no judge. */\nvar A2PRIVATE = { answers: {}, worked: {}, expected: {} };',
-  'var A2META = ' + JSON.stringify(META) + ';', 'var CWMETA = ' + JSON.stringify(CWMETA) + ';', filled].join('\n\n'));
+  'var A2META = ' + JSON.stringify(META) + ';', 'var CWMETA = ' + JSON.stringify(CWMETA) + ';', filled, u4server].join('\n\n'));
 guardAscii('Code.gs', code);
 fs.mkdirSync(DEPLOY, { recursive: true, mode: 0o700 });
 fs.writeFileSync(path.join(DEPLOY, 'Code.gs'), code, { mode: 0o600 });
@@ -244,7 +266,9 @@ let body = index.slice(index.indexOf(bodyOpen) + bodyOpen.length);
 body = body.slice(0, body.lastIndexOf('</body>') > -1 ? body.lastIndexOf('</body>') : body.length).replace(/<script[\s\S]*?<\/script>/gi, '');
 const boot = '<script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" };\n' +
   // A2_DEPLOY keeps the a2ssd- prefix: the A2 client strips exactly that to compare with the server's v (with any other prefix every call shows the stale line)
-  'window.A2_VENDOR = ' + JSON.stringify([CDN, GH]) + ';\nwindow.A2_DEPLOY = ' + JSON.stringify('a2ssd-' + BUILD) + ';\nwindow.A2_CW = ' + JSON.stringify(CW) + ';</script>';
+  'window.A2_VENDOR = ' + JSON.stringify([CDN, GH]) + ';\nwindow.A2_DEPLOY = ' + JSON.stringify('a2ssd-' + BUILD) + ';\nwindow.A2_CW = ' + JSON.stringify(CW) + ';\n' +
+  '/* These are public web identifiers, not secrets: the database rules are the only guard. No pupil identity is ever written here or to the database. */\n' +
+  'window.U4_LIVE = ' + JSON.stringify({ base: U4_DB }) + ';\nwindow.U4_STRINGS = ' + asciiJs(JSON.stringify(JSON.parse(u4strings))) + ';\nwindow.U4_INDEX = ' + asciiJs(JSON.stringify(JSON.parse(u4index))) + ';</script>';
 const frags = [boot, '<script>\n' + jsBlock(shim) + '\n</script>']
   .concat(scripts.map(([n, s]) => { const b = jsBlock(s); if (/<\/script/i.test(b)) { console.error(n + ': </script left'); process.exit(1); } return '<script>\n' + b + '\n</script>'; }))
   .concat(["<script>window.addEventListener('DOMContentLoaded', function () { App.boot(); });</script>"]);
