@@ -67,15 +67,15 @@ const sandbox = {
   Session: { getActiveUser: () => ({ getEmail: () => current }), getEffectiveUser: () => ({ getEmail: () => current }) },
   LockService: { getScriptLock: () => ({ waitLock() {}, tryLock: () => true, releaseLock() {} }) },
   UrlFetchApp: {
-    fetch: (url) => {
+    fetch: (url, opts) => {
       if (/openidconnect\.googleapis\.com\/v1\/userinfo/.test(url)) {
         const name = /noname/.test(current) ? '' : DEV_NAMES[current] || 'Dev Pupil';
         const [g, ...f] = name.split(' ');
         return { getResponseCode: () => 200, getContentText: () => JSON.stringify(name ? { given_name: g, family_name: f.join(' '), name } : {}) };
       }
-      const live = /^https:\/\/[a-z0-9-]+\.firebasedatabase\.app(\/[^?]*)(?:\?(.*))?$/.exec(url);
+      const live = /^https:\/\/[a-z0-9.-]+\.firebasedatabase\.app(\/[^?]*)(?:\?(.*))?$/.exec(url);
       if (live) { // the live room: the same rules emulation the page reaches at /fb
-        const o = arguments[1] || {}, r = fb(String(o.method || 'get').toUpperCase(), '/fb' + live[1], Object.fromEntries(new URLSearchParams(live[2] || '')), o.payload);
+        const o = opts || {}, r = fb(String(o.method || 'get').toUpperCase(), '/fb' + live[1], Object.fromEntries(new URLSearchParams(live[2] || '')), o.payload);
         return { getResponseCode: () => r.code, getContentText: () => JSON.stringify(r.val) };
       }
       return { getResponseCode: () => 404, getContentText: () => '' };
@@ -183,6 +183,7 @@ http.createServer((req, res) => {
       res.writeHead(200, { 'content-type': 'application/json' });
       if (u.pathname === '/__reset') { db = { script: {}, user: {}, sheets: {} }; save(); res.end('{"ok":true}'); return; }
       if (u.pathname === '/__clock') { const at = JSON.parse(body || '{}').at; sandbox.__clock(typeof at === 'number' ? at : null); res.end('{"ok":true}'); return; }
+      if (u.pathname === '/__sweep') { sandbox.u4Sweep_(); res.end('{"ok":true}'); return; }   // the nightly sweep, on demand (carry1)
       if (u.pathname === '/__store') { res.end(JSON.stringify(db)); return; }
       if (u.pathname === '/__set') { const j = JSON.parse(body || '{}'); Object.assign(db.script, j.script || {}); Object.entries(j.user || {}).forEach(([k, v]) => { db.user[k] = Object.assign(db.user[k] || {}, v); }); save(); res.end('{"ok":true}'); return; }
       const fn = u.pathname.replace(/^\/api\//, '');

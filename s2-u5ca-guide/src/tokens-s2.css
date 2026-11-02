@@ -19,4 +19,5 @@
 :root{
   --paper:#FFFDF7;--paper-edge:#CFC9DD;--paper-rule:#D9D4E6;--grey-chip:#ECEAF2;--grey-ink:#8A86A0;--mark:#C8102E;--mark-soft:#FBE4E2;--right:#1B7F3B;--right-soft:#ECF9EF;
   --chat-me:#EDE7FA;--chat-them:#FFFFFF;--chip:#F5F1FC;--step-on:#1C1A2E;
+  --sc-card:#FFFDF5;--sc-card-edge:#E6D8A8;--sc-pop:#2B2742;--sc-hl:rgba(255,197,61,.22);
   --th-1:#0E8A7A;--th-2:#3B4FD8;--th-3:#8E2F8A;--th-4:#D1601A;--th-5:#C0263B;--th-6:#2F7D32;--th-7:#4A6072;}

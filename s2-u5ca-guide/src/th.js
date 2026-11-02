@@ -11,6 +11,9 @@ var active = { stop: function () {} };
 var $app, $who, $toast, toastT, CLS = "", STAFF_URL = "#staff", LIVE = false;
 var BANNED = ["fuck", "shit", "bitch", "cunt", "wank", "dick", "prick", "twat", "bastard", "slut", "whore", "fag", "retard", "nigg", "spastic"].map(function (w) { return new RegExp("\\b" + w, "i"); });
 var QS = {}; location.search.replace(/[?&]([^=&]+)=([^&]*)/g, function (_, k, v) { QS[k] = decodeURIComponent(v); });
+// the chat refuses a classmate's first name (D-NONAME): the server sends only hashes of the names, hashed the same way here
+function h36(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
+function nameHit(txt, nh) { if (!nh || !nh.length) return false; return String(txt).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/[^a-z]+/).some(function (w) { return w.length >= 2 && nh.indexOf(h36(w)) !== -1; }); }
 var GONE_MS = parseInt(QS.gone, 10) || 90000;   // ?gone=6000 is a test hook for the drives and gates only
 
 /* ---------- small helpers ---------- */
@@ -248,6 +251,7 @@ function Surface(spec, o) {
     });
     root.appendChild(tbl);
     api.get = function () { return picks.every(function (p) { return !p; }) ? "" : picks.join(","); };
+    api.order = dispR;   // the shuffled row order, so an answer read out in words follows the rows as shown
     api.complete = function () { return picks.every(function (p) { return !!p; }); };
     api.set = function (v) { var a = (v || "").split(","); picks = rows.map(function (_, i) { return a[i] || ""; }); Object.keys(cells).forEach(function (ri) { Object.keys(cells[ri].btns).forEach(function (k) { cells[ri].btns[k].classList.toggle("on", k === picks[ri]); }); }); };
     api.verdict = function (res, rv) { var all = true; rows.forEach(function (_, ri) { var ok = res.cells && res.cells[ri] === 1; if (!ok) all = false; clear(cells[ri].vk).appendChild(el("span.vk" + (ok ? ".ok" : ".no"), { text: ok ? "✓" : "✗" })); var want = rv && rv.ansKey && rv.ansKey[ri]; if (want && cells[ri].btns[want]) cells[ri].btns[want].classList.add("right"); if (!ok && picks[ri] && cells[ri].btns[picks[ri]]) cells[ri].btns[picks[ri]].classList.add("wrong"); }); return all; };
@@ -487,6 +491,7 @@ function Surface(spec, o) {
 function answerWords(spec, rv, sf) {
   if (!rv) return "";
   if (spec.kind === "one") return [].concat(rv.ansKey).map(function (L) { return sf ? sf.label(L) : L; }).join(", ");
+  if (spec.kind === "tf" && sf && sf.order) return sf.order.map(function (i) { return rv.ansKey[i]; }).join(", ");
   if (spec.kind === "tf" || spec.kind === "sort") return rv.ansKey.join(", ");
   if (spec.kind === "gaps") return rv.ansKey.map(function (a) { return String(a).split("|")[0]; }).join(", ");
   if (spec.kind === "match") return rv.ansKey.map(function (p) { return (p[0] + 1) + " with " + spec.right[p[1]].replace(/\s+/g, " "); }).join(". ");
@@ -530,27 +535,54 @@ function codeBlock(code, numbered) {
 }
 function learnTry(tr, t, n, onRight) {
   var box = el("div.blk.try" + (tr.code ? ".codeopts" : "")); box.appendChild(el("div.head", { text: S["learn.head.try"] }));
-  if (tr.verbatim) { var vm = /^(\d{4})\s+Q(\S+)$/.exec(tr.verbatim); box.appendChild(el("p.src", { text: vm ? fmt("learn.try.from", { year: vm[1], label: "Question " + vm[2] }) : tr.verbatim })); }
-  box.appendChild(el("p.stem", { text: tr.stem }));
-  var hd = (tr.surface && tr.surface.heads) || [S["learn.match.left"], S["learn.match.right"]];
-  var sf = Surface(tr.surface, { seed: "try:" + ME.first + ":" + t + ":" + n, leftHead: hd[0], rightHead: hd[1] }); box.appendChild(sf.el);
-  var out = el("div.verdict.hidden"), btn = el("button.btn", { text: S["learn.try.check"], on: { click: check } });
-  box.appendChild(el("div.acts", {}, [btn])); box.appendChild(out);
-  function check() {
-    if (!sf.complete()) { toast(S["try.incomplete"]); return; }
-    var k = tr.key, sp = tr.surface, cells = [], rv = {}, right = false, a = "";
-    if (sp.kind === "one") { var got = "ABCDEFGH".indexOf(sf.get()); right = got === k.answer; cells = [right ? 1 : 0]; rv.ansKey = letters(k.answer); var optText = Array.isArray(sp.opts[k.answer]) ? sp.opts[k.answer][1] : sp.opts[k.answer]; a = sf.label(rv.ansKey) + " · " + optText; }
-    else if (sp.kind === "gaps") { var g = sf.get().split("|"); cells = k.answer.map(function (w, i) { return norm(g[i] || "") === norm(w) ? 1 : 0; }); rv.ansKey = k.answer; a = k.answer.join(", "); right = cells.every(function (c) { return c === 1; }); }
-    else if (sp.kind === "tf") { var v = sf.get().split(","); cells = k.answer.map(function (w, i) { return (v[i] || "").toLowerCase() === String(w).toLowerCase() ? 1 : 0; }); rv.ansKey = k.answer; a = k.answer.join(", "); right = cells.every(function (c) { return c === 1; }); }
-    else if (sp.kind === "match") { var pr = {}; sf.get().split(",").forEach(function (p) { var mm = /^(\d+)-(\d+)$/.exec(p); if (mm) pr[mm[1]] = parseInt(mm[2], 10); }); cells = k.answer.map(function (r, l) { return pr[l] === r ? 1 : 0; }); rv.ansKey = k.answer.map(function (r, l) { return [l, r]; }); a = k.answer.map(function (r, l) { return sp.left[l] + " is " + sp.right[r]; }).join(". "); right = cells.every(function (c) { return c === 1; }); }
-    else if (sp.kind === "list") { var lines = sf.get().split("\n"), used = {}; cells = lines.map(function (ln) { var nl = norm(ln); if (!nl) return 0; if ((k.reject || []).some(function (rj) { return norm(rj) === nl; })) return 0; for (var gi = 0; gi < k.accept.length; gi++) { if (used[gi]) continue; var hit = k.accept[gi].some(function (acc) { var na = norm(acc); return na === nl || (nl.length >= 4 && na.indexOf(nl) !== -1) || (na.length >= 4 && nl.indexOf(na) !== -1); }); if (hit) { used[gi] = 1; return 1; } } return 0; }); var cnt = cells.filter(function (c) { return c === 1; }).length; right = cnt >= (sp.n || k.accept.length); rv.points = k.accept.map(function (gr) { return gr[0]; }); a = rv.points.join(", "); }
-    sf.disable(true); sf.verdict({ cells: cells }, rv); btn.disabled = true;
-    clear(out).classList.remove("hidden"); out.appendChild(el("p.b" + (right ? ".okline" : ".noline"), { text: right ? S["learn.try.right"] : fmt("learn.try.wrong", { a: a }) }));
-    if (tr.why) out.appendChild(el("p.why", { text: fmt("learn.try.why", { why: tr.why }) }));
-    out.appendChild(el("p.small", { text: S["learn.try.ticked"] }));
-    onRight();
+  var parts = tr.parts || [tr], toldTick = false;
+  parts.forEach(function (p, pi) { var pt = el("div.part"); buildTry(pt, p, pi, parts.length > 1 ? S[pi ? "learn.try.partB" : "learn.try.partA"] : ""); box.appendChild(pt); });
+  function buildTry(pt, tp, pi, label) {
+    clear(pt); if (label) pt.appendChild(el("div.pn", { text: label }));
+    if (tp.verbatim) { var vm = /^(\d{4})\s+Q(\S+)$/.exec(tp.verbatim); pt.appendChild(el("p.src", { text: vm ? fmt("learn.try.from", { year: vm[1], label: "Question " + vm[2] }) : tp.verbatim })); }
+    pt.appendChild(el("p.stem", { text: tp.stem }));
+    if (tp.fig && window.SCENES && SCENES[tp.fig]) { var fg = el("div.fig.scn", { attr: { "data-fig": tp.fig } }); SCENES[tp.fig](fg, 0, { static: true }); pt.appendChild(fg); }
+    var hd = (tp.surface && tp.surface.heads) || [S["learn.match.left"], S["learn.match.right"]];
+    var sf = Surface(tp.surface, { seed: "try:" + ME.first + ":" + t + ":" + n + (pi ? ":" + pi : ""), leftHead: hd[0], rightHead: hd[1] }); pt.appendChild(sf.el);
+    var out = el("div.verdict.hidden"), btn = el("button.btn", { text: S["learn.try.check"], on: { click: check } }), acts = el("div.acts", {}, [btn]);
+    pt.appendChild(acts); pt.appendChild(out);
+    function check() {
+      if (!sf.complete()) { toast(S["try.incomplete"]); return; }
+      var k = tp.key, sp = tp.surface, cells = [], rv = {}, right = false, a = "";
+      if (sp.kind === "one") { var got = "ABCDEFGH".indexOf(sf.get()); right = got === k.answer; cells = [right ? 1 : 0]; rv.ansKey = letters(k.answer); var optText = Array.isArray(sp.opts[k.answer]) ? sp.opts[k.answer][1] : sp.opts[k.answer]; a = sf.label(rv.ansKey) + " · " + optText; }
+      else if (sp.kind === "gaps") { var g = sf.get().split("|"); cells = k.answer.map(function (w, i) { return norm(g[i] || "") === norm(w) ? 1 : 0; }); rv.ansKey = k.answer; a = k.answer.join(", "); right = cells.every(function (c) { return c === 1; }); }
+      else if (sp.kind === "tf") { var v = sf.get().split(","); cells = k.answer.map(function (w, i) { return (v[i] || "").toLowerCase() === String(w).toLowerCase() ? 1 : 0; }); rv.ansKey = k.answer; a = (sf.order || []).map(function (i) { return k.answer[i]; }).join(", "); right = cells.every(function (c) { return c === 1; }); }
+      else if (sp.kind === "match") { var pr = {}; sf.get().split(",").forEach(function (p) { var mm = /^(\d+)-(\d+)$/.exec(p); if (mm) pr[mm[1]] = parseInt(mm[2], 10); }); cells = k.answer.map(function (r, l) { return pr[l] === r ? 1 : 0; }); rv.ansKey = k.answer.map(function (r, l) { return [l, r]; }); a = k.answer.map(function (r, l) { return sp.left[l] + " is " + sp.right[r]; }).join(". "); right = cells.every(function (c) { return c === 1; }); }
+      else if (sp.kind === "list") { var lines = sf.get().split("\n"), used = {}; cells = lines.map(function (ln) { var nl = norm(ln); if (!nl) return 0; if ((k.reject || []).some(function (rj) { return norm(rj) === nl; })) return 0; for (var gi = 0; gi < k.accept.length; gi++) { if (used[gi]) continue; var hit = k.accept[gi].some(function (acc) { var na = norm(acc); return na === nl || (nl.length >= 4 && na.indexOf(nl) !== -1) || (na.length >= 4 && nl.indexOf(na) !== -1); }); if (hit) { used[gi] = 1; return 1; } } return 0; }); var cnt = cells.filter(function (c) { return c === 1; }).length; right = cnt >= (sp.n || k.accept.length); rv.points = k.accept.map(function (gr) { return gr[0]; }); a = rv.points.join(", "); }
+      sf.disable(true); sf.verdict({ cells: cells }, rv); btn.disabled = true;
+      clear(out).classList.remove("hidden"); out.appendChild(el("p.b" + (right ? ".okline" : ".noline"), { text: right ? S["learn.try.right"] : fmt("learn.try.wrong", { a: a }) }));
+      if (tp.why) out.appendChild(el("p.why", { text: fmt("learn.try.why", { why: tp.why }) }));
+      if (!toldTick) { toldTick = true; out.appendChild(el("p.small", { text: S["learn.try.ticked"] })); }
+      if (!right) acts.appendChild(el("button.btn.quiet", { type: "button", text: S["learn.try.again"], on: { click: function () { buildTry(pt, tp, pi, label); } } }));
+      onRight();
+    }
   }
   return box;
+}
+function learnAnim(v) {
+  var N = v.steps.length, i = 0, SC = window.SCENES || {};
+  var box = el("div.blk.anim", { attr: { "data-scene": v.scene } }); box.appendChild(el("div.head", { text: S["learn.head.watchit"] }));
+  if (v.title) box.appendChild(el("h4", { text: v.title })); if (v.lead) box.appendChild(el("p.lead", { html: termHtml(v.lead) }));
+  var stage = el("div.stage.scn", { attr: { "data-scene": v.scene, role: "img" } }), cap = el("p.cap", { attr: { "aria-live": "polite" } });
+  var back = el("button.btn.sec.back", { type: "button", text: S["learn.anim.back"], on: { click: function () { if (i > 0) { i--; draw(); } } } });
+  var next = el("button.btn.next", { type: "button", text: S["learn.anim.next"], on: { click: function () { if (i < N - 1) { i++; draw(); } } } });
+  var replay = el("button.btn.quiet.replay", { type: "button", text: S["learn.anim.replay"], on: { click: function () { i = 0; draw(); next.focus(); } } });
+  var stepn = el("span.stepn"), dots = el("span.dots", { attr: { "aria-hidden": "true" } }); v.steps.forEach(function () { dots.appendChild(el("i")); });
+  var ctl = el("div.ctl", { on: { keydown: function (e) { if (e.key === "ArrowRight" && i < N - 1) { i++; draw(); e.preventDefault(); } else if (e.key === "ArrowLeft" && i > 0) { i--; draw(); e.preventDefault(); } } } }, [back, el("span.stepwrap", {}, [stepn, dots]), next, replay]);
+  box.appendChild(stage); box.appendChild(cap); box.appendChild(ctl);
+  function draw() {
+    if (SC[v.scene]) SC[v.scene](stage, i); else console.error("missing scene " + v.scene);
+    cap.textContent = v.steps[i]; stepn.textContent = fmt("learn.anim.step", { i: i + 1, N: N }); stage.setAttribute("aria-label", v.steps[i]);
+    Array.prototype.forEach.call(dots.children, function (d, k) { d.classList.toggle("on", k <= i); });
+    var was = document.activeElement; back.disabled = i === 0; next.disabled = i === N - 1;
+    if (was === next && next.disabled) replay.focus(); if (was === back && back.disabled) next.focus();
+  }
+  draw(); return box;
 }
 function learnPlay(pl) {
   var box = el("div.blk.play"); box.appendChild(el("div.head", { text: S["learn.head.play"] }));
@@ -619,12 +651,15 @@ function renderLearn(t, n) {
     $app.appendChild(crumbFrom(S["nav.home"] + " › " + fmt("learn.crumb", { t: t, n: n, N: N }), ["#", "#th/" + t, "#th/" + t + "/learn/1"]));
     var sc = el("section.scr.tw-" + t); var pills = el("div.pills");
     for (var i = 1; i <= N; i++) { var on = i === n, ok = !!(p.bits >> (i - 1) & 1); pills.appendChild(el("a.p" + (on ? ".on" : "") + (ok ? ".ok" : ""), { href: "#th/" + t + "/learn/" + i, text: String(i), attr: { "aria-label": fmt(ok ? "aria.screenTicked" : "aria.screen", { n: i }), "aria-current": on ? "page" : null } })); }
-    sc.appendChild(pills); sc.appendChild(el("h2", { text: scr.title })); sc.appendChild(el("p.goal", { text: scr.goal }));
+    sc.appendChild(pills); if (scr.kicker) sc.appendChild(el("p.kicker", { text: scr.kicker })); sc.appendChild(el("h2", { text: scr.title })); sc.appendChild(el("p.goal", { text: scr.goal }));
     var saidHead = false, tickDone = ticked;
     function tick() { if (tickDone) return Promise.resolve(); tickDone = true; return api("apiTheory", { op: "learn", t: t, n: n }).then(function (r) { if (!ST.recs[t]) ST.recs[t] = {}; ST.recs[t].L = r.L; var pl = pills.children[n - 1]; if (pl) pl.classList.add("ok"); }).catch(function (e) { tickDone = false; console.error(e); toast(S["err.save"]); }); }
     scr.blocks.forEach(function (b) {
       if (b.say) { var sb = el("div.blk.say"); if (!saidHead) { sb.appendChild(el("div.head", { text: S["learn.head.means"] })); saidHead = true; } b.say.forEach(function (ln) { sb.appendChild(el("p", { html: termHtml(ln) })); }); sc.appendChild(sb); }
-      else if (b.picture) { var pc = b.picture, pb = el("div.blk.pic"); pb.appendChild(el("div.head", { text: S["learn.head.picture"] })); if (pc.title) pb.appendChild(el("h4", { text: pc.title })); arr(pc.lines).forEach(function (ln) { pb.appendChild(el("p", { html: termHtml(ln) })); });
+      else if (b.note) { var nt = b.note, nb = el("div.blk.note" + (nt.kind ? "." + nt.kind : "")); if (nt.title) nb.appendChild(el("h4", { text: nt.title })); arr(nt.lines).forEach(function (ln) { nb.appendChild(el("p", { html: termHtml(ln) })); }); sc.appendChild(nb); }
+      else if (b.bridge) { sc.appendChild(el("p.blk.bridge", { html: termHtml(b.bridge) })); }
+      else if (b.anim) { sc.appendChild(learnAnim(b.anim)); }
+      else if (b.picture) { var pc = b.picture, pb = el("div.blk.pic"); pb.appendChild(el("div.head", { text: S["learn.head.picture"] })); if (pc.title) pb.appendChild(el("h4", { text: pc.title })); if (pc.fig && window.SCENES && SCENES[pc.fig]) { var pf = el("div.fig.scn", { attr: { "data-fig": pc.fig } }); SCENES[pc.fig](pf, 0, { static: true }); pb.appendChild(pf); } arr(pc.lines).forEach(function (ln) { pb.appendChild(el("p", { html: termHtml(ln) })); });
         if (pc.match && pc.match.length) { var tb = el("table.pmatch"); var hr = el("tr"); var hds = pc.heads || [S["learn.match.left"], S["learn.match.right"]]; hr.appendChild(el("th", { text: hds[0] })); hr.appendChild(el("th.arrow", { text: "" })); hr.appendChild(el("th", { text: hds[1] })); tb.appendChild(hr); pc.match.forEach(function (pr) { var tr = el("tr"); tr.appendChild(el("td", { text: pr[0] })); tr.appendChild(el("td.arrow", { text: "→" })); tr.appendChild(el("td", { html: termHtml(pr[1]) })); tb.appendChild(tr); }); pb.appendChild(tb); }
         if (arr(pc.breaks).length) { var bk = el("div.breaks"); bk.appendChild(el("div.h", { text: S["learn.head.breaks"] })); arr(pc.breaks).forEach(function (ln) { bk.appendChild(el("p", { html: termHtml(ln) })); }); pb.appendChild(bk); }
         sc.appendChild(pb); }
@@ -634,7 +669,13 @@ function renderLearn(t, n) {
           cbk.appendChild(cp); showPart(0); }
         if (arr(cd.names).length) { var cn = el("div.cnames"); cn.appendChild(el("div.h", { text: S["code.namesHead"] })); arr(cd.names).forEach(function (nm) { cn.appendChild(el("div.cname", {}, [el("code", { text: nm[0] }), el("span", { html: termHtml(nm[1]) })])); }); cbk.appendChild(cn); }
         sc.appendChild(cbk); }
-      else if (b.exam) { var ex = b.exam, eb = el("div.blk.exam"); eb.appendChild(el("div.head", { text: S["learn.head.exam"] })); eb.appendChild(el("div.term", { text: ex.term })); eb.appendChild(el("p.def", { text: ex.say })); if (ex.src) eb.appendChild(el("div.src", { text: fmt("learn.exam.src", { src: ex.src }) })); sc.appendChild(eb); }
+      else if (b.exam) { var ex = b.exam, eb = el("div.blk.exam"); eb.appendChild(el("div.head", { text: S["learn.head.exam"] }));
+        if (ex.parts) ex.parts.forEach(function (ep) { var pt = el("div.part"); if (ep.head) pt.appendChild(el("h4", { text: ep.head })); if (ep.term) pt.appendChild(el("div.tl", { text: ep.term })); if (ep.say) pt.appendChild(el("p.def", { html: termHtml(ep.say) }));
+          if (ep.sample) { var sm = el("div.sample"); ep.sample.forEach(function (r) { sm.appendChild(el("div", {}, [el("span", { html: termHtml(r[0]) }), el("span.tag", { text: r[1] })])); }); pt.appendChild(sm); }
+          if (ep.points) { var pu = el("ul"); ep.points.forEach(function (x) { pu.appendChild(el("li", { html: termHtml(x) })); }); pt.appendChild(pu); }
+          if (ep.src) pt.appendChild(el("div.src", { text: fmt("learn.exam.src", { src: ep.src }) })); eb.appendChild(pt); });
+        else { eb.appendChild(el("div.term", { text: ex.term })); eb.appendChild(el("p.def", { text: ex.say })); if (ex.src) eb.appendChild(el("div.src", { text: fmt("learn.exam.src", { src: ex.src }) })); }
+        sc.appendChild(eb); }
       else if (b.watch) { sc.appendChild(el("div.blk.watch", {}, [el("span.ic", { text: "!" }), el("div", {}, [el("div.lab", { text: S["learn.head.watch"] }), el("p", { html: termHtml(b.watch) })])])); }
       else if (b.side) { var sd = b.side, sb2 = el("div.blk.side"); [sd.left, sd.right].forEach(function (col) { if (!col) return; var c = el("div.col"); c.appendChild(el("h4", { text: col.title })); var ul = el("ul"); arr(col.rows).forEach(function (r) { ul.appendChild(el("li", { html: termHtml(r) })); }); c.appendChild(ul); sb2.appendChild(c); }); sc.appendChild(sb2); }
       else if (b.play) { sc.appendChild(learnPlay(b.play)); }
@@ -827,6 +868,13 @@ function renderPair(t) {
     var cnOf = function (s) { return P.cn["ABC".indexOf(s)]; };
     var startedKey = "u4_started_" + pid;
     if (P.done) return finishView(P, { names: P.names || [], m: P.right, R: R, solo: solo, trio: trio });
+    var carryKey = "u4_carry_" + pid + "_" + P.carried;
+    if (P.carried && !sessionStorage.getItem(carryKey)) {   // an unfinished pair from last lesson: same partner, agreed rounds kept, a fresh chat
+      var cc = el("div.card.waitcard"); cc.appendChild(el("h2", { text: S["pair.carry.head"] }));
+      cc.appendChild(el("p", { text: fmt(solo ? "pair.carry.saySolo" : trio ? "pair.carry.sayTrio" : "pair.carry.say", { round: P.r, R: R }) }));
+      cc.appendChild(el("div.acts", {}, [el("button.btn.big", { text: S["pair.carry.start"], on: { click: function () { sessionStorage.setItem(carryKey, "1"); sessionStorage.setItem(startedKey, "1"); sessionStorage.setItem("u4_seen_" + pid, "1"); pairView(P, false); } } })]));
+      $app.appendChild(cc); return;
+    }
     if (!sessionStorage.getItem(startedKey) && !(P.r > 1 && !fresh && !told)) {   // a new tab mid-way goes straight back into the rounds; a pupil just told their partner left still gets the card
       var mc = el("div.card.waitcard");
       if (solo) { var w = P.why; mc.appendChild(el("h2", { text: w === "owner" ? S["pair.solo.headOwner"] : w === "chose" ? S["pair.solo.headChose"] : (w === "left" || w === "gone" || w === "room" || w === "dropped") ? S["pair.solo.headLeft"] : S["pair.solo.head"] })); mc.appendChild(el("p", { text: (w === "left" || w === "gone" || w === "room" || w === "dropped") ? S["pair.solo.sayLeft"] : S["pair.solo.say"] })); }
@@ -860,7 +908,7 @@ function renderPair(t) {
     var form = el("form"); var inp = el("input", { type: "text", maxlength: 240, placeholder: S["pair.chat.placeholder"], attr: { "aria-label": S["pair.chat.title"] } }); var sendBtn = el("button.btn", { type: "submit", text: S["pair.chat.send"] }); form.appendChild(inp); form.appendChild(sendBtn); chat.appendChild(form);
     var lastSent = 0, chatClosed = false;
     form.addEventListener("submit", function (e) { e.preventDefault(); var txt = inp.value.trim(); if (!txt || chatClosed || solo) return; say(txt); });
-    function say(txt) { if (Date.now() - lastSent < 1000) { toast(S["pair.chat.tooFast"]); return; } if (BANNED.some(function (rx) { return rx.test(txt); })) { toast(S["pair.chat.banned"]); return; } lastSent = Date.now(); inp.value = ""; post("msg", txt.slice(0, 240)); }
+    function say(txt) { if (Date.now() - lastSent < 1000) { toast(S["pair.chat.tooFast"]); return; } if (BANNED.some(function (rx) { return rx.test(txt); })) { toast(S["pair.chat.banned"]); return; } if (nameHit(txt, P.nh)) { toast(S["pair.chat.name"]); return; } lastSent = Date.now(); inp.value = ""; post("msg", txt.slice(0, 240)); }
     function addLine(s, txt, sys) { var m = el("div.msg" + (sys ? ".sys" : s === seat ? ".me" : "")); if (!sys) m.appendChild(el("b", { text: s === seat ? S["pair.chat.you"] : cnOf(s) })); m.appendChild(el("span", { text: txt })); lines.appendChild(m); lines.scrollTop = lines.scrollHeight; }
     function paintQuick() { clear(quick); if (solo || chatClosed) return; var ph = phase === 1 ? "1" : phase === 4 ? "4" : "2"; var cs = (round.chips && round.chips[ph]) || []; if (!cs.length) return; quick.appendChild(el("div.h", { text: S["pair.chat.chips"] })); cs.forEach(function (c) { quick.appendChild(el("button.chip", { type: "button", text: c, on: { click: function () { say(c); } } })); }); }
     function closeChat(msg) { chatClosed = true; chat.classList.add("off"); inp.disabled = true; sendBtn.disabled = true; clear(quick); chat.appendChild(el("p.small", { text: msg })); }
@@ -950,7 +998,7 @@ function renderPair(t) {
       rEvery(4000, function () { fbSend("PUT", room + "/p/" + seat + ".json", Date.now()).catch(function () {}); });
       rEvery(4000, function () { fbGet(room + "/p.json").then(function (pp) { pp = pp || {}; others.forEach(function (s) { if (pp[s]) seen[s] = pp[s]; var last = seen[s] || started; if (Date.now() - last > GONE_MS) onGone(s, false); }); }).catch(function () {}); });
       rEvery(1000, pollEv);
-      rEvery(8000, function () { api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (st.dissolved) { stopRound(); active.stop(); api("apiPair", { op: "join", t: t }).then(function (v2) { stopped = false; timers = []; sessionStorage.setItem("u4_started_" + (v2.pair ? v2.pair.pid : pid), "1"); paint(v2); }); return; } (st.gone || []).forEach(function (gs) { if (gs !== seat && others.indexOf(gs) !== -1) dropSeat(gs, (st.goneWhy || {})[gs] === "dropped"); }); if (st.pairOn === false && !offToasted) { offToasted = true; toast(S["pair.err.off"]); } }).catch(function () {}); });
+      rEvery(8000, function () { api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (st.room && st.room !== room) { stopRound(); active.stop(); api("apiPair", { op: "join", t: t }).then(function (v2) { stopped = false; timers = []; paint(v2); }); return; } if (st.dissolved) { stopRound(); active.stop(); api("apiPair", { op: "join", t: t }).then(function (v2) { stopped = false; timers = []; sessionStorage.setItem("u4_started_" + (v2.pair ? v2.pair.pid : pid), "1"); paint(v2); }); return; } (st.gone || []).forEach(function (gs) { if (gs !== seat && others.indexOf(gs) !== -1) dropSeat(gs, (st.goneWhy || {})[gs] === "dropped"); }); if (st.pairOn === false && !offToasted) { offToasted = true; toast(S["pair.err.off"]); } }).catch(function () {}); });
       fbSend("PUT", room + "/p/" + seat + ".json", Date.now()).catch(function () {});
       // rebuild from the whole log once, then stream
       fbGet(room + "/ev.json").then(function (o) { var keys = Object.keys(o || {}).sort(); keys.forEach(function (k) { lastKey = k; handle(o[k]); }); if (!fresh && !sessionStorage.getItem("u4_seen_" + pid) && (r > 1 || keys.length)) toast(fmt("pair.resume", { round: r, R: R })); sessionStorage.setItem("u4_seen_" + pid, "1"); paintPhase(); }).catch(function () { roomFailAt = Date.now() - 10001; roomTrouble(); paintPhase(); });
