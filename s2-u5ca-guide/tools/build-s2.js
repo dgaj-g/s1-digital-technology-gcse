@@ -209,6 +209,7 @@ const scripts = [
   ['editor.js', need(path.join(A2, 'platform', 'editor.js'))],
   ['lesson.js', need(path.join(A2, 'platform', 'lesson.js'))],
   ['cw.js', need(path.join(S2, 'src', 'cw.js'))],
+  ['th-scenes.js', need(path.join(S2, 'src', 'th-scenes.js'))],
   ['th.js', need(path.join(S2, 'src', 'th.js'))],
   ['app.js', app],
   ['staff.js', staff],
