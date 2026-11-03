@@ -125,5 +125,9 @@
  "flow.play": "▶ Play it",
  "code.after": "Type this straight after line {n}. Lines in grey are already typed.",
  "code.before": "Already typed",
- "staff.tabTheory": "Unit 4 theory"
+ "staff.tabTheory": "Unit 4 theory",
+ "staff.remove": "Remove from class",
+ "staff.removeConfirm": "Remove {name} from this class? Press again to confirm.",
+ "staff.removeNote": "Is this pupil not in {cls}? Removing takes them and their work off this class's lists. If they open the class link again, they join again.",
+ "staff.removeNotYours": "Only the teacher who made this class can remove a pupil from it."
 }

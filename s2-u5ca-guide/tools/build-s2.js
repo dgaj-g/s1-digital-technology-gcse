@@ -202,6 +202,16 @@ staff = swap('staff.js', staff, `pane().querySelector('#cwsort').addEventListene
   `pane().querySelector('#cwsort').addEventListener('change', (e) => { keep('cwsort', e.target.value); cwPaint(); });
       const clr = pane().querySelector('[data-clear]');
       if (clr) twoPress(clr, T('staff.clearConfirm', { name: CLS }), (reset) => call({ op: 'clearMine', name: CLS }).then(load, (e) => { reset(); fail(e); }));`);
+// the teacher can take one pupil out of the class (a test account, or a pupil in the wrong class): the button sits at the foot of her activity drawer
+staff = swap('staff.js', staff, `'<button class="btn ghost" data-close>' + h(T('staff.close')) + '</button></div><div data-acts><p class="note">' + h(T('staff.act.loading')) + '</p></div></aside>');`,
+  `'<button class="btn ghost" data-close>' + h(T('staff.close')) + '</button></div><div data-acts><p class="note">' + h(T('staff.act.loading')) + '</p></div>' +
+      (pu.me ? '' : '<div class="part"><p class="note">' + h(T('staff.removeNote', { cls: CLS })) + '</p><button class="btn ghost" data-remove>' + h(T('staff.remove')) + '</button></div>') + '</aside>');`);
+staff = swap('staff.js', staff, "dr.querySelector('[data-close]').addEventListener('click', () => dr.remove());\n    call({ op: 'activity', name: CLS, email })",
+  `dr.querySelector('[data-close]').addEventListener('click', () => dr.remove());
+    const rm = dr.querySelector('[data-remove]');
+    if (rm) twoPress(rm, T('staff.removeConfirm', { name: pu.n || pu.email }), (reset) => call({ op: 'removePupil', name: CLS, pupil: email }).then(() => { dr.remove(); paint(); }, (e) => { reset(); fail(e); }));
+    call({ op: 'activity', name: CLS, email })`);
+staff = swap('staff.js', staff, "e.code === 'owner-only' ? T('staff.ownerOnly') :", "e.code === 'owner-only' ? T('staff.ownerOnly') : e.code === 'not-yours' ? T('staff.removeNotYours') :");
 const scripts = [
   ['content.js', contentJs],
   ['lessonview.js', need(path.join(A2, 'platform', 'lessonview.js'))],
@@ -237,6 +247,23 @@ tpl = swap('Code.gs.template', tpl, "var CW_OPS = ['open', 'screen', 'tick', 'co
 tpl = swap('Code.gs.template', tpl, "a: str_(c.a), d: num_(c.d), c: num_(c.c), r: num_(c.r) };", "a: str_(c.a), d: num_(c.d), c: num_(c.c), r: num_(c.r), h: num_(c.h) ? 1 : 0 };");
 tpl = swap('Code.gs.template', tpl, "      else if (op === 'reveal') c.r = num_(c.r) + 1;\n",
   "      else if (op === 'reveal') c.r = num_(c.r) + 1;\n      else if (op === 'had') { var hv = num_(req.v) ? 1 : 0; if ((num_(c.h) ? 1 : 0) !== hv) ev = [now, hv ? 'h' : 'g', ch]; c.h = hv; }\n");
+// removePupil (D-REMOVE, 3 Nov 2026): the class's teacher takes one pupil out; her own row can't go. u4forget_ (u4.gs) clears her Unit 4 records
+tpl = swap('Code.gs.template', tpl, "  if (op === 'clearMine') {\n", `  if (op === 'removePupil') {
+    if (!canManage_(name, email)) return err_('not-yours');
+    var gone = str_(req.pupil).trim();
+    if (!gone || gone.toLowerCase() === String(email).toLowerCase()) return err_('not-self');
+    return withLock_(function () {
+      var store = sp_(), keys = store.getKeys();
+      if (keys.indexOf(pKey_(name, gone)) === -1) return err_('no-pupil');
+      keys.forEach(function (k) {
+        if (k === pKey_(name, gone) || k === sKey_(name, gone) || k === wKey_(name, gone) || k.indexOf('d:' + name + ':' + gone + ':') === 0) store.deleteProperty(k);
+      });
+      u4forget_(name, gone);
+      return ok_({});
+    });
+  }
+  if (op === 'clearMine') {
+`);
 tpl = swap('Code.gs.template', tpl, "  if (!realClass_(name)) return err_('unknown-class');\n", "  if (!realClass_(name)) return err_('unknown-class');\n  if (/^theory/.test(op)) return u4Staff_(req, email, name);\n");
 const U4 = process.env.U4_DIR || '/Users/damiengartland/Desktop/Claude Work/S2 U5CA Guide/_unit4_theory';
 const u4server = ['build/server/u4.gs', 'proto/bank.js', 'proto/rounds.js', 'proto/judge.js'].map((f) => '/* ---- ' + f + ' ---- */\n' + need(path.join(U4, f))).join('\n\n');

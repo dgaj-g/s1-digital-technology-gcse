@@ -934,9 +934,9 @@ function renderPair(t) {
         if (!pending.length) return; // agreed → check runs
         var otherLocks = others.filter(function (s) { return locks[s] && locks[s] !== myLock; });
         if (otherLocks.length) { var s0 = otherLocks[0], L0 = ansLetter(sf, spec, locks[s0]); phaseBox.appendChild(el("p.say", { text: L0 ? fmt("pair.wants", { them: cnOf(s0), letter: L0 }) : fmt("pair.wantsAny", { them: cnOf(s0) }) }));
-          phaseBox.appendChild(el("div.acts", {}, [el("button.btn.gold", { text: L0 ? fmt("pair.agree", { letter: L0 }) : S["pair.agreeAny"], on: { click: function () { sf.set(locks[s0]); locks[seat] = locks[s0]; post("lock", r + ":" + locks[s0]); settle(); } } }), el("button.btn.sec", { text: S["pair.notYet"], on: { click: function () { say(S["pair.notYetSay"]); } } })])); }
+          phaseBox.appendChild(el("div.acts", {}, [el("button.btn.gold", { text: L0 ? fmt("pair.agree", { letter: L0 }) : S["pair.agreeAny"], on: { click: function () { sf.set(locks[s0]); locks[seat] = locks[s0]; post("lock", r + ":" + locks[s0]); settle(); } } }), el("button.btn.sec", { text: S["pair.notYet"], on: { click: function () { say(S["pair.notYetSay"]); } } })].concat(myLock ? [el("button.btn.quiet", { text: S["pair.unlock"], on: { click: unlockMine } })] : []))); }   // both locked, different answers: either can take theirs back
         else { var names = pending.map(cnOf); phaseBox.appendChild(el("p.say.waiting", { text: names.length > 1 ? fmt("pair.locked2", { them: names[0], them2: names[1] }) : fmt("pair.locked", { them: names[0] }) }));
-          phaseBox.appendChild(el("div.acts", {}, [el("button.btn.quiet", { text: S["pair.unlock"], on: { click: function () { locks[seat] = null; phase = 2; post("lock", r + ":"); paintPhase(); } } })])); }
+          phaseBox.appendChild(el("div.acts", {}, [el("button.btn.quiet", { text: S["pair.unlock"], on: { click: unlockMine } })])); }
         return; }
     }
     var myOwn = null, theirSf = {};
@@ -953,6 +953,7 @@ function renderPair(t) {
     }
     function answerText(a) { if (!a) return "—"; if (spec.kind === "one") { var L = sf.label(a); var o = spec.opts.filter(function (op) { return (Array.isArray(op) ? op[0] : null) === a; })[0]; return L + (o ? " · " + o[1] : ""); } return a.replace(/\|/g, " · ").replace(/\n/g, " · "); }
     function lockOwn() { if (!sf.complete()) { toast(S["try.incomplete"]); return; } myPicked = true; myOwn = sf.get(); picks[seat] = myOwn; if (solo) { locks[seat] = myOwn; return settle(); } post("pick", r + ":" + myOwn).then(function () { advance(); paintPhase(); }); paintPhase(); }
+    function unlockMine() { locks[seat] = null; phase = others.some(function (s) { return locks[s]; }) ? 4 : 2; post("lock", r + ":"); paintPhase(); }   // a partner still locked keeps me on Agree
     function lockPair() { var a = sf.get(); locks[seat] = a; phase = 4; post("lock", r + ":" + a).then(settle); paintPhase(); }
     function advance() { if (phase === 1 && myPicked && others.every(function (s) { return picks[s]; })) { phase = 2; addLine(null, S["pair.allAnswered"], true); paintPhase(); } }
     var settling = false;
@@ -977,7 +978,7 @@ function renderPair(t) {
       if (!m || parseInt(m[1], 10) !== r) return;
       if (ev.k === "pick") { if (s !== seat) { var was = picks[s]; picks[s] = m[2]; if (phase >= 2 && was && was !== m[2]) changedBy = s; else if (phase >= 2) changedBy = null; } else if (!picks[s]) { picks[s] = m[2]; myPicked = true; myOwn = m[2]; sf.set(m[2]); } advance(); paintCompareIfOn(); if (phase === 4) paintPhase(); return; }
       if (ev.k === "lock") {
-        if (!m[2]) { locks[s] = null; if (phase === 4 && !locks[seat]) phase = 2; }          // an unlock (D-UNLOCK): back to compare unless I hold a lock
+        if (!m[2]) { locks[s] = null; if (phase === 4 && !locks[seat] && !others.some(function (o) { return locks[o]; })) phase = 2; }          // an unlock (D-UNLOCK): back to compare unless I hold a lock
         else { locks[s] = m[2]; if (s === seat && phase < 4) { phase = 4; sf.set(m[2]); } else if (s !== seat && phase === 2) phase = 4; }   // a partner lock pulls me to Agree
         if (phase >= 2) { paintPhase(); settle(); } return; }
     }
