@@ -254,7 +254,7 @@ function Surface(spec, o) {
     api.order = dispR;   // the shuffled row order, so an answer read out in words follows the rows as shown
     api.complete = function () { return picks.every(function (p) { return !!p; }); };
     api.set = function (v) { var a = (v || "").split(","); picks = rows.map(function (_, i) { return a[i] || ""; }); Object.keys(cells).forEach(function (ri) { Object.keys(cells[ri].btns).forEach(function (k) { cells[ri].btns[k].classList.toggle("on", k === picks[ri]); }); }); };
-    api.verdict = function (res, rv) { var all = true; rows.forEach(function (_, ri) { var ok = res.cells && res.cells[ri] === 1; if (!ok) all = false; clear(cells[ri].vk).appendChild(el("span.vk" + (ok ? ".ok" : ".no"), { text: ok ? "✓" : "✗" })); var want = rv && rv.ansKey && rv.ansKey[ri]; if (want && cells[ri].btns[want]) cells[ri].btns[want].classList.add("right"); if (!ok && picks[ri] && cells[ri].btns[picks[ri]]) cells[ri].btns[picks[ri]].classList.add("wrong"); }); return all; };
+    api.verdict = function (res, rv) { var all = true; rows.forEach(function (_, ri) { var ok = res.cells && res.cells[ri] === 1; if (!ok) all = false; clear(cells[ri].vk).appendChild(el("span.vk" + (ok ? ".ok" : ".no"))); var want = rv && rv.ansKey && rv.ansKey[ri]; if (want && cells[ri].btns[want]) cells[ri].btns[want].classList.add("right"); if (!ok && picks[ri] && cells[ri].btns[picks[ri]]) cells[ri].btns[picks[ri]].classList.add("wrong"); }); return all; };
     api.clearMarks = function () { Object.keys(cells).forEach(function (ri) { clear(cells[ri].vk); Object.keys(cells[ri].btns).forEach(function (k) { cells[ri].btns[k].classList.remove("right", "wrong"); }); }); };
   }
 
@@ -297,7 +297,7 @@ function Surface(spec, o) {
     api.get = function () { return picksS.every(function (p) { return !p; }) ? "" : picksS.join(","); };
     api.complete = function () { return picksS.every(function (p) { return !!p; }); };
     api.set = function (v) { var a = (v || "").split(","); picksS = items.map(function (_, i) { return a[i] || ""; }); Object.keys(rowsS).forEach(function (ii) { Object.keys(rowsS[ii].btns).forEach(function (k) { rowsS[ii].btns[k].classList.toggle("on", k === picksS[ii]); }); }); };
-    api.verdict = function (res, rv) { var all = true; items.forEach(function (_, ii) { var ok = res.cells && res.cells[ii] === 1; if (!ok) all = false; rowsS[ii].row.classList.add(ok ? "right" : "wrong"); clear(rowsS[ii].vk).appendChild(el("span.vk" + (ok ? ".ok" : ".no"), { text: ok ? "✓" : "✗" })); var want = rv && rv.ansKey && rv.ansKey[ii]; if (want && rowsS[ii].btns[want]) rowsS[ii].btns[want].classList.add("right"); }); return all; };
+    api.verdict = function (res, rv) { var all = true; items.forEach(function (_, ii) { var ok = res.cells && res.cells[ii] === 1; if (!ok) all = false; rowsS[ii].row.classList.add(ok ? "right" : "wrong"); clear(rowsS[ii].vk).appendChild(el("span.vk" + (ok ? ".ok" : ".no"))); var want = rv && rv.ansKey && rv.ansKey[ii]; if (want && rowsS[ii].btns[want]) rowsS[ii].btns[want].classList.add("right"); }); return all; };
     api.clearMarks = function () { Object.keys(rowsS).forEach(function (ii) { rowsS[ii].row.classList.remove("right", "wrong"); clear(rowsS[ii].vk); Object.keys(rowsS[ii].btns).forEach(function (k) { rowsS[ii].btns[k].classList.remove("right"); }); }); };
   }
 
@@ -439,7 +439,7 @@ function Surface(spec, o) {
     api.complete = function () { if (agv) return ains.every(function (i) { return !!i.value; }); return acells.result.every(function (c) { return c.given != null || !!c.inp.value; }) && (!hasOvf || !acells.overflow[0].inp || !!acells.overflow[0].inp.value); };
     api.set = function (v) { v = v || {}; ["carry", "result", "overflow"].forEach(function (nm) { var str = String(v[nm] == null ? "" : v[nm]); acells[nm].forEach(function (c, i) { if (c && c.inp) { var ch = str.charAt(i); c.inp.value = /^[01]$/.test(ch) ? ch : ""; c.inp.classList.toggle("typed", !!c.inp.value); } }); }); };
     api.verdict = function (res, rv) { var cells = res.cells || [], k = 0, all = true, key = (rv && rv.ansKey) || {};
-      function paintVk(cls, ok, nm) { var vk = avk[cls]; if (!vk) return; clear(vk).appendChild(el("span.vk" + (ok ? ".ok" : ".no"), { text: ok ? "\u2713" : "\u2717" })); if (!ok && key[nm] != null) vk.appendChild(el("span.fix", { text: String(key[nm]) })); }
+      function paintVk(cls, ok, nm) { var vk = avk[cls]; if (!vk) return; clear(vk).appendChild(el("span.vk" + (ok ? ".ok" : ".no"))); if (!ok && key[nm] != null) vk.appendChild(el("span.fix", { text: String(key[nm]) })); }
       function markRow(nm) { var okRow = true, any = false; acells[nm].forEach(function (c) { if (!c || !c.inp) return; any = true; var ok = cells[k++] === 1; if (!ok) okRow = false; c.inp.classList.add(ok ? "right" : "wrong"); }); return { ok: okRow, any: any }; }
       if (agv) { var rC = markRow("carry"), rR = markRow("result"), rO = markRow("overflow"); if (rC.any) { if (!rC.ok) all = false; paintVk("carry", rC.ok, "carry"); }
         if (rR.any || rO.any) { var ok2 = (!rR.any || rR.ok) && (!rO.any || rO.ok); if (!ok2) all = false; paintVk("result", ok2, rR.any && !rR.ok ? "result" : "overflow"); } }
@@ -492,9 +492,10 @@ function answerWords(spec, rv, sf) {
   if (!rv) return "";
   if (spec.kind === "one") return [].concat(rv.ansKey).map(function (L) { return sf ? sf.label(L) : L; }).join(", ");
   if (spec.kind === "tf" && sf && sf.order) return sf.order.map(function (i) { return rv.ansKey[i]; }).join(", ");
-  if (spec.kind === "tf" || spec.kind === "sort") return rv.ansKey.join(", ");
+  if (spec.kind === "sort") return sf ? "" : rv.ansKey.join(", ");   // the sort rows already light the right column in green
+  if (spec.kind === "tf") return rv.ansKey.join(", ");
   if (spec.kind === "gaps") return rv.ansKey.map(function (a) { return String(a).split("|")[0]; }).join(", ");
-  if (spec.kind === "match") return rv.ansKey.map(function (p) { return (p[0] + 1) + " with " + spec.right[p[1]].replace(/\s+/g, " "); }).join(". ");
+  if (spec.kind === "match") return rv.ansKey.map(function (p) { return (spec.left[p[0]] || p[0] + 1) + ": " + spec.right[p[1]].replace(/\s+/g, " ").replace(/\.$/, ""); }).join(". ") + ".";
   if (spec.kind === "number") return rv.ansKey;
   if (spec.kind === "add") return rv.ansKey && rv.ansKey.result != null ? String(rv.ansKey.result) : "";
   if (spec.kind === "output") return rv.ansKey.join(", ");
@@ -509,6 +510,21 @@ function contextBlocks(ctx) {
     else if (c.kind === "figure") { var f = el("div.fig", { html: c.svg || "" }); if (c.alt) f.setAttribute("aria-label", c.alt); box.appendChild(f); if (c.cap) box.appendChild(el("div.cap", { text: c.cap })); }
     else if (c.kind === "table") { var t = el("table"); if (c.head) { var tr = el("tr"); c.head.forEach(function (h) { tr.appendChild(el("th", { text: h })); }); t.appendChild(tr); } (c.rows || []).forEach(function (r) { var tr2 = el("tr"); r.forEach(function (cell) { tr2.appendChild(el("td", { text: cell })); }); t.appendChild(tr2); }); box.appendChild(t); }
   });
+  return box;
+}
+
+/* a partner round's scenario and two-class picture, drawn like the screen 5 inheritance scene (no code) */
+function pairCtx(ctx) {
+  if (!ctx || !(ctx.scene || ctx.classes)) return null;
+  var box = el("div.pctx");
+  if (ctx.scene) box.appendChild(el("p.scene", { text: ctx.scene }));
+  var c = ctx.classes, L = window.__scenelib;
+  if (c && L) {
+    var items = function (k) { return (k.has || []).map(function (x) { return L.mem1(L.esc(x)); }).join(""); };
+    var fig = el("div.fig.scn", { attr: { role: "img", "aria-label": c.link } });
+    fig.innerHTML = '<div class="sc inhsc">' + L.cd("class " + L.esc(c.parent.name), items(c.parent)) + '<div class="inh">' + L.esc(c.link) + " \u2191</div>" + L.cd("class " + L.esc(c.child.name), items(c.child)) + "</div>";
+    box.appendChild(fig);
+  }
   return box;
 }
 
@@ -735,9 +751,10 @@ function renderPart(t, qid) {
     paper.appendChild(el("div.phead", {}, [el("span.src", { text: fmt("part.head", { year: part.year, label: part.label, x: part.marks }) }), el("span.form", { text: formName(part.form) })]));
     paper.appendChild(el("p.stem", {}, [document.createTextNode(part.stem + " "), el("span.mk", { text: "[" + part.marks + "]" })]));
     var ctx = contextBlocks(part.context); if (ctx) paper.appendChild(ctx);
+    if (sp.how) paper.appendChild(el("p.how", { text: sp.how }));
     var isCode = sp.kind === "code", isWrite = sp.kind === "write" || isCode, isLong = sp.kind === "long", floor = isCode ? part.marks * 2 : isWrite ? part.marks * 4 : isLong ? 60 : 0;
     var draftT = null, draftNote = el("p.small.quiet.hidden", { text: S["part.draftSaved"] });
-    var sf = Surface(sp, { keepOrder: true, floor: floor, onChange: function () { gate(); if (isWrite || isLong) { clearTimeout(draftT); draftT = setTimeout(function () { api("apiTheory", { op: "draft", t: t, qid: qid, text: sf.get() }).then(function () { draftNote.classList.remove("hidden"); }).catch(function () {}); }, 800); } } });
+    var sf = Surface(sp, { keepOrder: true, floor: floor, leftHead: (sp.heads || [])[0], rightHead: (sp.heads || [])[1], onChange: function () { gate(); if (isWrite || isLong) { clearTimeout(draftT); draftT = setTimeout(function () { api("apiTheory", { op: "draft", t: t, qid: qid, text: sf.get() }).then(function () { draftNote.classList.remove("hidden"); }).catch(function () {}); }, 800); } } });
     if ((isWrite || isLong) && r.draft) sf.set(r.draft);
     paper.appendChild(sf.el); if (isWrite || isLong) paper.appendChild(draftNote);
     var btnCheck = el("button.btn", { text: S["part.check"], on: { click: check } }), btnClear = el("button.btn.quiet", { text: S["part.clear"], on: { click: reset } });
@@ -761,16 +778,17 @@ function renderPart(t, qid) {
         if (isWrite) return writeVerdict(J);
         if (isLong) return longVerdict(J);
         sf.verdict(J, J);
-        vbox.appendChild(el("div.verdict" + (J.right ? ".full" : ""), {}, [el("span.score", { text: fmt("part.marks", { m: J.m, x: J.x }) }), el("span.b", { text: J.right ? S["part.full"] : "" })]));
+        vbox.appendChild(el("div.verdict" + (J.right ? ".full" : ""), {}, [el("span.score" + (J.right ? ".full" : ""), { text: fmt("part.marks", { m: J.m, x: J.x }) }), J.right ? el("span.fullnote", { text: S["part.full"] }) : null]));
         if (!J.right) { var aw = answerWords(sp, J, sf); if (aw) vbox.appendChild(el("p.ansright", {}, [el("b", { text: fmt("part.right", { a: aw }) })])); }
         if (J.why) vbox.appendChild(el("p.why", { text: fmt("part.why", { why: J.why }) }));
+        if (J.model) vbox.appendChild(el("div.modelbox", {}, [el("div.h", { text: S["part.model"] }), el("p", { text: J.model })]));
         vbox.appendChild(msBox(J.ms));
       }).catch(function (e) { console.error(e); btnCheck.disabled = false; toast(S["err.server"]); });
     }
     function tickRow(ptText, auto, on, onToggle) { var cb = el("input", { type: "checkbox", checked: !!on, on: { change: function () { onToggle(cb.checked); } } }); var row = el("label.tick" + (auto ? ".auto" : "") + (on ? ".on" : ""), {}, [cb, el("span.lab", {}, [el("b", { text: S["part.tick.me"] }), el("span", { text: " " + ptText })]), auto ? el("span.hintl", { text: S["part.tick.hint"] }) : null]); cb.addEventListener("change", function () { row.classList.toggle("on", cb.checked); }); return row; }
     function writeVerdict(J) {
       var pts = J.points || [], ticks = pts.map(function (_, i) { return J.auto && J.auto[i] ? 1 : 0; });
-      vbox.appendChild(el("div.verdict", {}, [el("span.score", { text: fmt("part.marks", { m: J.m, x: J.x }) })]));
+      vbox.appendChild(el("div.verdict" + (J.x && J.m === J.x ? ".full" : ""), {}, [el("span.score" + (J.x && J.m === J.x ? ".full" : ""), { text: fmt("part.marks", { m: J.m, x: J.x }) })]));
       var tk = el("div.ticks"); tk.appendChild(el("div.gh", { text: S["part.tick.head"] })); var total = el("p.b");
       pts.forEach(function (pt, i) { tk.appendChild(tickRow(pt, J.auto && J.auto[i], ticks[i], function (v) { ticks[i] = v ? 1 : 0; paintTotal(); })); });
       function paintTotal() { var m = Math.min(J.x, ticks.reduce(function (a, b) { return a + b; }, 0)); total.textContent = fmt("part.tick.total", { m: m, x: J.x }); }
@@ -784,7 +802,7 @@ function renderPart(t, qid) {
     }
     function longVerdict(J) {
       var groups = J.bullets || [], ticks = groups.map(function (g, gi) { return g.points.map(function (_, i) { return J.auto && J.auto[gi] && J.auto[gi][i] ? 1 : 0; }); }), pick = null;
-      vbox.appendChild(el("div.verdict", {}, [el("span.score", { text: fmt("part.marks", { m: J.m, x: J.x }) })]));
+      vbox.appendChild(el("div.verdict" + (J.x && J.m === J.x ? ".full" : ""), {}, [el("span.score" + (J.x && J.m === J.x ? ".full" : ""), { text: fmt("part.marks", { m: J.m, x: J.x }) })]));
       var tk = el("div.ticks"); tk.appendChild(el("div.gh", { text: S["part.tick.head"] }));
       groups.forEach(function (g, gi) { tk.appendChild(el("h4", { text: g.text })); g.points.forEach(function (pt, i) { tk.appendChild(tickRow(pt, J.auto && J.auto[gi] && J.auto[gi][i], ticks[gi][i], function (v) { ticks[gi][i] = v ? 1 : 0; pick = null; paintBand(); })); }); });
       var bandLine = el("p.b"), bands = el("div.bands"), pickBox = el("div.markpick"), pickLine = el("p.small"); tk.appendChild(bandLine); tk.appendChild(bands); tk.appendChild(pickLine); tk.appendChild(pickBox);
@@ -889,6 +907,7 @@ function renderPair(t) {
     rd.appendChild(el("div.pill", { text: fmt("pair.round.pill", { round: r, R: R }) }));
     var steps = el("div.steps"), stepEls = [1, 2, 3, 4].map(function (i) { var s = el("div.step", { text: S["pair.step" + i] }); steps.appendChild(s); return s; }); rd.appendChild(steps);
     function setStep(n) { stepEls.forEach(function (s, i) { s.classList.toggle("done", i + 1 < n); s.classList.toggle("on", i + 1 === n); }); }
+    var pc = pairCtx(round.context); if (pc) rd.appendChild(pc);
     rd.appendChild(el("p.stem", { text: round.stem }));
     var picks = {}, locks = {}, lastKey = null, myPicked = false, phase = 1, checked = null, changedBy = null;
     var sf = Surface(spec, { seed: seed, keepOrder: !!round.keepOrder, onChange: function () { if (phase >= 2 && !checked) { post("pick", r + ":" + sf.get()); paintCompare(); } } });
