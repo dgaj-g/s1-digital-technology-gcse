@@ -166,13 +166,16 @@ b.term{color:var(--sw-ink);font-weight:900;border-bottom:3px solid var(--sw)}
 .chip.used{background:var(--grey-chip);border-color:var(--grey-chip);color:var(--grey-ink);cursor:default;transform:none}
 .hint{font-size:15px;color:var(--mute);font-weight:700;margin-top:8px}
 .sort{display:grid;gap:8px}
-.sort .hd{display:grid;grid-template-columns:1fr auto;gap:12px;font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:var(--mute);font-weight:900;padding:0 6px}
-.srow{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:var(--card)}
+.sort .hd{display:none;grid-template-columns:1fr auto;gap:12px;font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:var(--mute);font-weight:900;padding:0 6px}
+.srow{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:var(--card)}
 .srow .cols{display:flex;gap:6px}
 .srtb{min-width:120px;height:38px;padding:0 12px;border-radius:9px;border:2px solid var(--sw-ink);background:var(--card);color:var(--sw-ink);font:700 15px var(--sans);cursor:pointer}
 .srtb.on{background:var(--sw-ink);color:var(--white)}
 .srow.right{border-color:var(--right);background:var(--right-soft)}
 .srow.wrong{border-color:var(--mark);background:var(--mark-soft)}
+.srow.wrong .srtb.on{background:var(--mark);border-color:var(--mark);color:var(--white)}
+.srow.wrong .srtb.right{border:3px solid var(--right);background:var(--right-soft);color:var(--right);font-weight:900}
+.srow.wrong .srtb.right::before{content:"\2713  "}
 .match{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:0 70px;align-items:stretch}
 .match .colL,.match .colR{display:grid;gap:10px;align-content:start}
 .match .mi{display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:var(--card);min-height:56px}
@@ -269,6 +272,9 @@ b.term{color:var(--sw-ink);font-weight:900;border-bottom:3px solid var(--sw)}
 .step.on{background:var(--sw);color:var(--white)}
 .step.done{border-color:var(--sw);color:var(--sw-ink)}
 .rd .stem{font-weight:700;font-size:21px;margin-bottom:12px}
+.rd .pctx{margin:0 0 16px}
+.rd .pctx .scene{margin:0 0 12px;font-size:18px;line-height:1.5}
+.rd .pctx .fig{border:2px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--card)}
 .phase{margin-top:16px;padding-top:14px;border-top:2px solid var(--line);display:grid;gap:12px}
 .phase .say{font-weight:700;font-size:18px}
 .phase .say.waiting{color:var(--mute);display:flex;align-items:center;gap:10px}
@@ -362,7 +368,7 @@ html.no-motion *,html.no-motion *::before,html.no-motion *::after{animation-dura
   .paper{padding:18px 16px}
   .scr,.rd{padding:20px 16px}
   .cpart,.cname{grid-template-columns:1fr}
-  .match{grid-template-columns:1fr 40px 1fr}
+  .match{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 40px}   /* two columns: the line canvas is absolute, so it takes no grid cell */
   .tcards{grid-template-columns:1fr}
 }
 
@@ -698,3 +704,19 @@ body.is-th main,body.is-pair main,body.is-staff main{max-width:1420px}
 @keyframes scSlide{from{transform:translateX(-90%);opacity:.3}to{transform:none;opacity:1}}
 @keyframes scBlink{50%{opacity:0}}
 @media (max-width:480px){.scr .dots{display:none}}
+
+/* ---- Topic 1 past paper, 3 Nov 2026: full-mark score, "how to answer" line, written full-mark answer, sort rows on a phone ---- */
+.verdict .fullnote{margin-left:14px;font-weight:900;font-size:22px;color:var(--right)}
+.paper .how{font-weight:800;font-size:17px;line-height:1.45;margin:0 0 12px;color:var(--sw-ink)}
+.modelbox{margin-top:14px;background:var(--card);border:2px solid var(--right);border-radius:12px;padding:12px 16px}
+.modelbox .h{font-weight:900;font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:var(--mute);margin-bottom:6px}
+.modelbox p{margin:0;white-space:pre-line;font:16px/1.5 var(--sans)}
+@media (max-width:600px){
+  .srow{grid-template-columns:1fr auto}
+  .srow .cols{grid-column:1/-1}
+  .srow .vkc{grid-row:1;grid-column:2}
+  .srow .cols{flex-wrap:wrap}
+  .srtb{min-width:0;flex:1 1 auto}
+  .match{gap:0 22px}
+  .match .mi{padding:8px 10px;gap:8px;font-size:15px;min-width:0;overflow-wrap:anywhere}
+}
