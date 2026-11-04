@@ -1,0 +1,317 @@
+[
+ {
+  "file": "db2018-p6-tables.png",
+  "pdf": "U1 DT 2018 QP.pdf",
+  "page": 6,
+  "box": [
+   93,
+   175,
+   565,
+   328
+  ],
+  "keys": [
+   "tab2018q2b",
+   "rel2018q2c",
+   "rel2018q2d",
+   "typ2018q2a1",
+   "typ2018q2a2"
+  ]
+ },
+ {
+  "file": "db2018-p16-staff-pay.png",
+  "pdf": "U1 DT 2018 QP.pdf",
+  "page": 16,
+  "box": [
+   91,
+   115,
+   573,
+   441
+  ],
+  "keys": [
+   "val2018q7e"
+  ]
+ },
+ {
+  "file": "db2019-p8-members.png",
+  "pdf": "U1 DT 2019 QP.pdf",
+  "page": 8,
+  "box": [
+   114,
+   404,
+   569,
+   519
+  ],
+  "keys": [
+   "typ2019q3b",
+   "typ2019q3c1",
+   "typ2019q3c2"
+  ]
+ },
+ {
+  "file": "db2019-p10-loans.png",
+  "pdf": "U1 DT 2019 QP.pdf",
+  "page": 10,
+  "box": [
+   136,
+   118,
+   497,
+   289
+  ],
+  "keys": [
+   "qry2019q3d1",
+   "qry2019q3e",
+   "rep2019q3d2"
+  ]
+ },
+ {
+  "file": "db2019-p11-relationship.png",
+  "pdf": "U1 DT 2019 QP.pdf",
+  "page": 11,
+  "box": [
+   108,
+   217,
+   558,
+   434
+  ],
+  "keys": [
+   "rel2019q3f"
+  ]
+ },
+ {
+  "file": "db2021-p4-relationship.png",
+  "pdf": "U1 DT 2021 QP.pdf",
+  "page": 4,
+  "box": [
+   206,
+   408,
+   501,
+   594
+  ],
+  "keys": [
+   "rel2021q2b"
+  ]
+ },
+ {
+  "file": "db2021-p5-cars.png",
+  "pdf": "U1 DT 2021 QP.pdf",
+  "page": 5,
+  "box": [
+   87,
+   121,
+   560,
+   231
+  ],
+  "keys": [
+   "qry2021q2c2",
+   "typ2021q2c1a",
+   "typ2021q2c1b"
+  ]
+ },
+ {
+  "file": "db2021-p6-query-results.png",
+  "pdf": "U1 DT 2021 QP.pdf",
+  "page": 6,
+  "box": [
+   252,
+   148,
+   434,
+   200
+  ],
+  "keys": []
+ },
+ {
+  "file": "db2021-p6-query-grid.png",
+  "pdf": "U1 DT 2021 QP.pdf",
+  "page": 6,
+  "box": [
+   137,
+   275,
+   544,
+   380
+  ],
+  "keys": [
+   "qry2021q2d"
+  ]
+ },
+ {
+  "file": "db2021-p7-sales-report.png",
+  "pdf": "U1 DT 2021 QP.pdf",
+  "page": 7,
+  "box": [
+   129,
+   137,
+   537,
+   277
+  ],
+  "keys": [
+   "qry2021q2f1",
+   "rep2021q2f2"
+  ]
+ },
+ {
+  "file": "db2021-p8-form.png",
+  "pdf": "U1 DT 2021 QP.pdf",
+  "page": 8,
+  "box": [
+   91,
+   130,
+   567,
+   402
+  ],
+  "keys": [
+   "val2021q2g1",
+   "val2021q2g2"
+  ]
+ },
+ {
+  "file": "db2022-p20-tables.png",
+  "pdf": "U1 DT 2022 QP.pdf",
+  "page": 20,
+  "box": [
+   114,
+   364,
+   570,
+   487
+  ],
+  "keys": [
+   "tab2022q10b",
+   "typ2022q10b1",
+   "typ2022q10b2"
+  ]
+ },
+ {
+  "file": "db2022-p21-text-file.png",
+  "pdf": "U1 DT 2022 QP.pdf",
+  "page": 21,
+  "box": [
+   128,
+   135,
+   559,
+   201
+  ],
+  "keys": [
+   "imp2022q10c"
+  ]
+ },
+ {
+  "file": "db2023-p7-sheet.png",
+  "pdf": "U1 DT 2023 QP.pdf",
+  "page": 7,
+  "box": [
+   54,
+   131,
+   534,
+   370
+  ],
+  "keys": [
+   "val2023q3b1",
+   "val2023q3b2",
+   "val2023q3b3"
+  ]
+ },
+ {
+  "file": "db2024-p7-tables.png",
+  "pdf": "U1 DT 2024 QP.pdf",
+  "page": 7,
+  "box": [
+   76,
+   104,
+   534,
+   381
+  ],
+  "keys": [
+   "typ2024q3a",
+   "tab2024q3c",
+   "tab2024q3d"
+  ]
+ },
+ {
+  "file": "db2024-p8-relationship.png",
+  "pdf": "U1 DT 2024 QP.pdf",
+  "page": 8,
+  "box": [
+   153,
+   104,
+   450,
+   324
+  ],
+  "keys": [
+   "tab2024q3c",
+   "tab2024q3d"
+  ]
+ },
+ {
+  "file": "db2024-p9-query-a.png",
+  "pdf": "U1 DT 2024 QP.pdf",
+  "page": 9,
+  "box": [
+   76,
+   103,
+   533,
+   163
+  ],
+  "keys": [
+   "qry2024q3e"
+  ]
+ },
+ {
+  "file": "db2024-p9-query-b.png",
+  "pdf": "U1 DT 2024 QP.pdf",
+  "page": 9,
+  "box": [
+   67,
+   326,
+   516,
+   432
+  ],
+  "keys": [
+   "qry2024q3f"
+  ]
+ },
+ {
+  "file": "db2025-p8-table.png",
+  "pdf": "U1 DT 2025 QP.pdf",
+  "page": 8,
+  "box": [
+   108,
+   147,
+   542,
+   320
+  ],
+  "keys": [
+   "typ2025q5a"
+  ]
+ },
+ {
+  "file": "db2025-p9-form.png",
+  "pdf": "U1 DT 2025 QP.pdf",
+  "page": 9,
+  "box": [
+   75,
+   129,
+   533,
+   329
+  ],
+  "keys": [
+   "val2025q5bii"
+  ]
+ },
+ {
+  "file": "db2026-p8-tables.png",
+  "pdf": "U1 DT 2026 QP.pdf",
+  "page": 8,
+  "box": [
+   72,
+   104,
+   532,
+   559
+  ],
+  "keys": [
+   "tab2026q4a",
+   "rel2026q4c",
+   "typ2026q4b",
+   "qry2026q4d1",
+   "rep2026q4d2"
+  ]
+ }
+]

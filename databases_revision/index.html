@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<title>Databases HQ</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:linear-gradient(135deg,#0a0a2e 0%,#1a1a4e 40%,#0d2137 100%);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#e0e0e0;overflow-x:hidden;}
+.container{max-width:900px;margin:0 auto;padding:30px 20px 60px;position:relative;z-index:1;}
+.header{text-align:center;margin-bottom:40px;animation:fadeInDown 0.8s ease;}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
+.header-icon{font-size:64px;margin-bottom:10px;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+.header h1{font-size:2.4em;font-weight:800;background:linear-gradient(135deg,#00f5d4,#00bbf9,#9b5de5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.header p{font-size:1.1em;color:#8899aa;max-width:600px;margin:0 auto;}
+.subtitle{display:inline-block;background:rgba(0,245,212,0.1);border:1px solid rgba(0,245,212,0.2);border-radius:20px;padding:6px 18px;font-size:0.85em;color:#00f5d4;margin-top:12px;letter-spacing:1px;}
+.flow-line{display:flex;align-items:center;justify-content:center;gap:8px;margin:30px 0;animation:fadeIn 1s ease 0.5s both;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.flow-dot{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.15);transition:all 0.3s;}
+.flow-dot.active{background:#00f5d4;box-shadow:0 0 12px rgba(0,245,212,0.5);}
+.flow-dash{width:30px;height:2px;background:rgba(255,255,255,0.1);}
+.cards{display:flex;flex-direction:column;gap:18px;}
+.card{display:flex;border-radius:16px;overflow:hidden;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:all 0.3s ease;text-decoration:none;color:inherit;animation:fadeInUp 0.6s ease both;}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(25px);}to{opacity:1;transform:translateY(0);}}
+.card:nth-child(1){animation-delay:0.1s;}.card:nth-child(2){animation-delay:0.2s;}.card:nth-child(3){animation-delay:0.3s;}.card:nth-child(4){animation-delay:0.4s;}.card:nth-child(5){animation-delay:0.5s;}.card:nth-child(6){animation-delay:0.6s;}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,0.3);border-color:rgba(255,255,255,0.12);}
+.card-num-strip{display:flex;align-items:center;justify-content:center;width:80px;min-height:120px;font-size:2em;font-weight:900;color:rgba(255,255,255,0.9);}
+.card-body{flex:1;padding:18px 20px;display:flex;flex-direction:column;gap:8px;}
+.card-title-row{display:flex;align-items:center;gap:10px;}
+.card-icon{font-size:1.6em;}
+.card-title{font-size:1.2em;font-weight:700;}
+.card-desc{font-size:0.88em;color:#8899aa;line-height:1.5;}
+.card-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.card-badge{font-size:0.75em;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,0.06);color:#aabbcc;}
+.card-action{display:flex;align-items:center;justify-content:center;padding:0 24px;font-weight:700;font-size:0.95em;white-space:nowrap;transition:all 0.3s;}
+/* Activity 1 - Data Detective - Deep Blue */
+.card:nth-child(1) .card-num-strip{background:linear-gradient(135deg,#1a3a5c,#2a5a8c);}
+.card:nth-child(1) .card-title{color:#64b5f6;}
+.card:nth-child(1) .card-action{color:#64b5f6;}
+.card:nth-child(1):hover{border-color:rgba(100,181,246,0.3);}
+/* Activity 2 - Type Caster - Amber */
+.card:nth-child(2) .card-num-strip{background:linear-gradient(135deg,#5a3e00,#8a6a10);}
+.card:nth-child(2) .card-title{color:#ffd54f;}
+.card:nth-child(2) .card-action{color:#ffd54f;}
+.card:nth-child(2):hover{border-color:rgba(255,213,79,0.3);}
+/* Activity 3 - Pixel Lab - Pink */
+.card:nth-child(3) .card-num-strip{background:linear-gradient(135deg,#5a1a3a,#8a2a5a);}
+.card:nth-child(3) .card-title{color:#f48fb1;}
+.card:nth-child(3) .card-action{color:#f48fb1;}
+.card:nth-child(3):hover{border-color:rgba(244,143,177,0.3);}
+/* Activity 4 - Graphics Showdown - Purple */
+.card:nth-child(4) .card-num-strip{background:linear-gradient(135deg,#2a1a5a,#4a2a8a);}
+.card:nth-child(4) .card-title{color:#b39ddb;}
+.card:nth-child(4) .card-action{color:#b39ddb;}
+.card:nth-child(4):hover{border-color:rgba(179,157,219,0.3);}
+/* Activity 5 - Sound Studio - Green */
+.card:nth-child(5) .card-num-strip{background:linear-gradient(135deg,#0a3a2a,#1a6a4a);}
+.card:nth-child(5) .card-title{color:#69f0ae;}
+.card:nth-child(5) .card-action{color:#69f0ae;}
+.card:nth-child(5):hover{border-color:rgba(105,240,174,0.3);}
+/* Activity 6 - Format Passport Control - Coral */
+.card:nth-child(6) .card-num-strip{background:linear-gradient(135deg,#5a1a0a,#8a3a1a);}
+.card:nth-child(6) .card-title{color:#ff8a65;}
+.card:nth-child(6) .card-action{color:#ff8a65;}
+.card:nth-child(6):hover{border-color:rgba(255,138,101,0.3);}
+.footer{text-align:center;margin-top:50px;padding:20px;color:#556677;font-size:0.85em;animation:fadeIn 1s ease 1s both;}
+.footer a{color:#00f5d4;text-decoration:none;}
+@media(max-width:600px){.header h1{font-size:1.8em;}.card-num-strip{width:60px;font-size:1.5em;}.card-body{padding:14px;}.card-action{padding:0 14px;font-size:0.85em;}.container{padding:20px 14px 40px;}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<div class="header-icon">🗄️</div>
+<h1>Databases HQ</h1>
+<p>Five activities on the Databases topic. In each one you learn the ideas, put them to work in a game, then face real CCEA exam questions from 2018 to 2026.</p>
+<div class="subtitle">GCSE DIGITAL TECHNOLOGY &bull; UNIT 1 REVISION</div>
+</div>
+<div class="flow-line">
+<div class="flow-dot active"></div><div class="flow-dash"></div><div class="flow-dot"></div><div class="flow-dash"></div><div class="flow-dot"></div><div class="flow-dash"></div><div class="flow-dot"></div><div class="flow-dash"></div><div class="flow-dot"></div>
+</div>
+<div class="cards">
+<a class="card" href="activity1.html">
+<div class="card-num-strip">1</div>
+<div class="card-body">
+<div class="card-title-row"><span class="card-icon">📋</span><span class="card-title">The Register</span></div>
+<div class="card-desc">Tap the parts of a real table, sort fields into data types, draw the links between the library tables, then link every loan slip to the right pupil.</div>
+<div class="card-meta"><span class="card-badge">⏱ 12 min</span><span class="card-badge">Tables and Records</span><span class="card-badge">Key Field</span><span class="card-badge">Data Types</span><span class="card-badge">Relationships</span></div>
+</div>
+<div class="card-action">PLAY →</div>
+</a>
+<a class="card" href="activity2.html">
+<div class="card-num-strip">2</div>
+<div class="card-body">
+<div class="card-title-row"><span class="card-icon">🚪</span><span class="card-title">The Door</span></div>
+<div class="card-desc">Choose a validation check for every field, then open the door and watch your rules let good data in and keep bad data out.</div>
+<div class="card-meta"><span class="card-badge">⏱ 12 min</span><span class="card-badge">Validation</span><span class="card-badge">Presence</span><span class="card-badge">Length</span><span class="card-badge">Range</span></div>
+</div>
+<div class="card-action">PLAY →</div>
+</a>
+<a class="card" href="activity3.html">
+<div class="card-num-strip">3</div>
+<div class="card-body">
+<div class="card-title-row"><span class="card-icon">🎢</span><span class="card-title">Query Gates</span></div>
+<div class="card-desc">Decide who gets through each ride gate, then type real criteria into a query design grid and run them on a booking table.</div>
+<div class="card-meta"><span class="card-badge">⏱ 12 min</span><span class="card-badge">Queries</span><span class="card-badge">Operators</span><span class="card-badge">AND / OR</span><span class="card-badge">BETWEEN</span></div>
+</div>
+<div class="card-action">PLAY →</div>
+</a>
+<a class="card" href="activity4.html">
+<div class="card-num-strip">4</div>
+<div class="card-body">
+<div class="card-title-row"><span class="card-icon">🏢</span><span class="card-title">The Front Office</span></div>
+<div class="card-desc">Pick the right tool for each job, make and read the reports on the wall, then record a macro that does the Friday jobs in one click.</div>
+<div class="card-meta"><span class="card-badge">⏱ 12 min</span><span class="card-badge">Forms</span><span class="card-badge">Reports</span><span class="card-badge">Macros</span></div>
+</div>
+<div class="card-action">PLAY →</div>
+</a>
+<a class="card" href="activity5.html">
+<div class="card-num-strip">5</div>
+<div class="card-body">
+<div class="card-title-row"><span class="card-icon">🎪</span><span class="card-title">The Festival</span></div>
+<div class="card-desc">Keep the festival’s computer system coping with volume, variety and velocity, then find the trends, patterns and relationships in its data.</div>
+<div class="card-meta"><span class="card-badge">⏱ 10 min</span><span class="card-badge">Big Data</span><span class="card-badge">The 3Vs</span><span class="card-badge">Data Analytics</span></div>
+</div>
+<div class="card-action">PLAY →</div>
+</a>
+</div>
+<div class="footer">GCSE Digital Technology &bull; Unit 1: Databases &bull; Content from the CCEA specification, the revision textbook and CCEA past papers</div>
+</div>
+</body>
+</html>
