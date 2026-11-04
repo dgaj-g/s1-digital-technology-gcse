@@ -6,7 +6,7 @@
 (function () {
 "use strict";
 var BASE = window.U4_BASE || "/";
-var S = {}, IDX = [], LEARN = {}, ST = null, ME = { first: "", owner: false }, R = 10;
+var AGO = null, S = {}, IDX = [], LEARN = {}, ST = null, ME = { first: "", owner: false }, R = 10;
 var active = { stop: function () {} };
 var $app, $who, $toast, toastT, CLS = "", STAFF_URL = "#staff", LIVE = false;
 var BANNED = ["fuck", "shit", "bitch", "cunt", "wank", "dick", "prick", "twat", "bastard", "slut", "whore", "fag", "retard", "nigg", "spastic"].map(function (w) { return new RegExp("\\b" + w, "i"); });
@@ -578,7 +578,7 @@ function codeBlock(code, numbered) {
   code.lines.forEach(function (ln, i) { var r = el("span.ln"); if (numbered !== false) r.appendChild(el("span.n", { text: String(i + 1) })); var body = el("span", { html: tokenise(ln) || " " }); r.appendChild(body); rows.push(r); pre.appendChild(r); });
   cb.appendChild(pre); cb.rows = rows; return cb;
 }
-function learnTry(tr, t, n, onRight) {
+function learnTry(tr, t, n, onChecked) {
   var box = el("div.blk.try" + (tr.code ? ".codeopts" : "")); box.appendChild(el("div.head", { text: S["learn.head.try"] }));
   var parts = tr.parts || [tr], toldTick = false;
   parts.forEach(function (p, pi) { var pt = el("div.part"); buildTry(pt, p, pi, parts.length > 1 ? S[pi ? "learn.try.partB" : "learn.try.partA"] : ""); box.appendChild(pt); });
@@ -604,7 +604,7 @@ function learnTry(tr, t, n, onRight) {
       if (tp.why) out.appendChild(el("p.why", { text: fmt("learn.try.why", { why: tp.why }) }));
       if (!toldTick) { toldTick = true; out.appendChild(el("p.small", { text: S["learn.try.ticked"] })); }
       if (!right) acts.appendChild(el("button.btn.quiet", { type: "button", text: S["learn.try.again"], on: { click: function () { buildTry(pt, tp, pi, label); } } }));
-      onRight();
+      onChecked(right);
     }
   }
   return box;
@@ -687,6 +687,8 @@ function learnPlay(pl) {
   }
   return box;
 }
+/* the staff view shows which screens a pupil opened, so reading without pressing anything still counts. It never interrupts the pupil. */
+function markOpened(t, n) { var rc = ST.recs[t] || (ST.recs[t] = {}), mask = 1 << (n - 1), bits = function () { return parseInt(rc.O || "0", 16) || 0; }; if (bits() & mask) return; rc.O = (bits() | mask).toString(16); api("apiTheory", { op: "learnOpen", t: t, n: n }).catch(function (e) { console.warn(e); rc.O = (bits() & ~mask).toString(16); }); }
 function renderLearn(t, n) {
   setBody("is-th");
   Promise.all([refresh(t), loadLearn(t)]).then(function (rr) {
@@ -698,7 +700,10 @@ function renderLearn(t, n) {
     for (var i = 1; i <= N; i++) { var on = i === n, ok = !!(p.bits >> (i - 1) & 1); pills.appendChild(el("a.p" + (on ? ".on" : "") + (ok ? ".ok" : ""), { href: "#th/" + t + "/learn/" + i, text: String(i), attr: { "aria-label": fmt(ok ? "aria.screenTicked" : "aria.screen", { n: i }), "aria-current": on ? "page" : null } })); }
     sc.appendChild(pills); if (scr.kicker) sc.appendChild(el("p.kicker", { text: scr.kicker })); sc.appendChild(el("h2", { text: scr.title })); sc.appendChild(el("p.goal", { text: scr.goal }));
     var saidHead = false, tickDone = ticked;
-    function tick() { if (tickDone) return Promise.resolve(); tickDone = true; return api("apiTheory", { op: "learn", t: t, n: n }).then(function (r) { if (!ST.recs[t]) ST.recs[t] = {}; ST.recs[t].L = r.L; var pl = pills.children[n - 1]; if (pl) pl.classList.add("ok"); }).catch(function (e) { tickDone = false; console.error(e); toast(S["err.save"]); }); }
+    function saved(r) { if (!ST.recs[t]) ST.recs[t] = {}; ST.recs[t].L = r.L; ST.recs[t].O = r.O; var pl = pills.children[n - 1]; if (pl) pl.classList.add("ok"); }
+    function tick() { if (tickDone) return Promise.resolve(); tickDone = true; return api("apiTheory", { op: "learn", t: t, n: n }).then(saved).catch(function (e) { tickDone = false; console.error(e); toast(S["err.save"]); }); }
+    function checked(right) { var first = !tickDone; tickDone = true; return api("apiTheory", { op: "learn", t: t, n: n, tried: 1, right: right ? 1 : 0 }).then(saved).catch(function (e) { console.error(e); if (first) { tickDone = false; toast(S["err.save"]); } }); }
+    markOpened(t, n);
     scr.blocks.forEach(function (b) {
       if (b.say) { var sb = el("div.blk.say"); if (!saidHead) { sb.appendChild(el("div.head", { text: S["learn.head.means"] })); saidHead = true; } b.say.forEach(function (ln) { sb.appendChild(el("p", { html: termHtml(ln) })); }); sc.appendChild(sb); }
       else if (b.note) { var nt = b.note, nb = el("div.blk.note" + (nt.kind ? "." + nt.kind : "")); if (nt.title) nb.appendChild(el("h4", { text: nt.title })); arr(nt.lines).forEach(function (ln) { nb.appendChild(el("p", { html: termHtml(ln) })); }); sc.appendChild(nb); }
@@ -724,7 +729,7 @@ function renderLearn(t, n) {
       else if (b.watch) { sc.appendChild(el("div.blk.watch", {}, [el("span.ic", { text: "!" }), el("div", {}, [el("div.lab", { text: S["learn.head.watch"] }), el("p", { html: termHtml(b.watch) })])])); }
       else if (b.side) { var sd = b.side, sb2 = el("div.blk.side"); [sd.left, sd.right].forEach(function (col) { if (!col) return; var c = el("div.col"); c.appendChild(el("h4", { text: col.title })); var ul = el("ul"); arr(col.rows).forEach(function (r) { ul.appendChild(el("li", { html: termHtml(r) })); }); c.appendChild(ul); sb2.appendChild(c); }); sc.appendChild(sb2); }
       else if (b.play) { sc.appendChild(learnPlay(b.play)); }
-      else if (b.try) { sc.appendChild(learnTry(b.try, t, n, function () { tick().then(paintFoot); })); }
+      else if (b.try) { sc.appendChild(learnTry(b.try, t, n, function (right) { checked(right).then(paintFoot); })); }
     });
     var foot = el("div.foot"); sc.appendChild(foot);
     function paintFoot() {
@@ -1163,10 +1168,11 @@ function renderStaff($app) {
       if (!pon) body.appendChild(el("p.pausednote", { text: S["staff.th.pairPaused"] }));
       if (!d.rows.length) { body.appendChild(el("p.sub", { text: fmt("staff.th.none", { cls: cls }) })); }
       else {
-        var tb = el("table.sttab"), thr = el("tr"); S["staff.th.cols"].split(" · ").forEach(function (c) { thr.appendChild(el("th", { text: c })); }); tb.appendChild(thr);
+        var screensN = (IDX[t - 1] || {}).screens || 0, tb = el("table.sttab"), thr = el("tr"); S["staff.th.cols"].split(" · ").forEach(function (c) { thr.appendChild(el("th", { text: c })); }); tb.appendChild(thr);
         d.rows.forEach(function (row) {
           var tr = el("tr"); tr.appendChild(el("td", {}, [el("button.nm", { type: "button", text: row.name, on: { click: function () { drill(row); } } })]));
-          tr.appendChild(el("td", { text: fmt("staff.th.learn", { n: row.learn[0], N: row.learn[1] }) }));
+          tr.appendChild(el("td", { text: seenWhen(row.seen, d.now) }));
+          tr.appendChild(el("td", { text: row.learn || row.opened ? fmt("staff.th.learnCell", { n: row.learn, N: screensN, o: row.opened }) : S["staff.th.notStarted"] }));
           var pr = row.pair, ptxt = "—";
           if (pr && pr.waiting) ptxt = S["staff.th.pairWaiting"];
           else if (pr && pr.gone) ptxt = fmt("staff.th.pairGone", { why: whyWord(pr.goneWhy) });
@@ -1181,7 +1187,7 @@ function renderStaff($app) {
           var fl = el("td"); (row.flags || []).forEach(function (f) { fl.appendChild(el("span.flag", { text: S["staff.th.flag." + f] || f })); }); tr.appendChild(fl);
           tb.appendChild(tr);
         });
-        body.appendChild(tb);
+        body.appendChild(el("div.sttabw", {}, [tb]));
       }
       var acts = el("div.acts.th-acts"); acts.appendChild(el("button.btn.sec", { text: S["staff.th.csv"], on: { click: function () { api("apiStaff", { op: "theoryCsv", t: t, kind: "marks" }).then(function (c) { download(c.name, c.csv); }); } } }));
       acts.appendChild(el("button.btn.sec", { text: S["staff.th.chatCsv"], on: { click: function () { api("apiStaff", { op: "theoryCsv", t: t, kind: "chat" }).then(function (c) { download(c.name, c.csv); }); } } }));
@@ -1193,11 +1199,32 @@ function renderStaff($app) {
         body.appendChild(pl); }
     }
     function drill(row) {
-      api("apiStaff", { op: "theoryPupil", t: t, e: row.e }).then(function (d) {
+      Promise.all([api("apiStaff", { op: "theoryPupil", t: t, e: row.e }), loadLearn(t).catch(function () { return null; })]).then(function (rr) {
+        var d = rr[0], L = rr[1], lr = d.learn || {}, hex = function (v) { return parseInt(v || "0", 16) || 0; }, doneB = hex(lr.L), openB = hex(lr.O) | doneB, tries = lr.T || {}, Ns = L ? L.screens.length : (IDX[t - 1] || {}).screens || 0;
         clear(body); var dr = el("div.drill.tw-" + t); dr.appendChild(el("h2", { text: fmt("staff.th.pupilHead", { name: d.name, t: t, round: d.round }) }));
-        var tb = el("table.sttab"), thr = el("tr"); [S["staff.th.qCol"], S["staff.th.marksCol"], S["staff.th.answerCol"], S["staff.th.schemeCol"]].forEach(function (c) { thr.appendChild(el("th", { text: c })); }); tb.appendChild(thr);
-        d.parts.forEach(function (pt) { var tr = el("tr"); tr.appendChild(el("td", { text: pt.year + " · " + pt.label + " · " + fmt("staff.th.partMarks", { n: pt.marks }) })); tr.appendChild(el("td", { text: pt.best ? fmt("staff.th.bestOf", { m: pt.best[0], x: pt.best[1] }) + " · " + (pt.attempts === 1 ? S["staff.th.attempt1"] : fmt("staff.th.attempts", { n: pt.attempts })) : S["staff.th.notTried"] })); var at = pt.answer == null ? "" : typeof pt.answer === "string" ? pt.answer : (pt.answer.text || (Array.isArray(pt.answer) ? pt.answer.map(function (x) { return Array.isArray(x) ? x.join(" ") : x; }).join(", ") : Object.keys(pt.answer).map(function (k) { return pt.answer[k]; }).join(" · "))); tr.appendChild(el("td.ans", { text: at })); tr.appendChild(el("td.ms", { text: pt.ms || "" })); tb.appendChild(tr); });
-        dr.appendChild(tb); dr.appendChild(el("div.acts", {}, [el("button.btn.sec", { text: S["staff.th.back"], on: { click: load } })])); body.appendChild(dr);
+        dr.appendChild(el("p.small", { text: fmt("staff.th.pupilSeen", { when: seenWhen(d.seen, d.now) }) + " " + S["staff.th.sinceNote"] }));
+        if (Ns) {
+          dr.appendChild(el("h3.staffsec", { text: S["staff.th.learnHead"] }));
+          var lt = el("table.sttab"), lh = el("tr"); S["staff.th.learnCols"].split(" · ").forEach(function (c) { lh.appendChild(el("th", { text: c })); }); lt.appendChild(lh);
+          for (var si = 1; si <= Ns; si++) { var m = 1 << (si - 1), c = tries[si], ltr = el("tr"), sc = L && L.screens[si - 1];
+            ltr.appendChild(el("td", { text: sc ? si + ". " + sc.title : fmt("staff.th.screenN", { n: si }) }));
+            ltr.appendChild(el("td", { text: S[openB & m ? "staff.th.yes" : "staff.th.no"] })); ltr.appendChild(el("td", { text: S[doneB & m ? "staff.th.yes" : "staff.th.no"] }));
+            ltr.appendChild(el("td", { text: c ? (c[0] === 1 ? fmt("staff.th.try1", { r: c[1] }) : fmt("staff.th.tries", { n: c[0], r: c[1] })) : S[doneB & m ? "staff.th.noTries" : "staff.th.notTried"] })); lt.appendChild(ltr); }
+          dr.appendChild(el("div.sttabw", {}, [lt]));
+        }
+        dr.appendChild(el("h3.staffsec", { text: S["staff.th.ppHead"] }));
+        if (!d.parts.length) dr.appendChild(el("p.small", { text: S["staff.th.noParts"] }));
+        var partHead = function (pt) { return el("h4", { text: pt.year + " · " + pt.label + " · " + fmt("staff.th.partMarks", { n: pt.marks }) }); }, wording = function (box, pt) { box.appendChild(partHead(pt)); var ctx = contextBlocks(pt.context); if (ctx) box.appendChild(ctx); box.appendChild(el("p.stem", { text: pt.stem })); };
+        var tried = d.parts.filter(function (pt) { return pt.best || (pt.said || []).length; }), notYet = d.parts.filter(function (pt) { return !(pt.best || (pt.said || []).length); });
+        tried.forEach(function (pt) { var card = el("div.ppcard"); wording(card, pt);
+          var ans = el("div.ans"); ans.appendChild(el("p.ansh", { text: pt.ansMark ? fmt("staff.th.latestMarks", { m: pt.ansMark[0], x: pt.ansMark[1] }) : S["staff.th.latest"] }));
+          if ((pt.said || []).length) pt.said.forEach(function (ln) { ans.appendChild(el("p", { text: ln })); }); else ans.appendChild(el("p", { text: S["staff.th.notSaved"] }));
+          card.appendChild(ans);
+          card.appendChild(el("p.small", { text: pt.best ? fmt("staff.th.bestLine", { m: pt.best[0], x: pt.best[1] }) + " · " + (pt.attempts === 1 ? S["staff.th.attempt1"] : fmt("staff.th.attempts", { n: pt.attempts })) : fmt("staff.th.notThisRound", { round: d.round }) }));
+          if (pt.ms) { card.appendChild(el("p.msh", { text: S["staff.th.schemeCol"] })); card.appendChild(el("div.ms", { text: pt.ms })); }
+          dr.appendChild(card); });
+        if (notYet.length) { var more = el("details.ppmore"); more.appendChild(el("summary", { text: fmt("staff.th.notYet", { n: notYet.length }) })); notYet.forEach(function (pt) { var card = el("div.ppcard"); wording(card, pt); more.appendChild(card); }); dr.appendChild(more); }
+        dr.appendChild(el("div.acts", {}, [el("button.btn.sec", { text: S["staff.th.back"], on: { click: load } })])); body.appendChild(dr);
       }).catch(function (e) { fail(e, "staff"); });
     }
     function pairDrill(pr) {
@@ -1234,8 +1261,9 @@ function show(host, who) {
   if (!LIVE) mount({});
   $app = host; $who = who || null; route();
 }
-function staff(pane, cls) {
-  if (!LIVE) mount({}); CLS = cls || CLS;
+function seenWhen(m, now) { return AGO ? AGO(now, m) : "—"; }
+function staff(pane, cls, ago) {
+  if (!LIVE) mount({ base: (window.A2_CW || "") + "u4/" }); CLS = cls || CLS; AGO = ago || AGO;
   try { active.stop(); } catch (e) { console.warn(e); }
   active = { stop: function () {} }; $app = pane; clear(pane); renderStaff(pane);
 }
