@@ -39,7 +39,7 @@ function el(tag, props, kids) {
   return node;
 }
 function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); return n; }
-function api(fn, req) { req = Object.assign({ cls: CLS }, req || {}); if (fn === "apiStaff" && req.name == null) req.name = CLS; return window.OLS_TRANSPORT.call(fn, req).then(function (r) { if (!r || r.ok === false) { var e = new Error((r && r.err) || "server said no"); e.res = r; throw e; } return r; }); }
+function api(fn, req) { req = Object.assign({ cls: CLS }, req || {}); if (fn === "apiStaff" && req.name == null) req.name = CLS; return window.OLS_TRANSPORT.call(fn, req).then(function (r) { var stuck = document.querySelector('#sys [data-sys="retry"]'); if (stuck) stuck.click();   /* the server answered, so the connection is back: clear the "could not reach" bar and send what waited */ if (!r || r.ok === false) { var e = new Error((r && r.err) || "server said no"); e.res = r; throw e; } return r; }); }
 function toast(msg) { if (!$toast) return; $toast.textContent = msg; $toast.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(function () { $toast.classList.remove("on"); }, 2600); }
 function go(h) { if (h === "#") h = HOME; if (location.hash === h) route(); else location.hash = h; }
 function termHtml(s) { return esc(s).replace(/\[\[([^|\]]+)\|\d+\]\]/g, '<b class="term">$1</b>').replace(/\[\[([^\]]+)\]\]/g, '<b class="term">$1</b>'); }
@@ -187,7 +187,7 @@ function renderTopic(t) {
       p.learnDone ? S["door.learn.again"] : p.ln ? S["door.learn.go"] : S["door.learn.start"], "#th/" + t + "/learn/" + (p.learnDone ? 1 : firstUnticked)));
     var ps = p.pair, pairText, pairBtn = null, pairCls = {};
     if (ps && ps.state === "done") { pairText = ps.solo ? fmt("door.pair.doneSolo", { m: ps.right, R: R }) : fmt("door.pair.done", { m: ps.right, R: R, name: ps.names ? joinNames(ps.names) : "" }); pairBtn = S["door.pair.see"]; pairCls.done = true; }
-    else if (ps && ps.state === "live") { pairText = fmt("door.pair.live", { round: ps.r || 1, R: R, them: ps.solo ? S["pair.soloStrip"] : joinNames(ps.them || []) }); pairBtn = S["door.pair.back"]; }
+    else if (ps && ps.state === "live") { pairText = ps.solo ? fmt("door.pair.liveSolo", { round: ps.r || 1, R: R }) : fmt("door.pair.live", { round: ps.r || 1, R: R, them: joinNames(ps.them || []) }); pairBtn = ps.solo ? S["door.pair.carry"] : S["door.pair.back"]; }
     else if (ps && ps.state === "waiting") { pairText = S["pair.wait.head"]; pairBtn = S["door.pair.back"]; }
     else if (!p.pairOn) { pairText = S["door.pair.off"]; pairCls.off = true; }
     else { pairText = S["door.pair.notStarted"]; pairBtn = S["door.pair.start"]; }
@@ -266,17 +266,31 @@ function Surface(spec, o) {
       if (!mm) { pc.split("\n").forEach(function (sg, si) { if (si) txt.appendChild(el("br")); if (sg) txt.appendChild(document.createTextNode(sg)); }); return; }
       var idx = parseInt(mm[1], 10) - 1, g;
       if (typed) { var inp = el("input.gapin", { type: "text", attr: { maxlength: "40", autocomplete: "off", spellcheck: "false", autocapitalize: "off", "aria-label": fmt("aria.gap", { n: idx + 1 }) }, on: { input: function () { filled[idx] = inp.value.trim(); g.classList.toggle("filled", !!filled[idx]); change(); } } }); gapIns[idx] = inp; g = el("span.gap.typed", {}, [inp, el("span.fix")]); }
-      else g = el("span.gap", { attr: { "data-i": idx, role: "button", tabindex: "0" }, on: { click: function () { gapClick(idx); }, keydown: function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); gapClick(idx); } } } }, [el("span.w", { text: "" }), el("span.fix")]);
+      else g = el("span.gap", { attr: { "data-i": idx, role: "button", tabindex: "0" }, on: { click: function () { if (justDragged) return; gapClick(idx); }, pointerdown: function (ev) { if (filled[idx]) dragWord(ev, filled[idx], idx, null); }, keydown: function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); gapClick(idx); } } } }, [el("span.w", { text: "" }), el("span.fix")]);
       gapEls[idx] = g; txt.appendChild(g); });
     root.appendChild(txt);
     if (!typed) { var bank = el("div.bank"); bank.appendChild(el("div.h", { text: S["part.gaps.bank"] })); var bankOrder = order(spec.bank.length, seed);
-      bankOrder.forEach(function (bi) { var w = spec.bank[bi]; var c = el("button.chip", { type: "button", text: w, on: { click: function () { if (locked || c.classList.contains("used")) return; sel = (sel === c) ? null : c; chips.forEach(function (x) { x.classList.toggle("sel", x === sel); }); target(); } } }); chips.push(c); bank.appendChild(c); });
+      bankOrder.forEach(function (bi) { var w = spec.bank[bi]; var c = el("button.chip", { type: "button", text: w, on: { click: function () { if (justDragged || locked || c.classList.contains("used")) return; sel = (sel === c) ? null : c; chips.forEach(function (x) { x.classList.toggle("sel", x === sel); }); target(); }, pointerdown: function (ev) { if (!c.classList.contains("used")) dragWord(ev, w, null, c); } } }); chips.push(c); bank.appendChild(c); });
       root.appendChild(bank); }
     root.appendChild(el("p.hint", { text: typed ? S["gaps.typed"] : S["part.gaps.hint"] }));
-    function target() { var first = -1; for (var i = 0; i < nGaps; i++) if (!filled[i]) { first = i; break; } gapEls.forEach(function (g, i) { g.classList.toggle("target", !!sel && i === first); }); }
+    function target() { gapEls.forEach(function (g) { g.classList.toggle("target", !!sel); }); }
     function paint() { if (typed) { gapIns.forEach(function (inp, i) { if (inp.value.trim() !== filled[i]) inp.value = filled[i]; gapEls[i].classList.toggle("filled", !!filled[i]); }); return; }
       gapEls.forEach(function (g, i) { g.classList.toggle("filled", !!filled[i]); g.querySelector(".w").textContent = filled[i] || ""; }); var used = {}; filled.forEach(function (w) { if (w) used[w] = (used[w] || 0) + 1; }); chips.forEach(function (c) { var w = c.textContent; if (used[w]) { used[w]--; c.classList.add("used"); c.classList.remove("sel"); if (sel === c) sel = null; } else c.classList.remove("used"); }); target(); }
     function gapClick(i) { if (locked) return; if (sel) { filled[i] = sel.textContent; sel = null; } else if (filled[i]) { filled[i] = ""; } paint(); change(); }
+    /* drag a word from the bank, or from one gap to another. The ghost follows the pointer with no transition; the whole box of a gap (plus a margin) takes the drop; near the top or bottom of the window the page scrolls. A word dragged out of a gap and let go elsewhere goes back to the bank. */
+    var justDragged = false;
+    function gapUnder(x, y) { var best = -1, bestD = Infinity; gapEls.forEach(function (g, i) { var b = g.getBoundingClientRect(), dx = Math.max(b.left - x, 0, x - b.right), dy = Math.max(b.top - y, 0, y - b.bottom), d = dx + dy; if (dx > 14 || dy > 14) return; if (d < bestD) { bestD = d; best = i; } }); return best; }   // the gap the word is over; if it is over none, the nearest within a finger's width
+    function dragWord(ev, word, fromGap, chip) {
+      if (locked || ev.button > 0) return;
+      var sx = ev.clientX, sy = ev.clientY, x = sx, y = sy, id = ev.pointerId, ghost = null, over = -1, raf = 0;
+      function place() { ghost.style.transform = "translate3d(" + x + "px," + y + "px,0) translate(-50%,-50%)"; }
+      function frame() { raf = 0; if (!ghost) return; var h = window.innerHeight, edge = 70; if (y < edge) window.scrollBy({ top: -Math.ceil((edge - y) / 5), behavior: "instant" }); else if (y > h - edge) window.scrollBy({ top: Math.ceil((y - (h - edge)) / 5), behavior: "instant" }); var u = gapUnder(x, y); if (u !== over) { if (over >= 0) gapEls[over].classList.remove("over"); over = u; if (over >= 0) gapEls[over].classList.add("over"); } raf = requestAnimationFrame(frame); }
+      function begin() { var cs = getComputedStyle(root); ghost = el("div.chip.ghost", { text: word }); ["--sw", "--sw-ink"].forEach(function (k) { ghost.style.setProperty(k, cs.getPropertyValue(k)); }); document.body.appendChild(ghost); document.body.classList.add("wordrag"); if (sel) { sel = null; chips.forEach(function (x2) { x2.classList.remove("sel"); }); target(); } if (chip) chip.classList.add("lifted"); if (fromGap != null) gapEls[fromGap].classList.add("lifted"); place(); raf = requestAnimationFrame(frame); }
+      function move(e) { if (e.pointerId !== id) return; x = e.clientX; y = e.clientY; if (!ghost) { if (Math.abs(x - sx) + Math.abs(y - sy) < 6) return; begin(); } e.preventDefault(); place(); }
+      function end(e, keep) { if (e.pointerId !== id) return; window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", cancel); if (!ghost) return; if (raf) cancelAnimationFrame(raf); raf = 0; ghost.remove(); ghost = null; document.body.classList.remove("wordrag"); if (chip) chip.classList.remove("lifted"); if (fromGap != null) gapEls[fromGap].classList.remove("lifted"); if (over >= 0) gapEls[over].classList.remove("over"); justDragged = true; setTimeout(function () { justDragged = false; }, 60); if (!keep || locked) return; var i = gapUnder(x, y); if (i >= 0 && i === fromGap) return; if (i >= 0) { if (fromGap != null) filled[fromGap] = filled[i]; filled[i] = word; } else if (fromGap != null) filled[fromGap] = ""; else return; paint(); change(); }
+      function up(e) { end(e, true); } function cancel(e) { end(e, false); }
+      window.addEventListener("pointermove", move, { passive: false }); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", cancel);
+    }
     api.get = function () { return filled.every(function (w) { return !w; }) ? "" : filled.join("|"); };
     api.complete = function () { return filled.every(function (w) { return !!w; }); };
     api.set = function (v) { var a = (v || "").split("|"); for (var i = 0; i < nGaps; i++) filled[i] = a[i] || ""; paint(); };
@@ -294,6 +308,7 @@ function Surface(spec, o) {
       r.appendChild(cb); r.appendChild(rowsS[ii].vk); box.appendChild(r);
     });
     root.appendChild(box);
+    api.order = dispI;   // the shuffled item order, so an answer read out in words follows the items as shown
     api.get = function () { return picksS.every(function (p) { return !p; }) ? "" : picksS.join(","); };
     api.complete = function () { return picksS.every(function (p) { return !!p; }); };
     api.set = function (v) { var a = (v || "").split(","); picksS = items.map(function (_, i) { return a[i] || ""; }); Object.keys(rowsS).forEach(function (ii) { Object.keys(rowsS[ii].btns).forEach(function (k) { rowsS[ii].btns[k].classList.toggle("on", k === picksS[ii]); }); }); };
@@ -302,19 +317,24 @@ function Surface(spec, o) {
   }
 
   else if (kind === "match") {
-    var left = spec.left, right = spec.right, dispRt = order(right.length, seed), pairs = {}, selL = null, dotsL = {}, dotsR = {}, itemsL = {}, itemsR = {};
+    var left = spec.left, right = spec.right, dispRt = order(right.length, seed), pairs = {}, selL = null, selR = null, dotsL = {}, dotsR = {}, itemsL = {}, itemsR = {};
     var mbox = el("div.match"); var colL = el("div.colL"), colR = el("div.colR"), svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     colL.appendChild(el("div.h", { text: o.leftHead || "" })); colR.appendChild(el("div.h", { text: o.rightHead || "" }));
-    left.forEach(function (tx, li) { var d = el("button.dot", { type: "button", attr: { "aria-label": fmt("aria.left", { n: li + 1 }) }, on: { click: function () { if (locked) return; selL = (selL === li) ? null : li; Object.keys(dotsL).forEach(function (k) { dotsL[k].classList.toggle("sel", String(selL) === k); }); } } }); dotsL[li] = d; var mi = el("div.mi", {}, [el("span", { text: tx }), d]); itemsL[li] = mi; colL.appendChild(mi); });
-    dispRt.forEach(function (ri) { var d = el("button.dot", { type: "button", attr: { "aria-label": fmt("aria.right", { n: ri + 1 }) }, on: { click: function () { if (locked) return; if (selL == null) { var owner = Object.keys(pairs).find(function (l) { return pairs[l] === ri; }); if (owner != null) { delete pairs[owner]; draw(); change(); } return; } pairs[selL] = ri; selL = null; Object.keys(dotsL).forEach(function (k) { dotsL[k].classList.remove("sel"); }); draw(); change(); } } }); dotsR[ri] = d; var mi = el("div.mi", {}, [d, el("span", { text: right[ri] })]); itemsR[ri] = mi; colR.appendChild(mi); });
+    /* the whole card is the target: the dot is only where the line starts. Either side can be clicked first. */
+    function paintSel() { Object.keys(itemsL).forEach(function (k) { var on = String(selL) === k; itemsL[k].classList.toggle("sel", on); dotsL[k].classList.toggle("sel", on); }); Object.keys(itemsR).forEach(function (k) { var on = String(selR) === k; itemsR[k].classList.toggle("sel", on); dotsR[k].classList.toggle("sel", on); }); }
+    function joinUp(li, ri) { pairs[li] = ri; selL = null; selR = null; paintSel(); draw(); change(); }
+    function clickL(li) { if (locked) return; if (selR != null) return joinUp(li, selR); selL = (selL === li) ? null : li; paintSel(); }
+    function clickR(ri) { if (locked) return; if (selL != null) return joinUp(selL, ri); if (selR === ri) { selR = null; paintSel(); return; } var owner = Object.keys(pairs).find(function (l) { return pairs[l] === ri; }); if (owner != null) { delete pairs[owner]; draw(); change(); return; } selR = ri; paintSel(); }
+    left.forEach(function (tx, li) { var d = el("button.dot", { type: "button", attr: { "aria-label": fmt("aria.left", { n: li + 1 }) } }); dotsL[li] = d; var mi = el("div.mi", { on: { click: function () { clickL(li); } } }, [el("span", { text: tx }), d]); itemsL[li] = mi; colL.appendChild(mi); });
+    dispRt.forEach(function (ri) { var d = el("button.dot", { type: "button", attr: { "aria-label": fmt("aria.right", { n: ri + 1 }) } }); dotsR[ri] = d; var mi = el("div.mi", { on: { click: function () { clickR(ri); } } }, [d, el("span", { text: right[ri] })]); itemsR[ri] = mi; colR.appendChild(mi); });
     mbox.appendChild(colL); mbox.appendChild(svg); mbox.appendChild(colR); root.appendChild(mbox); root.appendChild(el("p.hint", { text: S["part.match.hint"] }));
     var lineCls = {};
     function draw() {
       while (svg.firstChild) svg.removeChild(svg.firstChild); var bb = mbox.getBoundingClientRect(); svg.setAttribute("width", bb.width); svg.setAttribute("height", bb.height); svg.setAttribute("viewBox", "0 0 " + bb.width + " " + bb.height);
-      Object.keys(dotsL).forEach(function (l) { dotsL[l].classList.toggle("done", pairs[l] != null); }); Object.keys(dotsR).forEach(function (r) { dotsR[r].classList.toggle("done", Object.keys(pairs).some(function (l) { return pairs[l] === parseInt(r, 10); })); });
+      Object.keys(dotsL).forEach(function (l) { var on = pairs[l] != null; dotsL[l].classList.toggle("done", on); itemsL[l].classList.toggle("paired", on); }); Object.keys(dotsR).forEach(function (r) { var on = Object.keys(pairs).some(function (l) { return pairs[l] === parseInt(r, 10); }); dotsR[r].classList.toggle("done", on); itemsR[r].classList.toggle("paired", on); });
       Object.keys(pairs).forEach(function (l) { var r = pairs[l]; var a = dotsL[l].getBoundingClientRect(), b = dotsR[r].getBoundingClientRect(); var ln = document.createElementNS("http://www.w3.org/2000/svg", "line"); ln.setAttribute("x1", a.left + a.width / 2 - bb.left); ln.setAttribute("y1", a.top + a.height / 2 - bb.top); ln.setAttribute("x2", b.left + b.width / 2 - bb.left); ln.setAttribute("y2", b.top + b.height / 2 - bb.top); if (lineCls[l]) ln.setAttribute("class", lineCls[l]); ln.addEventListener("click", function () { if (locked) return; delete pairs[l]; draw(); change(); }); svg.appendChild(ln); });
     }
-    api.redraw = draw; window.addEventListener("resize", draw); requestAnimationFrame(draw);
+    api.redraw = draw; if (window.ResizeObserver) new ResizeObserver(function () { draw(); }).observe(mbox); else window.addEventListener("resize", draw); requestAnimationFrame(draw);
     api.get = function () { var ks = Object.keys(pairs).map(Number).sort(function (a, b) { return a - b; }); return ks.map(function (l) { return l + "-" + pairs[l]; }).join(","); };
     api.complete = function () { return Object.keys(pairs).length === left.length; };
     api.set = function (v) { pairs = {}; (v || "").split(",").forEach(function (p) { var mm = /^(\d+)-(\d+)$/.exec(p); if (mm) pairs[mm[1]] = parseInt(mm[2], 10); }); draw(); };
@@ -761,7 +781,7 @@ function renderPart(t, qid) {
     paper.appendChild(el("div.acts", {}, [btnCheck, btnClear])); gate();
     var vbox = el("div.vwrap.hidden"); paper.appendChild(vbox);
     var attemptsLine = el("p.attempts" + (attempts ? "" : ".hidden"), { text: fmt("part.attempts", { n: attempts }) }); paper.appendChild(attemptsLine);
-    var nav = el("div.acts.navrow", {}, [el("a.btn.sec", { href: "#th/" + t + "/pp", text: S["part.back"] }), nextQ ? el("a.btn.gold", { href: "#th/" + t + "/pp/" + nextQ, text: S["part.next"] }) : el("a.btn.gold", { href: "#th/" + t + "/pp", text: S["part.back"] })]);
+    var nav = el("div.acts.navrow", {}, nextQ ? [el("a.btn.sec", { href: "#th/" + t + "/pp", text: S["part.back"] }), el("a.btn.gold", { href: "#th/" + t + "/pp/" + nextQ, text: S["part.next"] })] : [el("a.btn.gold", { href: "#th/" + t + "/pp", text: S["part.back"] })]);
     paper.appendChild(nav);
     $app.appendChild(paper);
     function reset() { sf.disable(false); sf.clearMarks(); sf.set(""); clear(vbox).classList.add("hidden"); btnCheck.disabled = false; gate(); }
@@ -824,21 +844,44 @@ function renderPart(t, qid) {
 
 /* ---------- work it out with a partner ---------- */
 var FB = (window.U4_LIVE && window.U4_LIVE.base) || "/fb";
-function fbGet(path) { return fetch(FB + "/u4/" + path, { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("room " + r.status); return r.json(); }); }
-function fbSend(method, path, body) { return fetch(FB + "/u4/" + path, { method: method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }).then(function (r) { if (!r.ok) throw new Error("room " + r.status); return r.json(); }); }
+function fbFetch(path, opts) {   // a call that hangs (a laptop waking up, the wifi changing) gives up, so the next try can run
+  var ctl = window.AbortController ? new AbortController() : null, to = ctl ? setTimeout(function () { ctl.abort(); }, 15000) : null; if (ctl) opts.signal = ctl.signal;
+  return fetch(FB + "/u4/" + path, opts).then(function (r) { if (!r.ok) throw new Error("room " + r.status); return r.json(); }).then(function (v) { clearTimeout(to); return v; }, function (e) { clearTimeout(to); throw e; });
+}
+function fbGet(path) { return fbFetch(path, { cache: "no-store" }); }
+function fbSend(method, path, body) { return fbFetch(path, { method: method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); }
 function ansLetter(sf, spec, a) { if (spec.kind === "one" && a) return sf.label(a); return null; }
-function diffWords(spec, a, b) {
-  if (a === b) return "";
-  var A, B, out = [];
-  if (spec.kind === "gaps") { A = a.split("|"); B = b.split("|"); A.forEach(function (v, i) { if (v !== B[i]) out.push(fmt("pair.diffGap", { n: i + 1 })); }); return out.length ? fmt("pair.diffAt", { where: out.join(" " + S["pair.and"] + " ") }) : ""; }
-  if (spec.kind === "tf") { A = a.split(","); B = b.split(","); A.forEach(function (v, i) { if (v !== B[i]) out.push(fmt("pair.diffRow", { n: i + 1 })); }); return out.length ? fmt("pair.diffAt", { where: out.join(" " + S["pair.and"] + " ") }) : ""; }
-  if (spec.kind === "sort") { A = a.split(","); B = b.split(","); A.forEach(function (v, i) { if (v !== B[i]) out.push(spec.items[i]); }); return out.length ? fmt("pair.diffSort", { list: out.join(", ") }) : ""; }
-  if (spec.kind === "match") { var pa = {}, pb = {}; a.split(",").forEach(function (p) { var m = p.split("-"); pa[m[0]] = m[1]; }); b.split(",").forEach(function (p) { var m = p.split("-"); pb[m[0]] = m[1]; }); Object.keys(pa).forEach(function (l) { if (pa[l] !== pb[l]) out.push(spec.left[l]); }); return out.length ? fmt("pair.diffMatch", { list: out.join(", ") }) : ""; }
-  return "";
+// An answer written out in words, part by part, so a locked answer reads the same for both partners. null: this kind has no words form.
+function answerParts(spec, a, sf) {
+  var out = [], k = spec.kind, v;
+  if (k === "one") { if (spec.pick || spec.opts.some(function (op) { return Array.isArray(op) && op[2]; })) return null; if (!a) return out; var o = spec.opts.map(function (op, i) { return Array.isArray(op) ? { L: op[0], t: op[1] } : { L: letters(i), t: op }; }).filter(function (x) { return x.L === a; })[0]; out.push({ k: 0, v: sf.label(a) + " · " + (o ? o.t : "") }); return out; }
+  if (k === "match") { var pr = {}; String(a || "").split(",").forEach(function (x) { var m = /^(\d+)-(\d+)$/.exec(x); if (m) pr[m[1]] = m[2]; }); spec.left.forEach(function (l, i) { out.push({ k: i, h: l, v: pr[i] != null ? spec.right[pr[i]] : "—" }); }); return out; }
+  if (k === "sort") { v = String(a || "").split(","); (sf.order || spec.items.map(function (_, i) { return i; })).forEach(function (ii) { var ci = "ABCDEFGH".indexOf(v[ii] || "?"); out.push({ k: ii, h: spec.items[ii], v: ci >= 0 ? spec.cols[ci] : "—" }); }); return out; }
+  if (k === "tf") { v = String(a || "").split(","); (sf.order || spec.rows.map(function (_, i) { return i; })).forEach(function (ri) { out.push({ k: ri, h: spec.rows[ri], v: v[ri] || "—" }); }); return out; }
+  return null;
+}
+// The same answer as something to read. `against`: the answers it is compared with, so the parts that differ stand out.
+function answerBlock(spec, a, sf, against) {
+  var box = el("div.ansr"), vs = (against || []).filter(function (x) { return x != null; });
+  if (spec.kind === "gaps") {
+    var mine = String(a || "").split("|"), ths = vs.map(function (x) { return String(x || "").split("|"); }), para = el("p.ansg");
+    spec.text.split(/\{(\d+)\}/).forEach(function (bit, i) { if (i % 2 === 0) { if (bit) para.appendChild(document.createTextNode(bit)); return; } var n = parseInt(bit, 10) - 1, w = mine[n] || ""; para.appendChild(el("b" + (ths.some(function (t) { return (t[n] || "") !== w; }) ? ".differs" : ""), { text: w || "___" })); });
+    box.appendChild(para); return box;
+  }
+  var parts = answerParts(spec, a, sf); if (!parts) return null;
+  if (!parts.length) { box.appendChild(el("p.ansn", { text: "—" })); return box; }
+  var oth = vs.map(function (x) { var m = {}; (answerParts(spec, x, sf) || []).forEach(function (pt) { m[pt.k] = pt.v; }); return m; });
+  parts.forEach(function (pt) { var row = el("div.ansl" + (oth.some(function (m) { return m[pt.k] !== pt.v; }) ? ".differs" : "")); if (pt.h) row.appendChild(el("span.q", { text: pt.h })); row.appendChild(el("b", { text: pt.v })); box.appendChild(row); });
+  return box;
 }
 function renderPair(t) {
   setBody("is-pair");
   var timers = [], stopped = false;
+  // What this pupil sent waits here until the room has it, so a dropped connection never loses an answer or a message.
+  var outbox = [], flushing = null, wakeFn = null, backNotNow = false;
+  function flush() { if (flushing) return flushing; if (!outbox.length) return Promise.resolve(); var e = outbox[0]; flushing = fbSend("POST", e.p, { s: e.s, k: e.k, x: e.x, t: e.t }).then(function () { outbox.shift(); flushing = null; return flush(); }).catch(function (e) { console.error(e); flushing = null; if (/room 4(0[0-7]|[1-9]\d)/.test(String(e && e.message)) && !/room 429/.test(String(e.message))) outbox.shift(); }); return flushing; }   // a refusal will never succeed; anything else tries again
+  function wake() { if (!stopped && wakeFn && !document.hidden) wakeFn(); }   // back from sleep or a dropped connection: catch up at once
+  document.addEventListener("visibilitychange", wake); window.addEventListener("online", wake); window.addEventListener("pageshow", wake);
   function every(ms, fn) { var id = setInterval(function () { if (!stopped) fn(); }, ms); timers.push(id); return id; }
   function later(ms, fn) { var id = setTimeout(function () { if (!stopped) fn(); }, ms); timers.push(id); return id; }
   active.stop = function () { stopped = true; timers.forEach(function (id) { clearInterval(id); clearTimeout(id); }); };
@@ -884,6 +927,7 @@ function renderPair(t) {
     var live = ["A", "B", "C"].slice(0, P.cn.length).filter(function (s) { return P.gone.indexOf(s) === -1; });
     var others = live.filter(function (s) { return s !== seat; });
     var cnOf = function (s) { return P.cn["ABC".indexOf(s)]; };
+    if (others.length < 2) trio = false;   // a trio who lost someone works as a pair
     var startedKey = "u4_started_" + pid;
     if (P.done) return finishView(P, { names: P.names || [], m: P.right, R: R, solo: solo, trio: trio });
     var carryKey = "u4_carry_" + pid + "_" + P.carried;
@@ -917,6 +961,7 @@ function renderPair(t) {
     var strip = el("div.vstrip.hidden"); rd.appendChild(strip);
     var nextBox = el("div.acts.hidden"); rd.appendChild(nextBox);
     var banner = el("div.banner.bad.hidden"); wrap.insertBefore(banner, rd);
+    var backBar = el("div.banner.backbar.hidden"); wrap.insertBefore(backBar, rd);
     // chat
     var chat = el("aside.chat" + (solo ? ".off" : "")); wrap.appendChild(chat);
     var ch = el("div.ch"); ch.appendChild(el("h3", { text: S["pair.chat.title"] }));
@@ -933,7 +978,7 @@ function renderPair(t) {
     function closeChat(msg) { chatClosed = true; chat.classList.add("off"); inp.disabled = true; sendBtn.disabled = true; clear(quick); chat.appendChild(el("p.small", { text: msg })); }
     if (solo) chat.appendChild(el("p.small", { text: S["pair.chat.off"] }));
     // posting
-    function post(k, x) { if (solo) return Promise.resolve(); return fbSend("POST", room + "/ev.json", { s: seat, k: k, x: String(x).slice(0, 240), t: Date.now() }).catch(function (e) { console.error(e); }); }
+    function post(k, x) { if (solo) return Promise.resolve(); outbox.push({ p: room + "/ev.json", s: seat, k: k, x: String(x).slice(0, 240), t: Date.now() }); return flush(); }
     // phase painting
     function paintPhase() {
       clear(phaseBox); paintQuick();
@@ -960,24 +1005,24 @@ function renderPair(t) {
     }
     var myOwn = null, theirSf = {};
     function paintCompare() {
-      if (solo || phase < 2) { cmp.classList.add("hidden"); return; }
+      if (solo || phase < 2 || checked) { cmp.classList.add("hidden"); return; }   // once the pair has its result there is nothing left to compare
       cmp.classList.remove("hidden"); clear(cmp); var mine = sf.get();
-      var col = el("div.col.me"); col.appendChild(el("div.h", { text: S["pair.cmp.you"] })); col.appendChild(el("p.answ", { text: answerText(mine) })); cmp.appendChild(col);
-      others.forEach(function (s) { var c = el("div.col"); c.appendChild(el("div.h", { text: fmt("pair.cmp.them", { them: cnOf(s) }) })); var ts = Surface(spec, { seed: seed, keepOrder: !!round.keepOrder }); if (picks[s]) ts.set(picks[s]); ts.disable(true); c.appendChild(ts.el); var d = diffWords(spec, mine, picks[s] || ""); if (d) c.appendChild(el("p.diffmark", { text: d })); if (changedBy === s) c.appendChild(el("p.diffmark", { text: fmt("pair.changed", { them: cnOf(s) }) })); cmp.appendChild(c); });
+      var col = el("div.col.me"); col.appendChild(el("div.h", { text: S["pair.cmp.you"] })); col.appendChild(answerBlock(spec, mine, sf, others.map(function (s) { return picks[s] == null ? null : picks[s]; })) || el("p.answ", { text: mine || "—" })); cmp.appendChild(col);
+      others.forEach(function (s) { var c = el("div.col"); c.appendChild(el("div.h", { text: fmt("pair.cmp.them", { them: cnOf(s) }) })); var said = answerBlock(spec, picks[s] || "", sf, [mine]); if (said) c.appendChild(said); else { var ts = Surface(spec, { seed: seed, keepOrder: !!round.keepOrder }); if (picks[s]) ts.set(picks[s]); ts.disable(true); c.appendChild(ts.el); } if (changedBy === s) c.appendChild(el("p.diffmark", { text: fmt("pair.changed", { them: cnOf(s) }) })); cmp.appendChild(c); });
       var same = others.every(function (s) { return picks[s] === mine; }), L = ansLetter(sf, spec, mine), txt;
       if (same) txt = trio ? (L ? fmt("pair.same3", { letter: L }) : S["pair.same3Any"]) : (L ? fmt("pair.same", { letter: L }) : S["pair.sameAny"]);
       else if (trio) txt = S["pair.diff3"];
       else { var s1 = others[0], L2 = ansLetter(sf, spec, picks[s1]); txt = L && L2 ? fmt("pair.diff", { letter: L, them: cnOf(s1), letter2: L2 }) : S["pair.diffAny"]; }
       cmp.appendChild(el("p.b.cmpline", { text: txt }));
     }
-    function answerText(a) { if (!a) return "—"; if (spec.kind === "one") { var L = sf.label(a); var o = spec.opts.filter(function (op) { return (Array.isArray(op) ? op[0] : null) === a; })[0]; return L + (o ? " · " + o[1] : ""); } return a.replace(/\|/g, " · ").replace(/\n/g, " · "); }
     function lockOwn() { if (!sf.complete()) { toast(S["try.incomplete"]); return; } myPicked = true; myOwn = sf.get(); picks[seat] = myOwn; if (solo) { locks[seat] = myOwn; return settle(); } post("pick", r + ":" + myOwn).then(function () { advance(); paintPhase(); }); paintPhase(); }
     function unlockMine() { locks[seat] = null; phase = others.some(function (s) { return locks[s]; }) ? 4 : 2; post("lock", r + ":"); paintPhase(); }   // a partner still locked keeps me on Agree
     function lockPair() { var a = sf.get(); locks[seat] = a; phase = 4; post("lock", r + ":" + a).then(settle); paintPhase(); }
-    function advance() { if (phase === 1 && myPicked && others.every(function (s) { return picks[s]; })) { phase = 2; addLine(null, S["pair.allAnswered"], true); paintPhase(); } }
+    function advance() { if (phase === 1 && myPicked && others.every(function (s) { return picks[s]; })) { phase = others.some(function (s) { return locks[s]; }) ? 4 : 2; addLine(null, S["pair.allAnswered"], true); paintPhase(); } }
     var settling = false;
-    function settle() { if (checked || settling) return; var myLock = locks[seat]; if (!myLock) return; if (!others.every(function (s) { return locks[s] === myLock; })) { paintPhase(); return; } settling = true;
-      api("apiPair", { op: "check", t: t, pid: pid, r: r, ans: myLock }).then(function (res) { checked = res; A[r] = { a: res.a, ok: res.right }; sf.disable(true); sf.verdict(res, res); strip.classList.remove("hidden"); strip.classList.add(res.right ? "ok" : "no"); clear(strip);
+    function settle() { if (checked || settling) return; var myLock = locks[seat]; if (!myLock) return; if (!others.every(function (s) { return locks[s] === myLock; })) { paintPhase(); return; } runCheck(myLock); }
+    function runCheck(ans) { settling = true;
+      api("apiPair", { op: "check", t: t, pid: pid, r: r, ans: ans }).then(function (res) { checked = res; A[r] = { a: res.a, ok: res.right }; if (res.a && res.a !== sf.get()) sf.set(res.a); sf.disable(true); sf.verdict(res, res); cmp.classList.add("hidden"); strip.classList.remove("hidden"); strip.classList.add(res.right ? "ok" : "no"); clear(strip);
         strip.appendChild(el("span.ic", { text: res.right ? "✓" : "✗" })); var L = ansLetter(sf, spec, res.keyShown && spec.kind === "one" ? res.keyShown : null);
         strip.appendChild(el("div", {}, [el("div.b", { text: res.right ? (solo ? S["pair.rightSolo"] : trio ? S["pair.rightTrio"] : S["pair.right"]) : (L ? fmt("pair.wrong", { letter: L }) : S["pair.wrongAny"]) }), res.why ? el("div.why", { text: fmt("pair.why", { why: res.why }) }) : null]));
         if (solo) strip.appendChild(el("div.small", { text: S["pair.soloStrip"] }));
@@ -992,37 +1037,69 @@ function renderPair(t) {
     // events
     function handle(ev) {
       if (!ev || !ev.k) return; var s = ev.s; var m = /^(\d+):([\s\S]*)$/.exec(ev.x || "");
-      if (ev.k === "msg") { addLine(s, ev.x, false); return; }
+      if (ev.k === "msg") { var mk = s + ":" + ev.t; if (msgSeen[mk]) return; msgSeen[mk] = 1; addLine(s, ev.x, false); return; }   // sent twice if the first reply was lost
       if (ev.k === "done") { var gs = ev.x === "left" ? s : ((/^gone:([ABC])$/.exec(ev.x) || [])[1] || null); if (gs && gs !== seat && others.indexOf(gs) !== -1) dropSeat(gs, ev.x !== "left"); return; }
       if (!m || parseInt(m[1], 10) !== r) return;
       if (ev.k === "pick") { if (s !== seat) { var was = picks[s]; picks[s] = m[2]; if (phase >= 2 && was && was !== m[2]) changedBy = s; else if (phase >= 2) changedBy = null; } else if (!picks[s]) { picks[s] = m[2]; myPicked = true; myOwn = m[2]; sf.set(m[2]); } advance(); paintCompareIfOn(); if (phase === 4) paintPhase(); return; }
       if (ev.k === "lock") {
         if (!m[2]) { locks[s] = null; if (phase === 4 && !locks[seat] && !others.some(function (o) { return locks[o]; })) phase = 2; }          // an unlock (D-UNLOCK): back to compare unless I hold a lock
-        else { locks[s] = m[2]; if (s === seat && phase < 4) { phase = 4; sf.set(m[2]); } else if (s !== seat && phase === 2) phase = 4; }   // a partner lock pulls me to Agree
+        else { locks[s] = m[2]; if (s !== seat && !picks[s]) picks[s] = m[2]; if (s === seat && phase < 4) { phase = 4; sf.set(m[2]); } else if (s !== seat) { advance(); if (phase === 2) phase = 4; } }   // a partner lock pulls me to Agree; it also counts as their answer
         if (phase >= 2) { paintPhase(); settle(); } return; }
     }
-    var roundTimers = [], goneShown = false, roomFails = 0, roomFailAt = null, seen = {}, started = Date.now(), ended = false;
-    function stopRound() { ended = true; roundTimers.forEach(function (id) { clearInterval(id); clearTimeout(id); }); roundTimers = []; }
+    var roundTimers = [], goneSeat = null, roomBad = false, roomFails = 0, roomFailAt = null, beat = {}, seenAt = {}, started = Date.now(), ended = false, doneKeys = {}, msgSeen = {};
+    function stopRound() { ended = true; wakeFn = null; roundTimers.forEach(function (id) { clearInterval(id); clearTimeout(id); }); roundTimers = []; }
     function rEvery(ms, fn) { var id = setInterval(function () { if (!stopped && !ended) fn(); }, ms); roundTimers.push(id); timers.push(id); }
-    function pollEv() { var q = room + "/ev.json?orderBy=%22$key%22" + (lastKey ? "&startAt=%22" + lastKey + "%22" : ""); fbGet(q).then(function (o) { roomFails = 0; roomFailAt = null; banner.classList.toggle("hidden", !goneShown); if (!o) return; Object.keys(o).sort().forEach(function (k) { if (k === lastKey) return; lastKey = k; handle(o[k]); }); }).catch(function () { roomFails++; if (!roomFailAt) roomFailAt = Date.now(); if (Date.now() - roomFailAt > 10000) roomTrouble(); }); }
-    function roomTrouble() { clear(banner).classList.remove("hidden"); banner.appendChild(el("span", { text: S["pair.err.room"] })); banner.appendChild(el("button.btn.sec", { text: S["pair.err.roomBtn"], on: { click: function () { leaveTo("room"); } } })); }
-    // A seat that has gone or left (D-DROP): a pair becomes solo for the one who stays, a trio carries on as a pair.
-    function dropSeat(gs, dropped) { others = others.filter(function (o) { return o !== gs; }); goneShown = false; banner.classList.add("hidden");
-      if (!others.length) { toast(fmt("pair.err.left", { them: cnOf(gs) })); leaveTo("gone"); return; }
-      toast(fmt(dropped ? "pair.err.droppedTrio" : "pair.err.leftTrio", { them: cnOf(gs) })); trio = false; cmp.classList.remove("trio"); advance(); paintPhase(); settle(); }
-    function onGone(s, silent) { if (goneShown || checked && r === R) return; if (silent) { dropSeat(s, true); return; } goneShown = true; clear(banner).classList.remove("hidden"); var three = others.length >= 2;
+    function eat(o) { if (!o || ended) return; Object.keys(o).sort().forEach(function (k) { if (doneKeys[k]) return; doneKeys[k] = 1; if (!lastKey || k > lastKey) lastKey = k; handle(o[k]); }); }
+    function pollEv() { var q = room + "/ev.json?orderBy=%22$key%22" + (lastKey ? "&startAt=%22" + lastKey + "%22" : ""); fbGet(q).then(function (o) { roomFails = 0; roomFailAt = null; if (roomBad) { roomBad = false; paintBanner(); } eat(o); }).catch(function () { roomFails++; if (!roomFailAt) roomFailAt = Date.now(); if (Date.now() - roomFailAt > 10000 && !roomBad) { roomBad = true; paintBanner(); } }); }
+    function heart() { fbSend("PUT", room + "/p/" + seat + ".json", Date.now()).catch(function () {}); }
+    // Is a partner still there? Only a heartbeat that CHANGES counts, timed on this computer's own clock, and only when the room answered.
+    function checkBeat() { fbGet(room + "/p.json").then(function (pp) { if (ended) return; pp = pp || {}; others.slice().forEach(function (s) { if (pp[s] && pp[s] !== beat[s]) { beat[s] = pp[s]; seenAt[s] = Date.now(); if (goneSeat === s) backAgain(s); } if (Date.now() - (seenAt[s] || started) > GONE_MS) onGone(s, false); }); }).catch(function () {}); }
+    function resync() { if (ended || solo) return; heart(); checkBeat(); flush(); fbGet(room + "/ev.json").then(function (o) { if (roomBad) { roomBad = false; roomFailAt = null; paintBanner(); } eat(o); }).catch(function () {}); }   // the whole log again, in case a read was lost
+    function paintBanner() { clear(banner); var show = roomBad || !!goneSeat; banner.classList.toggle("hidden", !show); if (!show) return;
+      if (roomBad) { banner.appendChild(el("span", { text: S["pair.err.room"] })); banner.appendChild(el("button.btn.sec", { text: S["pair.err.roomBtn"], on: { click: function () { leaveTo("room"); } } })); return; }
+      var s = goneSeat, three = others.length >= 2;
       banner.appendChild(el("span", { text: fmt(three ? "pair.err.gone3" : "pair.err.gone", { them: cnOf(s) }) }));
       banner.appendChild(el("button.btn.sec", { text: three ? fmt("pair.err.gone3Btn", { them: cnOf(s) }) : S["pair.err.goneBtn"], on: { click: function () { if (!three) { leaveTo("gone"); return; } api("apiPair", { op: "drop", t: t, pid: pid, seat: s }).then(function () { post("done", "gone:" + s); dropSeat(s, true); }).catch(function (e) { fail(e, "pair"); }); } } })); }
+    // A seat that has gone or left (D-DROP): a pair becomes solo for the one who stays, a trio carries on as a pair.
+    function dropSeat(gs, dropped) { others = others.filter(function (o) { return o !== gs; }); if (goneSeat === gs) goneSeat = null; paintBanner();
+      if (!others.length) { toast(fmt("pair.err.left", { them: cnOf(gs) })); leaveTo("gone"); return; }
+      toast(fmt(dropped ? "pair.err.droppedTrio" : "pair.err.leftTrio", { them: cnOf(gs) })); trio = false; cmp.classList.remove("trio"); advance(); paintPhase(); settle(); }
+    function onGone(s, silent) { if (goneSeat || checked && r === R) return; if (silent) { dropSeat(s, true); return; } goneSeat = s; paintBanner(); }
+    function backAgain(s) { goneSeat = null; paintBanner(); var txt = fmt("pair.err.back", { them: cnOf(s) }); addLine(null, txt, true); toast(txt); resync(); }
     function leaveTo(reason) { if (!solo) post("done", "left"); stopRound(); active.stop(); api("apiPair", { op: "leave", t: t, pid: pid, reason: reason }).then(function (v2) { stopped = false; timers = []; sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); paint(v2); toast(S["pair.err.carryOn"]); }).catch(function (e) { fail(e, "pair"); }); }
+    // Go in again from the server's word: a new room, a pair put back together, or left on your own.
+    function reenter(sayBack) { stopRound(); active.stop(); outbox = []; api("apiPair", { op: "join", t: t }).then(function (v2) { intoView(v2, sayBack); }).catch(function (e) { fail(e, "pair"); }); }
+    function intoView(v2, sayBack) { stopped = false; timers = []; if (v2.pair) { sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); if (sayBack) sessionStorage.setItem("u4_seen_" + v2.pair.pid, "1"); } paint(v2); if (sayBack && v2.pair && v2.pair.them.length) toast(fmt("pair.back.done", { them: v2.pair.them.join(" " + S["pair.and"] + " "), round: v2.pair.r })); }
+    // The way back: on your own after someone left, you can ask to work with them again; both have to want it.
+    function paintBack() { clear(backBar); var b = P.back, show = !!b && (!b.live || (b.theyAsked && !backNotNow)); backBar.classList.toggle("hidden", !show); if (!show) return;
+      var them = b.names.join(" " + S["pair.and"] + " ");
+      if (b.asked) { backBar.appendChild(el("span", { text: fmt("pair.back.asked", { them: them }) })); return; }
+      var ask = b.theyAsked && !backNotNow; backBar.appendChild(el("span", { text: fmt(ask ? "pair.back.they" : "pair.back.say", { them: them }) }));
+      var go = el("button.btn" + (ask ? "" : ".sec"), { text: fmt("pair.back.btn", { them: them }), on: { click: function () { go.disabled = true; askBack(function () { go.disabled = false; }); } } }); backBar.appendChild(go);
+      if (ask) backBar.appendChild(el("button.btn.quiet", { text: S["pair.back.not"], on: { click: function () { backNotNow = true; paintBack(); } } })); }
+    function askBack(onFail) { api("apiPair", { op: "back", t: t, pid: pid }).then(function (v2) { if (ended) return; if (v2.reunited) { stopRound(); active.stop(); outbox = []; intoView(v2, true); return; } P.back = v2.pair ? v2.pair.back : null; paintBack(); }).catch(function (e) { console.error(e); onFail(); toast(S["err.server"]); }); }
     if (!solo) {
-      rEvery(4000, function () { fbSend("PUT", room + "/p/" + seat + ".json", Date.now()).catch(function () {}); });
-      rEvery(4000, function () { fbGet(room + "/p.json").then(function (pp) { pp = pp || {}; others.forEach(function (s) { if (pp[s]) seen[s] = pp[s]; var last = seen[s] || started; if (Date.now() - last > GONE_MS) onGone(s, false); }); }).catch(function () {}); });
+      rEvery(4000, heart);
+      rEvery(4000, checkBeat);
       rEvery(1000, pollEv);
-      rEvery(8000, function () { api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (st.room && st.room !== room) { stopRound(); active.stop(); api("apiPair", { op: "join", t: t }).then(function (v2) { stopped = false; timers = []; paint(v2); }); return; } if (st.dissolved) { stopRound(); active.stop(); api("apiPair", { op: "join", t: t }).then(function (v2) { stopped = false; timers = []; sessionStorage.setItem("u4_started_" + (v2.pair ? v2.pair.pid : pid), "1"); paint(v2); }); return; } (st.gone || []).forEach(function (gs) { if (gs !== seat && others.indexOf(gs) !== -1) dropSeat(gs, (st.goneWhy || {})[gs] === "dropped"); }); if (st.pairOn === false && !offToasted) { offToasted = true; toast(S["pair.err.off"]); } }).catch(function () {}); });
-      fbSend("PUT", room + "/p/" + seat + ".json", Date.now()).catch(function () {});
+      rEvery(3000, flush);
+      rEvery(10000, resync);
+      wakeFn = resync;
+      rEvery(8000, function () { api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (ended) return;
+        if (st.moved || (st.gone || []).indexOf(seat) !== -1 || st.dissolved) { reenter(false); return; }
+        if (st.room && st.room !== room) { var was = others.length; stopRound(); active.stop(); outbox = []; api("apiPair", { op: "join", t: t }).then(function (v2) { intoView(v2, !!(v2.pair && v2.pair.them.length > was)); }).catch(function (e) { fail(e, "pair"); }); return; }
+        P.back = st.back; paintBack();
+        if (st.r > r && !checked && !settling) { runCheck(locks[seat] || sf.get() || ""); return; }   // the other side has the verdict already: never sit waiting for it
+        (st.gone || []).forEach(function (gs) { if (others.indexOf(gs) !== -1) dropSeat(gs, (st.goneWhy || {})[gs] === "dropped"); });
+        if (st.pairOn === false && !offToasted) { offToasted = true; toast(S["pair.err.off"]); } }).catch(function () {}); });
+      heart();
       // rebuild from the whole log once, then stream
-      fbGet(room + "/ev.json").then(function (o) { var keys = Object.keys(o || {}).sort(); keys.forEach(function (k) { lastKey = k; handle(o[k]); }); if (!fresh && !sessionStorage.getItem("u4_seen_" + pid) && (r > 1 || keys.length)) toast(fmt("pair.resume", { round: r, R: R })); sessionStorage.setItem("u4_seen_" + pid, "1"); paintPhase(); }).catch(function () { roomFailAt = Date.now() - 10001; roomTrouble(); paintPhase(); });
-    } else paintPhase();
+      fbGet(room + "/ev.json").then(function (o) { var any = !!o && Object.keys(o).length > 0; eat(o); if (!fresh && !sessionStorage.getItem("u4_seen_" + pid) && (r > 1 || any)) toast(fmt("pair.resume", { round: r, R: R })); sessionStorage.setItem("u4_seen_" + pid, "1"); paintPhase(); }).catch(function () { roomFailAt = Date.now() - 10001; roomBad = true; paintBanner(); paintPhase(); });
+    } else {
+      paintPhase();
+      if (P.back) { var soloStatus = function () { api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (ended) return; if (st.moved) { reenter(true); return; } P.back = st.back; paintBack(); }).catch(function () {}); }; rEvery(8000, soloStatus); wakeFn = soloStatus; }
+    }
+    paintBack();
     setStep(1);
   }
   var offToasted = false;
