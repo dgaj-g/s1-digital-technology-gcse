@@ -57,6 +57,7 @@ function wordCount(t) { return String(t == null ? "" : t).split(/\s+/).filter(fu
 function pct(m, x) { return x ? Math.round(100 * m / x) : 0; }
 function letters(i) { return "ABCDEFGHIJ".charAt(i); }
 function joinNames(a) { return a.join(S["list.and"]); }
+function whyWord(w) { return S["staff.th.why." + w] || ""; }
 function bandLevel(bands, hits) { var total = 0, i, j; for (i = 0; i < hits.length; i++) total += hits[i];
   for (var b = 0; b < bands.length; b++) { var band = bands[b], ok = total >= band.total; for (j = 0; j < band.need.length && ok; j++) if ((hits[j] || 0) < band.need[j]) ok = false; if (!ok) continue;
     var hi = false; if (band.hiTotal != null && total >= band.hiTotal) hi = true; if (band.hiNeed) { hi = true; for (j = 0; j < band.hiNeed.length; j++) if ((hits[j] || 0) < band.hiNeed[j]) hi = false; }
@@ -80,8 +81,8 @@ function prog(t) {
   var ps = ST.pairs[t] || null, round = (ST.tc.round && ST.tc.round[t]) || 1;
   var Q = (rec && rec.Q && rec.Q[round]) || {}, qn = 0, qm = 0, qx = 0; Object.keys(Q).forEach(function (q) { qn++; qm += Q[q][0]; qx += Q[q][1]; });
   var NP = meta ? meta.parts.length : 0, total = meta ? meta.total : qx;
-  var learnDone = N > 0 && ln >= N, pairDone = !!(ps && ps.state === "done"), ppDone = NP > 0 && qn >= NP;
-  return { t: t, N: N, ln: ln, bits: bits, learnDone: learnDone, pair: ps, pairDone: pairDone, pairOn: !!(ST.tc.pair && ST.tc.pair[t]), round: round, qn: qn, qm: qm, qx: qx, NP: NP, total: total, ppDone: ppDone,
+  var learnDone = N > 0 && ln >= N, pairNow = !!(ps && ps.state === "done"), goes = (ST.goes && ST.goes[t]) || [], earned = goes.some(function (g) { return !g.cut; }), pairDone = pairNow || earned, pairAgain = !pairNow && earned, ppDone = NP > 0 && qn >= NP;
+  return { t: t, N: N, ln: ln, bits: bits, learnDone: learnDone, pair: ps, pairDone: pairDone, pairAgain: pairAgain, goes: goes, go: (ST.tc.go && ST.tc.go[t]) || 1, pairOn: !!(ST.tc.pair && ST.tc.pair[t]), round: round, qn: qn, qm: qm, qx: qx, NP: NP, total: total, ppDone: ppDone,
     open: !!(ST.tc.open && ST.tc.open[t]) && !!meta, closed: !(ST.tc.open && ST.tc.open[t]) && !!rec, done: learnDone && pairDone && ppDone, meta: meta, rec: rec };
 }
 function ring(frac, lab) {
@@ -151,7 +152,7 @@ function renderTh() {
         rings.appendChild(ring(p.pairDone ? 1 : (p.pair && p.pair.state === "live" ? ((p.pair.r || 1) - 1) / R : 0), S["th.rings.pair"]));
         rings.appendChild(ring(p.NP ? p.qn / p.NP : 0, S["th.rings.pp"]));
         card.appendChild(rings);
-        var st = p.done ? fmt("th.card.done", { t: t, m: p.qm, x: p.total }) : p.qn ? fmt("th.card.marks", { round: p.round, m: p.qm, x: p.total }) : p.pair && p.pair.state === "live" ? fmt("th.card.pair", { r: p.pair.r || 1, R: R }) : p.ln ? fmt("th.card.learn", { n: p.ln, N: p.N }) : S["th.card.notStarted"];
+        var st = p.done ? fmt("th.card.done", { t: t, m: p.qm, x: p.total }) : p.qn ? fmt("th.card.marks", { round: p.round, m: p.qm, x: p.total }) : p.pair && p.pair.state === "live" ? fmt("th.card.pair", { r: p.pair.r || 1, R: R }) : p.ln ? fmt("th.card.learn", { n: p.ln, N: p.N }) : p.pairDone ? S["topic.where.pairDoneOnce"] : S["th.card.notStarted"];
         card.appendChild(el("div.status" + (p.done ? ".done" : ""), { text: st }));
         card.appendChild(el("a.btn", { href: "#th/" + t, text: fmt("th.card.open", { t: t }) }));
       } else {
@@ -192,17 +193,19 @@ function renderTopic(t) {
     else if (ps && ps.state === "live") { pairText = ps.solo ? fmt("door.pair.liveSolo", { round: ps.r || 1, R: R }) : fmt("door.pair.live", { round: ps.r || 1, R: R, them: joinNames(ps.them || []) }); pairBtn = ps.solo ? S["door.pair.carry"] : S["door.pair.back"]; }
     else if (ps && ps.state === "waiting") { pairText = S["pair.wait.head"]; pairBtn = S["door.pair.back"]; }
     else if (!p.pairOn) { pairText = S["door.pair.off"]; pairCls.off = true; }
-    else { pairText = S["door.pair.notStarted"]; pairBtn = S["door.pair.start"]; }
-    doors.appendChild(door("2", S["door.pair"], S["door.pair.sub"], pairText, pairCls, pairBtn, "#th/" + t + "/pair", null, ps && ps.state === "live" && !p.pairOn ? null : el("p.small.quiet", { text: p.pairOn || ps ? S["pair.door.act"] : S["pair.door.notNow"] })));
+    else { pairText = p.goes.length ? S["door.pair.newGo"] : S["door.pair.notStarted"]; pairBtn = S["door.pair.start"]; }
+    var lastG = p.goes.length ? p.goes[p.goes.length - 1] : null, goNote = !lastG || (ps && ps.state === "done") ? null : el("p.small.quiet", { text: lastG.cut ? fmt("door.pair.lastGoCut", { r: lastG.r, R: R }) : lastG.names && lastG.names.length ? fmt("door.pair.lastGo", { m: lastG.right, R: R, name: joinNames(lastG.names) }) : lastG.solo ? fmt("door.pair.lastGoSolo", { m: lastG.right, R: R }) : fmt("door.pair.lastGoPlain", { m: lastG.right, R: R }) });
+    var pairNote = ps && ps.state === "live" && !p.pairOn ? null : el("p.small.quiet", { text: p.pairOn || ps ? S["pair.door.act"] : S["pair.door.notNow"] });
+    doors.appendChild(door("2", S["door.pair"], S["door.pair.sub"], pairText, pairCls, pairBtn, "#th/" + t + "/pair", null, goNote && pairNote ? el("div", {}, [goNote, pairNote]) : goNote || pairNote));
     var ppText = p.qn ? fmt("door.pp.progMarks", { round: p.round, m: p.qm, x: p.total, n: p.qn, N: p.NP }) : fmt("door.pp.prog", { round: p.round, n: 0, N: p.NP });
     doors.appendChild(door("3", S["door.pp"], S["door.pp.sub"], ppText, { done: p.ppDone }, p.ppDone ? S["door.pp.see"] : p.qn ? S["door.pp.go"] : S["door.pp.start"], "#th/" + t + "/pp"));
     $app.appendChild(doors);
-    var done = []; if (p.learnDone) done.push(S["topic.where.learnDone"]); else if (p.ln) done.push(fmt("topic.where.learnPart", { n: p.ln, N: p.N })); if (p.pairDone) done.push(S["topic.where.pairDone"]); if (p.ppDone) done.push(S["topic.where.ppDone"]); else if (p.qn) done.push(fmt("topic.where.ppPart", { n: p.qn, N: p.NP }));
-    var next = !p.learnDone ? S["topic.where.next.learn"] : (!p.pairDone && p.pairOn) ? S["topic.where.next.pair"] : !p.ppDone ? S["topic.where.next.pp"] : !p.pairDone ? S["topic.where.next.pair"] : null;
+    var done = []; if (p.learnDone) done.push(S["topic.where.learnDone"]); else if (p.ln) done.push(fmt("topic.where.learnPart", { n: p.ln, N: p.N })); if (p.pairDone) done.push(p.pairAgain ? S["topic.where.pairDoneOnce"] : S["topic.where.pairDone"]); if (p.ppDone) done.push(S["topic.where.ppDone"]); else if (p.qn) done.push(fmt("topic.where.ppPart", { n: p.qn, N: p.NP }));
+    var next = !p.learnDone ? S["topic.where.next.learn"] : (p.pairAgain && p.pairOn) ? S["topic.where.next.pairAgain"] : (!p.pairDone && p.pairOn) ? S["topic.where.next.pair"] : !p.ppDone ? S["topic.where.next.pp"] : !p.pairDone ? S["topic.where.next.pair"] : null;
     $app.appendChild(el("div.where.tw-" + t, {}, [el("span.dot"), el("span", { text: next ? fmt("topic.where", { t: t, done: done.length ? done.join(" ") : S["topic.where.nothing"], next: next }) : fmt("topic.where.done", { t: t }) })]));
     $app.appendChild(el("a.back", { href: "#th", text: "‹ " + S["nav.backTh"] }));
-    if (!p.pairDone && active === mine) {   // the door follows the partner switch, so nobody has to reload when the teacher turns it on or off
-      var doorPoll = setInterval(function () { if (document.hidden) return; api("apiPair", { op: "switch", t: t }).then(function (st) { if (active === mine && st.pairOn !== p.pairOn) route(); }).catch(function (e) { console.warn(e); }); }, 15000);
+    if (active === mine) {   // the door follows the partner switch and a new partner go, so nobody has to reload
+      var doorPoll = setInterval(function () { if (document.hidden) return; api("apiPair", { op: "switch", t: t }).then(function (st) { if (active === mine && (st.pairOn !== p.pairOn || (st.go || 1) !== p.go)) route(); }).catch(function (e) { console.warn(e); }); }, 15000);
       mine.stop = function () { clearInterval(doorPoll); };
     }
   }).catch(function (e) { fail(e, "topic"); });
@@ -902,7 +905,7 @@ function renderPair(t) {
   function pausedView(v) {
     clear($app); $app.appendChild(head());
     $app.appendChild(el("div.card.waitcard", {}, [el("h2", { text: S["pair.paused.head"] }), el("p", { text: fmt(v.solo ? "pair.paused.saySolo" : v.trio ? "pair.paused.sayTrio" : "pair.paused.say", { round: v.r, R: v.R }) }), el("p.small", { text: S["pair.paused.try"] }), el("div.acts", {}, [el("a.btn.sec", { href: "#th/" + t, text: fmt("nav.backTopic", { t: t }) })])]));
-    function look() { api("apiPair", { op: "join", t: t }).then(function (v2) { if (stopped || v2.state === "paused") return; active.stop(); stopped = false; timers = []; wakeFn = null; if (v2.pair) sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); paint(v2); toast(S["pair.paused.back"]); }).catch(function (e) { console.warn(e); }); }
+    function look() { api("apiPair", { op: "join", t: t, look: 1 }).then(function (v2) { if (stopped || v2.state === "paused") return; active.stop(); if (v2.state === "off" || v2.state === "free") { toast(S["pair.newGo.toast"]); go("#th/" + t); return; } stopped = false; timers = []; wakeFn = null; if (v2.pair) sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); paint(v2); toast(S["pair.paused.back"]); }).catch(function (e) { console.warn(e); }); }
     wakeFn = look; every(10000, function () { if (!document.hidden) look(); });
   }
   function paint(v) {
@@ -1036,14 +1039,14 @@ function renderPair(t) {
     var settling = false;
     function settle() { if (checked || settling) return; var myLock = locks[seat]; if (!myLock) return; if (!others.every(function (s) { return locks[s] === myLock; })) { paintPhase(); return; } runCheck(myLock); }
     function runCheck(ans) { settling = true;
-      api("apiPair", { op: "check", t: t, pid: pid, r: r, ans: ans }).then(function (res) { if (res.state === "paused") { settling = false; reenter(false); return; } checked = res; A[r] = { a: res.a, ok: res.right }; if (res.a && res.a !== sf.get()) sf.set(res.a); sf.disable(true); sf.verdict(res, res); cmp.classList.add("hidden"); strip.classList.remove("hidden"); strip.classList.add(res.right ? "ok" : "no"); clear(strip);
+      api("apiPair", { op: "check", t: t, pid: pid, r: r, ans: ans }).then(function (res) { if (res.state === "ended") { settling = false; endedGo(); return; } if (res.state === "paused") { settling = false; reenter(false); return; } checked = res; A[r] = { a: res.a, ok: res.right }; if (res.a && res.a !== sf.get()) sf.set(res.a); sf.disable(true); sf.verdict(res, res); cmp.classList.add("hidden"); strip.classList.remove("hidden"); strip.classList.add(res.right ? "ok" : "no"); clear(strip);
         strip.appendChild(el("span.ic", { text: res.right ? "✓" : "✗" })); var L = ansLetter(sf, spec, res.keyShown && spec.kind === "one" ? res.keyShown : null);
         strip.appendChild(el("div", {}, [el("div.b", { text: res.right ? (solo ? S["pair.rightSolo"] : trio ? S["pair.rightTrio"] : S["pair.right"]) : (L ? fmt("pair.wrong", { letter: L }) : S["pair.wrongAny"]) }), res.why ? el("div.why", { text: fmt("pair.why", { why: res.why }) }) : null]));
         if (solo) strip.appendChild(el("div.small", { text: S["pair.soloStrip"] }));
         if (!solo) addLine(null, fmt(res.right ? "pair.chat.lockedRight" : "pair.chat.lockedWrong", { r: r }), true);
         clear(nextBox).classList.remove("hidden");
         if (r < R) nextBox.appendChild(el("button.btn.big", { text: fmt("pair.nextRound", { round: r + 1 }), on: { click: function () { P.r = r + 1; P.A = A; P.right = Object.keys(A).filter(function (k) { return A[k].ok; }).length; stopRound(); pairView(P, false); } } }));
-        else nextBox.appendChild(el("button.btn.big.gold", { text: S["pair.finish.go"], on: { click: function () { api("apiPair", { op: "finish", t: t, pid: pid }).then(function (f) { if (f.state === "paused") { reenter(false); return; } if (!solo) post("done", "10"); stopRound(); finishView(P, f); }).catch(function (e) { fail(e, "pair"); }); } } }));
+        else nextBox.appendChild(el("button.btn.big.gold", { text: S["pair.finish.go"], on: { click: function () { api("apiPair", { op: "finish", t: t, pid: pid }).then(function (f) { if (f.state === "ended") { endedGo(); return; } if (f.state === "paused") { reenter(false); return; } if (!solo) post("done", "10"); stopRound(); finishView(P, f); }).catch(function (e) { fail(e, "pair"); }); } } }));
         paintPhase(); settling = false;
       }).catch(function (e) { settling = false; console.error(e); toast(S["err.server"]); later(3000, settle); });
     }
@@ -1073,14 +1076,16 @@ function renderPair(t) {
       if (roomBad) { banner.appendChild(el("span", { text: S["pair.err.room"] })); banner.appendChild(el("button.btn.sec", { text: S["pair.err.roomBtn"], on: { click: function () { leaveTo("room"); } } })); return; }
       var s = goneSeat, three = others.length >= 2;
       banner.appendChild(el("span", { text: fmt(three ? "pair.err.gone3" : "pair.err.gone", { them: cnOf(s) }) }));
-      banner.appendChild(el("button.btn.sec", { text: three ? fmt("pair.err.gone3Btn", { them: cnOf(s) }) : S["pair.err.goneBtn"], on: { click: function () { if (!three) { leaveTo("gone"); return; } api("apiPair", { op: "drop", t: t, pid: pid, seat: s }).then(function (res) { if (res.state === "paused") { reenter(false); return; } post("done", "gone:" + s); dropSeat(s, true); }).catch(function (e) { fail(e, "pair"); }); } } })); }
+      banner.appendChild(el("button.btn.sec", { text: three ? fmt("pair.err.gone3Btn", { them: cnOf(s) }) : S["pair.err.goneBtn"], on: { click: function () { if (!three) { leaveTo("gone"); return; } api("apiPair", { op: "drop", t: t, pid: pid, seat: s }).then(function (res) { if (res.state === "ended") { endedGo(); return; } if (res.state === "paused") { reenter(false); return; } post("done", "gone:" + s); dropSeat(s, true); }).catch(function (e) { fail(e, "pair"); }); } } })); }
     // A seat that has gone or left (D-DROP): a pair becomes solo for the one who stays, a trio carries on as a pair.
     function dropSeat(gs, dropped) { others = others.filter(function (o) { return o !== gs; }); if (goneSeat === gs) goneSeat = null; paintBanner();
       if (!others.length) { toast(fmt("pair.err.left", { them: cnOf(gs) })); leaveTo("gone"); return; }
       toast(fmt(dropped ? "pair.err.droppedTrio" : "pair.err.leftTrio", { them: cnOf(gs) })); trio = false; cmp.classList.remove("trio"); advance(); paintPhase(); settle(); }
     function onGone(s, silent) { if (goneSeat || checked && r === R) return; if (silent) { dropSeat(s, true); return; } goneSeat = s; paintBanner(); }
     function backAgain(s) { goneSeat = null; paintBanner(); var txt = fmt("pair.err.back", { them: cnOf(s) }); addLine(null, txt, true); toast(txt); resync(); }
-    function leaveTo(reason) { stopRound(); active.stop(); api("apiPair", { op: "leave", t: t, pid: pid, reason: reason }).then(function (v2) { stopped = false; timers = []; if (v2.state === "paused") { paint(v2); return; } if (!solo) post("done", "left"); sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); paint(v2); toast(S["pair.err.carryOn"]); }).catch(function (e) { fail(e, "pair"); }); }
+    function leaveTo(reason) { stopRound(); active.stop(); api("apiPair", { op: "leave", t: t, pid: pid, reason: reason }).then(function (v2) { if (v2.state === "ended") { endedGo(); return; } stopped = false; timers = []; if (v2.state === "paused") { paint(v2); return; } if (!solo) post("done", "left"); sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); paint(v2); toast(S["pair.err.carryOn"]); }).catch(function (e) { fail(e, "pair"); }); }
+    // The teacher started a new partner go: this run is over and saved, so back to the door, where the new go starts.
+    function endedGo() { stopRound(); active.stop(); outbox = []; toast(S["pair.newGo.toast"]); go("#th/" + t); }
     // Go in again from the server's word: a new room, a pair put back together, or left on your own.
     function reenter(sayBack) { stopRound(); active.stop(); outbox = []; api("apiPair", { op: "join", t: t }).then(function (v2) { intoView(v2, sayBack); }).catch(function (e) { fail(e, "pair"); }); }
     function intoView(v2, sayBack) { stopped = false; timers = []; if (v2.pair) { sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); if (sayBack) sessionStorage.setItem("u4_seen_" + v2.pair.pid, "1"); } paint(v2); if (sayBack && v2.pair && v2.pair.them.length) toast(fmt("pair.back.done", { them: v2.pair.them.join(" " + S["pair.and"] + " "), round: v2.pair.r })); }
@@ -1091,7 +1096,7 @@ function renderPair(t) {
       var ask = b.theyAsked && !backNotNow; backBar.appendChild(el("span", { text: fmt(ask ? "pair.back.they" : "pair.back.say", { them: them }) }));
       var go = el("button.btn" + (ask ? "" : ".sec"), { text: fmt("pair.back.btn", { them: them }), on: { click: function () { go.disabled = true; askBack(function () { go.disabled = false; }); } } }); backBar.appendChild(go);
       if (ask) backBar.appendChild(el("button.btn.quiet", { text: S["pair.back.not"], on: { click: function () { backNotNow = true; paintBack(); } } })); }
-    function askBack(onFail) { api("apiPair", { op: "back", t: t, pid: pid }).then(function (v2) { if (ended) return; if (v2.state === "paused") { reenter(false); return; } if (v2.reunited) { stopRound(); active.stop(); outbox = []; intoView(v2, true); return; } P.back = v2.pair ? v2.pair.back : null; paintBack(); }).catch(function (e) { console.error(e); onFail(); toast(S["err.server"]); }); }
+    function askBack(onFail) { api("apiPair", { op: "back", t: t, pid: pid }).then(function (v2) { if (ended) return; if (v2.state === "ended") { endedGo(); return; } if (v2.state === "paused") { reenter(false); return; } if (v2.reunited) { stopRound(); active.stop(); outbox = []; intoView(v2, true); return; } P.back = v2.pair ? v2.pair.back : null; paintBack(); }).catch(function (e) { console.error(e); onFail(); toast(S["err.server"]); }); }
     if (!solo) {
       rEvery(4000, heart);
       rEvery(4000, checkBeat);
@@ -1100,6 +1105,7 @@ function renderPair(t) {
       rEvery(10000, resync);
       wakeFn = resync;
       rEvery(8000, function () { api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (ended) return;
+        if (st.ended) { endedGo(); return; }
         if (st.pairOn === false && !st.done) { reenter(false); return; }   // the teacher has paused it: this tab goes to the paused card
         if (st.moved || (st.gone || []).indexOf(seat) !== -1 || st.dissolved) { reenter(false); return; }
         if (st.room && st.room !== room) { var was = others.length; stopRound(); active.stop(); outbox = []; api("apiPair", { op: "join", t: t }).then(function (v2) { intoView(v2, !!(v2.pair && v2.pair.them.length > was)); }).catch(function (e) { fail(e, "pair"); }); return; }
@@ -1111,7 +1117,7 @@ function renderPair(t) {
       fbGet(room + "/ev.json").then(function (o) { var any = !!o && Object.keys(o).length > 0; eat(o); if (!fresh && !sessionStorage.getItem("u4_seen_" + pid) && (r > 1 || any)) toast(fmt("pair.resume", { round: r, R: R })); sessionStorage.setItem("u4_seen_" + pid, "1"); paintPhase(); }).catch(function () { roomFailAt = Date.now() - 10001; roomBad = true; paintBanner(); paintPhase(); });
     } else {
       paintPhase();
-      var soloStatus = function () { api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (ended) return; if (st.pairOn === false && !st.done) { reenter(false); return; } if (st.moved) { reenter(true); return; } P.back = st.back; paintBack(); }).catch(function () {}); }; rEvery(8000, soloStatus); wakeFn = soloStatus;
+      var soloStatus = function () { api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (ended) return; if (st.ended) { endedGo(); return; } if (st.pairOn === false && !st.done) { reenter(false); return; } if (st.moved) { reenter(true); return; } P.back = st.back; paintBack(); }).catch(function () {}); }; rEvery(8000, soloStatus); wakeFn = soloStatus;
     }
     paintBack();
     setStep(1);
@@ -1132,8 +1138,8 @@ function renderPair(t) {
 function download(name, text) { var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "text/csv" })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
 function renderStaff($app) {
   if (!LIVE) setBody("is-staff");
-  var t = parseInt(sessionStorage.getItem("u4_staff_t") || "1", 10) || 1, timer = null, armed = null;
-  active.stop = function () { clearInterval(timer); clearTimeout(armed); };
+  var t = parseInt(sessionStorage.getItem("u4_staff_t") || "1", 10) || 1, timer = null, armed = null, armedGo = null;
+  active.stop = function () { clearInterval(timer); clearTimeout(armed); clearTimeout(armedGo); };
   (LIVE ? Promise.resolve() : refresh(t)).then(function () {
     if (!LIVE && !ME.owner) return go("#");
     if (!LIVE) { $app.appendChild(crumbFrom(S["nav.home"] + " › " + S["staff.th.tab"], ["#"])); $app.appendChild(el("h1", { text: S["staff.th.tab"] + " · " + S["th.crumb.home"] })); }
@@ -1142,6 +1148,7 @@ function renderStaff($app) {
     function paintChips() { clear(chips); for (var i = 1; i <= 7; i++) (function (i) { chips.appendChild(el("button.tchip.tw-" + i + (i === t ? ".on" : ""), { type: "button", text: fmt("staff.th.chip", { t: i, name: topicName(i) }), on: { click: function () { t = i; sessionStorage.setItem("u4_staff_t", String(t)); paintChips(); load(); } } })); })(i); }
     function load() { api("apiStaff", { op: "theory", t: t }).then(paintTopic).catch(function (e) { fail(e, "staff"); }); }
     function paintTopic(d) {
+      clearTimeout(armed); armed = null; clearTimeout(armedGo); armedGo = null;   // a repainted button must ask again before it acts
       clear(body); var cls = d.cls, open = !!(d.tc.open && d.tc.open[t]), pon = !!(d.tc.pair && d.tc.pair[t]);
       var ctl = el("div.ctl.tw-" + t);
       ctl.appendChild(el("span.state" + (open ? "" : ".off"), { text: open ? fmt("staff.th.openNow", { cls: cls }) : fmt("staff.th.closedNow", { cls: cls }) }));
@@ -1149,6 +1156,9 @@ function renderStaff($app) {
       ctl.appendChild(el("button.btn" + (pon ? ".sec" : ".quiet"), { text: pon ? S["staff.th.pairOn"] : S["staff.th.pairOff"], attr: { "aria-pressed": pon ? "true" : "false" }, on: { click: function () { api("apiStaff", { op: "theoryPairOn", t: t, on: !pon }).then(load); } } }));
       var rbtn = el("button.btn.quiet", { text: fmt("staff.th.round", { n: d.round + 1 }), on: { click: function () { if (armed) { clearTimeout(armed); armed = null; api("apiStaff", { op: "theoryRound", t: t }).then(load); return; } rbtn.textContent = fmt("staff.th.roundSure", { n: d.round + 1, cls: cls, prev: d.round }); rbtn.classList.add("gold"); armed = setTimeout(function () { armed = null; rbtn.textContent = fmt("staff.th.round", { n: d.round + 1 }); rbtn.classList.remove("gold"); }, 6000); } } });
       ctl.appendChild(el("span.state", { text: fmt("staff.th.roundNow", { n: d.round }) })); ctl.appendChild(rbtn);
+      var goNow = (d.tc.go && d.tc.go[t]) || 1, curPairs = d.pairs.filter(function (pr) { return (pr.go || 1) === goNow; }), liveN = curPairs.filter(function (pr) { return !pr.done; }).length;
+      if (goNow > 1 || curPairs.length) ctl.appendChild(el("span.state", { text: fmt("staff.th.goNow", { n: goNow }) }));
+      if (curPairs.length) { var gbtn = el("button.btn.quiet", { text: S["staff.th.newGo"], on: { click: function () { if (armedGo) { clearTimeout(armedGo); armedGo = null; gbtn.disabled = true; api("apiStaff", { op: "theoryNewGo", t: t }).then(function () { toast(S["staff.th.newGoDone"]); load(); }).catch(function (e) { fail(e, "staff"); }); return; } gbtn.textContent = fmt(liveN === 0 ? "staff.th.newGoSure0" : liveN === 1 ? "staff.th.newGoSure1" : "staff.th.newGoSure", { cls: cls, n: liveN }); gbtn.classList.add("gold"); armedGo = setTimeout(function () { armedGo = null; gbtn.textContent = S["staff.th.newGo"]; gbtn.classList.remove("gold"); }, 6000); } } }); ctl.appendChild(gbtn); }
       body.appendChild(ctl);
       if (!pon) body.appendChild(el("p.pausednote", { text: S["staff.th.pairPaused"] }));
       if (!d.rows.length) { body.appendChild(el("p.sub", { text: fmt("staff.th.none", { cls: cls }) })); }
@@ -1159,12 +1169,13 @@ function renderStaff($app) {
           tr.appendChild(el("td", { text: fmt("staff.th.learn", { n: row.learn[0], N: row.learn[1] }) }));
           var pr = row.pair, ptxt = "—";
           if (pr && pr.waiting) ptxt = S["staff.th.pairWaiting"];
-          else if (pr && pr.gone) ptxt = fmt("staff.th.pairGone", { why: pr.goneWhy || "" });
-          else if (pr && pr.done && pr.solo) ptxt = fmt("staff.th.pairSolo", { m: pr.right, R: pr.R, why: pr.why || "" });
+          else if (pr && pr.gone) ptxt = fmt("staff.th.pairGone", { why: whyWord(pr.goneWhy) });
+          else if (pr && pr.done && pr.solo) ptxt = fmt("staff.th.pairSolo", { m: pr.right, R: pr.R, why: whyWord(pr.why) });
           else if (pr && pr.done) ptxt = fmt("staff.th.pair", { m: pr.right, R: pr.R, name: joinNames(pr.names) });
           else if (pr && pr.trio) ptxt = fmt("staff.th.pairLiveTrio", { r: Math.min(pr.r, pr.R), R: pr.R, name: pr.names[0], name2: pr.names[1] });
-          else if (pr && pr.solo) ptxt = fmt("staff.th.pairLiveSolo", { r: Math.min(pr.r, pr.R), R: pr.R, why: pr.why || "" });
+          else if (pr && pr.solo) ptxt = fmt("staff.th.pairLiveSolo", { r: Math.min(pr.r, pr.R), R: pr.R, why: whyWord(pr.why) });
           else if (pr) ptxt = fmt("staff.th.pairLive", { r: Math.min(pr.r, pr.R), R: pr.R, name: pr.names[0] });
+          else if (row.prev) ptxt = row.prev.cut ? fmt("staff.th.pairPrevCut", { r: row.prev.r }) : fmt("staff.th.pairPrev", { m: row.prev.right, R: row.prev.R });
           tr.appendChild(el("td", { text: ptxt }));
           tr.appendChild(el("td", { text: row.pp.n ? fmt("staff.th.pp", { m: row.pp.m, x: row.pp.x, p: row.pp.p }) + " · " + fmt("staff.th.ppN", { n: row.pp.n, N: row.pp.N }) : S["staff.th.notTried"] }));
           var fl = el("td"); (row.flags || []).forEach(function (f) { fl.appendChild(el("span.flag", { text: S["staff.th.flag." + f] || f })); }); tr.appendChild(fl);
@@ -1172,10 +1183,14 @@ function renderStaff($app) {
         });
         body.appendChild(tb);
       }
-      var acts = el("div.acts"); acts.appendChild(el("button.btn.sec", { text: S["staff.th.csv"], on: { click: function () { api("apiStaff", { op: "theoryCsv", t: t, kind: "marks" }).then(function (c) { download(c.name, c.csv); }); } } }));
+      var acts = el("div.acts.th-acts"); acts.appendChild(el("button.btn.sec", { text: S["staff.th.csv"], on: { click: function () { api("apiStaff", { op: "theoryCsv", t: t, kind: "marks" }).then(function (c) { download(c.name, c.csv); }); } } }));
       acts.appendChild(el("button.btn.sec", { text: S["staff.th.chatCsv"], on: { click: function () { api("apiStaff", { op: "theoryCsv", t: t, kind: "chat" }).then(function (c) { download(c.name, c.csv); }); } } }));
       body.appendChild(acts);
-      if (d.pairs.length) { var pl = el("div.pairs"); pl.appendChild(el("h3", { text: S["door.pair"] })); d.pairs.forEach(function (pr) { pl.appendChild(el("button.pr", { type: "button", text: fmt(pr.solo ? "staff.th.prBtnSolo" : "staff.th.prBtn", { names: joinNames(pr.names), m: pr.right, R: R, state: S[pr.done ? "staff.th.prDone" : "staff.th.prLive"], lines: pr.lines }), on: { click: function () { pairDrill(pr); } } })); }); body.appendChild(pl); }
+      if (d.pairs.length) { var pl = el("div.pairs"); pl.appendChild(el("h3", { text: S["door.pair"] }));
+        var gos = []; d.pairs.forEach(function (pr) { var g = pr.go || 1; if (gos.indexOf(g) === -1) gos.push(g); }); gos.sort(function (a, b) { return b - a; });
+        gos.forEach(function (g) { if (goNow > 1 || gos.length > 1) pl.appendChild(el("h4", { text: fmt("staff.th.goHead", { n: g }) }));
+          d.pairs.filter(function (pr) { return (pr.go || 1) === g; }).forEach(function (pr) { pl.appendChild(el("button.pr", { type: "button", text: fmt(pr.solo ? "staff.th.prBtnSolo" : "staff.th.prBtn", { names: joinNames(pr.names), m: pr.right, R: R, state: pr.cut ? fmt("staff.th.prStopped", { r: pr.r }) : S[pr.done ? "staff.th.prDone" : "staff.th.prLive"], lines: pr.lines }), on: { click: function () { pairDrill(pr); } } })); }); });
+        body.appendChild(pl); }
     }
     function drill(row) {
       api("apiStaff", { op: "theoryPupil", t: t, e: row.e }).then(function (d) {
@@ -1196,7 +1211,7 @@ function renderStaff($app) {
         dr.appendChild(el("div.acts", {}, [el("button.btn.sec", { text: S["staff.th.back"], on: { click: load } })])); body.appendChild(dr);
       }).catch(function (e) { fail(e, "staff"); });
     }
-    paintChips(); load(); timer = setInterval(function () { if (body.querySelector(".drill")) return; load(); }, 60000);
+    paintChips(); load(); timer = setInterval(function () { if (body.querySelector(".drill") || armed || armedGo) return; load(); }, 60000);
   }).catch(function (e) { fail(e, "staff"); });
 }
 
