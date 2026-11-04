@@ -1,0 +1,347 @@
+[
+ {
+  "file": "ss2018-p16-staff-pay.png",
+  "pdf": "U1 DT 2018 QP.pdf",
+  "page": 16,
+  "box": [
+   91,
+   115,
+   573,
+   441
+  ],
+  "keys": [
+   "fmt2018a",
+   "fn2018b",
+   "vl2018c1",
+   "abs2018c3"
+  ]
+ },
+ {
+  "file": "ss2018-p18-staff-pay-2.png",
+  "pdf": "U1 DT 2018 QP.pdf",
+  "page": 18,
+  "box": [
+   136,
+   146,
+   525,
+   465
+  ],
+  "keys": [
+   "cf2018d",
+   "val2018e"
+  ]
+ },
+ {
+  "file": "ss2019-p21-activities.png",
+  "pdf": "U1 DT 2019 QP.pdf",
+  "page": 21,
+  "box": [
+   119,
+   131,
+   548,
+   333
+  ],
+  "keys": [
+   "fmt2019a",
+   "form2019b",
+   "abs2019c",
+   "dm2019f",
+   "ch2019d"
+  ]
+ },
+ {
+  "file": "ss2019-p22-income-chart.png",
+  "pdf": "U1 DT 2019 QP.pdf",
+  "page": 22,
+  "box": [
+   163,
+   130,
+   542,
+   376
+  ],
+  "keys": [
+   "ch2019d"
+  ]
+ },
+ {
+  "file": "ss2019-p23-sessions-pie.png",
+  "pdf": "U1 DT 2019 QP.pdf",
+  "page": 23,
+  "box": [
+   109,
+   121,
+   546,
+   429
+  ],
+  "keys": [
+   "ch2019e1",
+   "ch2019e2"
+  ]
+ },
+ {
+  "file": "ss2021-p10-results.png",
+  "pdf": "U1 DT 2021 QP.pdf",
+  "page": 10,
+  "box": [
+   93,
+   145,
+   569,
+   323
+  ],
+  "keys": [
+   "fmt2021a",
+   "rep2021c",
+   "fn2021b",
+   "val2021f",
+   "ch2021h"
+  ]
+ },
+ {
+  "file": "ss2021-p11-results-2.png",
+  "pdf": "U1 DT 2021 QP.pdf",
+  "page": 11,
+  "box": [
+   85,
+   259,
+   556,
+   471
+  ],
+  "keys": [
+   "abs2021d"
+  ]
+ },
+ {
+  "file": "ss2021-p13-letter.png",
+  "pdf": "U1 DT 2021 QP.pdf",
+  "page": 13,
+  "box": [
+   142,
+   129,
+   501,
+   401
+  ],
+  "keys": [
+   "fn2021g2",
+   "if2021g1"
+  ]
+ },
+ {
+  "file": "ss2021-p14-average-chart.png",
+  "pdf": "U1 DT 2021 QP.pdf",
+  "page": 14,
+  "box": [
+   128,
+   216,
+   556,
+   409
+  ],
+  "keys": [
+   "ch2021h"
+  ]
+ },
+ {
+  "file": "ss2021-p15-menu.png",
+  "pdf": "U1 DT 2021 QP.pdf",
+  "page": 15,
+  "box": [
+   84,
+   131,
+   557,
+   387
+  ],
+  "keys": [
+   "mac2021i"
+  ]
+ },
+ {
+  "file": "ss2022-p6-tuck-shop.png",
+  "pdf": "U1 DT 2022 QP.pdf",
+  "page": 6,
+  "box": [
+   92,
+   133,
+   568,
+   322
+  ],
+  "keys": [
+   "type2022a",
+   "fmt2022b",
+   "form2022c",
+   "rep2022d",
+   "if2022f",
+   "ch2022e"
+  ]
+ },
+ {
+  "file": "ss2022-p7-sold-chart.png",
+  "pdf": "U1 DT 2022 QP.pdf",
+  "page": 7,
+  "box": [
+   124,
+   126,
+   506,
+   341
+  ],
+  "keys": [
+   "ch2022e"
+  ]
+ },
+ {
+  "file": "ss2022-p8-lookup.png",
+  "pdf": "U1 DT 2022 QP.pdf",
+  "page": 8,
+  "box": [
+   93,
+   132,
+   568,
+   381
+  ],
+  "keys": [
+   "vl2022g1"
+  ]
+ },
+ {
+  "file": "ss2022-p9-lookup-error.png",
+  "pdf": "U1 DT 2022 QP.pdf",
+  "page": 9,
+  "box": [
+   85,
+   146,
+   557,
+   396
+  ],
+  "keys": [
+   "vl2022g2"
+  ]
+ },
+ {
+  "file": "ss2023-p8-wages.png",
+  "pdf": "U1 DT 2023 QP.pdf",
+  "page": 8,
+  "box": [
+   63,
+   132,
+   542,
+   522
+  ],
+  "keys": [
+   "fmt2023a",
+   "form2023b2",
+   "fn2023b1",
+   "abs2023c",
+   "if2023d",
+   "ch2023f"
+  ]
+ },
+ {
+  "file": "ss2023-p10-wages-chart.png",
+  "pdf": "U1 DT 2023 QP.pdf",
+  "page": 10,
+  "box": [
+   97,
+   84,
+   531,
+   259
+  ],
+  "keys": [
+   "ch2023e",
+   "ch2023f"
+  ]
+ },
+ {
+  "file": "ss2024-p10-quotations.png",
+  "pdf": "U1 DT 2024 QP.pdf",
+  "page": 10,
+  "box": [
+   85,
+   145,
+   542,
+   478
+  ],
+  "keys": [
+   "fmt2024c",
+   "form2024b",
+   "fn2024a",
+   "fn2024d",
+   "abs2024e",
+   "if2024f",
+   "ch2024g"
+  ]
+ },
+ {
+  "file": "ss2024-p12-budget-chart.png",
+  "pdf": "U1 DT 2024 QP.pdf",
+  "page": 12,
+  "box": [
+   120,
+   92,
+   482,
+   311
+  ],
+  "keys": [
+   "ch2024g",
+   "ch2024h"
+  ]
+ },
+ {
+  "file": "ss2025-p11-sheet.png",
+  "pdf": "U1 DT 2025 QP.pdf",
+  "page": 11,
+  "box": [
+   54,
+   117,
+   533,
+   530
+  ],
+  "keys": [
+   "fmt2025c",
+   "fn2025d",
+   "if2025e"
+  ]
+ },
+ {
+  "file": "ss2025-p12-lookup.png",
+  "pdf": "U1 DT 2025 QP.pdf",
+  "page": 12,
+  "box": [
+   63,
+   293,
+   539,
+   537
+  ],
+  "keys": [
+   "vl2025f"
+  ]
+ },
+ {
+  "file": "ss2026-p14-stationery.png",
+  "pdf": "U1 DT 2026 QP.pdf",
+  "page": 14,
+  "box": [
+   68,
+   103,
+   542,
+   425
+  ],
+  "keys": [
+   "val2026b",
+   "form2026c",
+   "fn2026e",
+   "ch2026g"
+  ]
+ },
+ {
+  "file": "ss2026-p16-sales-chart.png",
+  "pdf": "U1 DT 2026 QP.pdf",
+  "page": 16,
+  "box": [
+   124,
+   223,
+   479,
+   447
+  ],
+  "keys": [
+   "ch2026g"
+  ]
+ }
+]
