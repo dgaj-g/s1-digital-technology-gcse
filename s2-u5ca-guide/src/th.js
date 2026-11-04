@@ -187,7 +187,7 @@ function renderTopic(t) {
       p.learnDone ? S["door.learn.again"] : p.ln ? S["door.learn.go"] : S["door.learn.start"], "#th/" + t + "/learn/" + (p.learnDone ? 1 : firstUnticked)));
     var ps = p.pair, pairText, pairBtn = null, pairCls = {};
     if (ps && ps.state === "done") { pairText = ps.solo ? fmt("door.pair.doneSolo", { m: ps.right, R: R }) : fmt("door.pair.done", { m: ps.right, R: R, name: ps.names ? joinNames(ps.names) : "" }); pairBtn = S["door.pair.see"]; pairCls.done = true; }
-    else if (ps && ps.state === "live") { pairText = fmt("door.pair.live", { round: ps.r || 1, R: R, them: ps.solo ? S["pair.soloStrip"] : joinNames(ps.them || []) }); pairBtn = S["door.pair.back"]; }
+    else if (ps && ps.state === "live") { pairText = ps.solo ? fmt("door.pair.liveSolo", { round: ps.r || 1, R: R }) : fmt("door.pair.live", { round: ps.r || 1, R: R, them: joinNames(ps.them || []) }); pairBtn = ps.solo ? S["door.pair.carry"] : S["door.pair.back"]; }
     else if (ps && ps.state === "waiting") { pairText = S["pair.wait.head"]; pairBtn = S["door.pair.back"]; }
     else if (!p.pairOn) { pairText = S["door.pair.off"]; pairCls.off = true; }
     else { pairText = S["door.pair.notStarted"]; pairBtn = S["door.pair.start"]; }
