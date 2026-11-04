@@ -133,6 +133,7 @@ vm.createContext(sandbox);
 // POST /__clock {at} holds the server clock at minute `at` (tmin) for session tests; {} lets it run again. Date.now only
 vm.runInContext('(function (g) { var now = Date.now, at = null; Date.now = function () { return at == null ? now() : 1767225600000 + at * 60000; }; g.__clock = function (m) { at = m; }; })(this);', sandbox);
 vm.runInContext(fs.readFileSync(CODE, 'utf8'), sandbox, { filename: 'Code.gs' });
+if (process.env.S2_U4_MIX != null) sandbox.U4_MIX = Number(process.env.S2_U4_MIX);   // 0 = pair at once (older drives); unset = the real 20 second shuffle wait
 
 const MIME = { '.js': 'text/javascript', '.wasm': 'application/wasm', '.png': 'image/png', '.css': 'text/css' };
 function page(q) {

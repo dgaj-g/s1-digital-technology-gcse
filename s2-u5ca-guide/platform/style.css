@@ -1157,6 +1157,8 @@ p.diffmark{padding:9px 14px;margin:10px 0 0;font-weight:700}
 .drill .ans{white-space:pre-wrap;font-size:15px}
 .drill .ms{white-space:pre-wrap;font-size:14px;color:var(--mute)}
 .tx{background:var(--tint);border-radius:12px;padding:14px 16px;white-space:pre-wrap;font-size:16px;line-height:1.5}
+.pairs h4{margin:14px 0 8px;font-size:16px;font-weight:900;color:var(--sw-ink)}
+.th-acts{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 22px}
 .pairs .pr{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:8px}
 
 /* ---------- motion (U5CA §7.5) ---------- */
