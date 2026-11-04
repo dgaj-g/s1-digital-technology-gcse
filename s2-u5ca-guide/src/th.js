@@ -1151,7 +1151,12 @@ function renderStaff($app) {
     var chips = el("div.chips"); $app.appendChild(el("p.small", { text: S["staff.th.pick"] })); $app.appendChild(chips);
     var body = el("div.staffbody"); $app.appendChild(body);
     function paintChips() { clear(chips); for (var i = 1; i <= 7; i++) (function (i) { chips.appendChild(el("button.tchip.tw-" + i + (i === t ? ".on" : ""), { type: "button", text: fmt("staff.th.chip", { t: i, name: topicName(i) }), on: { click: function () { t = i; sessionStorage.setItem("u4_staff_t", String(t)); paintChips(); load(); } } })); })(i); }
-    function load() { api("apiStaff", { op: "theory", t: t }).then(paintTopic).catch(function (e) { fail(e, "staff"); }); }
+    // Apps Script replies can take seconds. Only the newest thing she asked for may paint, a name says at once that it is opening, and the fuller view starts from the top.
+    var lastAsk = 0, listTop = 0;
+    function scrollBox() { for (var n = body.parentElement; n && n !== document.body; n = n.parentElement) if (/auto|scroll/.test(getComputedStyle(n).overflowY)) return n; return document.scrollingElement || document.documentElement; }
+    function opening(text) { var box = scrollBox(); listTop = box.scrollTop; clear(body); body.appendChild(el("p.sub.drillwait", { text: text })); box.scrollTop = 0; return ++lastAsk; }
+    function backBtn() { var b = el("button.btn.sec", { type: "button", text: S["staff.th.back"], on: { click: function () { var y = listTop; b.disabled = true; b.textContent = S["staff.th.backWait"]; load(function () { scrollBox().scrollTop = y; }); } } }); return b; }
+    function load(after) { var my = ++lastAsk; api("apiStaff", { op: "theory", t: t }).then(function (d) { if (my !== lastAsk) return; paintTopic(d); if (typeof after === "function") after(); }).catch(function (e) { fail(e, "staff"); }); }
     function paintTopic(d) {
       clearTimeout(armed); armed = null; clearTimeout(armedGo); armedGo = null;   // a repainted button must ask again before it acts
       clear(body); var cls = d.cls, open = !!(d.tc.open && d.tc.open[t]), pon = !!(d.tc.pair && d.tc.pair[t]);
@@ -1199,7 +1204,9 @@ function renderStaff($app) {
         body.appendChild(pl); }
     }
     function drill(row) {
+      var my = opening(fmt("staff.th.openingPupil", { name: row.name }));
       Promise.all([api("apiStaff", { op: "theoryPupil", t: t, e: row.e }), loadLearn(t).catch(function () { return null; })]).then(function (rr) {
+        if (my !== lastAsk) return;
         var d = rr[0], L = rr[1], lr = d.learn || {}, hex = function (v) { return parseInt(v || "0", 16) || 0; }, doneB = hex(lr.L), openB = hex(lr.O) | doneB, tries = lr.T || {}, Ns = L ? L.screens.length : (IDX[t - 1] || {}).screens || 0;
         clear(body); var dr = el("div.drill.tw-" + t); dr.appendChild(el("h2", { text: fmt("staff.th.pupilHead", { name: d.name, t: t, round: d.round }) }));
         dr.appendChild(el("p.small", { text: fmt("staff.th.pupilSeen", { when: seenWhen(d.seen, d.now) }) + " " + S["staff.th.sinceNote"] }));
@@ -1224,21 +1231,23 @@ function renderStaff($app) {
           if (pt.ms) { card.appendChild(el("p.msh", { text: S["staff.th.schemeCol"] })); card.appendChild(el("div.ms", { text: pt.ms })); }
           dr.appendChild(card); });
         if (notYet.length) { var more = el("details.ppmore"); more.appendChild(el("summary", { text: fmt("staff.th.notYet", { n: notYet.length }) })); notYet.forEach(function (pt) { var card = el("div.ppcard"); wording(card, pt); more.appendChild(card); }); dr.appendChild(more); }
-        dr.appendChild(el("div.acts", {}, [el("button.btn.sec", { text: S["staff.th.back"], on: { click: load } })])); body.appendChild(dr);
+        dr.appendChild(el("div.acts", {}, [backBtn()])); body.appendChild(dr);
       }).catch(function (e) { fail(e, "staff"); });
     }
     function pairDrill(pr) {
+      var my = opening(S["staff.th.openingPair"]);
       api("apiStaff", { op: "theoryPair", t: t, pid: pr.pid }).then(function (d) {
+        if (my !== lastAsk) return;
         clear(body); var dr = el("div.drill.tw-" + t); dr.appendChild(el("h2", { text: fmt("staff.th.pairHead", { names: d.names.join(" + "), t: t }) }));
         dr.appendChild(el("p.small", { text: d.names.map(function (n, i) { return fmt("staff.th.wasCn", { name: n, cn: d.cn[i] }); }).join(" ") + " " + fmt("staff.th.pairRight", { m: d.right, R: d.R }) }));
         var tb = el("table.sttab"), thr = el("tr"); [S["staff.th.roundCol"], S["staff.th.qCol"], S["staff.th.lockedCol"], S["staff.th.rightCol"]].forEach(function (c) { thr.appendChild(el("th", { text: c })); }); tb.appendChild(thr);
         d.A.forEach(function (a) { var tr = el("tr"); tr.appendChild(el("td", { text: String(a.r) })); tr.appendChild(el("td", { text: a.stem })); tr.appendChild(el("td" + (a.ok ? "" : ".ans"), { text: a.a + (a.ok ? " ✓" : " ✗") })); tr.appendChild(el("td.ms", { text: a.keyShown || "" })); tb.appendChild(tr); });
         dr.appendChild(tb);
         dr.appendChild(el("h3", { text: S["staff.th.transcript"] })); dr.appendChild(el("pre.tx", { text: d.tx || S["staff.th.noChat"] }));
-        dr.appendChild(el("div.acts", {}, [el("button.btn.sec", { text: S["staff.th.back"], on: { click: load } })])); body.appendChild(dr);
+        dr.appendChild(el("div.acts", {}, [backBtn()])); body.appendChild(dr);
       }).catch(function (e) { fail(e, "staff"); });
     }
-    paintChips(); load(); timer = setInterval(function () { if (body.querySelector(".drill") || armed || armedGo) return; load(); }, 60000);
+    paintChips(); load(); timer = setInterval(function () { if (body.querySelector(".drill, .drillwait") || armed || armedGo) return; load(); }, 60000);
   }).catch(function (e) { fail(e, "staff"); });
 }
 
