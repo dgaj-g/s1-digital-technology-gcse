@@ -167,6 +167,7 @@ function renderTh() {
 /* ---------- topic page: three doors ---------- */
 function renderTopic(t) {
   setBody("is-th");
+  var mine = active;
   refresh(t).then(function () {
     var p = prog(t), ix = IDX[t - 1];
     if (!p.open) return go("#th");
@@ -187,18 +188,23 @@ function renderTopic(t) {
       p.learnDone ? S["door.learn.again"] : p.ln ? S["door.learn.go"] : S["door.learn.start"], "#th/" + t + "/learn/" + (p.learnDone ? 1 : firstUnticked)));
     var ps = p.pair, pairText, pairBtn = null, pairCls = {};
     if (ps && ps.state === "done") { pairText = ps.solo ? fmt("door.pair.doneSolo", { m: ps.right, R: R }) : fmt("door.pair.done", { m: ps.right, R: R, name: ps.names ? joinNames(ps.names) : "" }); pairBtn = S["door.pair.see"]; pairCls.done = true; }
+    else if (ps && ps.state === "live" && !p.pairOn) { pairText = ps.solo ? fmt("door.pair.pausedSolo", { round: ps.r || 1, R: R }) : fmt("door.pair.paused", { round: ps.r || 1, R: R, them: joinNames(ps.them || []) }); pairCls.off = true; }
     else if (ps && ps.state === "live") { pairText = ps.solo ? fmt("door.pair.liveSolo", { round: ps.r || 1, R: R }) : fmt("door.pair.live", { round: ps.r || 1, R: R, them: joinNames(ps.them || []) }); pairBtn = ps.solo ? S["door.pair.carry"] : S["door.pair.back"]; }
     else if (ps && ps.state === "waiting") { pairText = S["pair.wait.head"]; pairBtn = S["door.pair.back"]; }
     else if (!p.pairOn) { pairText = S["door.pair.off"]; pairCls.off = true; }
     else { pairText = S["door.pair.notStarted"]; pairBtn = S["door.pair.start"]; }
-    doors.appendChild(door("2", S["door.pair"], S["door.pair.sub"], pairText, pairCls, pairBtn, "#th/" + t + "/pair", null, el("p.small.quiet", { text: p.pairOn || ps ? S["pair.door.act"] : S["pair.door.notNow"] })));
+    doors.appendChild(door("2", S["door.pair"], S["door.pair.sub"], pairText, pairCls, pairBtn, "#th/" + t + "/pair", null, ps && ps.state === "live" && !p.pairOn ? null : el("p.small.quiet", { text: p.pairOn || ps ? S["pair.door.act"] : S["pair.door.notNow"] })));
     var ppText = p.qn ? fmt("door.pp.progMarks", { round: p.round, m: p.qm, x: p.total, n: p.qn, N: p.NP }) : fmt("door.pp.prog", { round: p.round, n: 0, N: p.NP });
     doors.appendChild(door("3", S["door.pp"], S["door.pp.sub"], ppText, { done: p.ppDone }, p.ppDone ? S["door.pp.see"] : p.qn ? S["door.pp.go"] : S["door.pp.start"], "#th/" + t + "/pp"));
     $app.appendChild(doors);
     var done = []; if (p.learnDone) done.push(S["topic.where.learnDone"]); else if (p.ln) done.push(fmt("topic.where.learnPart", { n: p.ln, N: p.N })); if (p.pairDone) done.push(S["topic.where.pairDone"]); if (p.ppDone) done.push(S["topic.where.ppDone"]); else if (p.qn) done.push(fmt("topic.where.ppPart", { n: p.qn, N: p.NP }));
-    var next = !p.learnDone ? S["topic.where.next.learn"] : (!p.pairDone && (p.pairOn || ps)) ? S["topic.where.next.pair"] : !p.ppDone ? S["topic.where.next.pp"] : !p.pairDone ? S["topic.where.next.pair"] : null;
+    var next = !p.learnDone ? S["topic.where.next.learn"] : (!p.pairDone && p.pairOn) ? S["topic.where.next.pair"] : !p.ppDone ? S["topic.where.next.pp"] : !p.pairDone ? S["topic.where.next.pair"] : null;
     $app.appendChild(el("div.where.tw-" + t, {}, [el("span.dot"), el("span", { text: next ? fmt("topic.where", { t: t, done: done.length ? done.join(" ") : S["topic.where.nothing"], next: next }) : fmt("topic.where.done", { t: t }) })]));
     $app.appendChild(el("a.back", { href: "#th", text: "‹ " + S["nav.backTh"] }));
+    if (!p.pairDone && active === mine) {   // the door follows the partner switch, so nobody has to reload when the teacher turns it on or off
+      var doorPoll = setInterval(function () { if (document.hidden) return; api("apiPair", { op: "switch", t: t }).then(function (st) { if (active === mine && st.pairOn !== p.pairOn) route(); }).catch(function (e) { console.warn(e); }); }, 15000);
+      mine.stop = function () { clearInterval(doorPoll); };
+    }
   }).catch(function (e) { fail(e, "topic"); });
 }
 
@@ -892,9 +898,17 @@ function renderPair(t) {
 
   function head(sub) { var h = el("div.pairhead.tw-" + t); h.appendChild(crumbFrom(S["nav.home"] + " › " + topicName(t) + " › " + S["door.pair"], ["#", "#th/" + t])); return h; }
   function offView() { clear($app); $app.appendChild(head()); $app.appendChild(el("div.card.waitcard", {}, [el("h2", { text: S["door.pair"] }), el("p", { text: S["door.pair.off"] }), el("p.small", { text: S["pair.door.notNow"] }), el("div.acts", {}, [el("a.btn.sec", { href: "#th/" + t, text: fmt("nav.backTopic", { t: t }) })])])); }
+  // The teacher's switch is off: nothing of the pair is on the screen, and it comes back by itself when the switch goes on.
+  function pausedView(v) {
+    clear($app); $app.appendChild(head());
+    $app.appendChild(el("div.card.waitcard", {}, [el("h2", { text: S["pair.paused.head"] }), el("p", { text: fmt(v.solo ? "pair.paused.saySolo" : v.trio ? "pair.paused.sayTrio" : "pair.paused.say", { round: v.r, R: v.R }) }), el("p.small", { text: S["pair.paused.try"] }), el("div.acts", {}, [el("a.btn.sec", { href: "#th/" + t, text: fmt("nav.backTopic", { t: t }) })])]));
+    function look() { api("apiPair", { op: "join", t: t }).then(function (v2) { if (stopped || v2.state === "paused") return; active.stop(); stopped = false; timers = []; wakeFn = null; if (v2.pair) sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); paint(v2); toast(S["pair.paused.back"]); }).catch(function (e) { console.warn(e); }); }
+    wakeFn = look; every(10000, function () { if (!document.hidden) look(); });
+  }
   function paint(v) {
     if (stopped) return;
     if (v.state === "off") return offView();
+    if (v.state === "paused") return pausedView(v);
     if (v.state === "waiting") return waitView(v);
     if (v.told && v.told.kind === "left") toast(fmt("pair.err.left", { them: v.told.them }));
     if (v.told && v.told.kind === "leftTrio") toast(fmt("pair.err.leftTrio", { them: v.told.them }));
@@ -1022,14 +1036,14 @@ function renderPair(t) {
     var settling = false;
     function settle() { if (checked || settling) return; var myLock = locks[seat]; if (!myLock) return; if (!others.every(function (s) { return locks[s] === myLock; })) { paintPhase(); return; } runCheck(myLock); }
     function runCheck(ans) { settling = true;
-      api("apiPair", { op: "check", t: t, pid: pid, r: r, ans: ans }).then(function (res) { checked = res; A[r] = { a: res.a, ok: res.right }; if (res.a && res.a !== sf.get()) sf.set(res.a); sf.disable(true); sf.verdict(res, res); cmp.classList.add("hidden"); strip.classList.remove("hidden"); strip.classList.add(res.right ? "ok" : "no"); clear(strip);
+      api("apiPair", { op: "check", t: t, pid: pid, r: r, ans: ans }).then(function (res) { if (res.state === "paused") { settling = false; reenter(false); return; } checked = res; A[r] = { a: res.a, ok: res.right }; if (res.a && res.a !== sf.get()) sf.set(res.a); sf.disable(true); sf.verdict(res, res); cmp.classList.add("hidden"); strip.classList.remove("hidden"); strip.classList.add(res.right ? "ok" : "no"); clear(strip);
         strip.appendChild(el("span.ic", { text: res.right ? "✓" : "✗" })); var L = ansLetter(sf, spec, res.keyShown && spec.kind === "one" ? res.keyShown : null);
         strip.appendChild(el("div", {}, [el("div.b", { text: res.right ? (solo ? S["pair.rightSolo"] : trio ? S["pair.rightTrio"] : S["pair.right"]) : (L ? fmt("pair.wrong", { letter: L }) : S["pair.wrongAny"]) }), res.why ? el("div.why", { text: fmt("pair.why", { why: res.why }) }) : null]));
         if (solo) strip.appendChild(el("div.small", { text: S["pair.soloStrip"] }));
         if (!solo) addLine(null, fmt(res.right ? "pair.chat.lockedRight" : "pair.chat.lockedWrong", { r: r }), true);
         clear(nextBox).classList.remove("hidden");
         if (r < R) nextBox.appendChild(el("button.btn.big", { text: fmt("pair.nextRound", { round: r + 1 }), on: { click: function () { P.r = r + 1; P.A = A; P.right = Object.keys(A).filter(function (k) { return A[k].ok; }).length; stopRound(); pairView(P, false); } } }));
-        else nextBox.appendChild(el("button.btn.big.gold", { text: S["pair.finish.go"], on: { click: function () { api("apiPair", { op: "finish", t: t, pid: pid }).then(function (f) { if (!solo) post("done", "10"); stopRound(); finishView(P, f); }).catch(function (e) { fail(e, "pair"); }); } } }));
+        else nextBox.appendChild(el("button.btn.big.gold", { text: S["pair.finish.go"], on: { click: function () { api("apiPair", { op: "finish", t: t, pid: pid }).then(function (f) { if (f.state === "paused") { reenter(false); return; } if (!solo) post("done", "10"); stopRound(); finishView(P, f); }).catch(function (e) { fail(e, "pair"); }); } } }));
         paintPhase(); settling = false;
       }).catch(function (e) { settling = false; console.error(e); toast(S["err.server"]); later(3000, settle); });
     }
@@ -1059,14 +1073,14 @@ function renderPair(t) {
       if (roomBad) { banner.appendChild(el("span", { text: S["pair.err.room"] })); banner.appendChild(el("button.btn.sec", { text: S["pair.err.roomBtn"], on: { click: function () { leaveTo("room"); } } })); return; }
       var s = goneSeat, three = others.length >= 2;
       banner.appendChild(el("span", { text: fmt(three ? "pair.err.gone3" : "pair.err.gone", { them: cnOf(s) }) }));
-      banner.appendChild(el("button.btn.sec", { text: three ? fmt("pair.err.gone3Btn", { them: cnOf(s) }) : S["pair.err.goneBtn"], on: { click: function () { if (!three) { leaveTo("gone"); return; } api("apiPair", { op: "drop", t: t, pid: pid, seat: s }).then(function () { post("done", "gone:" + s); dropSeat(s, true); }).catch(function (e) { fail(e, "pair"); }); } } })); }
+      banner.appendChild(el("button.btn.sec", { text: three ? fmt("pair.err.gone3Btn", { them: cnOf(s) }) : S["pair.err.goneBtn"], on: { click: function () { if (!three) { leaveTo("gone"); return; } api("apiPair", { op: "drop", t: t, pid: pid, seat: s }).then(function (res) { if (res.state === "paused") { reenter(false); return; } post("done", "gone:" + s); dropSeat(s, true); }).catch(function (e) { fail(e, "pair"); }); } } })); }
     // A seat that has gone or left (D-DROP): a pair becomes solo for the one who stays, a trio carries on as a pair.
     function dropSeat(gs, dropped) { others = others.filter(function (o) { return o !== gs; }); if (goneSeat === gs) goneSeat = null; paintBanner();
       if (!others.length) { toast(fmt("pair.err.left", { them: cnOf(gs) })); leaveTo("gone"); return; }
       toast(fmt(dropped ? "pair.err.droppedTrio" : "pair.err.leftTrio", { them: cnOf(gs) })); trio = false; cmp.classList.remove("trio"); advance(); paintPhase(); settle(); }
     function onGone(s, silent) { if (goneSeat || checked && r === R) return; if (silent) { dropSeat(s, true); return; } goneSeat = s; paintBanner(); }
     function backAgain(s) { goneSeat = null; paintBanner(); var txt = fmt("pair.err.back", { them: cnOf(s) }); addLine(null, txt, true); toast(txt); resync(); }
-    function leaveTo(reason) { if (!solo) post("done", "left"); stopRound(); active.stop(); api("apiPair", { op: "leave", t: t, pid: pid, reason: reason }).then(function (v2) { stopped = false; timers = []; sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); paint(v2); toast(S["pair.err.carryOn"]); }).catch(function (e) { fail(e, "pair"); }); }
+    function leaveTo(reason) { stopRound(); active.stop(); api("apiPair", { op: "leave", t: t, pid: pid, reason: reason }).then(function (v2) { stopped = false; timers = []; if (v2.state === "paused") { paint(v2); return; } if (!solo) post("done", "left"); sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); paint(v2); toast(S["pair.err.carryOn"]); }).catch(function (e) { fail(e, "pair"); }); }
     // Go in again from the server's word: a new room, a pair put back together, or left on your own.
     function reenter(sayBack) { stopRound(); active.stop(); outbox = []; api("apiPair", { op: "join", t: t }).then(function (v2) { intoView(v2, sayBack); }).catch(function (e) { fail(e, "pair"); }); }
     function intoView(v2, sayBack) { stopped = false; timers = []; if (v2.pair) { sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); if (sayBack) sessionStorage.setItem("u4_seen_" + v2.pair.pid, "1"); } paint(v2); if (sayBack && v2.pair && v2.pair.them.length) toast(fmt("pair.back.done", { them: v2.pair.them.join(" " + S["pair.and"] + " "), round: v2.pair.r })); }
@@ -1077,7 +1091,7 @@ function renderPair(t) {
       var ask = b.theyAsked && !backNotNow; backBar.appendChild(el("span", { text: fmt(ask ? "pair.back.they" : "pair.back.say", { them: them }) }));
       var go = el("button.btn" + (ask ? "" : ".sec"), { text: fmt("pair.back.btn", { them: them }), on: { click: function () { go.disabled = true; askBack(function () { go.disabled = false; }); } } }); backBar.appendChild(go);
       if (ask) backBar.appendChild(el("button.btn.quiet", { text: S["pair.back.not"], on: { click: function () { backNotNow = true; paintBack(); } } })); }
-    function askBack(onFail) { api("apiPair", { op: "back", t: t, pid: pid }).then(function (v2) { if (ended) return; if (v2.reunited) { stopRound(); active.stop(); outbox = []; intoView(v2, true); return; } P.back = v2.pair ? v2.pair.back : null; paintBack(); }).catch(function (e) { console.error(e); onFail(); toast(S["err.server"]); }); }
+    function askBack(onFail) { api("apiPair", { op: "back", t: t, pid: pid }).then(function (v2) { if (ended) return; if (v2.state === "paused") { reenter(false); return; } if (v2.reunited) { stopRound(); active.stop(); outbox = []; intoView(v2, true); return; } P.back = v2.pair ? v2.pair.back : null; paintBack(); }).catch(function (e) { console.error(e); onFail(); toast(S["err.server"]); }); }
     if (!solo) {
       rEvery(4000, heart);
       rEvery(4000, checkBeat);
@@ -1086,23 +1100,22 @@ function renderPair(t) {
       rEvery(10000, resync);
       wakeFn = resync;
       rEvery(8000, function () { api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (ended) return;
+        if (st.pairOn === false && !st.done) { reenter(false); return; }   // the teacher has paused it: this tab goes to the paused card
         if (st.moved || (st.gone || []).indexOf(seat) !== -1 || st.dissolved) { reenter(false); return; }
         if (st.room && st.room !== room) { var was = others.length; stopRound(); active.stop(); outbox = []; api("apiPair", { op: "join", t: t }).then(function (v2) { intoView(v2, !!(v2.pair && v2.pair.them.length > was)); }).catch(function (e) { fail(e, "pair"); }); return; }
         P.back = st.back; paintBack();
         if (st.r > r && !checked && !settling) { runCheck(locks[seat] || sf.get() || ""); return; }   // the other side has the verdict already: never sit waiting for it
-        (st.gone || []).forEach(function (gs) { if (others.indexOf(gs) !== -1) dropSeat(gs, (st.goneWhy || {})[gs] === "dropped"); });
-        if (st.pairOn === false && !offToasted) { offToasted = true; toast(S["pair.err.off"]); } }).catch(function () {}); });
+        (st.gone || []).forEach(function (gs) { if (others.indexOf(gs) !== -1) dropSeat(gs, (st.goneWhy || {})[gs] === "dropped"); }); }).catch(function () {}); });
       heart();
       // rebuild from the whole log once, then stream
       fbGet(room + "/ev.json").then(function (o) { var any = !!o && Object.keys(o).length > 0; eat(o); if (!fresh && !sessionStorage.getItem("u4_seen_" + pid) && (r > 1 || any)) toast(fmt("pair.resume", { round: r, R: R })); sessionStorage.setItem("u4_seen_" + pid, "1"); paintPhase(); }).catch(function () { roomFailAt = Date.now() - 10001; roomBad = true; paintBanner(); paintPhase(); });
     } else {
       paintPhase();
-      if (P.back) { var soloStatus = function () { api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (ended) return; if (st.moved) { reenter(true); return; } P.back = st.back; paintBack(); }).catch(function () {}); }; rEvery(8000, soloStatus); wakeFn = soloStatus; }
+      var soloStatus = function () { api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (ended) return; if (st.pairOn === false && !st.done) { reenter(false); return; } if (st.moved) { reenter(true); return; } P.back = st.back; paintBack(); }).catch(function () {}); }; rEvery(8000, soloStatus); wakeFn = soloStatus;
     }
     paintBack();
     setStep(1);
   }
-  var offToasted = false;
   function finishView(P, f) {
     clear($app); $app.appendChild(head());
     var card = el("div.card.finish.tw-" + t); card.appendChild(el("h2", { text: S["pair.finish.head"] })); card.appendChild(el("div.score", { text: fmt("pair.finish.score", { m: f.m, R: f.R }) }));
@@ -1137,6 +1150,7 @@ function renderStaff($app) {
       var rbtn = el("button.btn.quiet", { text: fmt("staff.th.round", { n: d.round + 1 }), on: { click: function () { if (armed) { clearTimeout(armed); armed = null; api("apiStaff", { op: "theoryRound", t: t }).then(load); return; } rbtn.textContent = fmt("staff.th.roundSure", { n: d.round + 1, cls: cls, prev: d.round }); rbtn.classList.add("gold"); armed = setTimeout(function () { armed = null; rbtn.textContent = fmt("staff.th.round", { n: d.round + 1 }); rbtn.classList.remove("gold"); }, 6000); } } });
       ctl.appendChild(el("span.state", { text: fmt("staff.th.roundNow", { n: d.round }) })); ctl.appendChild(rbtn);
       body.appendChild(ctl);
+      if (!pon) body.appendChild(el("p.pausednote", { text: S["staff.th.pairPaused"] }));
       if (!d.rows.length) { body.appendChild(el("p.sub", { text: fmt("staff.th.none", { cls: cls }) })); }
       else {
         var tb = el("table.sttab"), thr = el("tr"); S["staff.th.cols"].split(" · ").forEach(function (c) { thr.appendChild(el("th", { text: c })); }); tb.appendChild(thr);
