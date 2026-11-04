@@ -187,7 +187,7 @@ let staff = need(path.join(A2, 'platform', 'staff.js'));
 staff = swap('staff.js', staff, "['papers', 'staff.tabPapers'], ['live', 'staff.tabLive'], ", '');
 staff = swap('staff.js', staff, "TAB = 'live', CLS", "TAB = 'coursework', CLS");
 staff = swap('staff.js', staff, "['coursework', 'staff.tabCoursework'], ", "['coursework', 'staff.tabCoursework'], ['theory', 'staff.tabTheory'], ");
-staff = swap('staff.js', staff, "coursework: vCoursework, ", "coursework: vCoursework, theory: () => window.TH.staff(pane(), CLS), ");
+staff = swap('staff.js', staff, "coursework: vCoursework, ", "coursework: vCoursework, theory: () => window.TH.staff(pane(), CLS, ago), ");
 // S2 tick ids are <stage>-<screen>.<step>, as AS's: group the drawer's squares by stage
 staff = swap('staff.js', staff, "const s = id.split('.')[1];", "const s = id.split('-')[0];");
 staff = swap('staff.js', staff, "TAB = sel('tab') || 'live';", "TAB = sel('tab') || 'coursework'; if (TAB === 'papers' || TAB === 'live') TAB = 'coursework';");
