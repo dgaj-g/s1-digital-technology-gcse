@@ -4,7 +4,7 @@ Source gate: every task must carry a src that resolves to a TB row in S1 Spreads
 past-paper row at the start of a table row in S1 Spreadsheets/PAST_PAPER_SWEEP.md. Built-in bad-source controls must FAIL."""
 import re, sys, pathlib, subprocess, json
 HQ = 'Spreadsheets HQ'
-TOPIC = pathlib.Path('/Users/damiengartland/Desktop/Claude Work/S1 Spreadsheets')
+TOPIC = pathlib.Path('/Users/damiengartland/Desktop/Claude Work/Archive - S1 old working folders (Nov 2026)/S1 Spreadsheets')
 HERE = pathlib.Path(__file__).parent
 OUT = HERE.parent
 SOURCE_MAP = (TOPIC / 'SOURCE_MAP.md').read_text()
