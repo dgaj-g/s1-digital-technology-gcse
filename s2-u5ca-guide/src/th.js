@@ -251,11 +251,11 @@ function Surface(spec, o) {
 
   else if (kind === "tf") {
     var rows = spec.rows, vals = spec.vals, dispR = order(rows.length, seed), picks = rows.map(function () { return ""; }), cells = {};
-    var tbl = el("table.tft"); var thead = el("thead"); var hr = el("tr"); hr.appendChild(el("th", { text: "" })); vals.forEach(function (v) { hr.appendChild(el("th.c", { text: v })); }); hr.appendChild(el("th.vk", { text: "" })); thead.appendChild(hr); tbl.appendChild(thead);
+    var tbl = el("table.tft" + (vals.some(function (v) { return v.length > 5; }) ? ".long" : "")); var thead = el("thead"); var hr = el("tr"); hr.appendChild(el("th", { text: "" })); vals.forEach(function (v) { hr.appendChild(el("th.c", { text: v })); }); hr.appendChild(el("th.vk", { text: "" })); thead.appendChild(hr); tbl.appendChild(thead);
     var tb = el("tbody"); tbl.appendChild(tb);
     dispR.forEach(function (ri) {
       var tr = el("tr"); tr.appendChild(el("td", { text: rows[ri] })); cells[ri] = { btns: {}, vk: el("td.vk") };
-      vals.forEach(function (v) { var b = el("button.tfb" + (v.length > 5 ? ".wide" : ""), { type: "button", text: v, on: { click: function () { if (locked) return; picks[ri] = v; Object.keys(cells[ri].btns).forEach(function (k) { cells[ri].btns[k].classList.toggle("on", k === v); }); change(); } } }); cells[ri].btns[v] = b; var td = el("td.c"); td.appendChild(b); tr.appendChild(td); });
+      vals.forEach(function (v) { var b = el("button.tfb", { type: "button", text: v, on: { click: function () { if (locked) return; picks[ri] = v; Object.keys(cells[ri].btns).forEach(function (k) { cells[ri].btns[k].classList.toggle("on", k === v); }); change(); } } }); cells[ri].btns[v] = b; var td = el("td.c"); td.appendChild(b); tr.appendChild(td); });
       tr.appendChild(cells[ri].vk); tb.appendChild(tr);
     });
     root.appendChild(tbl);

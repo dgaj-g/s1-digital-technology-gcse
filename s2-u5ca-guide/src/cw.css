@@ -334,7 +334,8 @@
   .cw-pre{font-size:14px}.cw-pre .ln{padding-left:48px}.cw-pre .ln::before{left:8px;width:30px}
   
   .cw-foot{gap:10px}.cw-foot .btn{margin-left:0;width:100%}.cw-foot .ticked{margin-left:0}.cw-foot .note{text-align:left}
-  .cw-flow .fp{font-size:9px;padding:2px 3px}.cw-flow .fp .k{font-size:11px}
+  .cw-flow .form{width:100%!important;height:auto!important;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:28px 6px 6px}
+  .cw-flow .fp{position:relative;left:auto!important;top:auto!important;width:auto!important;height:auto!important;min-height:54px;flex-direction:column;gap:2px}.cw-flow .fp:has(.k){padding-bottom:18px}.cw-flow .fp .k{font-size:11px}
   .cw-isense .line{font-size:15px}.cw-isense .list{margin-left:0;width:100%;font-size:14px}
   .cw-pop{max-width:calc(100vw - 32px)}
 }
@@ -373,9 +374,9 @@
 
 /* ch09 four-choices: cards flip from MY choice to the other ideas */
 .dw-flip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:860px;margin:0 auto;perspective:900px}
-.dw-flip .fc{height:170px}
-.dw-flip .in{position:relative;width:100%;height:100%;transform-style:preserve-3d;animation:flipOver .8s cubic-bezier(.3,.8,.3,1.1) var(--d) both}
-.dw-flip .fr,.dw-flip .bk{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;padding:12px;border:2px solid var(--sw);background:var(--card)}
+.dw-flip .fc{min-height:170px}
+.dw-flip .in{display:grid;position:relative;width:100%;height:100%;transform-style:preserve-3d;animation:flipOver .8s cubic-bezier(.3,.8,.3,1.1) var(--d) both}
+.dw-flip .fr,.dw-flip .bk{position:relative;grid-area:1/1;min-width:0;backface-visibility:hidden;border-radius:14px;padding:12px;border:2px solid var(--sw);background:var(--card)}
 .dw-flip .fr{display:flex;flex-direction:column;justify-content:center;text-align:center}
 .dw-flip .bk{transform:rotateY(180deg);background:color-mix(in srgb,var(--sw) 12%,var(--card))}
 .dw-flip .ttl{font-weight:900;font-size:15px;color:var(--sw-ink);margin-bottom:6px}
@@ -412,9 +413,9 @@
 @keyframes hum{50%{transform:scale(1.05)}}
 @keyframes outPop{from{opacity:0;transform:translate(-50%,-20px)}to{opacity:1;transform:translate(-50%,0)}}
 @media (max-width:900px){
-  .dw-flip{grid-template-columns:1fr 1fr}.dw-flip .fc{height:160px}
-  .dw-list{grid-template-columns:1fr;justify-items:center}.dw-list .ar{transform:rotate(90deg)}
-  .dw-list .grid,.dw-wire .grid{grid-template-columns:repeat(4,56px)}
+  .dw-flip{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.dw-flip .fc{min-height:160px}
+  .dw-list{grid-template-columns:minmax(0,1fr);justify-items:center}.dw-list .ar{transform:rotate(90deg)}
+  .dw-list .grid,.dw-wire .grid{grid-template-columns:repeat(4,minmax(0,56px));max-width:100%}.dw-list .card{max-width:100%}
   .dw-wire{grid-template-columns:1fr;justify-items:center}
 }
 .dw-rec{--c:var(--brand);display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:4px 2px;max-width:860px;margin:0 auto;font-family:var(--mono);font-size:17px}
@@ -457,7 +458,7 @@
 p.cw-banner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px;font-size:17px;line-height:1.3;font-weight:800;color:var(--ink);max-width:none;animation:cardIn .3s ease-out .05s both}
 p.cw-banner b{display:inline-block;background:var(--sw-ink);color:var(--white);border-radius:8px;padding:3px 10px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;font-weight:900}
 p.cw-banner .n{color:var(--mute);font-weight:700;font-size:15px}
-p.cw-done{display:flex;gap:8px;align-items:baseline;background:var(--ok-bg);border-left:6px solid var(--ok);border-radius:10px;padding:10px 14px;margin:6px 0 14px;font-size:17px;line-height:1.45;max-width:760px}
+p.cw-done{overflow-wrap:anywhere;display:flex;gap:8px;align-items:baseline;background:var(--ok-bg);border-left:6px solid var(--ok);border-radius:10px;padding:10px 14px;margin:6px 0 14px;font-size:17px;line-height:1.45;max-width:760px}
 p.cw-done b{color:var(--ok);white-space:nowrap}
 .cw-open{display:grid;gap:12px;margin:4px 0 16px}
 .cw-screen > .cw-open{animation:cardIn .45s ease-out .5s both}
@@ -466,6 +467,7 @@ p.cw-done b{color:var(--ok);white-space:nowrap}
 .cw-open .row p{margin:0;font-size:19px;line-height:1.45}
 .cw-open ol{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:6px}
 .cw-open ol.two{grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(var(--rows),auto);column-gap:10px}   /* a long part: steps in two columns, down then across (EASE 21 Oct 2026) */
+@media (max-width:600px){.cw-open ol.two{grid-template-columns:minmax(0,1fr);grid-auto-flow:row;grid-template-rows:none}}
 .cw-open ol a{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-weight:700;font-size:17px;padding:6px 10px;border-radius:10px;background:var(--card);border:2px solid transparent}
 .cw-open ol a:hover{border-color:var(--sw-ink)}
 .cw-open ol a i{font-style:normal;flex:none;width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:var(--sw-ink);color:var(--white);font-weight:900;font-size:14px}
