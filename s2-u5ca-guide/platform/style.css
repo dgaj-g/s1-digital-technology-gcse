@@ -1504,6 +1504,8 @@ body.is-th main,body.is-pair main,body.is-staff main{max-width:1420px}
 .scn .nope{color:var(--bad);font-weight:800;margin-top:6px;font-size:15px}
 .scn .tray{margin-top:10px;font-size:30px}
 .scn .edwrap{flex:1 1 100%;min-width:0}
+/* class "ed" is also the coursework editor (display:flex): the scene's rows must stack */
+.scn .ed{display:block;border:0}
 .scn .edlab{font-weight:900;color:var(--sw-ink);margin-bottom:6px;font-size:18px}
 .scn .ed .fm{display:inline-block;width:1.2em;color:var(--tok-c);user-select:none}
 .scn .cp.gut-hl .n{background:var(--accent);color:var(--ink);border-radius:4px}
