@@ -1,4 +1,4 @@
-/* Activity 4 — The Front Office. Sources: TB p12; PP 2018 Q7(f), 2019 Q3(d), 2021 Q2(f), 2022 Q10(a), 2023 Q3(a), 2024 Q10, 2025 Q5(c), 2026 Q4(d). */
+/* Activity 4 — The Front Office. Sources: TB p12; PP 2019 Q3(d), 2021 Q2(f), 2022 Q10(a), 2023 Q3(a), 2024 Q10, 2025 Q5(c), 2026 Q4(d). */
 /* The bookings are rows of the Activity 3 table (same names, activities and dates). Location as TB p12: Archery and Karting are Indoor; Quad Biking and Horse Riding are Outdoor. */
 const RD_ROWS=[['Byrne','Indoor','Archery','03/05/2026'],['Kelly','Indoor','Karting','22/05/2026'],['Murphy','Outdoor','Quad Biking','09/06/2026'],
   ['Walsh','Indoor','Archery','30/06/2026'],['Doyle','Outdoor','Horse Riding','01/07/2026'],['Quinn','Indoor','Karting','31/05/2026'],
@@ -278,5 +278,5 @@ rounds:[
  ]},
 {title:'The Report Desk',teachAt:[2,3],mode:'sim',sim:'reportdesk',heading:'Make the reports, read the reports, then record a macro',tip:'Group by puts similar data together under a heading. Ascending is A to Z or earliest first; descending is Z to A or latest first. A report shows the results of a query, so the query runs first.',tasks:[]},
 {title:'Exam Room',heading:'Real CCEA exam questions',teachAt:[],boss:{icon:'🗂️',name:'The Paper Mountain'},tip:'Say what the tool does. For a grouped report, name the field. For report benefits, name a function such as sorting, filtering or totals.',
- tasks:[],pool:[[[PP.form2022q10a,PP.tab2023q3a],1],[[PP.mac2018q7f,PP.mac2024q10],1],[[PP.rep2019q3d2,PP.rep2026q4d2],1],[[PP.rep2021q2f2],1],[[PP.rep2025q5c],1]]}
+ tasks:[],pool:[[[PP.form2022q10a,PP.tab2023q3a],1],[[PP.mac2024q10],1],[[PP.rep2019q3d2,PP.rep2026q4d2],1],[[PP.rep2021q2f2],1],[[PP.rep2025q5c],1]]}
 ]};
