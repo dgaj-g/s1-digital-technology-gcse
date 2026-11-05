@@ -217,5 +217,5 @@ rounds:[
  ]},
 {title:'Door Duty',teachAt:[],mode:'sim',sim:'door',heading:'Put a check on every field, then open the door',tip:'Read the rule beside each field. Must be filled in: presence. A set number of characters: length. Numbers only or letters only: type. A pattern: format. Between two limits: range.',tasks:[]},
 {title:'Exam Room',heading:'Real CCEA exam questions',teachAt:[2],boss:{icon:'🚧',name:'The Gatecrasher'},tip:'Learn the five checks in the textbook’s words, and describe each one with a real field and real values.',
- tasks:[],pool:[[[PP.val2025q5bi],1],[[PP.val2018q7e,PP.val2022q10d1,PP.val2023q3b2],1],[[PP.val2022q10d2,PP.val2023q3b3,PP.val2022q10c3,PP.val2023q3b1],2],[[PP.val2021q2g1,PP.val2021q2g2],1],[[PP.val2025q5bii],1]]}
+ tasks:[],pool:[[[PP.val2025q5bi],1],[[PP.val2022q10d1,PP.val2023q3b2],1],[[PP.val2022q10d2,PP.val2023q3b3,PP.val2022q10c3,PP.val2023q3b1],2],[[PP.val2021q2g1,PP.val2021q2g2],1],[[PP.val2025q5bii],1]]}
 ]};

@@ -105,10 +105,6 @@ rep2026q4d2:{shape:'name-feature',needs:['report'],fig:'db2026-p8-tables.png',ty
   options:['A report','A query','A form','A macro'],answer:0,
   feedback:'Mark scheme: A Report.'},
 /* ---------- D1 macros ---------- */
-mac2018q7f:{shape:'define-macro',needs:['macro'],type:'pick',src:'PP 2018 Q7(f)',ref:'2018 Q7(f) · 2 marks',need:2,
-  q:'Jen will add a macro to allow her to print her staff pay spreadsheet when it is completed. What is a macro? Choose two correct points.',
-  options:[{text:'A short cut to a task, or a set of instructions or commands',ok:true},{text:'Automatically carries out repetitive tasks',ok:true},{text:'A check that data is between an upper and lower limit',ok:false},{text:'A table that links two other tables',ok:false},{text:'A copy of the data kept in case the original is lost',ok:false}],
-  feedback:'Mark scheme, any two: a short cut to a task / program / set of instructions / commands / actions; automatically carries out repetitive tasks (one click does it).'},
 mac2024q10:{shape:'definition',needs:['macro'],type:'mcq',src:'PP 2024 Q10',ref:'2024 Q10 (part) · 1 mark',
   q:'Which term matches this definition: “A series of stored commands that can be activated using a button”?',
   options:['Macro','Spyware','Backup','Intranet'],answer:0,
@@ -208,10 +204,6 @@ val2025q5bi:{shape:'define-validation',needs:['validation'],type:'fill',src:'PP 
   text:'Validation is an automatic check carried out by the [[computer]] that makes sure the data entered is [[sensible]], reasonable or meets set criteria.',
   feedback:'Mark scheme: a process, software or automatic computer check [1] that ensures the data entered is sensible, reasonable or meets set criteria [1]. Validation cannot prove that data is accurate: a sensible but wrong date of birth still gets through.'},
 /* ---------- D4 validation checks ---------- */
-val2018q7e:{shape:'name-range',needs:['range'],fig:'db2018-p16-staff-pay.png',type:'mcq',src:'PP 2018 Q7(e)',ref:'2018 Q7(e) · 1 mark',
-  q:'Jen uses this spreadsheet to calculate staff pay.[FIG]Staff cannot work more than 9 hours per day. Name a validation check that could be used in cells D3 to H10.',
-  options:['Range check','Presence check','Length check','Format check'],answer:0,
-  feedback:'Mark scheme: Range check. It lets through only values between a lower and an upper limit (such as 0 and 9).'},
 val2021q2g1:{shape:'describe-check',needs:['presence','describe'],fig:'db2021-p8-form.png',type:'pick',src:'PP 2021 Q2(g)',ref:'2021 Q2(g) (presence) · 2 marks',need:2,
   q:'The car-sales owner uses this form to enter data into <code>tblCARS</code>.[FIG]Describe how a <b>presence check</b> could be used on the form. Choose what the check does and an example on this form.',
   options:[{text:'It checks that data has been entered into a field',ok:true},{text:'For example, it makes sure RegistrationNo is not left empty',ok:true},{text:'It checks that the data is between an upper and a lower limit',ok:false},{text:'For example, it makes sure YearProduced is between 1990 and 2021',ok:false},{text:'It checks that the data has the right number of characters',ok:false},{text:'It checks that the data typed in is correct',ok:false}],
