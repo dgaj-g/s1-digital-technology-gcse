@@ -264,6 +264,10 @@ tpl = swap('Code.gs.template', tpl, "  if (op === 'clearMine') {\n", `  if (op =
   }
   if (op === 'clearMine') {
 `);
+// the store's safeguard (5 Nov 2026): the Learn visit lists give way first, before any finished paper moves to the archive Sheet
+// and it moves above the class check: the page calls health with no class, so below that check it only ever answered unknown-class and never ran
+tpl = swap('Code.gs.template', tpl, "  if (op === 'health') {\n    props = allProps_();\n    var bytes = storeBytes_(props), moved = 0;\n    if (isOwner_(email) && bytes > ARCHIVE_AT) moved = archive_(props);\n    return ok_({ bytes: bytes, moved: moved });\n  }\n", "");
+tpl = swap('Code.gs.template', tpl, "  if (!realClass_(name)) return err_('unknown-class');\n", "  if (op === 'health') {\n    props = allProps_();\n    var bytes = storeBytes_(props), moved = 0;\n    if (isOwner_(email) && bytes > ARCHIVE_AT) { bytes = u4visitsTrim_(props); if (bytes > ARCHIVE_AT) moved = archive_(props); }\n    return ok_({ bytes: bytes, moved: moved });\n  }\n  if (!realClass_(name)) return err_('unknown-class');\n");
 tpl = swap('Code.gs.template', tpl, "  if (!realClass_(name)) return err_('unknown-class');\n", "  if (!realClass_(name)) return err_('unknown-class');\n  if (/^theory/.test(op)) return u4Staff_(req, email, name);\n");
 const U4 = process.env.U4_DIR || '/Users/damiengartland/Desktop/Claude Work/S2 U5CA Guide/_unit4_theory';
 const u4server = ['build/server/u4.gs', 'proto/bank.js', 'proto/rounds.js', 'proto/judge.js'].map((f) => '/* ---- ' + f + ' ---- */\n' + need(path.join(U4, f))).join('\n\n');
