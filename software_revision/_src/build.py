@@ -4,7 +4,7 @@ Gate: every task must carry a src that appears in S1 Software/SOURCE_MAP.md (or 
 import re, sys, pathlib
 HERE = pathlib.Path(__file__).parent
 OUT = HERE.parent
-SOURCE_MAP = pathlib.Path('/Users/damiengartland/Desktop/Claude Work/S1 Software/SOURCE_MAP.md').read_text()
+SOURCE_MAP = pathlib.Path('/Users/damiengartland/Desktop/Claude Work/Archive - S1 old working folders (Nov 2026)/S1 Software/SOURCE_MAP.md').read_text()
 css = (HERE / 'style.css').read_text()
 engine = (HERE / 'engine.js').read_text()
 pp = (HERE / 'pp.js').read_text()
