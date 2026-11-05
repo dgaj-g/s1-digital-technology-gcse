@@ -200,16 +200,25 @@ S.inherit=function(st,i){
 };
 
 S.vend=function(st,i){
-  const n=i>=3?4:5;
-  let drinks=''; for(let k=0;k<n;k++) drinks+='\ud83e\udd64';
-  const sub=['','','is stock > 0? 5 > 0 \u2713','release one drink','stock = stock \u2212 1'][i]||'';
-  const vm='<div class="obj vm"><div class="objt">'+tg('object: machine','sw')+'</div><div class="shelf">'+drinks+'</div>'
-    +'<div>'+tg(i>=5?'data, protected inside':'data','lab')+vb('stock',i>=4?4:5,i===4||i===0)+'</div>'
-    +mem1('Dispense()'+(sub?'<div style="font-weight:600;font-size:14px">'+sub+'</div>':''),(i>=1&&i<=4)?'hl':'')+'</div>';
+  // 0 five drinks. 1 could it just set stock itself? refused. 2 asks: calls Dispense. 3 checks. 4 releases. 5 updates. 6 the rule.
+  const left=i>=4?4:5, stock=i>=5?4:5;
+  let drinks=''; for(let k=0;k<left;k++) drinks+='🥤';
+  const sub=['','','','is stock more than 0? <span class="nw">5 &gt; 0 ✓</span>','release one drink','stock = stock − 1',''][i]||'';
+  const dataTag=i===0?'data':'🔒 data, protected';
+  const vm='<div class="obj vm"><div class="objt">'+tg('object: machine','sw')+'</div>'
+    +'<div class="shelf'+(i===4?' hl':'')+'">'+drinks+'</div>'
+    +'<div class="tray'+(i===4?' hl chg':'')+'">'+(i>=4?'<span class="trd">🥤</span> one drink out':'')+'</div>'
+    +'<div class="vdata'+(i===1?' no':'')+(i===3||i===5?' hl':'')+'"><div class="vdh">'+tg(dataTag,'lab')+'</div>'
+    +'<div class="vdr">'+vb('stock',stock,i===5)+'<span class="vdn">the number of drinks available</span></div></div>'
+    +'<div class="vmeth'+(i>=3&&i<=5?' hl':'')+'"><div class="vmh">'+tg('method','lab')+'<span class="vmn">Dispense()</span></div><div class="vsub">'+sub+'</div></div>'
+    +'</div>';
+  const who='<h5>Another part of the program</h5>';
+  const ask=code(['machine.Dispense();'],{nonum:true});
   let caller='';
-  if(i>=1) caller='<div class="caller"><h5>Another part of the program</h5>'+code(['machine.Dispense();'],{nonum:true})+'<div style="margin:6px 0">calls the method \u2192</div><div class="nope">stock = 4 <s>direct change</s> \u2717 not allowed</div></div>';
-  const tray=i>=3?'<div class="tray'+(i===3?' chg':'')+'">\ud83e\udd64 one drink out</div>':'';
-  st.innerHTML='<div class="sc vendsc">'+vm+caller+tray+(i===5?note('Encapsulation: the data (stock) is kept inside the object and changed only through the object\u2019s own methods, such as Dispense().'):'')+'</div>';
+  if(i===1) caller='<div class="caller to-data"><div class="cbox no">'+who+'<div class="ctry">Just set stock to 4?</div><div class="nope">✗ Not allowed</div><div class="csub">stock is protected, so it stays at 5</div></div></div>';
+  if(i>=2&&i<=5) caller='<div class="caller to-meth"><div class="cbox yes">'+who+ask+'<div class="yep">✓ Allowed</div><div class="csub"><span class="arw wide">←</span><span class="arw nar">↑</span> calls the machine’s own method</div></div></div>';
+  if(i===6) caller='<div class="caller">'+who+'<div class="cbox no"><div class="ctry">Setting stock directly</div><div class="nope">✗ Not allowed</div></div><div class="cbox yes">'+ask+'<div class="yep">✓ Allowed: it calls a method</div></div></div>';
+  st.innerHTML='<div class="sc vendsc">'+vm+caller+'</div>';
 };
 
 S.editor=function(st,i){

@@ -571,8 +571,9 @@
       "title": "The vending machine object",
       "lead": "Press Next to ask the machine for a drink. Watch what happens to its stored data.",
       "steps": [
-       "A vending machine object holds five drinks. Its stored data: stock = 5.",
-       "Another part of the program wants a drink. It cannot reach in and change stock itself. It calls the machine's Dispense method.",
+       "A vending machine object holds five drinks. It stores one piece of data: stock = 5, the number of drinks available.",
+       "Another part of the program wants a drink. Could it just change stock to 4 itself? Not here. The programmer has protected stock. Otherwise the number would say 4 with no drink given out.",
+       "So it asks the machine instead. It calls the machine's Dispense method.",
        "Dispense checks the data first: is stock more than 0? Yes, it is 5.",
        "Dispense releases one drink.",
        "Dispense updates the data: stock = 4. Only the machine's own method changed it.",
