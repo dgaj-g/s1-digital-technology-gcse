@@ -1177,7 +1177,7 @@ function renderStaff($app) {
         d.rows.forEach(function (row) {
           var tr = el("tr"); tr.appendChild(el("td", {}, [el("button.nm", { type: "button", text: row.name, on: { click: function () { drill(row); } } })]));
           tr.appendChild(el("td", { text: seenWhen(row.seen, d.now) }));
-          tr.appendChild(el("td", { text: row.learn || row.opened ? fmt("staff.th.learnCell", { n: row.learn, N: screensN, o: row.opened }) : S["staff.th.notStarted"] }));
+          tr.appendChild(el("td", { text: row.time ? fmt("staff.th.learnCellTime", { n: row.learn, N: screensN, o: row.opened, time: timeWords(row.time) }) : row.learn || row.opened ? fmt("staff.th.learnCell", { n: row.learn, N: screensN, o: row.opened }) : S["staff.th.notStarted"] }));
           var pr = row.pair, ptxt = "—";
           if (pr && pr.waiting) ptxt = S["staff.th.pairWaiting"];
           else if (pr && pr.gone) ptxt = fmt("staff.th.pairGone", { why: whyWord(pr.goneWhy) });
@@ -1212,12 +1212,19 @@ function renderStaff($app) {
         dr.appendChild(el("p.small", { text: fmt("staff.th.pupilSeen", { when: seenWhen(d.seen, d.now) }) + " " + S["staff.th.sinceNote"] }));
         if (Ns) {
           dr.appendChild(el("h3.staffsec", { text: S["staff.th.learnHead"] }));
-          var lt = el("table.sttab"), lh = el("tr"); S["staff.th.learnCols"].split(" · ").forEach(function (c) { lh.appendChild(el("th", { text: c })); }); lt.appendChild(lh);
+          var spent = d.time || {}, lt = el("table.sttab"), lh = el("tr"); S["staff.th.learnCols"].split(" · ").forEach(function (c) { lh.appendChild(el("th", { text: c })); }); lt.appendChild(lh);
           for (var si = 1; si <= Ns; si++) { var m = 1 << (si - 1), c = tries[si], ltr = el("tr"), sc = L && L.screens[si - 1];
             ltr.appendChild(el("td", { text: sc ? si + ". " + sc.title : fmt("staff.th.screenN", { n: si }) }));
             ltr.appendChild(el("td", { text: S[openB & m ? "staff.th.yes" : "staff.th.no"] })); ltr.appendChild(el("td", { text: S[doneB & m ? "staff.th.yes" : "staff.th.no"] }));
-            ltr.appendChild(el("td", { text: c ? (c[0] === 1 ? fmt("staff.th.try1", { r: c[1] }) : fmt("staff.th.tries", { n: c[0], r: c[1] })) : S[doneB & m ? "staff.th.noTries" : "staff.th.notTried"] })); lt.appendChild(ltr); }
+            ltr.appendChild(el("td", { text: c ? (c[0] === 1 ? fmt("staff.th.try1", { r: c[1] }) : fmt("staff.th.tries", { n: c[0], r: c[1] })) : S[doneB & m ? "staff.th.noTries" : "staff.th.notTried"] })); ltr.appendChild(el("td", { text: spent[si] ? timeWords(spent[si]) : openB & m ? S["staff.th.timeNone"] : "—" })); lt.appendChild(ltr); }
           dr.appendChild(el("div.sttabw", {}, [lt]));
+          var spentAll = Object.keys(spent).reduce(function (a, k) { return a + (Number(spent[k]) || 0); }, 0);
+          dr.appendChild(el("p.small.timenote", { text: (spentAll ? fmt("staff.th.timeTotal", { time: timeWords(spentAll) }) + " " : "") + S["staff.th.timeNote"] }));
+          var visits = d.visits || [];
+          if (visits.length) { var vd = el("details.ppmore.visits"), vt = el("table.sttab"), vh = el("tr"); vd.appendChild(el("summary", { text: visits.length === 1 ? S["staff.th.visitsOne"] : fmt("staff.th.visits", { n: visits.length }) }));
+            S["staff.th.visitsCols"].split(" · ").forEach(function (c) { vh.appendChild(el("th", { text: c })); }); vt.appendChild(vh);
+            visits.forEach(function (x) { var vs = L && L.screens[x[1] - 1], vr = el("tr"); vr.appendChild(el("td", { text: seenWhen(x[0], d.now) })); vr.appendChild(el("td", { text: vs ? x[1] + ". " + vs.title : fmt("staff.th.screenN", { n: x[1] }) })); vr.appendChild(el("td", { text: timeWords(x[2]) })); vt.appendChild(vr); });
+            vd.appendChild(el("div.sttabw", {}, [vt])); vd.appendChild(el("p.small", { text: S["staff.th.visitsNote"] })); dr.appendChild(vd); }
         }
         dr.appendChild(el("h3.staffsec", { text: S["staff.th.ppHead"] }));
         if (!d.parts.length) dr.appendChild(el("p.small", { text: S["staff.th.noParts"] }));
@@ -1270,6 +1277,7 @@ function show(host, who) {
   if (!LIVE) mount({});
   $app = host; $who = who || null; route();
 }
+function timeWords(sec) { if (sec < 60) return S["staff.th.timeUnder"]; var mins = Math.round(sec / 60), h = Math.floor(mins / 60), rest = mins % 60; return !h ? fmt("staff.th.timeMin", { n: mins }) : rest ? fmt("staff.th.timeHrMin", { h: h, n: rest }) : fmt("staff.th.timeHr", { h: h }); }
 function seenWhen(m, now) { return AGO ? AGO(now, m) : "—"; }
 function staff(pane, cls, ago) {
   if (!LIVE) mount({ base: (window.A2_CW || "") + "u4/" }); CLS = cls || CLS; AGO = ago || AGO;
@@ -1277,5 +1285,25 @@ function staff(pane, cls, ago) {
   active = { stop: function () {} }; $app = pane; clear(pane); renderStaff(pane);
 }
 function stop() { try { active.stop(); } catch (e) { console.warn(e); } active = { stop: function () {} }; }
+/* Time on each Learn screen, for the staff view. Counted the way the coursework minutes are (D100): only while the page is on screen and she typed, clicked or scrolled in the last 3 minutes. Sent once a minute on its own, never with a mark; a failed send is kept for the next one and never bothers her. */
+var TM_TICK = 5000, TM_IDLE = 180000, TM_SEND = 60000, TM_CAP = 15000, TM_GAP = 600000, TM_ITEMS = 60, tmBuf = [], tmLast = Date.now(), tmAct = Date.now();
+function tmAdd(t, n, s, at) { var b = tmBuf[tmBuf.length - 1]; if (b && b[0] === t && b[1] === n && at - b[3] <= TM_GAP) { b[2] += s; b[3] = at; } else tmBuf.push([t, n, s, at]); }
+function tmTick() {
+  var now = Date.now(), dt = Math.min(now - tmLast, TM_CAP), m = /^#th\/([1-7])\/learn(?:\/(\d+))?$/.exec(location.hash || "");
+  tmLast = now;
+  if (!m || !LIVE || document.hidden || now - tmAct >= TM_IDLE) return;
+  tmAdd(m[1], m[2] || "1", Math.round(dt / 1000), now);
+}
+function tmSend() {
+  if (!tmBuf.length) return;
+  var now = Date.now(), sent = tmBuf.splice(0, TM_ITEMS);
+  api("apiTheory", { op: "learnTime", v: sent.map(function (b) { return [b[0], b[1], b[2], Math.round((now - b[3]) / 1000)]; }) }).catch(function (e) { console.warn(e); tmBuf = sent.concat(tmBuf); });
+}
+["keydown", "pointerdown", "input", "wheel", "scroll", "touchstart"].forEach(function (ev) { window.addEventListener(ev, function () { tmAct = Date.now(); }, { capture: true, passive: true }); });
+setInterval(tmTick, TM_TICK);
+setInterval(tmSend, TM_SEND);
+document.addEventListener("visibilitychange", function () { if (document.hidden) { tmTick(); tmSend(); } else tmLast = Date.now(); });
+window.addEventListener("pagehide", function () { tmTick(); tmSend(); });
+
 window.TH = { boot: boot, mount: mount, show: show, staff: staff, stop: stop, Surface: Surface };
 })();
