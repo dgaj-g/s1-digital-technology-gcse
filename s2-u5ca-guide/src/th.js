@@ -224,25 +224,25 @@ function Surface(spec, o) {
 
   if (kind === "one") {
     var opts = spec.opts.map(function (op, i) { return Array.isArray(op) ? { L: op[0], text: op[1], table: op[2] } : { L: letters(i), text: op }; });
-    var pick = spec.pick || 0, disp = order(opts.length, seed), shown = {}, chosen = null, picked = [], btns = {};
+    var open = !!spec.open, pick = spec.pick || 0, multi = open || pick, disp = order(opts.length, seed), shown = {}, chosen = null, picked = [], btns = {};
     disp.forEach(function (oi, di) { shown[opts[oi].L] = letters(di); });
     api.label = function (L) { return shown[L] || L; };
-    var wrap = el("div.opts" + (pick ? ".pickn" : "")); root.appendChild(wrap);
-    function paintOne() { Object.keys(btns).forEach(function (k) { var on = pick ? picked.indexOf(k) >= 0 : k === chosen; btns[k].classList.toggle("on", on); btns[k].setAttribute("aria-pressed", on ? "true" : "false"); }); }
+    var wrap = el("div.opts" + (multi ? ".pickn" : "")); root.appendChild(wrap);
+    function paintOne() { Object.keys(btns).forEach(function (k) { var on = multi ? picked.indexOf(k) >= 0 : k === chosen; btns[k].classList.toggle("on", on); btns[k].setAttribute("aria-pressed", on ? "true" : "false"); }); }
     disp.forEach(function (oi) {
       var op = opts[oi], body = el("span.optbody");
       if (op.text) body.appendChild(el("span", { text: op.text }));
       if (op.table) { var ot = el("table.optt"); if (op.table.head) { var otr = el("tr"); op.table.head.forEach(function (h) { otr.appendChild(el("th", { text: h })); }); ot.appendChild(otr); } (op.table.rows || []).forEach(function (r) { var tr2 = el("tr"); r.forEach(function (c) { tr2.appendChild(el("td", { text: String(c) })); }); ot.appendChild(tr2); }); body.appendChild(ot); }
-      var b = el("button.opt", { type: "button", attr: { "aria-pressed": "false" }, on: { click: function () { if (locked) return; if (pick) { var ix = picked.indexOf(op.L); if (ix >= 0) picked.splice(ix, 1); else if (picked.length < pick) picked.push(op.L); else { toast(fmt("pick.hint", { n: pick })); return; } } else chosen = op.L; paintOne(); change(); } } }, [el("span.l", { text: shown[op.L] }), body]);
+      var b = el("button.opt", { type: "button", attr: { "aria-pressed": "false" }, on: { click: function () { if (locked) return; if (multi) { var ix = picked.indexOf(op.L); if (ix >= 0) picked.splice(ix, 1); else if (open || picked.length < pick) picked.push(op.L); else { toast(fmt("pick.hint", { n: pick })); return; } } else chosen = op.L; paintOne(); change(); } } }, [el("span.l", { text: shown[op.L] }), body]);
       btns[op.L] = b; wrap.appendChild(b);
     });
-    if (pick) root.appendChild(el("p.hint", { text: fmt("pick.hint", { n: pick }) }));
+    if (pick && !open) root.appendChild(el("p.hint", { text: fmt("pick.hint", { n: pick }) }));
     function sortedPicked() { return opts.map(function (o) { return o.L; }).filter(function (L) { return picked.indexOf(L) >= 0; }); }
-    api.get = function () { return pick ? sortedPicked().join(",") : (chosen || ""); };
-    api.complete = function () { return pick ? picked.length >= pick : !!chosen; };
-    api.set = function (v) { if (pick) picked = String(v || "").split(",").filter(function (x) { return !!x && !!btns[x]; }); else chosen = v || null; paintOne(); };
+    api.get = function () { return multi ? sortedPicked().join(",") : (chosen || ""); };
+    api.complete = function () { return open ? picked.length >= 1 : pick ? picked.length >= pick : !!chosen; };
+    api.set = function (v) { if (multi) picked = String(v || "").split(",").filter(function (x) { return !!x && !!btns[x]; }); else chosen = v || null; paintOne(); };
     api.verdict = function (res, rv) { var ans = rv && rv.ansKey, ansArr = ans == null ? [] : [].concat(ans), ok;
-      if (pick) { ok = ansArr.length ? (ansArr.every(function (L) { return picked.indexOf(L) >= 0; }) && picked.length <= pick) : (res.cells || []).every(function (c) { return c === 1; });
+      if (multi) { ok = ansArr.length ? (ansArr.every(function (L) { return picked.indexOf(L) >= 0; }) && picked.length <= (open ? ansArr.length : pick)) : (res.cells || []).every(function (c) { return c === 1; });
         picked.forEach(function (L) { if (btns[L]) btns[L].classList.add(ansArr.length ? (ansArr.indexOf(L) >= 0 ? "right" : "wrong") : (ok ? "right" : "wrong")); }); }
       else { ok = !!(res.cells && res.cells[0] === 1); if (chosen && btns[chosen]) btns[chosen].classList.add(ok ? "right" : "wrong"); }
       ansArr.forEach(function (L) { if (btns[L]) btns[L].classList.add("right"); }); return ok; };
@@ -812,6 +812,8 @@ function renderPart(t, qid) {
     paper.appendChild(el("div.phead", {}, [el("span.src", { text: fmt("part.head", { year: part.year, label: part.label, x: part.marks }) }), el("span.form", { text: formName(part.form) })]));
     paper.appendChild(el("p.stem", {}, [document.createTextNode(part.stem + " "), el("span.mk", { text: "[" + part.marks + "]" })]));
     var ctx = contextBlocks(part.context); if (ctx) paper.appendChild(ctx);
+    var isWU = !!part.writeUp;
+    if (isWU) { paper.appendChild(el("div.wuintro", {}, [el("p", { text: S["wu.intro"] }), el("p.b", { text: S["wu.step1"] })])); }
     if (sp.how) paper.appendChild(el("p.how", { text: sp.how }));
     var isCode = sp.kind === "code", isWrite = sp.kind === "write" || isCode, isLong = sp.kind === "long", floor = isCode ? part.marks * 2 : isWrite ? part.marks * 4 : isLong ? 60 : 0;
     var draftT = null, draftNote = el("p.small.quiet.hidden", { text: S["part.draftSaved"] });
@@ -822,6 +824,7 @@ function renderPart(t, qid) {
     paper.appendChild(el("div.acts", {}, [btnCheck, btnClear])); gate();
     var vbox = el("div.vwrap.hidden"); paper.appendChild(vbox);
     var attemptsLine = el("p.attempts" + (attempts ? "" : ".hidden"), { text: fmt("part.attempts", { n: attempts }) }); paper.appendChild(attemptsLine);
+    var wuBox = null; if (isWU) { wuBox = el("section.wubox"); paper.appendChild(wuBox); if (best) step2(); else wuBox.appendChild(el("p.small.quiet", { text: S["wu.locked"] })); }
     var nav = el("div.acts.navrow", {}, nextQ ? [el("a.btn.sec", { href: "#th/" + t + "/pp", text: S["part.back"] }), el("a.btn.gold", { href: "#th/" + t + "/pp/" + nextQ, text: S["part.next"] })] : [el("a.btn.gold", { href: "#th/" + t + "/pp", text: S["part.back"] })]);
     paper.appendChild(nav);
     $app.appendChild(paper);
@@ -842,9 +845,40 @@ function renderPart(t, qid) {
         vbox.appendChild(el("div.verdict" + (J.right ? ".full" : ""), {}, [el("span.score" + (J.right ? ".full" : ""), { text: fmt("part.marks", { m: J.m, x: J.x }) }), J.right ? el("span.fullnote", { text: S["part.full"] }) : null]));
         if (!J.right) { var aw = answerWords(sp, J, sf); if (aw) vbox.appendChild(el("p.ansright", {}, [el("b", { text: fmt("part.right", { a: aw }) })])); }
         if (J.why) vbox.appendChild(el("p.why", { text: fmt("part.why", { why: J.why }) }));
+        if (isWU) return step2();   // a six-mark question holds the model answer and mark scheme back until the pupil has written their own
         if (J.model) vbox.appendChild(el("div.modelbox", {}, [el("div.h", { text: S["part.model"] }), el("p", { text: J.model })]));
         vbox.appendChild(msBox(J.ms));
       }).catch(function (e) { console.error(e); btnCheck.disabled = false; toast(S["err.server"]); });
+    }
+    // step 2 of a six-mark question: the pupil writes the answer; it is saved, never marked, and checked by the pupil against CCEA's model answer
+    function step2() {
+      if (!wuBox || wuBox.getAttribute("data-on")) return; wuBox.setAttribute("data-on", "1"); clear(wuBox);
+      var wu = r.writeup || { text: "", ticks: [], shown: 0 }, WFLOOR = 30, saveT = null;
+      wuBox.appendChild(el("h3", { text: S["wu.step2"] }));
+      wuBox.appendChild(el("div.wunote", {}, [el("b", { text: S["wu.notMarked.b"] }), el("span", { text: " " + S["wu.notMarked"] })]));
+      wuBox.appendChild(el("p", { text: S["wu.prompt"] }));
+      var ta = el("textarea", { attr: { rows: "10", "aria-label": S["wu.step2"], spellcheck: "true" } }); ta.value = wu.text || "";
+      var wc = el("p.small.quiet"), saved = el("p.small.quiet.hidden", { text: S["wu.saved"] });
+      wuBox.appendChild(el("div.write", {}, [ta])); wuBox.appendChild(wc); wuBox.appendChild(saved);
+      var btnShow = el("button.btn.gold", { text: S["wu.show"], on: { click: show } }); var showRow = el("div.acts", {}, [btnShow]); wuBox.appendChild(showRow);
+      var rev = el("div.wurev"); wuBox.appendChild(rev);
+      function words() { var v = ta.value.trim(); return v ? v.split(/\s+/).length : 0; }
+      function paintWC() { var n = words(); wc.textContent = wu.shown || n >= WFLOOR ? fmt("wu.words", { n: n }) : fmt("wu.floor", { n: WFLOOR, w: n }); btnShow.disabled = n < WFLOOR; }
+      function send(extra) { var q = { op: "writeup", t: t, qid: qid, text: ta.value }; Object.keys(extra || {}).forEach(function (k) { q[k] = extra[k]; }); return api("apiTheory", q).then(function (res) { if (res && res.writeup) wu = res.writeup; saved.classList.remove("hidden"); return res; }); }
+      ta.addEventListener("input", function () { paintWC(); saved.classList.add("hidden"); clearTimeout(saveT); saveT = setTimeout(function () { send().catch(function () { toast(S["err.server"]); }); }, 1200); });
+      function show() { btnShow.disabled = true; clearTimeout(saveT); send({ shown: 1 }).then(function (res) { wu.shown = 1; paintRev(res.reveal); }).catch(function (e) { console.error(e); btnShow.disabled = false; toast(S["err.server"]); }); }
+      function paintRev(R) {
+        if (!R) return; showRow.classList.add("hidden"); paintWC(); clear(rev);
+        rev.appendChild(el("div.modelbox", {}, [el("div.h", { text: S["part.model"] }), el("p", { text: R.model || "" })]));
+        var pts = R.review || [], ticks = pts.map(function (_, i) { return (wu.ticks || [])[i] ? 1 : 0; }), tk = el("div.ticks.wuticks"), tot = el("p.b");
+        tk.appendChild(el("div.gh", { text: S["wu.review.head"] })); tk.appendChild(el("p.small", { text: S["wu.review.note"] }));
+        pts.forEach(function (pt, i) { var cb = el("input", { type: "checkbox", checked: !!ticks[i], on: { change: function () { ticks[i] = cb.checked ? 1 : 0; row.classList.toggle("on", cb.checked); paintTot(); send({ ticks: ticks }).catch(function () { toast(S["err.server"]); }); } } }); var row = el("label.tick" + (ticks[i] ? ".on" : ""), {}, [cb, el("span.lab", { text: pt })]); tk.appendChild(row); });
+        function paintTot() { tot.textContent = fmt("wu.covered", { m: ticks.reduce(function (a, b) { return a + b; }, 0), x: pts.length }); }
+        paintTot(); tk.appendChild(tot); rev.appendChild(tk);
+        rev.appendChild(el("p.wuagain", { text: S["wu.again"] }));
+        rev.appendChild(msBox(R.ms));
+      }
+      paintWC(); if (wu.shown && r.reveal) paintRev(r.reveal);
     }
     function tickRow(ptText, auto, on, onToggle) { var cb = el("input", { type: "checkbox", checked: !!on, on: { change: function () { onToggle(cb.checked); } } }); var row = el("label.tick" + (auto ? ".auto" : "") + (on ? ".on" : ""), {}, [cb, el("span.lab", {}, [el("b", { text: S["part.tick.me"] }), el("span", { text: " " + ptText })]), auto ? el("span.hintl", { text: S["part.tick.hint"] }) : null]); cb.addEventListener("change", function () { row.classList.toggle("on", cb.checked); }); return row; }
     function writeVerdict(J) {
@@ -1260,6 +1294,7 @@ function renderStaff($app) {
         tried.forEach(function (pt) { var card = el("div.ppcard"); wording(card, pt);
           var ans = el("div.ans"); ans.appendChild(el("p.ansh", { text: pt.ansMark ? fmt("staff.th.latestMarks", { m: pt.ansMark[0], x: pt.ansMark[1] }) : S["staff.th.latest"] }));
           if ((pt.said || []).length) pt.said.forEach(function (ln) { ans.appendChild(el("p", { text: ln })); }); else ans.appendChild(el("p", { text: S["staff.th.notSaved"] }));
+          if (pt.wrote) { ans.appendChild(el("p.ansh", { text: S["staff.th.wrote"] })); ans.appendChild(el("p.wrote", { text: pt.wrote.text })); if (pt.wrote.shown && (pt.wrote.review || []).length) ans.appendChild(el("p.small.quiet", { text: fmt("staff.th.wroteTicks", { m: (pt.wrote.ticks || []).reduce(function (a, b) { return a + (b ? 1 : 0); }, 0), x: pt.wrote.review.length }) })); }
           card.appendChild(ans);
           card.appendChild(el("p.small", { text: pt.best ? fmt("staff.th.bestLine", { m: pt.best[0], x: pt.best[1] }) + " · " + (pt.attempts === 1 ? S["staff.th.attempt1"] : fmt("staff.th.attempts", { n: pt.attempts })) : fmt("staff.th.notThisRound", { round: d.round }) }));
           if (pt.ms) { card.appendChild(el("p.msh", { text: S["staff.th.schemeCol"] })); card.appendChild(el("div.ms", { text: pt.ms })); }
