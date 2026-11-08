@@ -1624,3 +1624,51 @@ body.is-th main,body.is-pair main,body.is-staff main{max-width:1420px}
 .ansg b{font-weight:800;padding:1px 6px;border-radius:6px;background:var(--tint)}
 .ansg b.differs{background:var(--watch);color:var(--watch-ink);box-shadow:inset 0 -3px 0 var(--watch-edge)}
 .ansn{margin:0;color:var(--mute);font-weight:700}
+/* Topic 2 number scenes */
+.scn .numsc{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.scn .nt{border-collapse:separate;border-spacing:4px 4px;font:700 18px var(--mono);color:var(--ink)}
+.scn .nt th{font:700 14px var(--mono);color:var(--mute);text-align:center;padding:2px 4px;min-width:40px}
+.scn .nt th .hon{color:var(--sw-ink);font-weight:900}
+.scn .nt td{text-align:center;min-width:40px;height:40px;border-radius:8px;background:var(--card);border:2px solid var(--line);box-sizing:border-box;padding:0 6px}
+.scn .nt td.on{background:var(--sw);color:var(--white);border-color:var(--sw)}
+.scn .nt td.wait{border-style:dashed;background:transparent}
+.scn .nt td.res{background:var(--right-soft);border-color:var(--right);font-weight:900}
+.scn .nt td.res.on{background:var(--right);color:var(--white)}
+.scn .nt td.mid{color:var(--mute)}
+.scn .nt .mid{color:var(--mute)}
+.scn .nt tr.carry td{height:30px;font-size:15px;border:none;background:transparent;color:var(--sw-ink)}
+.scn .nt tr.carry td.ovf{background:var(--mark-soft);color:var(--mark);border:2px solid var(--mark)}
+.scn .nt .ovfh{color:var(--mark)}
+.scn .addsc td:first-child{border:none;background:transparent;font:700 14px var(--sans);color:var(--mute);min-width:52px;text-align:right}
+.scn .colmark{font:700 13px var(--sans);color:var(--sw-ink);text-transform:uppercase;letter-spacing:.4px}
+.scn .sline{font:700 20px var(--mono);color:var(--ink);padding:6px 12px;border-radius:8px;background:var(--tint)}
+.scn .bytebig{font:900 34px var(--mono);letter-spacing:4px;color:var(--sw-ink)}
+.scn .nibrow{display:flex;gap:28px;flex-wrap:wrap}
+.scn .nibb{display:flex;flex-direction:column;align-items:center;gap:4px}
+.scn .nbits span{display:inline-block;width:36px;height:40px;line-height:36px;text-align:center;margin:2px;border-radius:8px;border:2px solid var(--line);font:900 20px var(--mono);background:var(--card)}
+.scn .nbits span.on{background:var(--sw);border-color:var(--sw);color:var(--white)}
+.scn .nhead{font:700 13px var(--mono);color:var(--mute);letter-spacing:10px;padding-left:10px}
+.scn .nhex{font:700 16px var(--mono);color:var(--ink);margin-top:4px}
+/* practice box */
+.play .pracin{font:900 22px var(--mono);width:220px;max-width:100%;padding:8px 12px;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);letter-spacing:2px;text-transform:uppercase}
+.play .pracin:focus{outline:3px solid var(--sw);outline-offset:1px}
+.play .pwork{margin-top:10px;padding:10px 14px;border-radius:10px;background:var(--tint);font-size:16px;line-height:1.5}
+.play .pwork .h{font-weight:900;color:var(--sw-ink);margin-bottom:4px}
+.play .pwork div{font-family:var(--mono)}
+/* phone: the number scenes (Topic 2) fit eight columns in a 390px window; wider tables scroll inside the stage */
+@media (max-width:600px){
+  .scr .stage.scn{padding:10px}
+  .scn .numsc{max-width:100%;overflow-x:auto;align-items:stretch;gap:10px}
+  .scn .nt{border-spacing:2px 2px;font-size:15px}
+  .scn .nt th{min-width:26px;padding:2px 1px;font-size:11px}
+  .scn .nt td{min-width:26px;height:32px;padding:0 2px}
+  .scn .nt tr.carry td{height:24px;font-size:13px}
+  .scn .addsc{border-spacing:1px 2px;font-size:14px}
+  .scn .addsc td,.scn .addsc th{min-width:20px;padding:0 1px}
+  .scn .addsc td:first-child{min-width:28px;font-size:11px}
+  .scn .sline{font-size:15px;padding:6px 10px;overflow-wrap:anywhere}
+  .scn .bytebig{font-size:28px;letter-spacing:3px}
+  .scn .nibrow{gap:14px}
+  .scn .nbits span{width:30px;height:34px;line-height:30px;font-size:17px;margin:1px}
+  .scn .nhead{letter-spacing:8px;padding-left:8px}
+}

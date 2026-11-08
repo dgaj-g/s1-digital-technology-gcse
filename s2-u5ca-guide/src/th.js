@@ -685,6 +685,33 @@ function learnPlay(pl) {
     box.appendChild(el("div.h", { text: S["play.logic.gate"] })); box.appendChild(grow); box.appendChild(rule);
     box.appendChild(el("div.logicrow", {}, [swA, swB, lamp, ltt])); buildTable(); paintL();
   }
+  else if (pl.kind === "prac") {
+    var modes = pl.modes || ["b2d"], mi = -1, q = null, pbits = [0, 0, 0, 0, 0, 0, 0, 0];
+    var pin = el("input.pracin", { type: "text", attr: { autocomplete: "off", spellcheck: "false", maxlength: "8", "aria-label": S["play.prac.label"] } }), prow = bitRow(pbits, function () {}), ask = el("p.target", { attr: { "aria-live": "polite" } }), pread = el("div.readout", { attr: { "aria-live": "polite" } }), pwork = el("div.pwork.hidden");
+    function rnd(n) { return Math.floor(Math.random() * n); }
+    function bin8(n) { var b = n.toString(2); while (b.length < 8) b = "0" + b; return b; }
+    function trimHex(h) { return h.replace(/^0+(?=.)/, ""); }
+    function newQ() { mi = (mi + 1) % modes.length; var m = modes[mi], n = 1 + rnd(254); q = { m: m, n: n, b: bin8(n), h: hex(n) };
+      var shown = (m === "b2d" || m === "b2h") ? q.b : (m === "d2b" || m === "d2h") ? String(n) : trimHex(q.h), useSw = m === "d2b" || m === "h2b";
+      ask.textContent = fmt("play.prac.ask." + m, { q: shown }); prow.classList.toggle("hidden", !useSw); pin.classList.toggle("hidden", useSw);
+      for (var i = 0; i < 8; i++) pbits[i] = 0; prow.repaint(); pin.value = ""; clear(pread); pwork.classList.add("hidden"); clear(pwork); if (!useSw) pin.focus(); }
+    function answer() { var m = q.m; return (m === "b2d" || m === "h2d") ? String(q.n) : (m === "d2b" || m === "h2b") ? q.b : trimHex(q.h); }
+    function given() { if (q.m === "d2b" || q.m === "h2b") return pbits.join(""); return pin.value.trim().toUpperCase().replace(/\s+/g, ""); }
+    function isRight(g) { var m = q.m; if (m === "b2d" || m === "h2d") return /^\d+$/.test(g) && parseInt(g, 10) === q.n; if (m === "d2h" || m === "b2h") return trimHex(g) === trimHex(q.h); return g === q.b; }
+    function working() { var m = q.m, L = [], ones = PV.filter(function (v, i) { return q.b[i] === "1"; });
+      if (m === "b2d") L.push(fmt("play.prac.work.add", { s: ones.join(" + "), n: q.n }));
+      if (m === "d2b") { var left = q.n; PV.forEach(function (v, i) { var yes = q.b[i] === "1"; L.push(fmt(yes ? "play.prac.work.yes" : "play.prac.work.no", { v: v, left: left, rest: left - v })); if (yes) left -= v; }); }
+      if (m === "b2h" || m === "h2b" || m === "d2h" || m === "h2d") { L.push(fmt("play.prac.work.nib", { b: q.b.slice(0, 4), h: q.h[0] })); L.push(fmt("play.prac.work.nib", { b: q.b.slice(4), h: q.h[1] })); }
+      if (m === "h2d" || m === "d2h") { var hi = parseInt(q.h[0], 16), lo = parseInt(q.h[1], 16); L.push(fmt("play.prac.work.six", { d: q.h[0], v: hi, p: hi * 16, o: lo, n: q.n })); }
+      return L; }
+    function check() { var g = given(); if (!g || (q.m !== "d2b" && q.m !== "h2b" && !g.length)) { pread.textContent = S["play.prac.empty"]; return; } var ok = isRight(g);
+      clear(pread); pread.appendChild(el("div" + (ok ? ".okline" : ".warn"), { text: ok ? S["play.prac.right"] : fmt("play.prac.wrong", { a: answer() }) }));
+      clear(pwork); pwork.classList.remove("hidden"); pwork.appendChild(el("div.h", { text: S["play.prac.workhead"] })); working().forEach(function (l) { pwork.appendChild(el("div", { text: l })); }); }
+    pin.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); check(); } });
+    box.appendChild(ask); box.appendChild(prow); box.appendChild(pin);
+    box.appendChild(el("div.acts", {}, [el("button.btn", { type: "button", text: S["play.prac.check"], on: { click: check } }), el("button.btn.sec", { type: "button", text: S["play.prac.another"], on: { click: newQ } })]));
+    box.appendChild(pread); box.appendChild(pwork); newQ();
+  }
   return box;
 }
 /* the staff view shows which screens a pupil opened, so reading without pressing anything still counts. It never interrupts the pupil. */
