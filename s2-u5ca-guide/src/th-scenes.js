@@ -345,7 +345,7 @@ S.truth=function(st,i){
   const rows=[[0,0],[0,1],[1,0],[1,1]];
   const body=rows.map((r,k)=>{ const done=i>=k+1; const pq=r[0]&&r[1]?1:0, out=pq?0:1;
     return {cls:(i===k+1?'chg':''),cells:[{v:r[0]},{v:r[1]},{v:done?pq:'',cls:done?'mid':'wait'},{v:done?out:'',cls:done?'res'+(out?' on':''):'wait'}]}; });
-  let h=nt(['P','Q','<span class="mid">P AND Q</span>','NOT, P AND Q'],body,'truthsc');
+  let h=nt(['P','Q','<span class="mid">P AND Q</span>','NOT(P AND Q)'],body,'truthsc');
   if(i>=1&&i<=4){ const r=rows[i-1],pq=r[0]&&r[1]?1:0; h+=sumLine('P AND Q is '+pq+'. NOT '+pq+' is <b>'+(pq?0:1)+'</b>.',true); }
   if(i>=5) h+=note('The column reads 1, 1, 1, 0. Each cell earns its own mark.',true);
   st.innerHTML='<div class="sc numsc">'+h+'</div>';

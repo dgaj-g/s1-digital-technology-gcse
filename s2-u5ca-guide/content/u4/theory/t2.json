@@ -1233,10 +1233,10 @@
     {
      "anim": {
       "scene": "truth",
-      "title": "Fill in NOT, P AND Q, row by row",
+      "title": "Fill in NOT(P AND Q), row by row",
       "lead": "Press Next to fill one row at a time. The brackets are worked out first, then NOT flips the answer.",
       "steps": [
-       "The paper gives P, Q and an empty column for NOT, P AND Q. Four rows cover every input.",
+       "The paper gives P, Q and an empty column for NOT(P AND Q). Four rows cover every input.",
        "Row 1: P is 0 and Q is 0. P AND Q is 0. NOT 0 is 1, so write 1.",
        "Row 2: P is 0 and Q is 1. P AND Q is 0. NOT 0 is 1, so write 1.",
        "Row 3: P is 1 and Q is 0. P AND Q is 0. NOT 0 is 1, so write 1.",
