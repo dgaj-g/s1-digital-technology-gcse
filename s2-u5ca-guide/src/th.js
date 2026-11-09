@@ -41,6 +41,17 @@ function el(tag, props, kids) {
 function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); return n; }
 function api(fn, req) { req = Object.assign({ cls: CLS }, req || {}); if (fn === "apiStaff" && req.name == null) req.name = CLS; return window.OLS_TRANSPORT.call(fn, req).then(function (r) { var stuck = document.querySelector('#sys [data-sys="retry"]'); if (stuck) stuck.click();   /* the server answered, so the connection is back: clear the "could not reach" bar and send what waited */ if (!r || r.ok === false) { var e = new Error((r && r.err) || "server said no"); e.res = r; throw e; } return r; }); }
 function toast(msg) { if (!$toast) return; $toast.textContent = msg; $toast.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(function () { $toast.classList.remove("on"); }, 2600); }
+/* C1 (pairing fix): a click that waits says so. The button is disabled and aria-busy for at least 300 ms, its words stay and a ring turns after them;
+   if the work fails she gets a toast and the button back. A button that should stay off after it worked carries data-keep-off. */
+function busy(btn, work) {
+  if (!btn || btn.getAttribute("aria-busy") === "true") return Promise.resolve();
+  var t0 = Date.now(), isA = btn.tagName === "A";
+  btn.setAttribute("aria-busy", "true"); if (isA) btn.setAttribute("aria-disabled", "true"); else btn.disabled = true;
+  function end(ok) { return new Promise(function (r) { setTimeout(r, Math.max(0, 300 - (Date.now() - t0))); }).then(function () { btn.removeAttribute("aria-busy"); if (isA) btn.removeAttribute("aria-disabled"); else btn.disabled = !!(ok && btn.dataset && btn.dataset.keepOff); }); }
+  var p; try { p = Promise.resolve(work()); } catch (e) { p = Promise.reject(e); }
+  return p.then(function (v) { return end(true).then(function () { return v; }); }, function (e) { console.error(e); return end(false).then(function () { toast(S["err.server"]); }); });
+}
+function busyOn(fn) { return function (ev) { var b = ev && ev.currentTarget; return busy(b, function () { return fn(ev); }); }; }
 function go(h) { if (h === "#") h = HOME; if (location.hash === h) route(); else location.hash = h; }
 function termHtml(s) { return esc(s).replace(/\[\[([^|\]]+)\|\d+\]\]/g, '<b class="term">$1</b>').replace(/\[\[([^\]]+)\]\]/g, '<b class="term">$1</b>'); }
 function setBody(cls) { document.body.className = (LIVE ? "sw-00 th-live " : "") + cls; }
@@ -196,7 +207,7 @@ function renderTopic(t) {
     else { pairText = p.goes.length ? S["door.pair.newGo"] : S["door.pair.notStarted"]; pairBtn = S["door.pair.start"]; }
     var lastG = p.goes.length ? p.goes[p.goes.length - 1] : null, goNote = !lastG || (ps && ps.state === "done") ? null : el("p.small.quiet", { text: lastG.cut ? fmt("door.pair.lastGoCut", { r: lastG.r, R: R }) : lastG.names && lastG.names.length ? fmt("door.pair.lastGo", { m: lastG.right, R: R, name: joinNames(lastG.names) }) : lastG.solo ? fmt("door.pair.lastGoSolo", { m: lastG.right, R: R }) : fmt("door.pair.lastGoPlain", { m: lastG.right, R: R }) });
     var pairNote = ps && ps.state === "live" && !p.pairOn ? null : el("p.small.quiet", { text: p.pairOn || ps ? S["pair.door.act"] : S["pair.door.notNow"] });
-    doors.appendChild(door("2", S["door.pair"], S["door.pair.sub"], pairText, pairCls, pairBtn, "#th/" + t + "/pair", null, goNote && pairNote ? el("div", {}, [goNote, pairNote]) : goNote || pairNote));
+    doors.appendChild(door("2", S["door.pair"], S["door.pair.sub"], pairText, pairCls, pairBtn, null, busyOn(function () { return api("apiPair", { op: "join", t: t }).then(function (v) { try { sessionStorage.setItem("u4_prejoin_" + t, JSON.stringify({ v: v, at: Date.now() })); } catch (e) {} go("#th/" + t + "/pair"); }); }), goNote && pairNote ? el("div", {}, [goNote, pairNote]) : goNote || pairNote));
     var ppText = p.qn ? fmt("door.pp.progMarks", { round: p.round, m: p.qm, x: p.total, n: p.qn, N: p.NP }) : fmt("door.pp.prog", { round: p.round, n: 0, N: p.NP });
     doors.appendChild(door("3", S["door.pp"], S["door.pp.sub"], ppText, { done: p.ppDone }, p.ppDone ? S["door.pp.see"] : p.qn ? S["door.pp.go"] : S["door.pp.start"], "#th/" + t + "/pp"));
     $app.appendChild(doors);
@@ -205,8 +216,9 @@ function renderTopic(t) {
     $app.appendChild(el("div.where.tw-" + t, {}, [el("span.dot"), el("span", { text: next ? fmt("topic.where", { t: t, done: done.length ? done.join(" ") : S["topic.where.nothing"], next: next }) : fmt("topic.where.done", { t: t }) })]));
     $app.appendChild(el("a.back", { href: "#th", text: "‹ " + S["nav.backTh"] }));
     if (active === mine) {   // the door follows the partner switch and a new partner go, so nobody has to reload
-      var doorPoll = setInterval(function () { if (document.hidden) return; api("apiPair", { op: "switch", t: t }).then(function (st) { if (active === mine && (st.pairOn !== p.pairOn || (st.go || 1) !== p.go)) route(); }).catch(function (e) { console.warn(e); }); }, 15000);
-      mine.stop = function () { clearInterval(doorPoll); };
+      var doorT = null, doorOn = true;
+      (function doorTick() { doorT = setTimeout(function () { if (!doorOn) return; if (document.hidden) { doorTick(); return; } api("apiPair", { op: "switch", t: t }).then(function (st) { if (active === mine && (st.pairOn !== p.pairOn || (st.go || 1) !== p.go)) route(); }).catch(function (e) { console.warn(e); }).then(function () { if (doorOn) doorTick(); }); }, 15000); })();   // chained: one ask at a time
+      mine.stop = function () { doorOn = false; clearTimeout(doorT); };
     }
   }).catch(function (e) { fail(e, "topic"); });
 }
@@ -795,7 +807,7 @@ function renderPP(t) {
         row.appendChild(el("small.st" + (best ? ".got" : ""), { text: best ? fmt("pp.row.marks", { m: best[0], x: best[1] }) : S["pp.row.notTried"] }));
         row.appendChild(el("a.btn" + (best ? ".sec" : ""), { href: "#th/" + t + "/pp/" + qid, text: best ? S["pp.row.open"] : S["pp.row.start"] }));
         sec.appendChild(row); });
-      if (allDone && !RT[st.id]) { var rate = el("div.rate"); rate.appendChild(el("div.h", { text: S["rate.head"] })); var chips = el("div.chips"); ["knew", "half", "not"].forEach(function (r) { chips.appendChild(el("button.chip", { type: "button", text: S["rate." + r], on: { click: function () { api("apiTheory", { op: "rate", t: t, stage: st.id, rating: r }).then(function () { if (!ST.recs[t].R) ST.recs[t].R = {}; ST.recs[t].R[st.id] = r; rate.remove(); toast(S["rate.thanks"]); }).catch(function (e) { console.error(e); toast(S["err.save"]); }); } } })); }); rate.appendChild(chips); sec.appendChild(rate); }
+      if (allDone && !RT[st.id]) { var rate = el("div.rate"); rate.appendChild(el("div.h", { text: S["rate.head"] })); var chips = el("div.chips"); ["knew", "half", "not"].forEach(function (r) { chips.appendChild(el("button.chip", { type: "button", text: S["rate." + r], on: { click: function (ev) { return busy(ev.currentTarget, function () { return api("apiTheory", { op: "rate", t: t, stage: st.id, rating: r }).then(function () { if (!ST.recs[t].R) ST.recs[t].R = {}; ST.recs[t].R[st.id] = r; rate.remove(); toast(S["rate.thanks"]); }).catch(function (e) { console.error(e); toast(S["err.save"]); }); }); } } })); }); rate.appendChild(chips); sec.appendChild(rate); }
       $app.appendChild(sec);
     });
     $app.appendChild(el("a.back", { href: "#th/" + t, text: "‹ " + fmt("nav.backTopic", { t: t }) }));
@@ -820,7 +832,7 @@ function renderPart(t, qid) {
     var sf = Surface(sp, { keepOrder: true, floor: floor, leftHead: (sp.heads || [])[0], rightHead: (sp.heads || [])[1], onChange: function () { gate(); if (isWrite || isLong) { clearTimeout(draftT); draftT = setTimeout(function () { api("apiTheory", { op: "draft", t: t, qid: qid, text: sf.get() }).then(function () { draftNote.classList.remove("hidden"); }).catch(function () {}); }, 800); } } });
     if ((isWrite || isLong) && r.draft) sf.set(r.draft);
     paper.appendChild(sf.el); if (isWrite || isLong) paper.appendChild(draftNote);
-    var btnCheck = el("button.btn", { text: S["part.check"], on: { click: check } }), btnClear = el("button.btn.quiet", { text: S["part.clear"], on: { click: reset } });
+    var btnCheck = el("button.btn", { text: S["part.check"], on: { click: busyOn(check) } }), btnClear = el("button.btn.quiet", { text: S["part.clear"], on: { click: reset } });
     paper.appendChild(el("div.acts", {}, [btnCheck, btnClear])); gate();
     var vbox = el("div.vwrap.hidden"); paper.appendChild(vbox);
     var attemptsLine = el("p.attempts" + (attempts ? "" : ".hidden"), { text: fmt("part.attempts", { n: attempts }) }); paper.appendChild(attemptsLine);
@@ -828,16 +840,16 @@ function renderPart(t, qid) {
     var nav = el("div.acts.navrow", {}, nextQ ? [el("a.btn.sec", { href: "#th/" + t + "/pp", text: S["part.back"] }), el("a.btn.gold", { href: "#th/" + t + "/pp/" + nextQ, text: S["part.next"] })] : [el("a.btn.gold", { href: "#th/" + t + "/pp", text: S["part.back"] })]);
     paper.appendChild(nav);
     $app.appendChild(paper);
-    function reset() { sf.disable(false); sf.clearMarks(); sf.set(""); clear(vbox).classList.add("hidden"); btnCheck.disabled = false; gate(); }
+    function reset() { sf.disable(false); sf.clearMarks(); sf.set(""); clear(vbox).classList.add("hidden"); btnCheck.disabled = false; delete btnCheck.dataset.keepOff; gate(); }
     // write, code and long: Check stays off under the word floor; the floor line under the box says why (A9, A18)
     function gate() { if (btnCheck && floor && !(vbox && vbox.childNodes.length)) btnCheck.disabled = !sf.complete(); }
     function bump(res) { best = res.best; attempts = res.attempts || attempts; attemptsLine.textContent = fmt("part.attempts", { n: attempts }); attemptsLine.classList.toggle("hidden", !attempts); if (ST.recs[t]) { if (!ST.recs[t].Q) ST.recs[t].Q = {}; if (!ST.recs[t].Q[p.round]) ST.recs[t].Q[p.round] = {}; ST.recs[t].Q[p.round][qid] = best; } }
     function msBox(ms) { var b = el("div.msbox"); b.appendChild(el("div.h", { text: S["part.ms"] })); b.appendChild(el("pre", { text: ms || "" })); return b; }
     function check() {
       if (!sf.complete()) { toast(floor ? fmt("part.write.floor", { words: floor }) : S["part.incomplete"]); return; }
-      btnCheck.disabled = true;
+      btnCheck.disabled = true; btnCheck.dataset.keepOff = "1";
       var answer = (isWrite || isLong) ? { text: sf.get() } : sf.get();
-      api("apiTheory", { op: "mark", t: t, qid: qid, answer: answer }).then(function (res) {
+      return api("apiTheory", { op: "mark", t: t, qid: qid, answer: answer }).then(function (res) {
         bump(res); var J = res.res; clear(vbox).classList.remove("hidden"); sf.disable(true);
         if (isWrite) return writeVerdict(J);
         if (isLong) return longVerdict(J);
@@ -848,7 +860,7 @@ function renderPart(t, qid) {
         if (isWU) return step2();   // a six-mark question holds the model answer and mark scheme back until the pupil has written their own
         if (J.model) vbox.appendChild(el("div.modelbox", {}, [el("div.h", { text: S["part.model"] }), el("p", { text: J.model })]));
         vbox.appendChild(msBox(J.ms));
-      }).catch(function (e) { console.error(e); btnCheck.disabled = false; toast(S["err.server"]); });
+      }).catch(function (e) { console.error(e); btnCheck.disabled = false; delete btnCheck.dataset.keepOff; toast(S["err.server"]); });
     }
     // step 2 of a six-mark question: the pupil writes the answer; it is saved, never marked, and checked by the pupil against CCEA's model answer
     function step2() {
@@ -860,13 +872,13 @@ function renderPart(t, qid) {
       var ta = el("textarea", { attr: { rows: "10", "aria-label": S["wu.step2"], spellcheck: "true" } }); ta.value = wu.text || "";
       var wc = el("p.small.quiet"), saved = el("p.small.quiet.hidden", { text: S["wu.saved"] });
       wuBox.appendChild(el("div.write", {}, [ta])); wuBox.appendChild(wc); wuBox.appendChild(saved);
-      var btnShow = el("button.btn.gold", { text: S["wu.show"], on: { click: show } }); var showRow = el("div.acts", {}, [btnShow]); wuBox.appendChild(showRow);
+      var btnShow = el("button.btn.gold", { text: S["wu.show"], on: { click: busyOn(show) } }); var showRow = el("div.acts", {}, [btnShow]); wuBox.appendChild(showRow);
       var rev = el("div.wurev"); wuBox.appendChild(rev);
       function words() { var v = ta.value.trim(); return v ? v.split(/\s+/).length : 0; }
       function paintWC() { var n = words(); wc.textContent = wu.shown || n >= WFLOOR ? fmt("wu.words", { n: n }) : fmt("wu.floor", { n: WFLOOR, w: n }); btnShow.disabled = n < WFLOOR; }
       function send(extra) { var q = { op: "writeup", t: t, qid: qid, text: ta.value }; Object.keys(extra || {}).forEach(function (k) { q[k] = extra[k]; }); return api("apiTheory", q).then(function (res) { if (res && res.writeup) wu = res.writeup; saved.classList.remove("hidden"); return res; }); }
       ta.addEventListener("input", function () { paintWC(); saved.classList.add("hidden"); clearTimeout(saveT); saveT = setTimeout(function () { send().catch(function () { toast(S["err.server"]); }); }, 1200); });
-      function show() { btnShow.disabled = true; clearTimeout(saveT); send({ shown: 1 }).then(function (res) { wu.shown = 1; paintRev(res.reveal); }).catch(function (e) { console.error(e); btnShow.disabled = false; toast(S["err.server"]); }); }
+      function show() { btnShow.disabled = true; btnShow.dataset.keepOff = "1"; clearTimeout(saveT); return send({ shown: 1 }).then(function (res) { wu.shown = 1; paintRev(res.reveal); }).catch(function (e) { console.error(e); btnShow.disabled = false; delete btnShow.dataset.keepOff; toast(S["err.server"]); }); }
       function paintRev(R) {
         if (!R) return; showRow.classList.add("hidden"); paintWC(); clear(rev);
         rev.appendChild(el("div.modelbox", {}, [el("div.h", { text: S["part.model"] }), el("p", { text: R.model || "" })]));
@@ -888,7 +900,7 @@ function renderPart(t, qid) {
       pts.forEach(function (pt, i) { tk.appendChild(tickRow(pt, J.auto && J.auto[i], ticks[i], function (v) { ticks[i] = v ? 1 : 0; paintTotal(); })); });
       function paintTotal() { var m = Math.min(J.x, ticks.reduce(function (a, b) { return a + b; }, 0)); total.textContent = fmt("part.tick.total", { m: m, x: J.x }); }
       paintTotal(); tk.appendChild(total);
-      var save = el("button.btn.gold", { text: S["part.saveTicks"], on: { click: function () { save.disabled = true; api("apiTheory", { op: "mark", t: t, qid: qid, answer: { text: sf.get(), ticks: ticks } }).then(function (res) { bump(res); toast(fmt("part.saved", { m: res.res.m, x: res.res.x })); total.textContent = fmt("part.saved", { m: res.res.m, x: res.res.x }); save.disabled = false; }).catch(function (e) { console.error(e); save.disabled = false; toast(S["err.save"]); }); } } });
+      var save = el("button.btn.gold", { text: S["part.saveTicks"], on: { click: function (ev) { return busy(ev.currentTarget, function () { save.disabled = true; return api("apiTheory", { op: "mark", t: t, qid: qid, answer: { text: sf.get(), ticks: ticks } }).then(function (res) { bump(res); toast(fmt("part.saved", { m: res.res.m, x: res.res.x })); total.textContent = fmt("part.saved", { m: res.res.m, x: res.res.x }); save.disabled = false; }).catch(function (e) { console.error(e); save.disabled = false; toast(S["err.save"]); }); }); } } });
       tk.appendChild(el("div.acts", {}, [save]));
       if (isCode && J.model) vbox.appendChild(el("div.codecmp", {}, [el("div", {}, [el("div.h", { text: S["part.answer"] }), el("pre.code", { text: sf.get() })]), el("div", {}, [el("div.h", { text: S["part.code.model"] }), el("pre.code.model", { text: J.model })])]));
       vbox.appendChild(tk);
@@ -909,7 +921,7 @@ function renderPart(t, qid) {
         clear(pickBox); if (bl.level) { pickLine.textContent = fmt("part.long.pick", { n: bl.level }); if (pick == null || pick < bl.lo || pick > bl.hi) pick = bl.suggest; for (var mk = bl.lo; mk <= bl.hi; mk++) (function (mk) { pickBox.appendChild(el("button.mkb" + (mk === pick ? ".on" : ""), { type: "button", text: String(mk), on: { click: function () { pick = mk; paintBand(); } } })); })(mk); } else { pickLine.textContent = ""; pick = 0; }
       }
       paintBand();
-      var save = el("button.btn.gold", { text: S["part.saveTicks"], on: { click: function () { save.disabled = true; api("apiTheory", { op: "mark", t: t, qid: qid, answer: { text: sf.get(), ticks: ticks, mark: pick } }).then(function (res) { bump(res); toast(fmt("part.saved", { m: res.res.m, x: res.res.x })); save.disabled = false; }).catch(function (e) { console.error(e); save.disabled = false; toast(S["err.save"]); }); } } });
+      var save = el("button.btn.gold", { text: S["part.saveTicks"], on: { click: function (ev) { return busy(ev.currentTarget, function () { save.disabled = true; return api("apiTheory", { op: "mark", t: t, qid: qid, answer: { text: sf.get(), ticks: ticks, mark: pick } }).then(function (res) { bump(res); toast(fmt("part.saved", { m: res.res.m, x: res.res.x })); save.disabled = false; }).catch(function (e) { console.error(e); save.disabled = false; toast(S["err.save"]); }); }); } } });
       tk.appendChild(el("div.acts", {}, [save])); vbox.appendChild(tk);
       if (J.why) vbox.appendChild(el("p.why", { text: fmt("part.why", { why: J.why }) }));
       vbox.appendChild(msBox(J.ms));
@@ -957,13 +969,13 @@ function renderPair(t) {
   function flush() { if (flushing) return flushing; if (!outbox.length) return Promise.resolve(); var e = outbox[0]; flushing = fbSend("POST", e.p, { s: e.s, k: e.k, x: e.x, t: e.t }).then(function () { outbox.shift(); flushing = null; return flush(); }).catch(function (e) { console.error(e); flushing = null; if (/room 4(0[0-7]|[1-9]\d)/.test(String(e && e.message)) && !/room 429/.test(String(e.message))) outbox.shift(); }); return flushing; }   // a refusal will never succeed; anything else tries again
   function wake() { if (!stopped && wakeFn && !document.hidden) wakeFn(); }   // back from sleep or a dropped connection: catch up at once
   document.addEventListener("visibilitychange", wake); window.addEventListener("online", wake); window.addEventListener("pageshow", wake);
-  function every(ms, fn) { var id = setInterval(function () { if (!stopped) fn(); }, ms); timers.push(id); return id; }
   function later(ms, fn) { var id = setTimeout(function () { if (!stopped) fn(); }, ms); timers.push(id); return id; }
-  active.stop = function () { stopped = true; timers.forEach(function (id) { clearInterval(id); clearTimeout(id); }); };
-  refresh(t).then(function () {
-    var p = prog(t); if (!p.open) return go("#th");
-    return api("apiPair", { op: "join", t: t });
-  }).then(function (v) { if (v) paint(v); }).catch(function (e) { fail(e, "pair"); });
+  active.stop = function () { stopped = true; pollGen++; timers.forEach(function (id) { clearInterval(id); clearTimeout(id); }); };
+  // B2: the door asked already (its reply waits in sessionStorage for 10 s): show it. Otherwise the waiting card goes up now and the first ask follows.
+  var waitStart = null, wc = null, pollGen = 0, pollLive = -1, lastGood = Date.now(), failShown = false, pre = null;
+  try { pre = JSON.parse(sessionStorage.getItem("u4_prejoin_" + t) || "null"); sessionStorage.removeItem("u4_prejoin_" + t); } catch (e) {}
+  if (pre && pre.v && Date.now() - pre.at < 10000) paint(pre.v);
+  else { waitView(null); pollJoin(0, true); }
 
   function head(sub) { var h = el("div.pairhead.tw-" + t); h.appendChild(crumbFrom(S["nav.home"] + " › " + topicName(t) + " › " + S["door.pair"], ["#", "#th/" + t])); return h; }
   function offView() { clear($app); $app.appendChild(head()); $app.appendChild(el("div.card.waitcard", {}, [el("h2", { text: S["door.pair"] }), el("p", { text: S["door.pair.off"] }), el("p.small", { text: S["pair.door.notNow"] }), el("div.acts", {}, [el("a.btn.sec", { href: "#th/" + t, text: fmt("nav.backTopic", { t: t }) })])])); }
@@ -971,14 +983,17 @@ function renderPair(t) {
   function pausedView(v) {
     clear($app); $app.appendChild(head());
     $app.appendChild(el("div.card.waitcard", {}, [el("h2", { text: S["pair.paused.head"] }), el("p", { text: fmt(v.solo ? "pair.paused.saySolo" : v.trio ? "pair.paused.sayTrio" : "pair.paused.say", { round: v.r, R: v.R }) }), el("p.small", { text: S["pair.paused.try"] }), el("div.acts", {}, [el("a.btn.sec", { href: "#th/" + t, text: fmt("nav.backTopic", { t: t }) })])]));
-    function look() { api("apiPair", { op: "join", t: t, look: 1 }).then(function (v2) { if (stopped || v2.state === "paused") return; active.stop(); if (v2.state === "off" || v2.state === "free") { toast(S["pair.newGo.toast"]); go("#th/" + t); return; } stopped = false; timers = []; wakeFn = null; if (v2.pair) sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); paint(v2); toast(S["pair.paused.back"]); }).catch(function (e) { console.warn(e); }); }
-    wakeFn = look; every(10000, function () { if (!document.hidden) look(); });
+    function look() { return api("apiPair", { op: "join", t: t, look: 1 }).then(function (v2) { if (stopped || v2.state === "paused") return; active.stop(); if (v2.state === "off" || v2.state === "free") { toast(S["pair.newGo.toast"]); go("#th/" + t); return; } stopped = false; timers = []; wakeFn = null; if (v2.pair) sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); paint(v2); toast(S["pair.paused.back"]); }).catch(function (e) { console.warn(e); }); }
+    wakeFn = look; var gen = ++pollGen;
+    (function tick() { later(10000, function () { if (gen !== pollGen) return; if (document.hidden) { tick(); return; } look().then(function () { if (gen === pollGen && !stopped) tick(); }); }); })();   // chained, 10 s after each reply
   }
   function paint(v) {
     if (stopped) return;
     if (v.state === "off") return offView();
     if (v.state === "paused") return pausedView(v);
-    if (v.state === "waiting") return waitView(v);
+    if (v.state === "waiting") { waitView(v); if (pollLive !== pollGen) pollJoin(2500 + Math.round(Math.random() * 1000)); return; }
+    if (v.alone90) toast(S["pair.wait.alone90"]);
+    if (v.joined && v.joined.length) toast(fmt("pair.joined.me", { them: joinNames(v.joined) }));
     if (v.told && v.told.kind === "left") toast(fmt("pair.err.left", { them: v.told.them }));
     if (v.told && v.told.kind === "leftTrio") toast(fmt("pair.err.leftTrio", { them: v.told.them }));
     if (v.told && v.told.kind === "dropped") toast(fmt("pair.err.dropped", { them: v.told.them }));
@@ -986,21 +1001,43 @@ function renderPair(t) {
     return pairView(v.pair, !!v.fresh, !!v.told);
   }
 
-  /* --- waiting room --- */
-  var waitStart = null, polled = false;
-  function waitView(v) {
-    clear($app); $app.appendChild(head());
+  /* --- waiting room (B1): one ask in flight, the next 2.5-3.5 s after its reply; a lost reply tries again at 4 s,
+     and the error card waits for 30 s with no good reply (polling carries on under it) --- */
+  function pollJoin(delay, first) {
+    var gen = ++pollGen; pollLive = gen;
+    function ask() {
+      if (stopped || gen !== pollGen) return;
+      var q = first ? refresh(t).then(function () { if (!prog(t).open) { pollGen++; go("#th"); return null; } return api("apiPair", { op: "join", t: t }); }) : api("apiPair", { op: "join", t: t });
+      q.then(function (v2) {
+        if (!v2 || stopped || gen !== pollGen) return;
+        first = false; lastGood = Date.now(); failShown = false;
+        if (v2.state === "waiting") { waitView(v2); later(2500 + Math.round(Math.random() * 1000), ask); return; }
+        active.stop(); stopped = false; timers = []; paint(v2);
+      }).catch(function (e) {
+        if (stopped || gen !== pollGen) return; console.warn(e);
+        if (Date.now() - lastGood > 30000) { if (!failShown) { failShown = true; wc = null; fail(e, "pair"); } }
+        else if (wc) wc.retry.classList.remove("hidden");
+        later(4000, ask);
+      });
+    }
+    if (delay) later(delay, ask); else ask();
+  }
+  function waitView(v) {   // v null: painted before the first reply (B2)
     if (!waitStart) waitStart = Date.now();
-    var card = el("div.card.waitcard"); card.appendChild(el("div.spin")); var big = el("h2", { text: polled ? (v.last3 ? S["pair.wait.trioHead"] : S["pair.wait.head"]) : S["pair.wait.openingHead"] });
-    var say = el("p", { text: polled ? (v.last3 ? S["pair.wait.trioSay"] : S["pair.wait.say"]) : fmt("pair.wait.openingSay", { t: t }) });
-    card.appendChild(big); card.appendChild(say);
-    var long = el("p.call" + (Date.now() - waitStart > 45000 ? "" : ".hidden"), { text: S["pair.wait.long"] }); card.appendChild(long);
-    var acts = el("div.acts");
-    acts.appendChild(el("button.btn.sec" + (Date.now() - waitStart > 45000 ? "" : ".hidden"), { text: S["pair.wait.own"], on: { click: function () { active.stop(); api("apiPair", { op: "solo", t: t, reason: "chose" }).then(function (v2) { stopped = false; timers = []; paint(v2); }).catch(function (e) { fail(e, "pair"); }); } } }));
-    acts.appendChild(el("button.btn.quiet", { text: S["pair.wait.leave"], on: { click: function () { active.stop(); api("apiPair", { op: "leave", t: t, reason: "left" }).then(function () { go("#th/" + t); }).catch(function () { go("#th/" + t); }); } } }));
-    card.appendChild(acts); $app.appendChild(card);
-    polled = true;
-    if (!timers.length) every(2000, function () { api("apiPair", { op: "join", t: t }).then(function (v2) { if (v2.state === "waiting") { var w = Date.now() - waitStart > 45000; big.textContent = v2.last3 ? S["pair.wait.trioHead"] : S["pair.wait.head"]; say.textContent = v2.last3 ? S["pair.wait.trioSay"] : S["pair.wait.say"]; long.classList.toggle("hidden", !w); acts.firstChild.classList.toggle("hidden", !w); } else { active.stop(); stopped = false; timers = []; paint(v2); } }).catch(function (e) { console.error(e); }); });
+    if (!wc || !$app.contains(wc.card)) {
+      clear($app); $app.appendChild(head());
+      wc = { card: el("div.card.waitcard"), big: el("h2"), say: el("p"), retry: el("p.small.quiet.hidden", { text: S["pair.wait.retry"], attr: { role: "status" } }), long: el("p.call.hidden", { text: S["pair.wait.long"] }), acts: el("div.acts") };
+      wc.own = el("button.btn.sec.hidden", { text: S["pair.wait.own"], on: { click: function (ev) { return busy(ev.currentTarget, function () { pollGen++; return api("apiPair", { op: "solo", t: t, reason: "chose" }).then(function (v2) { active.stop(); stopped = false; timers = []; paint(v2); }).catch(function (e) { pollJoin(0); throw e; }); }); } } });
+      wc.acts.appendChild(wc.own);
+      wc.acts.appendChild(el("button.btn.quiet", { text: S["pair.wait.leave"], on: { click: function (ev) { return busy(ev.currentTarget, function () { pollGen++; return api("apiPair", { op: "leave", t: t, reason: "left" }).catch(function (e) { console.warn(e); }).then(function () { active.stop(); go("#th/" + t); }); }); } } }));
+      [el("div.spin"), wc.big, wc.say, wc.retry, wc.long, wc.acts].forEach(function (n) { wc.card.appendChild(n); });
+      $app.appendChild(wc.card);
+    }
+    var w = Date.now() - waitStart > 45000, three = v && v.last3;
+    wc.big.textContent = !v ? S["pair.wait.openingHead"] : three ? S["pair.wait.trioHead"] : S["pair.wait.head"];
+    wc.say.textContent = !v ? fmt("pair.wait.openingSay", { t: t }) : three ? S["pair.wait.trioSay"] : S["pair.wait.say"];
+    if (v) wc.retry.classList.add("hidden");
+    wc.long.classList.toggle("hidden", !w); wc.own.classList.toggle("hidden", !w);
   }
 
   /* --- the rounds --- */
@@ -1017,15 +1054,24 @@ function renderPair(t) {
     if (P.carried && !sessionStorage.getItem(carryKey)) {   // an unfinished pair from last lesson: same partner, agreed rounds kept, a fresh chat
       var cc = el("div.card.waitcard"); cc.appendChild(el("h2", { text: S["pair.carry.head"] }));
       cc.appendChild(el("p", { text: fmt(solo ? "pair.carry.saySolo" : trio ? "pair.carry.sayTrio" : "pair.carry.say", { round: P.r, R: R }) }));
-      cc.appendChild(el("div.acts", {}, [el("button.btn.big", { text: S["pair.carry.start"], on: { click: function () { sessionStorage.setItem(carryKey, "1"); sessionStorage.setItem(startedKey, "1"); sessionStorage.setItem("u4_seen_" + pid, "1"); pairView(P, false); } } })]));
+      cc.appendChild(el("div.acts", {}, [el("button.btn.big", { text: S["pair.carry.start"], on: { click: function (ev) { return busy(ev.currentTarget, function () { sessionStorage.setItem(carryKey, "1"); sessionStorage.setItem(startedKey, "1"); sessionStorage.setItem("u4_seen_" + pid, "1"); pairView(P, false); }); } } })]));
       $app.appendChild(cc); return;
     }
     if (!sessionStorage.getItem(startedKey) && !(P.r > 1 && !fresh && !told)) {   // a new tab mid-way goes straight back into the rounds; a pupil just told their partner left still gets the card
       var mc = el("div.card.waitcard");
       if (solo) { var w = P.why; mc.appendChild(el("h2", { text: w === "owner" ? S["pair.solo.headOwner"] : w === "chose" ? S["pair.solo.headChose"] : (w === "left" || w === "gone" || w === "room" || w === "dropped") ? S["pair.solo.headLeft"] : S["pair.solo.head"] })); mc.appendChild(el("p", { text: (w === "left" || w === "gone" || w === "room" || w === "dropped") ? S["pair.solo.sayLeft"] : S["pair.solo.say"] })); }
       else { mc.appendChild(el("h2", { text: S["pair.match.head"] })); mc.appendChild(el("p", { text: trio ? fmt("pair.match.trioSay", { me: me, them: others.map(cnOf)[0], them2: others.map(cnOf)[1] }) : fmt("pair.match.say", { me: me, them: others.map(cnOf)[0] }) })); mc.appendChild(el("p.small", { text: S["pair.door.act"] })); }
-      mc.appendChild(el("div.acts", {}, [el("button.btn.big", { text: solo ? S["pair.solo.start"] : S["pair.match.start"], on: { click: function () { sessionStorage.setItem(startedKey, "1"); pairView(P, false); } } })]));
-      $app.appendChild(mc); return;
+      mc.appendChild(el("div.acts", {}, [el("button.btn.big", { text: solo ? S["pair.solo.start"] : S["pair.match.start"], on: { click: function (ev) { return busy(ev.currentTarget, function () { sessionStorage.setItem(startedKey, "1"); pairView(P, false); }); } } })]));
+      $app.appendChild(mc);
+      if (!solo && !trio && room) {   // B3 on the match card: a late pupil may take seat C before the pair starts; the live room says so (no lock)
+        var mcLook = function () { if (!document.body.contains(mc)) return; fbGet(room + "/ev.json").then(function (o) {
+          var hit = o && Object.keys(o).some(function (k) { var e = o[k]; return e && e.k === "done" && e.x === "joined"; });
+          if (!hit) { later(4000, mcLook); return; } if (!document.body.contains(mc)) return;
+          return api("apiPair", { op: "join", t: t }).then(function (v2) { if (!document.body.contains(mc)) return; active.stop(); stopped = false; timers = []; paint(v2); if (v2.pair && v2.pair.cn && v2.pair.cn.length > 2) toast(fmt("pair.joined.them", { them: v2.pair.cn[2] })); });
+        }).catch(function () { later(4000, mcLook); }); };
+        later(4000, mcLook);
+      }
+      return;
     }
     var r = P.r; if (r > R) { return finishView(P, { names: P.names || [], m: P.right, R: R, solo: solo, trio: trio, unsealed: true }); }
     var round = rounds[r - 1], spec = round.surface, seed = pid + ":" + r;
@@ -1054,10 +1100,10 @@ function renderPair(t) {
     var quick = el("div.quick"); chat.appendChild(quick);
     var form = el("form"); var inp = el("input", { type: "text", maxlength: 240, placeholder: S["pair.chat.placeholder"], attr: { "aria-label": S["pair.chat.title"] } }); var sendBtn = el("button.btn", { type: "submit", text: S["pair.chat.send"] }); form.appendChild(inp); form.appendChild(sendBtn); chat.appendChild(form);
     var lastSent = 0, chatClosed = false;
-    form.addEventListener("submit", function (e) { e.preventDefault(); var txt = inp.value.trim(); if (!txt || chatClosed || solo) return; say(txt); });
-    function say(txt) { if (Date.now() - lastSent < 1000) { toast(S["pair.chat.tooFast"]); return; } if (BANNED.some(function (rx) { return rx.test(txt); })) { toast(S["pair.chat.banned"]); return; } if (nameHit(txt, P.nh)) { toast(S["pair.chat.name"]); return; } lastSent = Date.now(); inp.value = ""; post("msg", txt.slice(0, 240)); }
+    form.addEventListener("submit", function (e) { e.preventDefault(); var txt = inp.value.trim(); if (!txt || chatClosed || solo) return; busy(sendBtn, function () { return say(txt); }); });
+    function say(txt) { if (Date.now() - lastSent < 1000) { toast(S["pair.chat.tooFast"]); return; } if (BANNED.some(function (rx) { return rx.test(txt); })) { toast(S["pair.chat.banned"]); return; } if (nameHit(txt, P.nh)) { toast(S["pair.chat.name"]); return; } lastSent = Date.now(); inp.value = ""; return post("msg", txt.slice(0, 240)); }
     function addLine(s, txt, sys) { var m = el("div.msg" + (sys ? ".sys" : s === seat ? ".me" : "")); if (!sys) m.appendChild(el("b", { text: s === seat ? S["pair.chat.you"] : cnOf(s) })); m.appendChild(el("span", { text: txt })); lines.appendChild(m); lines.scrollTop = lines.scrollHeight; }
-    function paintQuick() { clear(quick); if (solo || chatClosed) return; var ph = phase === 1 ? "1" : phase === 4 ? "4" : "2"; var cs = (round.chips && round.chips[ph]) || []; if (!cs.length) return; quick.appendChild(el("div.h", { text: S["pair.chat.chips"] })); cs.forEach(function (c) { quick.appendChild(el("button.chip", { type: "button", text: c, on: { click: function () { say(c); } } })); }); }
+    function paintQuick() { clear(quick); if (solo || chatClosed) return; var ph = phase === 1 ? "1" : phase === 4 ? "4" : "2"; var cs = (round.chips && round.chips[ph]) || []; if (!cs.length) return; quick.appendChild(el("div.h", { text: S["pair.chat.chips"] })); cs.forEach(function (c) { quick.appendChild(el("button.chip", { type: "button", text: c, on: { click: function (ev) { return busy(ev.currentTarget, function () { return say(c); }); } } })); }); }
     function closeChat(msg) { chatClosed = true; chat.classList.add("off"); inp.disabled = true; sendBtn.disabled = true; clear(quick); chat.appendChild(el("p.small", { text: msg })); }
     if (solo) chat.appendChild(el("p.small", { text: S["pair.chat.off"] }));
     // posting
@@ -1067,23 +1113,23 @@ function renderPair(t) {
       clear(phaseBox); paintQuick();
       if (checked) { setStep(5); return; }
       if (phase === 1) { setStep(1); sf.disable(myPicked);
-        if (!myPicked) phaseBox.appendChild(el("div.acts", {}, [el("button.btn", { text: solo ? S["learn.try.check"] : S["pair.lockOwn"], on: { click: lockOwn } })]));
+        if (!myPicked) phaseBox.appendChild(el("div.acts", {}, [el("button.btn", { text: solo ? S["learn.try.check"] : S["pair.lockOwn"], on: { click: busyOn(lockOwn) } })]));
         else { var waitingOn = others.filter(function (s) { return !picks[s]; }).map(cnOf); phaseBox.appendChild(el("p.say.waiting", { text: waitingOn.length > 1 ? fmt("pair.waitingFor2", { them: waitingOn[0], them2: waitingOn[1] }) : fmt("pair.waitingFor", { them: waitingOn[0] || "" }) })); }
         return; }
       if (phase === 2) { setStep(2); sf.disable(false); stepEls[2].classList.add("on"); paintCompare(); var mine = sf.get(), okAll = others.every(function (s) { return picks[s] === mine; });
         var acts = el("div.acts"); var L = ansLetter(sf, spec, mine);
-        acts.appendChild(el("button.btn.gold", { text: L ? fmt("pair.lockPair", { letter: L }) : S["pair.lockPairAny"], on: { click: lockPair } }));
-        if (!okAll) { others.forEach(function (s) { if (picks[s] && picks[s] !== mine) acts.appendChild(el("button.btn.sec", { text: fmt("pair.useTheirs", { them: cnOf(s) }), on: { click: function () { sf.set(picks[s]); post("pick", r + ":" + picks[s]); paintPhase(); } } })); }); }
-        if (myOwn != null && mine !== myOwn) acts.appendChild(el("button.btn.quiet", { text: S["pair.useMine"], on: { click: function () { sf.set(myOwn); post("pick", r + ":" + myOwn); paintPhase(); } } }));
+        acts.appendChild(el("button.btn.gold", { text: L ? fmt("pair.lockPair", { letter: L }) : S["pair.lockPairAny"], on: { click: busyOn(lockPair) } }));
+        if (!okAll) { others.forEach(function (s) { if (picks[s] && picks[s] !== mine) acts.appendChild(el("button.btn.sec", { text: fmt("pair.useTheirs", { them: cnOf(s) }), on: { click: function (ev) { return busy(ev.currentTarget, function () { sf.set(picks[s]); return post("pick", r + ":" + picks[s]); paintPhase(); }); } } })); }); }
+        if (myOwn != null && mine !== myOwn) acts.appendChild(el("button.btn.quiet", { text: S["pair.useMine"], on: { click: function (ev) { return busy(ev.currentTarget, function () { sf.set(myOwn); return post("pick", r + ":" + myOwn); paintPhase(); }); } } }));
         phaseBox.appendChild(acts); return; }
       if (phase === 4) { setStep(4); sf.disable(true); paintCompare(); var myLock = locks[seat];
         var pending = others.filter(function (s) { return locks[s] !== myLock; });
         if (!pending.length) return; // agreed → check runs
         var otherLocks = others.filter(function (s) { return locks[s] && locks[s] !== myLock; });
         if (otherLocks.length) { var s0 = otherLocks[0], L0 = ansLetter(sf, spec, locks[s0]); phaseBox.appendChild(el("p.say", { text: L0 ? fmt("pair.wants", { them: cnOf(s0), letter: L0 }) : fmt("pair.wantsAny", { them: cnOf(s0) }) }));
-          phaseBox.appendChild(el("div.acts", {}, [el("button.btn.gold", { text: L0 ? fmt("pair.agree", { letter: L0 }) : S["pair.agreeAny"], on: { click: function () { sf.set(locks[s0]); locks[seat] = locks[s0]; post("lock", r + ":" + locks[s0]); settle(); } } }), el("button.btn.sec", { text: S["pair.notYet"], on: { click: function () { say(S["pair.notYetSay"]); } } })].concat(myLock ? [el("button.btn.quiet", { text: S["pair.unlock"], on: { click: unlockMine } })] : []))); }   // both locked, different answers: either can take theirs back
+          phaseBox.appendChild(el("div.acts", {}, [el("button.btn.gold", { text: L0 ? fmt("pair.agree", { letter: L0 }) : S["pair.agreeAny"], on: { click: function (ev) { return busy(ev.currentTarget, function () { sf.set(locks[s0]); locks[seat] = locks[s0]; var w = post("lock", r + ":" + locks[s0]); settle(); return w; }); } } }), el("button.btn.sec", { text: S["pair.notYet"], on: { click: function (ev) { return busy(ev.currentTarget, function () { return say(S["pair.notYetSay"]); }); } } })].concat(myLock ? [el("button.btn.quiet", { text: S["pair.unlock"], on: { click: busyOn(unlockMine) } })] : []))); }   // both locked, different answers: either can take theirs back
         else { var names = pending.map(cnOf); phaseBox.appendChild(el("p.say.waiting", { text: names.length > 1 ? fmt("pair.locked2", { them: names[0], them2: names[1] }) : fmt("pair.locked", { them: names[0] }) }));
-          phaseBox.appendChild(el("div.acts", {}, [el("button.btn.quiet", { text: S["pair.unlock"], on: { click: unlockMine } })])); }
+          phaseBox.appendChild(el("div.acts", {}, [el("button.btn.quiet", { text: S["pair.unlock"], on: { click: busyOn(unlockMine) } })])); }
         return; }
     }
     var myOwn = null, theirSf = {};
@@ -1098,21 +1144,21 @@ function renderPair(t) {
       else { var s1 = others[0], L2 = ansLetter(sf, spec, picks[s1]); txt = L && L2 ? fmt("pair.diff", { letter: L, them: cnOf(s1), letter2: L2 }) : S["pair.diffAny"]; }
       cmp.appendChild(el("p.b.cmpline", { text: txt }));
     }
-    function lockOwn() { if (!sf.complete()) { toast(S["try.incomplete"]); return; } myPicked = true; myOwn = sf.get(); picks[seat] = myOwn; if (solo) { locks[seat] = myOwn; return settle(); } post("pick", r + ":" + myOwn).then(function () { advance(); paintPhase(); }); paintPhase(); }
-    function unlockMine() { locks[seat] = null; phase = others.some(function (s) { return locks[s]; }) ? 4 : 2; post("lock", r + ":"); paintPhase(); }   // a partner still locked keeps me on Agree
-    function lockPair() { var a = sf.get(); locks[seat] = a; phase = 4; post("lock", r + ":" + a).then(settle); paintPhase(); }
+    function lockOwn() { if (!sf.complete()) { toast(S["try.incomplete"]); return; } myPicked = true; myOwn = sf.get(); picks[seat] = myOwn; if (solo) { locks[seat] = myOwn; return settle(); } var w = post("pick", r + ":" + myOwn).then(function () { advance(); paintPhase(); }); paintPhase(); return w; }
+    function unlockMine() { locks[seat] = null; phase = others.some(function (s) { return locks[s]; }) ? 4 : 2; var w = post("lock", r + ":"); paintPhase(); return w; }   // a partner still locked keeps me on Agree
+    function lockPair() { var a = sf.get(); locks[seat] = a; phase = 4; var w = post("lock", r + ":" + a).then(settle); paintPhase(); return w; }
     function advance() { if (phase === 1 && myPicked && others.every(function (s) { return picks[s]; })) { phase = others.some(function (s) { return locks[s]; }) ? 4 : 2; addLine(null, S["pair.allAnswered"], true); paintPhase(); } }
     var settling = false;
-    function settle() { if (checked || settling) return; var myLock = locks[seat]; if (!myLock) return; if (!others.every(function (s) { return locks[s] === myLock; })) { paintPhase(); return; } runCheck(myLock); }
+    function settle() { if (checked || settling) return; var myLock = locks[seat]; if (!myLock) return; if (!others.every(function (s) { return locks[s] === myLock; })) { paintPhase(); return; } return runCheck(myLock); }
     function runCheck(ans) { settling = true;
-      api("apiPair", { op: "check", t: t, pid: pid, r: r, ans: ans }).then(function (res) { if (res.state === "ended") { settling = false; endedGo(); return; } if (res.state === "paused") { settling = false; reenter(false); return; } checked = res; A[r] = { a: res.a, ok: res.right }; if (res.a && res.a !== sf.get()) sf.set(res.a); sf.disable(true); sf.verdict(res, res); cmp.classList.add("hidden"); strip.classList.remove("hidden"); strip.classList.add(res.right ? "ok" : "no"); clear(strip);
+      return api("apiPair", { op: "check", t: t, pid: pid, r: r, ans: ans }).then(function (res) { if (res.state === "ended") { settling = false; endedGo(); return; } if (res.state === "paused") { settling = false; reenter(false); return; } checked = res; A[r] = { a: res.a, ok: res.right }; if (res.a && res.a !== sf.get()) sf.set(res.a); sf.disable(true); sf.verdict(res, res); cmp.classList.add("hidden"); strip.classList.remove("hidden"); strip.classList.add(res.right ? "ok" : "no"); clear(strip);
         strip.appendChild(el("span.ic", { text: res.right ? "✓" : "✗" })); var L = ansLetter(sf, spec, res.keyShown && spec.kind === "one" ? res.keyShown : null);
         strip.appendChild(el("div", {}, [el("div.b", { text: res.right ? (solo ? S["pair.rightSolo"] : trio ? S["pair.rightTrio"] : S["pair.right"]) : (L ? fmt("pair.wrong", { letter: L }) : S["pair.wrongAny"]) }), res.why ? el("div.why", { text: fmt("pair.why", { why: res.why }) }) : null]));
         if (solo) strip.appendChild(el("div.small", { text: S["pair.soloStrip"] }));
         if (!solo) addLine(null, fmt(res.right ? "pair.chat.lockedRight" : "pair.chat.lockedWrong", { r: r }), true);
         clear(nextBox).classList.remove("hidden");
-        if (r < R) nextBox.appendChild(el("button.btn.big", { text: fmt("pair.nextRound", { round: r + 1 }), on: { click: function () { P.r = r + 1; P.A = A; P.right = Object.keys(A).filter(function (k) { return A[k].ok; }).length; stopRound(); pairView(P, false); } } }));
-        else nextBox.appendChild(el("button.btn.big.gold", { text: S["pair.finish.go"], on: { click: function () { api("apiPair", { op: "finish", t: t, pid: pid }).then(function (f) { if (f.state === "ended") { endedGo(); return; } if (f.state === "paused") { reenter(false); return; } if (!solo) post("done", "10"); stopRound(); finishView(P, f); }).catch(function (e) { fail(e, "pair"); }); } } }));
+        if (r < R) nextBox.appendChild(el("button.btn.big", { text: fmt("pair.nextRound", { round: r + 1 }), on: { click: function (ev) { return busy(ev.currentTarget, function () { P.r = r + 1; P.A = A; P.right = Object.keys(A).filter(function (k) { return A[k].ok; }).length; stopRound(); pairView(P, false); }); } } }));
+        else nextBox.appendChild(el("button.btn.big.gold", { text: S["pair.finish.go"], on: { click: function (ev) { return busy(ev.currentTarget, function () { return api("apiPair", { op: "finish", t: t, pid: pid }).then(function (f) { if (f.state === "ended") { endedGo(); return; } if (f.state === "paused") { reenter(false); return; } if (!solo) post("done", "10"); stopRound(); finishView(P, f); }).catch(function (e) { fail(e, "pair"); }); }); } } }));
         paintPhase(); settling = false;
       }).catch(function (e) { settling = false; console.error(e); toast(S["err.server"]); later(3000, settle); });
     }
@@ -1121,6 +1167,7 @@ function renderPair(t) {
     function handle(ev) {
       if (!ev || !ev.k) return; var s = ev.s; var m = /^(\d+):([\s\S]*)$/.exec(ev.x || "");
       if (ev.k === "msg") { var mk = s + ":" + ev.t; if (msgSeen[mk]) return; msgSeen[mk] = 1; addLine(s, ev.x, false); return; }   // sent twice if the first reply was lost
+      if (ev.k === "done" && ev.x === "joined") { if (s !== seat && P.cn.length < 3 && !ended) { stopRound(); active.stop(); api("apiPair", { op: "join", t: t }).then(function (v2) { intoView(v2, false); if (v2.pair && v2.pair.cn && v2.pair.cn.length > 2) toast(fmt("pair.joined.them", { them: v2.pair.cn[2] })); }).catch(function (e) { fail(e, "pair"); }); } return; }   // B3: a late pupil took seat C: fetch the three and say so
       if (ev.k === "done") { var gs = ev.x === "left" ? s : ((/^gone:([ABC])$/.exec(ev.x) || [])[1] || null); if (gs && gs !== seat && others.indexOf(gs) !== -1) dropSeat(gs, ev.x !== "left"); return; }
       if (!m || parseInt(m[1], 10) !== r) return;
       if (ev.k === "pick") { if (s !== seat) { var was = picks[s]; picks[s] = m[2]; if (phase >= 2 && was && was !== m[2]) changedBy = s; else if (phase >= 2) changedBy = null; } else if (!picks[s]) { picks[s] = m[2]; myPicked = true; myOwn = m[2]; sf.set(m[2]); } advance(); paintCompareIfOn(); if (phase === 4) paintPhase(); return; }
@@ -1131,25 +1178,25 @@ function renderPair(t) {
     }
     var roundTimers = [], goneSeat = null, roomBad = false, roomFails = 0, roomFailAt = null, beat = {}, seenAt = {}, started = Date.now(), ended = false, doneKeys = {}, msgSeen = {};
     function stopRound() { ended = true; wakeFn = null; roundTimers.forEach(function (id) { clearInterval(id); clearTimeout(id); }); roundTimers = []; }
-    function rEvery(ms, fn) { var id = setInterval(function () { if (!stopped && !ended) fn(); }, ms); roundTimers.push(id); timers.push(id); }
+    function rEvery(ms, fn) { var k = roundTimers.length; roundTimers.push(0); (function tick() { roundTimers[k] = setTimeout(function () { if (stopped || ended) return; var p; try { p = fn(); } catch (e) { console.error(e); } Promise.resolve(p).catch(function () {}).then(function () { if (!stopped && !ended) tick(); }); }, ms); })(); }   // chained (B1): the next is set once this one has answered
     function eat(o) { if (!o || ended) return; Object.keys(o).sort().forEach(function (k) { if (doneKeys[k]) return; doneKeys[k] = 1; if (!lastKey || k > lastKey) lastKey = k; handle(o[k]); }); }
-    function pollEv() { var q = room + "/ev.json?orderBy=%22$key%22" + (lastKey ? "&startAt=%22" + lastKey + "%22" : ""); fbGet(q).then(function (o) { roomFails = 0; roomFailAt = null; if (roomBad) { roomBad = false; paintBanner(); } eat(o); }).catch(function () { roomFails++; if (!roomFailAt) roomFailAt = Date.now(); if (Date.now() - roomFailAt > 10000 && !roomBad) { roomBad = true; paintBanner(); } }); }
+    function pollEv() { var q = room + "/ev.json?orderBy=%22$key%22" + (lastKey ? "&startAt=%22" + lastKey + "%22" : ""); return fbGet(q).then(function (o) { roomFails = 0; roomFailAt = null; if (roomBad) { roomBad = false; paintBanner(); } eat(o); }).catch(function () { roomFails++; if (!roomFailAt) roomFailAt = Date.now(); if (Date.now() - roomFailAt > 10000 && !roomBad) { roomBad = true; paintBanner(); } }); }
     function heart() { fbSend("PUT", room + "/p/" + seat + ".json", Date.now()).catch(function () {}); }
     // Is a partner still there? Only a heartbeat that CHANGES counts, timed on this computer's own clock, and only when the room answered.
     function checkBeat() { fbGet(room + "/p.json").then(function (pp) { if (ended) return; pp = pp || {}; others.slice().forEach(function (s) { if (pp[s] && pp[s] !== beat[s]) { beat[s] = pp[s]; seenAt[s] = Date.now(); if (goneSeat === s) backAgain(s); } if (Date.now() - (seenAt[s] || started) > GONE_MS) onGone(s, false); }); }).catch(function () {}); }
     function resync() { if (ended || solo) return; heart(); checkBeat(); flush(); fbGet(room + "/ev.json").then(function (o) { if (roomBad) { roomBad = false; roomFailAt = null; paintBanner(); } eat(o); }).catch(function () {}); }   // the whole log again, in case a read was lost
     function paintBanner() { clear(banner); var show = roomBad || !!goneSeat; banner.classList.toggle("hidden", !show); if (!show) return;
-      if (roomBad) { banner.appendChild(el("span", { text: S["pair.err.room"] })); banner.appendChild(el("button.btn.sec", { text: S["pair.err.roomBtn"], on: { click: function () { leaveTo("room"); } } })); return; }
+      if (roomBad) { banner.appendChild(el("span", { text: S["pair.err.room"] })); banner.appendChild(el("button.btn.sec", { text: S["pair.err.roomBtn"], on: { click: function (ev) { return busy(ev.currentTarget, function () { return leaveTo("room"); }); } } })); return; }
       var s = goneSeat, three = others.length >= 2;
       banner.appendChild(el("span", { text: fmt(three ? "pair.err.gone3" : "pair.err.gone", { them: cnOf(s) }) }));
-      banner.appendChild(el("button.btn.sec", { text: three ? fmt("pair.err.gone3Btn", { them: cnOf(s) }) : S["pair.err.goneBtn"], on: { click: function () { if (!three) { leaveTo("gone"); return; } api("apiPair", { op: "drop", t: t, pid: pid, seat: s }).then(function (res) { if (res.state === "ended") { endedGo(); return; } if (res.state === "paused") { reenter(false); return; } post("done", "gone:" + s); dropSeat(s, true); }).catch(function (e) { fail(e, "pair"); }); } } })); }
+      banner.appendChild(el("button.btn.sec", { text: three ? fmt("pair.err.gone3Btn", { them: cnOf(s) }) : S["pair.err.goneBtn"], on: { click: function (ev) { return busy(ev.currentTarget, function () { if (!three) return leaveTo("gone"); return api("apiPair", { op: "drop", t: t, pid: pid, seat: s }).then(function (res) { if (res.state === "ended") { endedGo(); return; } if (res.state === "paused") { reenter(false); return; } post("done", "gone:" + s); dropSeat(s, true); }).catch(function (e) { fail(e, "pair"); }); }); } } })); }
     // A seat that has gone or left (D-DROP): a pair becomes solo for the one who stays, a trio carries on as a pair.
     function dropSeat(gs, dropped) { others = others.filter(function (o) { return o !== gs; }); if (goneSeat === gs) goneSeat = null; paintBanner();
       if (!others.length) { toast(fmt("pair.err.left", { them: cnOf(gs) })); leaveTo("gone"); return; }
       toast(fmt(dropped ? "pair.err.droppedTrio" : "pair.err.leftTrio", { them: cnOf(gs) })); trio = false; cmp.classList.remove("trio"); advance(); paintPhase(); settle(); }
     function onGone(s, silent) { if (goneSeat || checked && r === R) return; if (silent) { dropSeat(s, true); return; } goneSeat = s; paintBanner(); }
     function backAgain(s) { goneSeat = null; paintBanner(); var txt = fmt("pair.err.back", { them: cnOf(s) }); addLine(null, txt, true); toast(txt); resync(); }
-    function leaveTo(reason) { stopRound(); active.stop(); api("apiPair", { op: "leave", t: t, pid: pid, reason: reason }).then(function (v2) { if (v2.state === "ended") { endedGo(); return; } stopped = false; timers = []; if (v2.state === "paused") { paint(v2); return; } if (!solo) post("done", "left"); sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); paint(v2); toast(S["pair.err.carryOn"]); }).catch(function (e) { fail(e, "pair"); }); }
+    function leaveTo(reason) { stopRound(); active.stop(); return api("apiPair", { op: "leave", t: t, pid: pid, reason: reason }).then(function (v2) { if (v2.state === "ended") { endedGo(); return; } stopped = false; timers = []; if (v2.state === "paused") { paint(v2); return; } if (!solo) post("done", "left"); sessionStorage.setItem("u4_started_" + v2.pair.pid, "1"); paint(v2); toast(S["pair.err.carryOn"]); }).catch(function (e) { fail(e, "pair"); }); }
     // The teacher started a new partner go: this run is over and saved, so back to the door, where the new go starts.
     function endedGo() { stopRound(); active.stop(); outbox = []; toast(S["pair.newGo.toast"]); go("#th/" + t); }
     // Go in again from the server's word: a new room, a pair put back together, or left on your own.
@@ -1160,9 +1207,9 @@ function renderPair(t) {
       var them = b.names.join(" " + S["pair.and"] + " ");
       if (b.asked) { backBar.appendChild(el("span", { text: fmt("pair.back.asked", { them: them }) })); return; }
       var ask = b.theyAsked && !backNotNow; backBar.appendChild(el("span", { text: fmt(ask ? "pair.back.they" : "pair.back.say", { them: them }) }));
-      var go = el("button.btn" + (ask ? "" : ".sec"), { text: fmt("pair.back.btn", { them: them }), on: { click: function () { go.disabled = true; askBack(function () { go.disabled = false; }); } } }); backBar.appendChild(go);
+      var go = el("button.btn" + (ask ? "" : ".sec"), { text: fmt("pair.back.btn", { them: them }), on: { click: function (ev) { return busy(ev.currentTarget, function () { go.disabled = true; return askBack(function () { go.disabled = false; }); }); } } }); backBar.appendChild(go);
       if (ask) backBar.appendChild(el("button.btn.quiet", { text: S["pair.back.not"], on: { click: function () { backNotNow = true; paintBack(); } } })); }
-    function askBack(onFail) { api("apiPair", { op: "back", t: t, pid: pid }).then(function (v2) { if (ended) return; if (v2.state === "ended") { endedGo(); return; } if (v2.state === "paused") { reenter(false); return; } if (v2.reunited) { stopRound(); active.stop(); outbox = []; intoView(v2, true); return; } P.back = v2.pair ? v2.pair.back : null; paintBack(); }).catch(function (e) { console.error(e); onFail(); toast(S["err.server"]); }); }
+    function askBack(onFail) { return api("apiPair", { op: "back", t: t, pid: pid }).then(function (v2) { if (ended) return; if (v2.state === "ended") { endedGo(); return; } if (v2.state === "paused") { reenter(false); return; } if (v2.reunited) { stopRound(); active.stop(); outbox = []; intoView(v2, true); return; } P.back = v2.pair ? v2.pair.back : null; paintBack(); }).catch(function (e) { console.error(e); onFail(); toast(S["err.server"]); }); }
     if (!solo) {
       rEvery(4000, heart);
       rEvery(4000, checkBeat);
@@ -1170,7 +1217,7 @@ function renderPair(t) {
       rEvery(3000, flush);
       rEvery(10000, resync);
       wakeFn = resync;
-      rEvery(8000, function () { api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (ended) return;
+      rEvery(8000, function () { return api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (ended) return;
         if (st.ended) { endedGo(); return; }
         if (st.pairOn === false && !st.done) { reenter(false); return; }   // the teacher has paused it: this tab goes to the paused card
         if (st.moved || (st.gone || []).indexOf(seat) !== -1 || st.dissolved) { reenter(false); return; }
@@ -1183,7 +1230,7 @@ function renderPair(t) {
       fbGet(room + "/ev.json").then(function (o) { var any = !!o && Object.keys(o).length > 0; eat(o); if (!fresh && !sessionStorage.getItem("u4_seen_" + pid) && (r > 1 || any)) toast(fmt("pair.resume", { round: r, R: R })); sessionStorage.setItem("u4_seen_" + pid, "1"); paintPhase(); }).catch(function () { roomFailAt = Date.now() - 10001; roomBad = true; paintBanner(); paintPhase(); });
     } else {
       paintPhase();
-      var soloStatus = function () { api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (ended) return; if (st.ended) { endedGo(); return; } if (st.pairOn === false && !st.done) { reenter(false); return; } if (st.moved) { reenter(true); return; } P.back = st.back; paintBack(); }).catch(function () {}); }; rEvery(8000, soloStatus); wakeFn = soloStatus;
+      var soloStatus = function () { return api("apiPair", { op: "status", t: t, pid: pid }).then(function (st) { if (ended) return; if (st.ended) { endedGo(); return; } if (st.pairOn === false && !st.done) { reenter(false); return; } if (st.moved) { reenter(true); return; } P.back = st.back; paintBack(); }).catch(function () {}); }; rEvery(8000, soloStatus); wakeFn = soloStatus;
     }
     paintBack();
     setStep(1);
@@ -1211,25 +1258,25 @@ function renderStaff($app) {
     if (!LIVE) { $app.appendChild(crumbFrom(S["nav.home"] + " › " + S["staff.th.tab"], ["#"])); $app.appendChild(el("h1", { text: S["staff.th.tab"] + " · " + S["th.crumb.home"] })); }
     var chips = el("div.chips"); $app.appendChild(el("p.small", { text: S["staff.th.pick"] })); $app.appendChild(chips);
     var body = el("div.staffbody"); $app.appendChild(body);
-    function paintChips() { clear(chips); for (var i = 1; i <= 7; i++) (function (i) { chips.appendChild(el("button.tchip.tw-" + i + (i === t ? ".on" : ""), { type: "button", text: fmt("staff.th.chip", { t: i, name: topicName(i) }), on: { click: function () { t = i; sessionStorage.setItem("u4_staff_t", String(t)); paintChips(); load(); } } })); })(i); }
+    function paintChips() { clear(chips); for (var i = 1; i <= 7; i++) (function (i) { chips.appendChild(el("button.tchip.tw-" + i + (i === t ? ".on" : ""), { type: "button", text: fmt("staff.th.chip", { t: i, name: topicName(i) }), on: { click: function (ev) { return busy(ev.currentTarget, function () { t = i; sessionStorage.setItem("u4_staff_t", String(t)); paintChips(); return load(); }); } } })); })(i); }
     // Apps Script replies can take seconds. Only the newest thing she asked for may paint, a name says at once that it is opening, and the fuller view starts from the top.
     var lastAsk = 0, listTop = 0;
     function scrollBox() { for (var n = body.parentElement; n && n !== document.body; n = n.parentElement) if (/auto|scroll/.test(getComputedStyle(n).overflowY)) return n; return document.scrollingElement || document.documentElement; }
     function opening(text) { var box = scrollBox(); listTop = box.scrollTop; clear(body); body.appendChild(el("p.sub.drillwait", { text: text })); box.scrollTop = 0; return ++lastAsk; }
-    function backBtn() { var b = el("button.btn.sec", { type: "button", text: S["staff.th.back"], on: { click: function () { var y = listTop; b.disabled = true; b.textContent = S["staff.th.backWait"]; load(function () { scrollBox().scrollTop = y; }); } } }); return b; }
-    function load(after) { var my = ++lastAsk; api("apiStaff", { op: "theory", t: t }).then(function (d) { if (my !== lastAsk) return; paintTopic(d); if (typeof after === "function") after(); }).catch(function (e) { fail(e, "staff"); }); }
+    function backBtn() { var b = el("button.btn.sec", { type: "button", text: S["staff.th.back"], on: { click: function (ev) { return busy(ev.currentTarget, function () { var y = listTop; return load(function () { scrollBox().scrollTop = y; }); }); } } }); return b; }
+    function load(after) { var my = ++lastAsk; return api("apiStaff", { op: "theory", t: t }).then(function (d) { if (my !== lastAsk) return; paintTopic(d); if (typeof after === "function") after(); }).catch(function (e) { fail(e, "staff"); }); }
     function paintTopic(d) {
       clearTimeout(armed); armed = null; clearTimeout(armedGo); armedGo = null;   // a repainted button must ask again before it acts
       clear(body); var cls = d.cls, open = !!(d.tc.open && d.tc.open[t]), pon = !!(d.tc.pair && d.tc.pair[t]);
       var ctl = el("div.ctl.tw-" + t);
       ctl.appendChild(el("span.state" + (open ? "" : ".off"), { text: open ? fmt("staff.th.openNow", { cls: cls }) : fmt("staff.th.closedNow", { cls: cls }) }));
-      ctl.appendChild(el("button.btn" + (open ? ".sec" : ""), { text: open ? S["staff.th.close"] : fmt("staff.th.open", { cls: cls }), on: { click: function () { api("apiStaff", { op: "theoryOpen", t: t, open: !open }).then(load); } } }));
-      ctl.appendChild(el("button.btn" + (pon ? ".sec" : ".quiet"), { text: pon ? S["staff.th.pairOn"] : S["staff.th.pairOff"], attr: { "aria-pressed": pon ? "true" : "false" }, on: { click: function () { api("apiStaff", { op: "theoryPairOn", t: t, on: !pon }).then(load); } } }));
-      var rbtn = el("button.btn.quiet", { text: fmt("staff.th.round", { n: d.round + 1 }), on: { click: function () { if (armed) { clearTimeout(armed); armed = null; api("apiStaff", { op: "theoryRound", t: t }).then(load); return; } rbtn.textContent = fmt("staff.th.roundSure", { n: d.round + 1, cls: cls, prev: d.round }); rbtn.classList.add("gold"); armed = setTimeout(function () { armed = null; rbtn.textContent = fmt("staff.th.round", { n: d.round + 1 }); rbtn.classList.remove("gold"); }, 6000); } } });
+      ctl.appendChild(el("button.btn" + (open ? ".sec" : ""), { text: open ? S["staff.th.close"] : fmt("staff.th.open", { cls: cls }), on: { click: function (ev) { return busy(ev.currentTarget, function () { return api("apiStaff", { op: "theoryOpen", t: t, open: !open }).then(load); }); } } }));
+      ctl.appendChild(el("button.btn" + (pon ? ".sec" : ".quiet"), { text: pon ? S["staff.th.pairOn"] : S["staff.th.pairOff"], attr: { "aria-pressed": pon ? "true" : "false" }, on: { click: function (ev) { return busy(ev.currentTarget, function () { return api("apiStaff", { op: "theoryPairOn", t: t, on: !pon }).then(load); }); } } }));
+      var rbtn = el("button.btn.quiet", { text: fmt("staff.th.round", { n: d.round + 1 }), on: { click: function (ev) { return busy(ev.currentTarget, function () { if (armed) { clearTimeout(armed); armed = null; return api("apiStaff", { op: "theoryRound", t: t }).then(load); return; } rbtn.textContent = fmt("staff.th.roundSure", { n: d.round + 1, cls: cls, prev: d.round }); rbtn.classList.add("gold"); armed = setTimeout(function () { armed = null; rbtn.textContent = fmt("staff.th.round", { n: d.round + 1 }); rbtn.classList.remove("gold"); }, 6000); }); } } });
       ctl.appendChild(el("span.state", { text: fmt("staff.th.roundNow", { n: d.round }) })); ctl.appendChild(rbtn);
       var goNow = (d.tc.go && d.tc.go[t]) || 1, curPairs = d.pairs.filter(function (pr) { return (pr.go || 1) === goNow; }), liveN = curPairs.filter(function (pr) { return !pr.done; }).length;
       if (goNow > 1 || curPairs.length) ctl.appendChild(el("span.state", { text: fmt("staff.th.goNow", { n: goNow }) }));
-      if (curPairs.length) { var gbtn = el("button.btn.quiet", { text: S["staff.th.newGo"], on: { click: function () { if (armedGo) { clearTimeout(armedGo); armedGo = null; gbtn.disabled = true; api("apiStaff", { op: "theoryNewGo", t: t }).then(function () { toast(S["staff.th.newGoDone"]); load(); }).catch(function (e) { fail(e, "staff"); }); return; } gbtn.textContent = fmt(liveN === 0 ? "staff.th.newGoSure0" : liveN === 1 ? "staff.th.newGoSure1" : "staff.th.newGoSure", { cls: cls, n: liveN }); gbtn.classList.add("gold"); armedGo = setTimeout(function () { armedGo = null; gbtn.textContent = S["staff.th.newGo"]; gbtn.classList.remove("gold"); }, 6000); } } }); ctl.appendChild(gbtn); }
+      if (curPairs.length) { var gbtn = el("button.btn.quiet", { text: S["staff.th.newGo"], on: { click: function (ev) { return busy(ev.currentTarget, function () { if (armedGo) { clearTimeout(armedGo); armedGo = null; gbtn.disabled = true; return api("apiStaff", { op: "theoryNewGo", t: t }).then(function () { toast(S["staff.th.newGoDone"]); load(); }).catch(function (e) { fail(e, "staff"); }); return; } gbtn.textContent = fmt(liveN === 0 ? "staff.th.newGoSure0" : liveN === 1 ? "staff.th.newGoSure1" : "staff.th.newGoSure", { cls: cls, n: liveN }); gbtn.classList.add("gold"); armedGo = setTimeout(function () { armedGo = null; gbtn.textContent = S["staff.th.newGo"]; gbtn.classList.remove("gold"); }, 6000); }); } } }); ctl.appendChild(gbtn); }
       body.appendChild(ctl);
       if (!pon) body.appendChild(el("p.pausednote", { text: S["staff.th.pairPaused"] }));
       if (!d.rows.length) { body.appendChild(el("p.sub", { text: fmt("staff.th.none", { cls: cls }) })); }
@@ -1255,8 +1302,8 @@ function renderStaff($app) {
         });
         body.appendChild(el("div.sttabw", {}, [tb]));
       }
-      var acts = el("div.acts.th-acts"); acts.appendChild(el("button.btn.sec", { text: S["staff.th.csv"], on: { click: function () { api("apiStaff", { op: "theoryCsv", t: t, kind: "marks" }).then(function (c) { download(c.name, c.csv); }); } } }));
-      acts.appendChild(el("button.btn.sec", { text: S["staff.th.chatCsv"], on: { click: function () { api("apiStaff", { op: "theoryCsv", t: t, kind: "chat" }).then(function (c) { download(c.name, c.csv); }); } } }));
+      var acts = el("div.acts.th-acts"); acts.appendChild(el("button.btn.sec", { text: S["staff.th.csv"], on: { click: function (ev) { return busy(ev.currentTarget, function () { return api("apiStaff", { op: "theoryCsv", t: t, kind: "marks" }).then(function (c) { download(c.name, c.csv); }); }); } } }));
+      acts.appendChild(el("button.btn.sec", { text: S["staff.th.chatCsv"], on: { click: function (ev) { return busy(ev.currentTarget, function () { return api("apiStaff", { op: "theoryCsv", t: t, kind: "chat" }).then(function (c) { download(c.name, c.csv); }); }); } } }));
       body.appendChild(acts);
       if (d.pairs.length) { var pl = el("div.pairs"); pl.appendChild(el("h3", { text: S["door.pair"] }));
         var gos = []; d.pairs.forEach(function (pr) { var g = pr.go || 1; if (gos.indexOf(g) === -1) gos.push(g); }); gos.sort(function (a, b) { return b - a; });
