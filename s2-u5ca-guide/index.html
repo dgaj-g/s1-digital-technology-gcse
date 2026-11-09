@@ -45,6 +45,12 @@
   .lines p { margin: 0 0 10px; }
   .foot { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 16px; }
   @media (max-width: 480px) { .in { padding: 16px; } header h1 { font-size: 1.3rem; } }
+  /* pairing fix C2: leaving for the guide takes a few seconds, so the button says so and a ring turns */
+  [aria-busy="true"] { cursor: progress; }
+  [aria-busy="true"]::after { content: ""; display: inline-block; vertical-align: -.15em; width: 1em; height: 1em; margin-left: .5em; border: .14em solid currentColor; border-right-color: transparent; border-radius: 50%; box-sizing: border-box; animation: busyspin .8s linear infinite; }
+  @keyframes busyspin { to { transform: rotate(360deg); } }
+  @keyframes busydots { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { [aria-busy="true"]::after { content: "\2022\2022\2022"; width: auto; height: auto; border: 0; border-radius: 0; letter-spacing: .1em; animation: busydots 1.2s ease-in-out infinite; } }
 </style>
 </head>
 <body>
@@ -112,14 +118,16 @@ function show(k, byHand) {
   if (!still && !byHand && k + 1 < FRAMES.length) timer = setTimeout(function () { show(k + 1); }, 1600 + 350 * f.say.split(' ').length);
 }
 document.getElementById('go').href = GO;
-document.getElementById('go').addEventListener('click', mark);
+function busy(b) { b.textContent = 'Opening your guide…'; b.setAttribute('aria-busy', 'true'); b.setAttribute('aria-disabled', 'true'); }   // the guide takes a few seconds to open
+window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });   // back from the guide: never a stuck busy button
+document.getElementById('go').addEventListener('click', function (e) { if (this.getAttribute('aria-busy') === 'true') { e.preventDefault(); return; } mark(); busy(this); });
 document.getElementById('open').addEventListener('click', function () {
   if (pop.showModal) pop.showModal(); else pop.setAttribute('open', '');
   show(0);
 });
 pop.addEventListener('close', function () { clearTimeout(timer); });
 var skip = document.getElementById('skip');
-if (seen()) { skip.hidden = false; skip.addEventListener('click', function () { location.href = GO; }); }
+if (seen()) { skip.hidden = false; skip.addEventListener('click', function () { if (skip.getAttribute('aria-busy') === 'true') return; busy(skip); location.href = GO; }); }
 </script>
 </body>
 </html>

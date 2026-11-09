@@ -20,8 +20,8 @@ const A2 = path.join(__dirname, '..');
 const DESIGN = process.env.S2_PRIVATE || '/Users/damiengartland/Desktop/Claude Work/S2 U5CA Guide/_platform';
 const PORT = Number(process.argv[2] || process.env.PORT || 8851);
 const STORE = process.env.S2_STORE || path.join(DESIGN, 'dev-store.json');
-const CODE = path.join(DESIGN, 'deploy', 'Code.gs');
-const INDEX = path.join(A2, 'server', 'Index.html');
+const CODE = process.env.S2_CODE || path.join(DESIGN, 'deploy', 'Code.gs');   // S2_CODE: the pairing gates run a kept copy of the old server as their control
+const INDEX = process.env.S2_INDEX || path.join(A2, 'server', 'Index.html');   // S2_INDEX: g_busy_drive runs today's page as its control
 const VENDOR = path.join(process.env.S2_A2 || path.join(process.env.HOME, 'Sites/ols-wt-a2/a2-ssd'), 'platform', 'vendor');
 const DEV_NAMES = { 'pupil1@c2ken.net': 'Aoife Byrne', 'pupil2@c2ken.net': 'Ciara Doyle', 'pupil3@c2ken.net': 'Niamh Kelly', 'dgartland021@c2ken.net': 'Damien Gartland', 'teacher2@c2ken.net': 'Sean Murphy', 'hod@c2ken.net': 'Mary Quinn' };
 
@@ -31,20 +31,25 @@ const save = () => fs.writeFileSync(STORE, JSON.stringify(db));
 load();
 
 let current = 'pupil1@c2ken.net';
+/* the store meter (9 Nov 2026, pairing fix D1): every property call is counted, and the ones made while the script lock is
+   held are counted again under `held`, so the load gate (gates/g_load.js) can cost them: a get/set/delete 30 ms, a
+   getProperties/getKeys 150 ms, as Apps Script measured on the 9 Nov jam. The server itself never waits on it. */
+const meter = { n: { get: 0, set: 0, del: 0, all: 0 }, held: { get: 0, set: 0, del: 0, all: 0 }, locks: 0, inLock: false };
+const tick = (k, key) => { meter.n[k]++; if (meter.inLock) { meter.held[k]++; if (meter.keys) meter.keys.push(k + ' ' + String(key || '').split(':')[0]); } };
 const QUOTA = (msg) => { const e = new Error(msg); e.name = 'Exception'; return e; };
 function props(get) {
   return {
-    getProperty: (k) => (k in get() ? get()[k] : null),
+    getProperty: (k) => (tick('get', k), k in get() ? get()[k] : null),
     setProperty: (k, v) => {
-      v = String(v);
+      v = String(v); tick('set', k);
       if (Buffer.byteLength(k) + Buffer.byteLength(v) > 9216) throw QUOTA('Exception: Argument too large: value');
       const all = get(); const size = Object.entries(all).reduce((n, [a, b]) => n + (a === k ? 0 : Buffer.byteLength(a) + Buffer.byteLength(b)), 0);
       if (size + Buffer.byteLength(k) + Buffer.byteLength(v) > 500 * 1024) throw QUOTA('Exception: You have exceeded the property storage quota.');
       all[k] = v; save(); return this;
     },
-    deleteProperty: (k) => { delete get()[k]; save(); },
-    getProperties: () => Object.assign({}, get()),
-    getKeys: () => Object.keys(get()),
+    deleteProperty: (k) => { tick('del', k); delete get()[k]; save(); },
+    getProperties: () => (tick('all'), Object.assign({}, get())),
+    getKeys: () => (tick('all'), Object.keys(get())),
   };
 }
 const signed = (buf) => Array.from(buf).map((b) => (b > 127 ? b - 256 : b));
@@ -65,7 +70,7 @@ const sandbox = {
     getUserProperties: () => props(() => (db.user[current] = db.user[current] || {})),
   },
   Session: { getActiveUser: () => ({ getEmail: () => current }), getEffectiveUser: () => ({ getEmail: () => current }) },
-  LockService: { getScriptLock: () => ({ waitLock() {}, tryLock: () => true, releaseLock() {} }) },
+  LockService: { getScriptLock: () => ({ waitLock(ms) { if (meter.onLock) meter.onLock(ms); meter.locks++; meter.inLock = true; }, tryLock: () => (meter.locks++, meter.inLock = true), releaseLock() { if (meter.inLock && meter.onRelease) meter.onRelease(); meter.inLock = false; } }) },   // onLock may throw, as waitLock does when the wait runs out
   UrlFetchApp: {
     fetch: (url, opts) => {
       if (/openidconnect\.googleapis\.com\/v1\/userinfo/.test(url)) {
@@ -190,10 +195,10 @@ http.createServer((req, res) => {
       const fn = u.pathname.replace(/^\/api\//, '');
       if (!/^(api[A-Z]\w+|remarkDryRun|remarkApply)$/.test(fn) || typeof sandbox[fn] !== 'function') { res.end(JSON.stringify({ __error: 'unknown ' + fn })); return; }
       current = String(req.headers['x-dev-user'] || 'pupil1@c2ken.net').toLowerCase();
-      try {
-        const out = sandbox[fn](JSON.parse(body || '{}'));
-        res.end(JSON.stringify(out === undefined ? null : out));
-      } catch (e) { console.error(fn, e); res.end(JSON.stringify({ __error: String(e && e.message || e) })); }
+      let out;   // S2_DEV_LATENCY=<ms> holds every api reply that long, so a drive can watch a button wait (g_busy_drive)
+      try { out = sandbox[fn](JSON.parse(body || '{}')); out = JSON.stringify(out === undefined ? null : out); }
+      catch (e) { console.error(fn, e); out = JSON.stringify({ __error: String(e && e.message || e) }); }
+      const lag = Number(process.env.S2_DEV_LATENCY || 0); if (lag > 0) setTimeout(() => res.end(out), lag); else res.end(out);
     });
     return;
   }
@@ -201,4 +206,4 @@ http.createServer((req, res) => {
 }).listen(require.main === module ? PORT : 0, () => require.main === module && console.log('S2 U5CA dev harness on http://localhost:' + PORT + '/?class=<name>&as=<email>  store ' + STORE));
 
 // required as a library (build/gates G8): the Apps Script sandbox and the store, on a throwaway port
-if (require.main !== module) module.exports = { sandbox, db: () => db, as: (e) => { current = e; } };
+if (require.main !== module) module.exports = { sandbox, db: () => db, as: (e) => { current = e; }, meter };
