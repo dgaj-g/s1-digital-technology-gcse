@@ -370,6 +370,7 @@
             .rocket { transform: translateX(-50%) rotate(90deg); }
         }
     </style>
+<script src="s1_platform/bridge.js"></script>
 </head>
 <body>
     <div class="game-wrapper">
@@ -530,6 +531,7 @@
 
         let currentQuestion = 0;
         let score = 0;
+        let correctCount = 0;
         let streak = 0;
         let answered = false;
         let shuffledQuestions = [];
@@ -574,6 +576,7 @@
             shuffledQuestions = shuffleArray(questions);
             currentQuestion = 0;
             score = 0;
+            correctCount = 0;
             streak = 0;
             updateRocketPosition();
             showQuestion();
@@ -628,6 +631,7 @@
 
             if (isCorrect) {
                 streak++;
+                correctCount++;
                 const points = 100 + (streak * 25);
                 score += points;
 
@@ -725,6 +729,7 @@
             document.getElementById('finalScore').textContent = `${score} Points`;
             document.getElementById('resultMessage').textContent = message;
             document.getElementById('resultOverlay').style.display = 'flex';
+            if (window.OLSBridge) OLSBridge.finish(correctCount, 10);
         }
 
         function restartGame() {

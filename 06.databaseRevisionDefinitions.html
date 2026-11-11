@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="s1_platform/bridge.js"></script>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Database Applications — Definitions Match (Masked)</title>
@@ -99,7 +100,7 @@ function maskDefinition(def, term){
 let score=0, correct=0, wrong=0, picked=null;
 const $ = s => document.querySelector(s);
 function shuffle(a){ const x=a.slice(); for(let i=x.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [x[i],x[j]]=[x[j],x[i]];} return x; }
-function updateScore(){ $('#score').textContent=score; $('#correct').textContent=correct; $('#wrong').textContent=wrong; if(correct===PAIRS.length) celebrate(); }
+function updateScore(){ $('#score').textContent=score; $('#correct').textContent=correct; $('#wrong').textContent=wrong; if(correct===PAIRS.length){ celebrate(); if (window.OLSBridge) OLSBridge.finish(Math.max(0, PAIRS.length-wrong), PAIRS.length); } }
 
 function render(){
   const termsHost=$('#terms'), defsHost=$('#defs'); termsHost.innerHTML=''; defsHost.innerHTML='';

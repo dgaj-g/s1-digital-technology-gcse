@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Software Showdown — GCSE Digital Technology (Compat)</title>
+<script src="s1_platform/bridge.js"></script>
 <style>
   :root{--bg:#0b3c5d;--panel:#ffffff;--ink:#0f1b2d;--accent:#2b90d9;--accent2:#18a999;--muted:#eef3f8;--warn:#d9534f;--ok:#4caf50}
   *{box-sizing:border-box}
@@ -274,7 +275,7 @@ function markRound3(){
   addScore(correct); $('r3Feedback').textContent='You matched '+correct+' of '+selects.length+' correctly. +'+correct+' points.';
   $('finishBtn').disabled=false;
 }
-function finishGame(){ $('finalScore').textContent='Final score: '+score+' points'; show('finishCard'); }
+function finishGame(){ $('finalScore').textContent='Final score: '+score+' points'; show('finishCard'); if (window.OLSBridge) OLSBridge.finish(score, mcqs.length + scenarios.length + matchRows.length); }
 function playAgain(){ score=0; $('scoreBox').textContent='Score: 0'; mcqIndex=0; renderMcq(); resetRound2(); renderMatch(); $('r3Feedback').textContent=''; show('round1'); }
 
 // Start

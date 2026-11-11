@@ -328,6 +328,7 @@
     .main { padding:16px 12px; }
   }
 </style>
+<script src="../s1_platform/bridge.js"></script>
 </head>
 <body>
 
@@ -707,6 +708,7 @@ function showResults() {
   document.getElementById('resultsOverlay').className = 'results-overlay visible';
 
   if (score >= 700) spawnConfetti(50);
+  if (window.OLSBridge) OLSBridge.finish(Math.round(score / 100), shuffledMissions.length);
 }
 
 function restartGame() {

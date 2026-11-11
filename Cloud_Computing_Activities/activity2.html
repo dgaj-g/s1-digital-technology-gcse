@@ -99,6 +99,7 @@ h1{font-size:clamp(2rem,6vw,3rem);margin-bottom:8px;background:linear-gradient(1
     .banned-word{padding:4px 10px;font-size:.74rem}
 }
 </style>
+<script src="../s1_platform/bridge.js"></script>
 </head>
 <body>
 
@@ -504,6 +505,7 @@ function showResults() {
     badge.style.border = `2px solid ${bdr}`;
 
     document.getElementById('progress-fill').style.width = '100%';
+    if (window.OLSBridge) OLSBridge.finish(score, totalPoints);
 }
 
 function restartGame() {

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Data Detective — Digital Data HQ</title>
@@ -447,6 +448,7 @@ function selectDef(el){
 function showResults(){
   const total=r1Score+r2Score+r3Score;
   const pct=Math.round(total/totalPossible*100);
+  if(window.OLSBridge) OLSBridge.finish(total,totalPossible);
   let icon='🌱',rank='Trainee Detective';
   if(pct>=90){icon='👑';rank='Chief Inspector';}
   else if(pct>=70){icon='⭐';rank='Senior Detective';}

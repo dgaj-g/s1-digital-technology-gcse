@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="s1_platform/bridge.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game 2: Database Application</title>
@@ -425,6 +426,7 @@
                         }
                     } else {
                         feedbackArea.textContent = 'Challenge Complete! Final Score: ' + score;
+                        if (window.OLSBridge) OLSBridge.finish(Math.max(0, score), 50);
                         nextLevelButton.textContent = 'Back to Menu';
                         nextLevelButton.style.display = 'block';
                     }

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OS Control Room — Software HQ</title>
+<script src="../s1_platform/bridge.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{min-height:100vh;background:linear-gradient(135deg,#0a1628 0%,#1a3a5c 40%,#0d2a44 100%);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#e0e0e0;overflow-x:hidden;}
@@ -1178,6 +1179,7 @@ function showResults(){
   const [icon,rank]=pct>=90?['👑',r1]:pct>=70?['⭐',r2]:pct>=50?['🔧',r3]:['🌱',r4];
   const newBest=G.points>(STORE.best||0);if(newBest){STORE.best=G.points;save();}
   setProgress(100);showScreen('resultsScreen');if(pct>=50||newBest)fireConfetti();sfx('win');
+  if(window.OLSBridge&&max>0)OLSBridge.finish(total,max);
   const tips=played.map(i=>marks[i]/maxMarks[i]<0.7?LEVELS[i].tip:null).filter(Boolean);
   const row=(L,i)=>{const st=stars[i]!=null?starStr(stars[i]):'';
     const sc=L.mode==='sim'?(stars[i]!=null?'mini-game':'not played'):(played.includes(i)?`${marks[i]}/${maxMarks[i]}`:'not played');

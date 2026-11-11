@@ -148,6 +148,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0d1b2
   .card{font-size:.85rem}
 }
 </style>
+<script src="../s1_platform/bridge.js"></script>
 </head>
 <body>
 
@@ -435,6 +436,7 @@ function showResults(){
   clients.forEach((c,i)=>{
     rows.innerHTML+=`<div class="bd-row"><div class="bd-client"><span class="bd-emoji">${c.icon}</span>${c.name}</div><div class="bd-score">${clientScores[i]} / ${c.cards.length}</div></div>`;
   });
+  if (window.OLSBridge) OLSBridge.finish(totalScore, TOTAL);
 }
 
 function restartGame(){startGame();window.scrollTo({top:0})}

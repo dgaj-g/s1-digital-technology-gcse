@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Activity 1 — The Grey Zone</title>
@@ -639,6 +640,7 @@ function showSummary() {
     </div>
   `;
   showScreen('summaryScreen');
+  if (window.OLSBridge) OLSBridge.done();
 
   // Clean up Firebase room data after 24 hours
   if (isOnline && roomRef && role === 'teacher') {

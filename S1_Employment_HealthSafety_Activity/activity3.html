@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Safety First! — Office Inspection</title>
@@ -530,6 +531,7 @@ function showResults(){
         &bull; <strong>Air conditioning</strong> \u2014 cool rooms with lots of equipment<br><br>
         <strong>&#x26A0;&#xFE0F; Exam tip:</strong> RSI = Repetitive Strain Injury (appears in 5 out of 7 past papers!). Always learn the problem AND its prevention together \u2014 the exam often asks for both.`;
 
+    if(window.OLSBridge)OLSBridge.finish(score,totalPossible);
     if(pct>=50)launchConfetti();
 }
 

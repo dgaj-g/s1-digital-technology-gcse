@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="s1_platform/bridge.js"></script>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Database Apps — Relationships & Criteria (Tabbed)</title>
 <style>
@@ -335,7 +336,7 @@ function renderL3(){
       if(result){ correct++; score++; } else { wrong++; score--; }
       updateScore();
       const allOk = l3Data.every((_,idx)=> $('#res'+idx).dataset.ok === '1');
-      if(allOk){ celebrate(); }
+      if(allOk){ celebrate(); if (window.OLSBridge) { var m = l1Scenarios.length + 4 + l3Data.length; OLSBridge.finish(Math.max(0, m - wrong), m); } }
     }
   });
 }

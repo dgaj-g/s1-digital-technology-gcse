@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Remote Ready — Home Office Simulator</title>
@@ -533,6 +534,7 @@ function showResults(){
         <strong>Equipment needed:</strong> laptop/computer, internet connection, webcam, headset, desk, ergonomic chair<br><br>
         <strong>&#x26A0;&#xFE0F; Exam trap:</strong> "Working from home" ≠ teleworking unless you mention using ICT. The examiner needs to see the word ICT/technology!`;
 
+    if(window.OLSBridge)OLSBridge.finish(swipeCorrect,totalSwipe);
     if(swipePct>=60)launchConfetti();
 }
 
