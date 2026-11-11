@@ -899,7 +899,7 @@ body.is-th main,body.is-pair main,body.is-staff main{max-width:1420px}
 .pic .picgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,280px);gap:20px;align-items:start}
 .pic .pictxt p:first-child{margin-top:0}
 .pic figure.picimg{margin:0;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:8px}
-.pic figure.picimg img{display:block;width:100%;height:auto;max-height:320px;object-fit:contain;border-radius:8px}
+.pic figure.picimg img{display:block;width:100%;height:auto;max-height:560px;object-fit:contain;border-radius:8px}
 .pic figcaption{margin-top:6px;font-size:15px;line-height:1.35}
 .pic figcaption .cp{display:block;font-weight:700;color:var(--ink)}
 .pic figcaption .cr{display:block;font-size:12px;color:var(--mute);margin-top:3px}
@@ -947,3 +947,27 @@ body.is-th main,body.is-pair main,body.is-staff main{max-width:1420px}
 .gfin .okline{font-weight:900;font-size:18px;margin:0}
 .play .pwork{margin-top:12px}
 @media (max-width:520px){.nibs{gap:4px}.gtab,.gkeys{gap:4px}.ghead,.ghd{font-size:14px}.gbit{font-size:19px}.gkey b{font-size:17px}}
+/* ---------- Topic 2 Version 22 (11 Nov 2026): no empty space beside the photo. picFit in th.js sizes the photo column; the arrow column stays narrow ---------- */
+.pic .pictxt .pmatch{margin-top:12px}
+.pic .pictxt .pmatch:first-child{margin-top:0}
+.pic .piclines p:first-child{margin-top:0}
+.pic > .piclines{margin-bottom:12px}
+.pic .pictxt .breaks{margin-top:12px}
+.pmatch th.arrow,.pmatch td.arrow{width:34px;padding-left:4px;padding-right:4px;text-align:center}
+/* Phones: each table row reads as two lines, the picture first, then the arrow and the computer word, so words are not broken one per line */
+@media (max-width:560px){
+  .pmatch{display:block}
+  .pmatch tr{display:grid;grid-template-columns:28px minmax(0,1fr);border-bottom:1px solid var(--line)}
+  .pmatch tr:first-child{border-bottom:2px solid var(--line)}
+  .pmatch tr:last-child{border-bottom:0}
+  .pmatch th,.pmatch td{border-bottom:0}
+  .pmatch tr > :first-child{grid-column:1 / -1;padding-bottom:2px}
+  .pmatch th.arrow,.pmatch td.arrow{width:auto;padding:2px 0 8px 12px;text-align:left}
+  .pmatch tr > :last-child{padding:2px 12px 8px 4px}
+}
+/* Topic 1 drawings: the words sit beside the drawing where it leaves room; the four small recipe cards sit in one row on wide screens */
+.scn .piclines.inscn{font-size:19px;line-height:1.5}
+@media (max-width:600px){.scn .piclines.inscn{font-size:18px}}
+.scn .piclines.inscn p{margin:0 0 8px}
+@media (min-width:1200px){.scn .rcs{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (min-width:721px) and (max-width:1199px){.scn .recipe .rc.main{flex-basis:100%}.scn .recipe .rc.main ol{columns:2;column-gap:28px}.scn .recipe .rc.main li{break-inside:avoid}}
