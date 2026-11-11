@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Digital Dragons — Investment Pitch Game</title>
@@ -1597,6 +1598,7 @@ function showResults() {
             '<a href="index.html" class="results-btn secondary" style="text-decoration:none;display:inline-block">Back to Hub</a>' +
         '</div>';
 
+    if (window.OLSBridge) OLSBridge.finish(totalCorrect, totalPossible);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 

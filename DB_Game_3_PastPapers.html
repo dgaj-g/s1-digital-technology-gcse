@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="s1_platform/bridge.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game 3: Past Paper Quiz</title>
@@ -468,6 +469,7 @@
                 document.getElementById('feedback-panel').style.display = 'none';
                 document.getElementById('nav-buttons').style.display = 'none';
                 questionNumber.textContent = "Final Score";
+                if (window.OLSBridge) OLSBridge.finish(score, allQuestions.length);
             }
             
             // --- Drag and Drop Logic ---

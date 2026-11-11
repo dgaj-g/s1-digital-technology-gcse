@@ -604,6 +604,7 @@ function showResults(){
   const [r1,r2,r3,r4]=ACT.ranks;
   const [icon,rank]=pct>=90?['👑',r1]:pct>=70?['⭐',r2]:pct>=50?['🔧',r3]:['🌱',r4];
   const newBest=G.points>(STORE.best||0);if(newBest){STORE.best=G.points;save();}
+  if(window.OLSBridge)OLSBridge.finish(total,max);
   setProgress(100);showScreen('resultsScreen');if(pct>=50||newBest)fireConfetti();sfx('win');
   const tips=played.map(i=>marks[i]/maxMarks[i]<0.7?LEVELS[i].tip:null).filter(Boolean);
   const row=(L,i)=>{const st=stars[i]!=null?starStr(stars[i]):'';

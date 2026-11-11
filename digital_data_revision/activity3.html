@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pixel Lab — Digital Data HQ</title>
@@ -271,6 +272,7 @@ function answerTest(chosen,correct,qIdx){
 /* RESULTS */
 function showResults(){
   const pct=Math.round(testScore/allQs.length*100);
+  if(window.OLSBridge) OLSBridge.finish(testScore,allQs.length);
   let icon='🌱',rank='Intern';
   if(pct>=90){icon='👑';rank='Head Designer';}
   else if(pct>=70){icon='⭐';rank='Senior Artist';}

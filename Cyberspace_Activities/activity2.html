@@ -449,6 +449,7 @@
     .suspect-name { font-size: 0.7rem; }
   }
 </style>
+<script src="../s1_platform/bridge.js"></script>
 </head>
 <body>
 
@@ -821,6 +822,7 @@ function showResults() {
   });
 
   spawnConfetti(pct >= 0.8 ? 50 : 20);
+  if (window.OLSBridge) OLSBridge.finish(Math.round(score / 200), shuffledCases.length);
 }
 
 function restartGame() {

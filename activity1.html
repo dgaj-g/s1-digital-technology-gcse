@@ -274,6 +274,7 @@
             h1 { font-size: 1.8em; }
         }
     </style>
+<script src="s1_platform/bridge.js"></script>
 </head>
 <body>
     <div class="game-container">
@@ -563,6 +564,7 @@
             document.getElementById('stars').textContent = stars;
             document.getElementById('resultMessage').textContent = message;
             document.getElementById('resultScreen').style.display = 'flex';
+            if (window.OLSBridge) OLSBridge.finish(correct, total);
         }
 
         function restartGame() {

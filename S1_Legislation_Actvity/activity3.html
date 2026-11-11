@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Speed Trial - S2 Legislation</title>
@@ -442,6 +443,8 @@ function showResults() {
         <button class="retry-btn" onclick="startGame()">&#x1F504; TRY AGAIN</button>
         <a href="index.html" class="home-link">&larr; Back to Activities</a>
     `;
+
+    if (window.OLSBridge) OLSBridge.finish(correct, answered);
 
     // Animate accuracy bar
     setTimeout(() => {

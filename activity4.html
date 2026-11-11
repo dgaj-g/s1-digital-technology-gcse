@@ -270,6 +270,7 @@
             .tool-btn { margin: 0; }
         }
     </style>
+<script src="s1_platform/bridge.js"></script>
 </head>
 <body>
     <a href="index.html" class="menu-btn">⬅ Menu</a>
@@ -527,6 +528,7 @@
             document.getElementById('gameContent').style.display = 'none';
             document.getElementById('resultScreen').style.display = 'block';
             document.getElementById('finalScore').textContent = `${score}/${levels.length} Correct`;
+            if (window.OLSBridge) OLSBridge.finish(score, levels.length);
         }
 
         function restartGame() {

@@ -1007,6 +1007,7 @@ html,body{overflow-x:clip;}
 @media(max-width:600px){.dr-row{grid-template-columns:minmax(0,1fr) 128px;gap:8px;padding:8px 10px;}.dr-badge{font-size:0.82em;padding:5px 10px;min-height:40px;}.dr-chip{font-size:0.76em;padding:3px 7px;}.dr-slot{padding-right:18px;}.dr-x{right:5px;}.dr-door{grid-template-columns:minmax(0,1fr);}.dr-way{order:-1;flex-direction:row;flex-wrap:wrap;gap:4px 12px;padding:6px 10px;}.dr-tally{flex-direction:row;gap:12px;margin-top:0;font-size:0.95em;}.dr-count{font-size:1em;}.dr-ck{display:none;}.dr-fv{grid-template-columns:86px minmax(0,1fr);gap:2px 6px;}.dr-fv em{grid-column:2;}.dr-dicon{font-size:1.5em;}}
 
 </style>
+<script src="../s1_platform/bridge.js"></script>
 </head>
 <body>
 <div class="container">
@@ -2402,6 +2403,7 @@ function showResults(){
   const [icon,rank]=pct>=90?['👑',r1]:pct>=70?['⭐',r2]:pct>=50?['🔧',r3]:['🌱',r4];
   const newBest=G.points>(STORE.best||0);if(newBest){STORE.best=G.points;save();}
   setProgress(100);showScreen('resultsScreen');if(pct>=50||newBest)fireConfetti();sfx('win');
+  if(window.OLSBridge&&max>0)OLSBridge.finish(total,max);
   const tips=played.map(i=>marks[i]/maxMarks[i]<0.7?LEVELS[i].tip:null).filter(Boolean);
   const row=(L,i)=>{const st=stars[i]!=null?starStr(stars[i]):'';
     const sc=L.mode==='sim'?(stars[i]!=null?'mini-game':'not played'):(played.includes(i)?`${marks[i]}/${maxMarks[i]}`:'not played');

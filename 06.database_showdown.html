@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script src="s1_platform/bridge.js"></script>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Database Showdown: Keys & Relationships</title>
@@ -394,7 +395,7 @@ function kmClick(btn){
     $('#kmMsg').innerHTML = `✅ Correct! Linked <strong>${p.pk}</strong> → <strong>${p.fk}</strong>. ${state.teacher?(' Why: '+p.why):''}`;
     setTimeout(()=>{
       kmLeftPick=null;
-      if(kmIndex === KM_PAIRS.length-1){ toast('Round complete!'); }
+      if(kmIndex === KM_PAIRS.length-1){ toast('Round complete!'); if (window.OLSBridge) OLSBridge.finish(state.score, MCQ_BANK.length*10 + 20 + KM_PAIRS.length*15); }
       kmIndex = (kmIndex+1) % KM_PAIRS.length;
       renderKM();
     }, 1100);

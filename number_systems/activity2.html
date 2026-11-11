@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hex HQ — Number Systems HQ</title>
@@ -261,6 +262,7 @@ function finishR3(){showResults();}
 function showResults(){
  const total=r1s+r2s+r3s,max=r1Q.length+r2Q.length+r3Q.length;
  const pct=Math.round(total/max*100);
+ if(window.OLSBridge) OLSBridge.finish(total,max);
  let icon='🌱',rank='Cipher Trainee';
  if(pct>=90){icon='👑';rank='Master Cryptographer';}else if(pct>=70){icon='⭐';rank='Senior Agent';}else if(pct>=50){icon='🕵️';rank='Field Agent';}
  setProgress(100);showScreen('resultsScreen');fireConfetti();

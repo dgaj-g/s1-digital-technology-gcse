@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conversion Arcade — Number Systems HQ</title>
@@ -190,6 +191,7 @@ function answer(btn,choice,correctStr){
 }
 function endGame(){
  const acc=answered?Math.round(correct/answered*100):0;
+ if(window.OLSBridge) OLSBridge.finish(correct,answered);
  let icon='🌱',rank='Arcade Rookie';
  if(score>=2500){icon='👑';rank='Conversion Legend';}
  else if(score>=1500){icon='⭐';rank='Arcade Master';}

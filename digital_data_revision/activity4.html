@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Graphics Showdown — Digital Data HQ</title>
@@ -410,6 +411,7 @@ function showResults(){
   const total=sortScore+tfScore+bufScore;
   const max=sortStatements.length+tfStatements.length+bufQs.length;
   const pct=Math.round(total/max*100);
+  if(window.OLSBridge) OLSBridge.finish(total,max);
   let icon='🌱',rank='Rookie';
   if(pct>=90){icon='👑';rank='Arena Champion';}
   else if(pct>=70){icon='⭐';rank='Senior Fighter';}

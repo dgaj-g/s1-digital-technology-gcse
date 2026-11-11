@@ -222,6 +222,7 @@
             .topology-panel { width: 100%; }
         }
     </style>
+<script src="s1_platform/bridge.js"></script>
 </head>
 <body>
     <a href="index.html" class="menu-btn">⬅ Menu</a>
@@ -437,6 +438,7 @@
                 lives--;
                 document.getElementById('lives').textContent = "❤️".repeat(lives);
                 if(lives === 0) {
+                    if (window.OLSBridge) OLSBridge.finish(score / 100, topologies.length * 3); // the run is over: the app keeps what was scored
                     alert("Game Over! Try again.");
                     location.reload(); 
                     return;
@@ -457,6 +459,7 @@
                 if(currentTopoIndex >= topologies.length) {
                     document.getElementById('finalScore').textContent = score;
                     document.getElementById('resultOverlay').style.display = 'flex';
+                    if (window.OLSBridge) OLSBridge.finish(score / 100, topologies.length * 3);
                     return;
                 }
             }

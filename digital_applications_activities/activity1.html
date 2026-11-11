@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>App Review Live - Digital Applications</title>
@@ -1217,6 +1218,8 @@ function showResults() {
   }
 
   document.getElementById('revisionBox').innerHTML = revisionHTML;
+
+  if (window.OLSBridge) OLSBridge.finish(round1Correct + round2Correct + round3Correct, 15 + round2Total + round3TotalMarks);
 
   showScreen('resultsScreen');
   setHost("That's a wrap on App Review Live! Check your scores!");

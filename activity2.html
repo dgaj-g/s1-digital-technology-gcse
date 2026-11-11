@@ -320,6 +320,7 @@
             100% { opacity: 0; transform: translateY(-100px) scale(1.5); }
         }
     </style>
+<script src="s1_platform/bridge.js"></script>
 </head>
 <body>
     <div class="game-container">
@@ -638,6 +639,7 @@
 
             document.getElementById('resultTitle').textContent = title;
             document.getElementById('finalScore').textContent = `${correctAnswers}/10`;
+            if (window.OLSBridge) OLSBridge.finish(correctAnswers, 10);
             document.getElementById('stars').textContent = stars;
             document.getElementById('resultMessage').textContent = message + ` (${points} points)`;
             document.getElementById('resultScreen').style.display = 'flex';

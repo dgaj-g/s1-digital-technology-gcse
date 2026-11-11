@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="s1_platform/bridge.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Type Matching Quiz</title>
@@ -137,11 +138,13 @@
         });
 
         function checkAnswers() {
+            let right = 0;
             questions.forEach((q, index) => {
                 const select = document.getElementById(`q${index}`);
                 const feedback = document.getElementById(`f${index}`);
                 
                 if (select.value === q.answer) {
+                    right++;
                     feedback.textContent = "Correct!";
                     feedback.className = "feedback correct";
                 } else {
@@ -149,6 +152,7 @@
                     feedback.className = "feedback incorrect";
                 }
             });
+            if (window.OLSBridge) OLSBridge.finish(right, questions.length);
         }
     </script>
 </body>

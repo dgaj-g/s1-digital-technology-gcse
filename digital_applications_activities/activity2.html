@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Crash Test Lab — Simulation Testing Facility</title>
@@ -1014,6 +1015,9 @@ function spawnSparks(x, y) {
 // ─── MELTDOWN ───
 function triggerMeltdown() {
   showScreen('meltdown');
+  // the inspection is over: the app keeps what was scored, out of the whole test
+  const mx = incidents.length + simulations.length * 4 + statements.length;
+  if (window.OLSBridge) OLSBridge.finish(r1Score + r2Score + r3Score, mx);
 }
 
 // ─── START GAME ───
@@ -1537,6 +1541,8 @@ function showResults() {
 
     <button class="btn-hub" onclick="location.href='index.html'">← Back to Activity Hub</button>
   `;
+
+  if (window.OLSBridge) OLSBridge.finish(total, maxTotal);
 
   // Final confetti burst
   setTimeout(() => spawnConfetti(50), 500);

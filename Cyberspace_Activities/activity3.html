@@ -359,6 +359,7 @@
     .main { padding:16px 12px; }
   }
 </style>
+<script src="../s1_platform/bridge.js"></script>
 </head>
 <body>
 
@@ -533,6 +534,7 @@ const waves = [
 let currentWaveIndex = 0;
 let health = 100;
 let score = 0;
+let wavesRight = 0;
 let answered = false;
 let comboFirst = null;
 
@@ -617,6 +619,7 @@ function deployShield(shieldId) {
   if (shieldId === wave.answer) {
     // Correct
     score += 100;
+    wavesRight++;
     document.getElementById('shield-' + shieldId).classList.add('selected-correct');
     triggerShieldEffect(true);
     showFeedback(true, wave.feedback, wave.exam);
@@ -663,6 +666,7 @@ function handleCombo(shieldId, wave) {
 
   if (shieldId === need) {
     score += 150;
+    wavesRight++;
     document.getElementById('shield-' + shieldId).classList.add('selected-correct');
     triggerShieldEffect(true);
     showFeedback(true, wave.feedback, wave.exam);
@@ -740,10 +744,11 @@ function showResults() {
   document.getElementById('resultsOverlay').className = 'results-overlay visible';
 
   if (health >= 70) launchFireworks();
+  if (window.OLSBridge) OLSBridge.finish(wavesRight, waves.length);
 }
 
 function restartGame() {
-  health = 100; score = 0; currentWaveIndex = 0; answered = false; comboFirst = null;
+  health = 100; score = 0; wavesRight = 0; currentWaveIndex = 0; answered = false; comboFirst = null;
   document.getElementById('resultsOverlay').className = 'results-overlay';
   document.getElementById('welcomeOverlay').style.display = 'flex';
   updateHealthBar();

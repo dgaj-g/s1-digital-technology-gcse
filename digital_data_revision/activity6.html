@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Format Passport Control — Digital Data HQ</title>
@@ -474,6 +475,7 @@ function showResults(){
   const total=gateScore+acrScore+compScore+ppqScore;
   const max=gateFormats.length+acronyms.length+compStatements.length+4;
   const pct=Math.round(total/max*100);
+  if(window.OLSBridge) OLSBridge.finish(total,max);
   let icon='🌱',rank='Trainee Officer';
   if(pct>=90){icon='👑';rank='Border Chief';}
   else if(pct>=70){icon='⭐';rank='Senior Agent';}

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../s1_platform/bridge.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Then &amp; Now — Employment Timeline Explorer</title>
@@ -515,6 +516,7 @@ function showResults(){
         <strong>Key term:</strong> Generic software = software used for many purposes (word processing, spreadsheets, databases).<br><br>
         <strong>&#x26A0;&#xFE0F; Exam tip:</strong> The 2023 paper had a 6-mark QWC question asking you to "describe the impacts of digital technology on employment" — cover BOTH jobs created AND jobs lost.`;
 
+    if(window.OLSBridge)OLSBridge.finish(classifyCorrect,total);
     if(pct>=60)launchConfetti();
 }
 
