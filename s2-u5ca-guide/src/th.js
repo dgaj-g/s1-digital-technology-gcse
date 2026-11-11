@@ -651,11 +651,17 @@ function learnPlay(pl) {
   function swLabel(i, on, rowName) { return rowName ? fmt("play.adder.bit", { v: PV[i], row: rowName, state: state(on) }) : fmt("play.bits.switch", { v: PV[i], state: state(on) }); }
   function bitRow(bits, onFlip, rowName) { var row = el("div.sws"); bits.forEach(function (b, i) { var btn = el("button.swt", { type: "button", attr: { "aria-pressed": b ? "true" : "false", "aria-label": swLabel(i, b, rowName) }, on: { click: function () { bits[i] = bits[i] ? 0 : 1; btn.setAttribute("aria-pressed", bits[i] ? "true" : "false"); btn.setAttribute("aria-label", swLabel(i, bits[i], rowName)); btn.querySelector(".bitv").textContent = String(bits[i]); onFlip(); } } }, [el("span.plv", { text: String(PV[i]) }), el("span.knob"), el("span.bitv", { text: String(b) })]); row.appendChild(btn); }); row.repaint = function () { [].slice.call(row.querySelectorAll(".swt")).forEach(function (btn, i) { btn.setAttribute("aria-pressed", bits[i] ? "true" : "false"); btn.setAttribute("aria-label", swLabel(i, bits[i], rowName)); btn.querySelector(".bitv").textContent = String(bits[i]); }); }; return row; }
   if (pl.kind === "bits") {
-    var bits = [0, 0, 0, 0, 0, 0, 0, 0], show = pl.show || ["den"], read = el("div.readout", { attr: { "aria-live": "polite" } }), hit = el("p.okline.hidden");
+    var bits = [0, 0, 0, 0, 0, 0, 0, 0], show = pl.show || ["den"], read = el("div.readout", { attr: { "aria-live": "polite" } }), hit = el("p.okline.hidden"), withHex = show.indexOf("hex") >= 0;
     if (pl.target) box.appendChild(el("p.target", { text: fmt("play.bits.target", { n: pl.target }) }));
-    function paintBits() { clear(read); var n = den(bits); if (show.indexOf("count") >= 0) read.appendChild(el("div", { text: fmt("play.bits.count", { n: bits.filter(function (b) { return b; }).length }) })); if (show.indexOf("den") >= 0) read.appendChild(el("div", { text: fmt("play.bits.den", { n: n }) })); if (show.indexOf("hex") >= 0) read.appendChild(el("div", { text: fmt("play.bits.hex", { h: hex(n) }) })); var ok = !!pl.target && n === pl.target; hit.classList.toggle("hidden", !ok); if (ok) hit.textContent = fmt("play.bits.hit", { n: n }); }
-    var row = bitRow(bits, paintBits); box.appendChild(row); box.appendChild(read); box.appendChild(hit);
-    box.appendChild(el("div.acts", {}, [el("button.btn.sec", { type: "button", text: S["play.bits.reset"], on: { click: function () { for (var i = 0; i < 8; i++) bits[i] = 0; row.repaint(); paintBits(); } } })]));
+    /* the brackets under the switches: each half is a nibble, the whole row is a byte; on the hex screen each nibble shows its own hex digit */
+    var nibs = el("div.nibs", { attr: { "aria-hidden": "true" } }), nibLb = [0, 1].map(function () { var c = el("div.nib"); c.appendChild(el("div.br")); var lb = el("div.lb"); c.appendChild(lb); nibs.appendChild(c); return lb; });
+    var byteBar = el("div.bytebar", { attr: { "aria-hidden": "true" } }, [el("div.br"), el("div.lb", { text: S["play.bits.byte"] })]);
+    var allBtn = el("button.btn.sec", { type: "button", on: { click: function () { var any = bits.some(function (b) { return b; }); for (var i = 0; i < 8; i++) bits[i] = any ? 0 : 1; row.repaint(); paintBits(); } } });
+    function paintBits() { clear(read); var n = den(bits), on = bits.filter(function (b) { return b; }).length; if (show.indexOf("count") >= 0) read.appendChild(el("div", { text: fmt("play.bits.count", { n: on }) })); if (show.indexOf("den") >= 0) read.appendChild(el("div", { text: fmt("play.bits.den", { n: n }) })); if (withHex) read.appendChild(el("div", { text: fmt("play.bits.hex", { h: hex(n) }) }));
+      nibLb.forEach(function (lb, k) { var nb = bits.slice(k * 4, k * 4 + 4).join(""); lb.textContent = withHex ? fmt("play.bits.nibhex", { b: nb, h: parseInt(nb, 2).toString(16).toUpperCase() }) : S["play.bits.nib"]; });
+      allBtn.textContent = on ? S["play.bits.alloff"] : S["play.bits.allon"]; var ok = !!pl.target && n === pl.target; hit.classList.toggle("hidden", !ok); if (ok) hit.textContent = fmt("play.bits.hit", { n: n }); }
+    var row = bitRow(bits, paintBits); box.appendChild(row); box.appendChild(nibs); box.appendChild(byteBar); box.appendChild(read); box.appendChild(hit);
+    box.appendChild(el("div.acts", {}, [allBtn]));
     paintBits();
   }
   else if (pl.kind === "ladder") {
@@ -698,36 +704,92 @@ function learnPlay(pl) {
     box.appendChild(el("div.logicrow", {}, [swA, swB, lamp, ltt])); buildTable(); paintL();
   }
   else if (pl.kind === "prac") {
-    var modes = pl.modes || ["b2d"], mi = -1, q = null, pbits = [0, 0, 0, 0, 0, 0, 0, 0];
-    var pin = el("input.pracin", { type: "text", attr: { autocomplete: "off", spellcheck: "false", maxlength: "8", "aria-label": S["play.prac.label"] } }), prow = bitRow(pbits, function () {}), ask = el("p.target", { attr: { "aria-live": "polite" } }), pread = el("div.readout", { attr: { "aria-live": "polite" } }), pwork = el("div.pwork.hidden");
+    /* guided practice (Topic 2 Version 21): every step is on the screen and checked as the pupil goes, so nothing has to be held in the head.
+       Steps used: tap the headings that have a 1, type the total, the take-away question at each heading, a nibble to a hex digit, a hex digit to a nibble. */
+    var modes = pl.modes || ["b2d"], mi = -1, q = null, ask = el("p.target", { attr: { "aria-live": "polite" } }), steps = el("div.gsteps"), fin = el("div.gfin.hidden", { attr: { "aria-live": "polite" } }), sn = 0, user = false;
+    var HD = "0123456789ABCDEF", P4 = [8, 4, 2, 1];
     function rnd(n) { return Math.floor(Math.random() * n); }
-    function bin8(n) { var b = n.toString(2); while (b.length < 8) b = "0" + b; return b; }
-    function trimHex(h) { return h.replace(/^0+(?=.)/, ""); }
-    function newQ() { mi = (mi + 1) % modes.length; var m = modes[mi], n = 1 + rnd(254); q = { m: m, n: n, b: bin8(n), h: hex(n) };
-      var shown = (m === "b2d" || m === "b2h") ? q.b : (m === "d2b" || m === "d2h") ? String(n) : trimHex(q.h), useSw = m === "d2b" || m === "h2b";
-      ask.textContent = fmt("play.prac.ask." + m, { q: shown }); prow.classList.toggle("hidden", !useSw); pin.classList.toggle("hidden", useSw);
-      for (var i = 0; i < 8; i++) pbits[i] = 0; prow.repaint(); pin.value = ""; clear(pread); pwork.classList.add("hidden"); clear(pwork); if (!useSw) pin.focus(); }
-    function answer() { var m = q.m; return (m === "b2d" || m === "h2d") ? String(q.n) : (m === "d2b" || m === "h2b") ? q.b : trimHex(q.h); }
-    function given() { if (q.m === "d2b" || q.m === "h2b") return pbits.join(""); return pin.value.trim().toUpperCase().replace(/\s+/g, ""); }
-    function isRight(g) { var m = q.m; if (m === "b2d" || m === "h2d") return /^\d+$/.test(g) && parseInt(g, 10) === q.n; if (m === "d2h" || m === "b2h") return trimHex(g) === trimHex(q.h); return g === q.b; }
-    function working() { var m = q.m, L = [], ones = PV.filter(function (v, i) { return q.b[i] === "1"; });
-      if (m === "b2d") L.push(fmt("play.prac.work.add", { s: ones.join(" + "), n: q.n }));
-      if (m === "d2b") { var left = q.n; PV.forEach(function (v, i) { var yes = q.b[i] === "1"; L.push(fmt(yes ? "play.prac.work.yes" : "play.prac.work.no", { v: v, left: left, rest: left - v })); if (yes) left -= v; }); }
-      if (m === "b2h" || m === "h2b" || m === "d2h" || m === "h2d") { L.push(fmt("play.prac.work.nib", { b: q.b.slice(0, 4), h: q.h[0] })); L.push(fmt("play.prac.work.nib", { b: q.b.slice(4), h: q.h[1] })); }
-      if (m === "h2d" || m === "d2h") { var hi = parseInt(q.h[0], 16), lo = parseInt(q.h[1], 16); L.push(fmt("play.prac.work.six", { d: q.h[0], v: hi, p: hi * 16, o: lo, n: q.n })); }
-      return L; }
-    function check() { var g = given(); if (!g || (q.m !== "d2b" && q.m !== "h2b" && !g.length)) { pread.textContent = S["play.prac.empty"]; return; } var ok = isRight(g);
-      clear(pread); pread.appendChild(el("div" + (ok ? ".okline" : ".warn"), { text: ok ? S["play.prac.right"] : fmt("play.prac.wrong", { a: answer() }) }));
-      clear(pwork); pwork.classList.remove("hidden"); pwork.appendChild(el("div.h", { text: S["play.prac.workhead"] })); working().forEach(function (l) { pwork.appendChild(el("div", { text: l })); }); }
-    pin.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); check(); } });
-    box.appendChild(ask); box.appendChild(prow); box.appendChild(pin);
-    box.appendChild(el("div.acts", {}, [el("button.btn", { type: "button", text: S["play.prac.check"], on: { click: check } }), el("button.btn.sec", { type: "button", text: S["play.prac.another"], on: { click: newQ } })]));
-    box.appendChild(pread); box.appendChild(pwork); newQ();
+    function bin(n, w) { var b = n.toString(2); while (b.length < w) b = "0" + b; return b; }
+    function plus(vals) { return vals.join(" + "); }
+    function say(host, key, v, cls) { var m = host.querySelector(".gmsg"); if (!m) { m = el("p.gmsg", { attr: { "aria-live": "polite" } }); host.appendChild(m); } m.className = "gmsg" + (cls ? " " + cls : ""); m.textContent = fmt(key, v); return m; }
+    function newStep(key, v) { sn++; var st = el("div.gstep"); st.appendChild(el("div.gn", { text: fmt("play.g.step", { n: sn }) })); st.appendChild(el("p.gq", { text: fmt(key, v) })); steps.appendChild(st); if (user && st.scrollIntoView) st.scrollIntoView({ block: "nearest" }); return st; }
+    function finish(st) { st.classList.add("done"); [].slice.call(st.querySelectorAll("button,input")).forEach(function (x) { x.disabled = true; }); }
+    /* tap each heading that has a 1 under it */
+    function tapHeads(st, b, heads, done) {
+      var tab = el("div.gtab.c" + heads.length), need = [], got = {}, sum = el("p.gsum");
+      heads.forEach(function (v, i) { if (b[i] === "1") need.push(i); var hb = el("button.ghead", { type: "button", text: String(v), attr: { "aria-pressed": "false", "aria-label": fmt("play.g.headlab", { v: v, b: b[i] }) } });
+        hb.addEventListener("click", function () { user = true; if (b[i] !== "1") { hb.classList.remove("no"); void hb.offsetWidth; hb.classList.add("no"); say(st, "play.g.zero", { v: v }, "warn"); return; }
+          if (got[i]) return; got[i] = 1; hb.classList.add("on"); hb.setAttribute("aria-pressed", "true"); var vals = need.filter(function (k) { return got[k]; }).map(function (k) { return heads[k]; }); sum.textContent = fmt("play.g.tapped", { s: plus(vals) }); say(st, "play.g.tapgood", { v: v }, "");
+          if (vals.length === need.length) { var m = st.querySelector(".gmsg"); if (m) m.remove(); done(need.map(function (k) { return heads[k]; })); } });
+        tab.appendChild(hb); });
+      heads.forEach(function (v, i) { tab.appendChild(el("div.gbit" + (b[i] === "1" ? ".one" : ""), { text: b[i] })); });
+      st.appendChild(tab); st.appendChild(sum);
+      if (!need.length) { sum.textContent = S["play.g.none"]; setTimeout(function () { done([]); }, 0); }
+    }
+    /* type the total of the headings tapped */
+    function typeTotal(st, vals, n, done) {
+      var line = el("div.gadd"), inp = el("input.pracin.gin", { type: "text", attr: { inputmode: "numeric", autocomplete: "off", spellcheck: "false", maxlength: "3", "aria-label": S["play.g.addlabel"] } }), help = el("div.pwork.hidden");
+      line.appendChild(el("span", { text: plus(vals) + " =" })); line.appendChild(inp); st.appendChild(line);
+      function chk() { user = true; var g = inp.value.trim(); if (!g) { say(st, "play.g.addempty", {}, "warn"); return; }
+        if (/^\d+$/.test(g) && parseInt(g, 10) === n) { say(st, "play.g.addright", { s: plus(vals), n: n }, "okline"); done(); return; }
+        say(st, "play.g.addwrong", {}, "warn"); clear(help); help.classList.remove("hidden"); var run = vals[0]; for (var k = 1; k < vals.length; k++) { help.appendChild(el("div", { text: fmt("play.g.run", { a: run, b: vals[k], c: run + vals[k] }) })); run += vals[k]; } if (vals.length < 2) help.appendChild(el("div", { text: fmt("play.g.one", { n: n }) })); }
+      inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); chk(); } });
+      st.appendChild(el("div.acts", {}, [el("button.btn", { type: "button", text: S["play.prac.check"], on: { click: chk } })])); st.appendChild(help);
+      if (user) inp.focus();
+    }
+    /* denary to binary: can this heading be taken away? */
+    function takeAway(st, n, done) {
+      var tab = el("div.gtab.c8"), cells = [], left = n, i = 0, qline = el("p.gtake"), leftLine = el("p.gsum"), yn = el("div.acts");
+      PV.forEach(function (v) { tab.appendChild(el("div.ghd", { text: String(v) })); }); PV.forEach(function () { var c = el("div.gbit.q", { text: "?" }); cells.push(c); tab.appendChild(c); });
+      var yes = el("button.btn.sec", { type: "button", text: S["play.g.yes"] }), no = el("button.btn.sec", { type: "button", text: S["play.g.no"] }); yn.appendChild(yes); yn.appendChild(no);
+      function ask1() { cells.forEach(function (c, k) { c.classList.toggle("now", k === i); }); leftLine.textContent = fmt("play.g.left", { left: left }); qline.textContent = fmt("play.g.take", { v: PV[i], left: left }); }
+      function answer(sayYes) { user = true; var v = PV[i], fits = v <= left;
+        if (sayYes !== fits) { say(st, fits ? "play.g.takebadno" : "play.g.takebadyes", { v: v, left: left }, "warn"); return; }
+        if (fits) { say(st, "play.g.takeyes", { v: v, left: left, rest: left - v }, ""); left -= v; cells[i].textContent = "1"; cells[i].classList.add("one"); } else { say(st, "play.g.takeno", { v: v, left: left }, ""); cells[i].textContent = "0"; }
+        cells[i].classList.remove("q"); i++; if (i < 8) ask1(); else { cells.forEach(function (c) { c.classList.remove("now"); }); qline.remove(); yn.remove(); leftLine.textContent = fmt("play.g.takedone", { n: n, b: bin(n, 8) }); var m = st.querySelector(".gmsg"); if (m) m.remove(); done(); } }
+      yes.addEventListener("click", function () { answer(true); }); no.addEventListener("click", function () { answer(false); });
+      st.appendChild(tab); st.appendChild(leftLine); st.appendChild(qline); st.appendChild(yn); ask1();
+    }
+    /* a nibble's value, then tap its hex digit on the keypad (each key shows what it stands for) */
+    function pickHex(st, v, done) {
+      st.appendChild(el("p.gq", { text: fmt("play.g.pickhex", { v: v }) })); var keys = el("div.gkeys");
+      HD.split("").forEach(function (h, k) { var kb = el("button.gkey", { type: "button", attr: { "aria-label": fmt("play.g.hexkey", { h: h, v: k }) } }, [el("b", { text: h }), el("small", { text: String(k) })]);
+        kb.addEventListener("click", function () { user = true; if (k !== v) { kb.classList.remove("no"); void kb.offsetWidth; kb.classList.add("no"); say(st, "play.g.hexbad", { h: h, w: k, v: v }, "warn"); return; } kb.classList.add("on"); say(st, "play.g.hexright", { v: v, h: h }, "okline"); done(h); });
+        keys.appendChild(kb); });
+      st.appendChild(keys);
+    }
+    function nibToHex(st, nb, done) { tapHeads(st, nb, P4, function (vals) { var v = parseInt(nb, 2); st.appendChild(el("p.gsum", { text: vals.length ? fmt("play.g.nibval", { s: plus(vals), v: v }) : fmt("play.g.nibzero", {}) })); pickHex(st, v, done); }); }
+    /* a hex digit to four bits: switch on 8, 4, 2, 1 to make its value */
+    function hexToNib(st, h, done) {
+      var v = parseInt(h, 16), nbits = [0, 0, 0, 0], row = el("div.sws.four"), now = el("p.gsum");
+      P4.forEach(function (pv, k) { var b = el("button.swt", { type: "button", attr: { "aria-pressed": "false", "aria-label": fmt("play.bits.switch", { v: pv, state: state(0) }) } }, [el("span.plv", { text: String(pv) }), el("span.knob"), el("span.bitv", { text: "0" })]);
+        b.addEventListener("click", function () { user = true; nbits[k] = nbits[k] ? 0 : 1; b.setAttribute("aria-pressed", nbits[k] ? "true" : "false"); b.setAttribute("aria-label", fmt("play.bits.switch", { v: pv, state: state(nbits[k]) })); b.querySelector(".bitv").textContent = String(nbits[k]); paintN(); }); row.appendChild(b); });
+      function onVals() { return P4.filter(function (pv, k) { return nbits[k]; }); }
+      function paintN() { var ov = onVals(), t = ov.reduce(function (a, c) { return a + c; }, 0); now.textContent = ov.length ? fmt("play.g.nibnow", { s: plus(ov), n: t }) : S["play.g.nibnone"]; }
+      function chk() { user = true; var t = onVals().reduce(function (a, c) { return a + c; }, 0); if (t !== v) { say(st, "play.g.nibbad", { n: t, v: v }, "warn"); return; } say(st, "play.g.nibright", { h: h, b: nbits.join("") }, "okline"); done(nbits.join("")); }
+      st.appendChild(row); st.appendChild(now); st.appendChild(el("div.acts", {}, [el("button.btn", { type: "button", text: S["play.prac.check"], on: { click: chk } })])); paintN();
+    }
+    function end(key, v) { clear(fin); fin.classList.remove("hidden"); fin.appendChild(el("p.okline", { text: fmt(key, v) })); if (user && fin.scrollIntoView) fin.scrollIntoView({ block: "nearest" }); }
+    function newQ() { mi = (mi + 1) % modes.length; var m = modes[mi], hexMode = /h/.test(m), n = hexMode ? 16 + rnd(239) : 1 + rnd(254), b = bin(n, 8), h = hex(n);
+      q = { m: m, n: n }; clear(steps); fin.classList.add("hidden"); clear(fin); sn = 0;
+      ask.textContent = fmt("play.g.ask." + m, { q: (m === "b2d" || m === "b2h") ? b : (m === "d2b" || m === "d2h") ? String(n) : h });
+      if (m === "b2d") { var s1 = newStep("play.g.tap", {}); tapHeads(s1, b, PV, function (vals) { finish(s1); var s2 = newStep("play.g.add", {}); typeTotal(s2, vals, n, function () { finish(s2); end("play.g.done.b2d", { b: b, n: n }); }); }); }
+      else if (m === "d2b") { var t1 = newStep("play.g.takeq", { n: n }); takeAway(t1, n, function () { finish(t1); end("play.g.done.d2b", { n: n, b: b }); }); }
+      else if (m === "b2h") { var l1 = newStep("play.g.tapnib", { side: S["play.g.leftside"], b: b.slice(0, 4) }); nibToHex(l1, b.slice(0, 4), function (h1) { finish(l1); var l2 = newStep("play.g.tapnib", { side: S["play.g.rightside"], b: b.slice(4) }); nibToHex(l2, b.slice(4), function (h2) { finish(l2); end("play.g.done.b2h", { b: b, h: h1 + h2 }); }); }); }
+      else if (m === "h2b") { var k1 = newStep("play.g.makenib", { h: h[0], v: parseInt(h[0], 16) }); hexToNib(k1, h[0], function (n1) { finish(k1); var k2 = newStep("play.g.makenib", { h: h[1], v: parseInt(h[1], 16) }); hexToNib(k2, h[1], function (n2) { finish(k2); end("play.g.done.h2b", { h: h, b: n1 + n2 }); }); }); }
+      else if (m === "h2d") { var j1 = newStep("play.g.makenib", { h: h[0], v: parseInt(h[0], 16) }); hexToNib(j1, h[0], function (n1) { finish(j1); var j2 = newStep("play.g.makenib", { h: h[1], v: parseInt(h[1], 16) }); hexToNib(j2, h[1], function (n2) { finish(j2); var j3 = newStep("play.g.tapbyte", { b: n1 + n2 }); tapHeads(j3, n1 + n2, PV, function (vals) { finish(j3); var j4 = newStep("play.g.add", {}); typeTotal(j4, vals, n, function () { finish(j4); var hi = parseInt(h[0], 16), lo = parseInt(h[1], 16); end("play.g.done.h2d", { h: h, n: n, d: h[0], v: hi, p: hi * 16, o: lo }); }); }); }); }); }
+      else { var e1 = newStep("play.g.takeq", { n: n }); takeAway(e1, n, function () { finish(e1); var e2 = newStep("play.g.tapnib", { side: S["play.g.leftside"], b: b.slice(0, 4) }); nibToHex(e2, b.slice(0, 4), function (h1) { finish(e2); var e3 = newStep("play.g.tapnib", { side: S["play.g.rightside"], b: b.slice(4) }); nibToHex(e3, b.slice(4), function (h2) { finish(e3); end("play.g.done.d2h", { n: n, b: b, h: h1 + h2 }); }); }); }); }
+    }
+    box.appendChild(ask); box.appendChild(steps); box.appendChild(fin);
+    box.appendChild(el("div.acts.gnext", {}, [el("button.btn.sec", { type: "button", text: S["play.prac.another"], on: { click: function () { user = true; newQ(); var f = steps.querySelector("button"); if (f) f.focus(); } } })]));
+    newQ();
   }
   return box;
 }
 /* the staff view shows which screens a pupil opened, so reading without pressing anything still counts. It never interrupts the pupil. */
 function markOpened(t, n) { var rc = ST.recs[t] || (ST.recs[t] = {}), mask = 1 << (n - 1), bits = function () { return parseInt(rc.O || "0", 16) || 0; }; if (bits() & mask) return; rc.O = (bits() | mask).toString(16); api("apiTheory", { op: "learnOpen", t: t, n: n }).catch(function (e) { console.warn(e); rc.O = (bits() & ~mask).toString(16); }); }
+/* a real photograph beside the Picture it text, with its caption and the credit its licence asks for */
+function picFig(im) { var f = el("figure.picimg"), img = el("img", { attr: { src: BASE + "img/" + im.src, alt: im.alt || "", loading: "lazy" } }); f.appendChild(img); var cap = el("figcaption"); if (im.cap) cap.appendChild(el("span.cp", { text: im.cap })); if (im.credit) { var cr = el("span.cr", { text: im.credit + ", " }); if (im.page) cr.appendChild(el("a", { text: S["learn.pic.via"], attr: { href: im.page, target: "_blank", rel: "noopener" } })); else cr.appendChild(document.createTextNode(S["learn.pic.via"])); cap.appendChild(cr); } f.appendChild(cap); return f; }
 function renderLearn(t, n) {
   setBody("is-th");
   Promise.all([refresh(t), loadLearn(t)]).then(function (rr) {
@@ -748,7 +810,9 @@ function renderLearn(t, n) {
       else if (b.note) { var nt = b.note, nb = el("div.blk.note" + (nt.kind ? "." + nt.kind : "")); if (nt.title) nb.appendChild(el("h4", { text: nt.title })); arr(nt.lines).forEach(function (ln) { nb.appendChild(el("p", { html: termHtml(ln) })); }); sc.appendChild(nb); }
       else if (b.bridge) { sc.appendChild(el("p.blk.bridge", { html: termHtml(b.bridge) })); }
       else if (b.anim) { sc.appendChild(learnAnim(b.anim)); }
-      else if (b.picture) { var pc = b.picture, pb = el("div.blk.pic"); pb.appendChild(el("div.head", { text: S["learn.head.picture"] })); if (pc.title) pb.appendChild(el("h4", { text: pc.title })); if (pc.fig && window.SCENES && SCENES[pc.fig]) { var pf = el("div.fig.scn", { attr: { "data-fig": pc.fig } }); SCENES[pc.fig](pf, 0, { static: true }); pb.appendChild(pf); } arr(pc.lines).forEach(function (ln) { pb.appendChild(el("p", { html: termHtml(ln) })); });
+      else if (b.picture) { var pc = b.picture, pb = el("div.blk.pic"); pb.appendChild(el("div.head", { text: S["learn.head.picture"] })); if (pc.title) pb.appendChild(el("h4", { text: pc.title })); if (pc.fig && window.SCENES && SCENES[pc.fig]) { var pf = el("div.fig.scn", { attr: { "data-fig": pc.fig } }); SCENES[pc.fig](pf, 0, { static: true }); pb.appendChild(pf); }
+        var ptxt = pb; if (pc.img && pc.img.src) { var pg = el("div.picgrid"); ptxt = el("div.pictxt"); pg.appendChild(ptxt); pg.appendChild(picFig(pc.img)); pb.appendChild(pg); }
+        arr(pc.lines).forEach(function (ln) { ptxt.appendChild(el("p", { html: termHtml(ln) })); });
         if (pc.match && pc.match.length) { var tb = el("table.pmatch"); var hr = el("tr"); var hds = pc.heads || [S["learn.match.left"], S["learn.match.right"]]; hr.appendChild(el("th", { text: hds[0] })); hr.appendChild(el("th.arrow", { text: "" })); hr.appendChild(el("th", { text: hds[1] })); tb.appendChild(hr); pc.match.forEach(function (pr) { var tr = el("tr"); tr.appendChild(el("td", { text: pr[0] })); tr.appendChild(el("td.arrow", { text: "→" })); tr.appendChild(el("td", { html: termHtml(pr[1]) })); tb.appendChild(tr); }); pb.appendChild(tb); }
         if (arr(pc.breaks).length) { var bk = el("div.breaks"); bk.appendChild(el("div.h", { text: S["learn.head.breaks"] })); arr(pc.breaks).forEach(function (ln) { bk.appendChild(el("p", { html: termHtml(ln) })); }); pb.appendChild(bk); }
         sc.appendChild(pb); }
