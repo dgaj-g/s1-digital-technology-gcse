@@ -17,7 +17,20 @@
    "weight": 25,
    "swatch": "#3B4FD8",
    "screens": 11,
-   "file": "t2.json"
+   "file": "t2.json",
+   "slots": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    4,
+    9,
+    10,
+    11
+   ]
   },
   {
    "t": 3,

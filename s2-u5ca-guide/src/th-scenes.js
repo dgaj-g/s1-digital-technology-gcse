@@ -295,31 +295,68 @@ S.den2bin=function(st,i){
   const cells=PV8.map((v,k)=>k<done?{v:bits[k],cls:(bits[k]==='1'?'on':'')+(k===done-1?' chg':'')}:{v:'',cls:'wait'});
   let q='';
   if(i===0) q=sumLine('Amount left: <b>147</b>');
-  else if(i<=8){ const k=i-1,yes=bits[k]==='1'; q=sumLine('Can '+PV8[k]+' be taken from '+lefts[k]+'? <b>'+(yes?'Yes':'No')+'</b>'+(yes?'. '+lefts[k]+' take away '+PV8[k]+' leaves <b>'+(lefts[k]-PV8[k])+'</b>.':'.'),true); }
-  if(i>=8) q+=note('Nothing is left. 147 is 10010011.',true);
+  else if(i<=8){ const k=i-1,h=PV8[k],l=lefts[k],yes=bits[k]==='1';
+    const why=yes?(h===l?h+' is the same as '+l:h+' is smaller than '+l):h+' is bigger than '+l;
+    q=sumLine('Can '+h+' be taken from '+l+'? <b>'+(yes?'Yes':'No')+'</b>: '+why+'. '+(yes?'Write 1. '+l+' − '+h+' = '+(l-h)+', so the amount left is <b>'+(l-h)+'</b>.':'Write 0. The amount left is still <b>'+l+'</b>.'),true); }
+  if(i>=8) q+=note('The amount left is 0, so 147 is 10010011. Check: 128 + 16 + 2 + 1 = 147.',true);
   st.innerHTML='<div class="sc numsc">'+nt(PV8.map(String),[{cells:cells}])+q+'</div>';
 };
 function nib(b,h,hl){ return '<div class="nibb'+(hl?' chg':'')+'"><div class="nbits">'+b.split('').map(x=>'<span class="'+(x==='1'?'on':'')+'">'+x+'</span>').join('')+'</div><div class="nhead">8 4 2 1</div>'+(h?'<div class="nhex">'+h+'</div>':'')+'</div>'; }
+S.hexintro=function(st,i){
+  const HX='0123456789ABCDEF';
+  let h='';
+  if(i<=3){
+    const upto=i===0?9:i===1?10:15;
+    h=sumLine('A nibble\'s headings: 8 4 2 1');
+    h+='<div class="hexgrid">'+Array.from({length:16},(_,v)=>{
+      const b=v.toString(2).padStart(4,'0'), shown=v<=upto, fresh=(i===1&&v===10)||(i===2&&v>10)||(i===3&&v===15);
+      return '<div class="hc'+(shown?(v>=10?' let':''):' wait')+(fresh?' chg':'')+'"><span class="hb">'+b+'</span>'+(shown?'<span class="hv">'+(v>=10?'= '+v:'&nbsp;')+'</span><span class="hd">'+HX[v]+'</span>':'<span class="hv">&nbsp;</span><span class="hd">?</span>')+'</div>';
+    }).join('')+'</div>';
+    if(i===3) h+=note('Sixteen different nibbles, so sixteen hex digits: ten from 0 to 9, and six from A to F.',true);
+  } else {
+    const j=i-4;
+    if(j<=2){
+      h='<div class="bytebig">10010011</div>';
+      h+='<div class="nibrow">'+nib('1001',j>=1?'8 + 1 = 9 → <b>9</b>':'',j===1)+nib('0011',j>=1?'2 + 1 = 3 → <b>3</b>':'',j===1)+'</div>';
+      if(j===2) h+=note('10010011 is <b>93</b> in hex. Eight digits became two.',true);
+    } else {
+      h='<div class="bytebig">11010110</div>';
+      h+='<div class="nibrow">'+nib('1101','8 + 4 + 1 = 13 → <b>D</b>',true)+nib('0110','4 + 2 = 6 → <b>6</b>',true)+'</div>';
+      h+=note('11010110 is <b>D6</b> in hex.',true);
+    }
+  }
+  st.innerHTML='<div class="sc numsc">'+h+'</div>';
+};
+function takeLines(n){ // one line per heading, the same words as the caption
+  let left=n,out='';
+  [8,4,2,1].forEach(v=>{ if(v<=left){ out+=sumLine('Can '+v+' be taken from '+left+'? Yes, so write 1. '+left+' − '+v+' = '+(left-v)+' left.',true); left-=v; } else out+=sumLine('Can '+v+' be taken from '+left+'? No, so write 0.',true); });
+  return out;
+}
 S.hexnib=function(st,i){
   let h='';
   if(i<=3){
     if(i===0) h='<div class="bytebig">11111011</div>';
-    else h='<div class="nibrow">'+nib('1111',i>=1?(i>=1?'8 + 4 + 2 + 1 = 15 → <b>F</b>':''):'',i===1)+nib('1011',i>=2?'8 + 2 + 1 = 11 → <b>B</b>':'',i===2)+'</div>';
-    if(i===1) h='<div class="nibrow">'+nib('1111','8 + 4 + 2 + 1 = 15 → <b>F</b>',true)+nib('1011','',false)+'</div>';
+    else h='<div class="nibrow">'+nib('1111','8 + 4 + 2 + 1 = 15 → <b>F</b>',i===1)+nib('1011',i>=2?'8 + 2 + 1 = 11 → <b>B</b>':'',i===2)+'</div>';
     if(i>=3) h+=note('11111011 is <b>FB</b> in hexadecimal.',true);
   } else {
     const j=i-4;
     if(j===0) h='<div class="bytebig">A9</div>';
-    else h='<div class="nibrow">'+nib(j>=1?'1010':'----','A is 10 = 8 + 2',j===1)+nib(j>=2?'1001':'----',j>=2?'9 = 8 + 1':'',j===2)+'</div>';
+    else h='<div class="nibrow">'+nib(j>=1?'1010':'----',j>=1?'A is 10 → <b>1010</b>':'',j===1)+nib(j>=2?'1001':'----',j>=2?'9 → <b>1001</b>':'',j===2)+'</div>';
+    if(j===1) h+=takeLines(10);
+    if(j===2) h+=takeLines(9);
     if(j>=3) h+=note('A9 is <b>10101001</b> in binary.',true);
   }
+  if(i>=1) h+='<div class="hexkey">A = 10 · B = 11 · C = 12 · D = 13 · E = 14 · F = 15</div>';
   st.innerHTML='<div class="sc numsc">'+h+'</div>';
 };
 S.hexden=function(st,i){
   let h='<div class="bytebig">E3</div>';
   if(i>=1) h+='<div class="nibrow">'+nib('1110','E is 14 = 8 + 4 + 2',i===1)+(i>=2?nib('0011','3 = 2 + 1',i===2):'')+'</div>';
+  if(i===1) h+=takeLines(14);
+  if(i===2) h+=takeLines(3);
   if(i>=3){ const bits='11100011'.split(''); h+=nt(PV8.map((v,k)=>bits[k]==='1'?'<span class="hon">'+v+'</span>':String(v)),[{cells:bits.map(b=>({v:b,cls:b==='1'?'on':''}))}]); h+=sumLine('128 + 64 + 32 + 2 + 1'+(i>=4?' = <b>227</b>':''),i===3||i===4); }
-  if(i>=5) h+=sumLine('Check: 14 × 16 = 224, then 224 + 3 = <b>227</b>. It matches.',true);
+  if(i>=5) {h+=sumLine('Check: E is 14 sixteens. 14 × 16 = 14 × 10 + 14 × 6.',true);h+=sumLine('14 × 10 = 140. 14 × 6 = 60 + 24 = 84.',true);h+=sumLine('140 + 84 = 224. Then 224 + 3 = <b>227</b>. It matches.',true);}
+  h+='<div class="hexkey">A = 10 · B = 11 · C = 12 · D = 13 · E = 14 · F = 15</div>';
   st.innerHTML='<div class="sc numsc">'+h+'</div>';
 };
 S.addbytes=function(st,i){
@@ -327,18 +364,21 @@ S.addbytes=function(st,i){
     const A=a.split('').map(Number),B=b.split('').map(Number); const res=[],car=[]; let c=0;
     for(let k=7;k>=0;k--){ const s=A[k]+B[k]+c; res[k]=s%2; c=s>1?1:0; car[k]=c; }
     const col=k=>8-k<=upto; // column k done?
-    const head=['',showOvf?'<span class="ovfh">9th</span>':''].concat(PV8.map(String));
+    const ovf=showOvf&&upto>=8&&c;
+    const X=showOvf?[{v:'',cls:'blank'}]:[]; // the ninth column appears only for the overflow sum
+    const head=[''].concat(showOvf?['<span class="ovfh">Overflow<br>bit</span>']:[]).concat(PV8.map(String));
     const rows=[
-      {cls:'carry',cells:[{v:'carry'},{v:(showOvf&&upto>=8&&c)?'1':'',cls:(showOvf&&upto>=8&&c)?'on ovf chg':''}].concat(PV8.map((v,k)=>({v:(k<7&&col(k+1)&&car[k+1])?'1':'',cls:(k<7&&col(k+1)&&car[k+1])?'on':''})))},
-      {cells:[{v:''},{v:''}].concat(A.map(x=>({v:x})))},
-      {cells:[{v:'+'},{v:''}].concat(B.map(x=>({v:x})))},
-      {cls:'result',cells:[{v:''},{v:''}].concat(PV8.map((v,k)=>({v:col(k)?res[k]:'',cls:col(k)?'res'+(8-k===upto?' chg':''):'wait'})))}
+      {cls:'carry',cells:[{v:'carry'}].concat(X,PV8.map((v,k)=>({v:(k<7&&col(k+1)&&car[k+1])?'1':'',cls:(k<7&&col(k+1)&&car[k+1])?'on':''})))},
+      {cells:[{v:''}].concat(X,A.map(x=>({v:x})))},
+      {cells:[{v:'+'}].concat(X,B.map(x=>({v:x})))},
+      {cls:'result',cells:[{v:'answer'}].concat(showOvf?[{v:ovf?'1':'',cls:ovf?'res ovf chg':'blank'}]:[],PV8.map((v,k)=>({v:col(k)?res[k]:'',cls:col(k)?'res'+(8-k===upto&&!showOvf?' chg':''):'wait'})))}
     ];
-    return nt(head,rows,'addsc')+(upto>0&&upto<=8?'<div class="colmark">column '+upto+'</div>':'');
+    return nt(head,rows,'addsc')+(upto>0&&upto<=8&&!showOvf?'<div class="colmark">column headed '+(1<<(upto-1))+'</div>':'');
   }
   let h='';
   if(i<=8){ h=addTab('01011011','00110111',i,false); if(i===8) h+=note('01011011 + 00110111 = <b>10010010</b>, which is 146.',true); }
-  else { h=addTab('11100011','01101110',8,true); if(i===9) h+=note('The last carry has nowhere to go. That is <b>overflow</b>.',true); else h+=note('The ninth bit is lost. The byte shows 01010001, which is 81. The true total is 337.',true); }
+  else if(i===9) h=addTab('11100011','01101110',0,true)+note('227 + 110 = 337. That is bigger than 255, so it cannot fit in a byte.',true);
+  else { h=addTab('11100011','01101110',8,true); if(i===10) h+=note('The answer has nine bits. The 1 in the ninth column is <b>overflow</b>, circled in red.',true); else h+=note('The ninth bit is lost. The byte keeps only 01010001: 64 + 16 + 1 = 81. The true total is 256 + 81 = 337.',true); }
   st.innerHTML='<div class="sc numsc">'+h+'</div>';
 };
 S.truth=function(st,i){
@@ -346,8 +386,8 @@ S.truth=function(st,i){
   const body=rows.map((r,k)=>{ const done=i>=k+1; const pq=r[0]&&r[1]?1:0, out=pq?0:1;
     return {cls:(i===k+1?'chg':''),cells:[{v:r[0]},{v:r[1]},{v:done?pq:'',cls:done?'mid':'wait'},{v:done?out:'',cls:done?'res'+(out?' on':''):'wait'}]}; });
   let h=nt(['P','Q','<span class="mid">P AND Q</span>','NOT(P AND Q)'],body,'truthsc');
-  if(i>=1&&i<=4){ const r=rows[i-1],pq=r[0]&&r[1]?1:0; h+=sumLine('P AND Q is '+pq+'. NOT '+pq+' is <b>'+(pq?0:1)+'</b>.',true); }
-  if(i>=5) h+=note('The column reads 1, 1, 1, 0. Each cell earns its own mark.',true);
+  if(i>=1&&i<=4){ const r=rows[i-1],pq=r[0]&&r[1]?1:0; h+=sumLine('Working column: P AND Q is '+pq+'. Answer column: NOT '+pq+' is <b>'+(pq?0:1)+'</b>.',true); }
+  if(i>=5) h+=note('The answer column, NOT(P AND Q), reads 1, 1, 1, 0. Each cell or column can earn its own mark.',true);
   st.innerHTML='<div class="sc numsc">'+h+'</div>';
 };
 })();

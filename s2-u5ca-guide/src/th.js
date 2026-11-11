@@ -53,7 +53,7 @@ function busy(btn, work) {
 }
 function busyOn(fn) { return function (ev) { var b = ev && ev.currentTarget; return busy(b, function () { return fn(ev); }); }; }
 function go(h) { if (h === "#") h = HOME; if (location.hash === h) route(); else location.hash = h; }
-function termHtml(s) { return esc(s).replace(/\[\[([^|\]]+)\|\d+\]\]/g, '<b class="term">$1</b>').replace(/\[\[([^\]]+)\]\]/g, '<b class="term">$1</b>'); }
+function termHtml(s) { return esc(s).replace(/\[\[([^|\]]+)\|\d+\]\]/g, '<b class="term">$1</b>').replace(/\[\[([^\]]+)\]\]/g, '<b class="term">$1</b>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>'); }
 function setBody(cls) { document.body.className = (LIVE ? "sw-00 th-live " : "") + cls; }
 function crumbFrom(str, hrefs) {
   var parts = str.split(" › "), c = el("nav.crumb");
@@ -82,6 +82,8 @@ function confetti() {
 function fetchJSON(u) { return fetch(u, { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(u + " " + r.status); return r.json(); }); }
 function refresh(t) { return api("apiTheory", t ? { op: "state", t: t } : { op: "state" }).then(function (r) { ST = r; R = r.R || 10; ME.first = r.first; ME.owner = !!r.owner; who(); return r; }); }
 function who() { if (!$who) return; clear($who); if (ME.owner) { $who.appendChild(el("a", { href: STAFF_URL, target: "_top", text: fmt("who.staff", { name: ME.first }) })); } else $who.textContent = ME.first; }
+function slotAt(t, i) { var a = (IDX[t - 1] || {}).slots; return (a && a[i - 1]) || i; }
+function posOf(t, s) { var a = (IDX[t - 1] || {}).slots, k = a ? a.indexOf(Number(s)) : -1; return k >= 0 ? k + 1 : Number(s); }
 function topicName(t) { var i = IDX[t - 1]; return i ? i.title : fmt("topic.fallback", { t: t }); }
 function formName(f) { return S["pp.form." + f] || (f === "mcq (tf)" ? S["pp.form.tf"] : f); }
 
@@ -195,7 +197,7 @@ function renderTopic(t) {
       if (btnText) d.appendChild(href ? el("a.btn", { href: href, text: btnText }) : el("button.btn", { text: btnText, on: { click: onClick } }));
       return d;
     }
-    var firstUnticked = 1; for (var i = 0; i < p.N; i++) if (!(p.bits >> i & 1)) { firstUnticked = i + 1; break; }
+    var firstUnticked = 1; for (var i = 0; i < p.N; i++) if (!(p.bits >> (slotAt(t, i + 1) - 1) & 1)) { firstUnticked = i + 1; break; }
     doors.appendChild(door("1", S["door.learn"], S["door.learn.sub"], p.learnDone ? fmt("door.learn.progDone", { N: p.N }) : fmt("door.learn.prog", { n: p.ln, N: p.N }), { done: p.learnDone },
       p.learnDone ? S["door.learn.again"] : p.ln ? S["door.learn.go"] : S["door.learn.start"], "#th/" + t + "/learn/" + (p.learnDone ? 1 : firstUnticked)));
     var ps = p.pair, pairText, pairBtn = null, pairCls = {};
@@ -237,7 +239,7 @@ function Surface(spec, o) {
   if (kind === "one") {
     var opts = spec.opts.map(function (op, i) { return Array.isArray(op) ? { L: op[0], text: op[1], table: op[2] } : { L: letters(i), text: op }; });
     var open = !!spec.open, pick = spec.pick || 0, multi = open || pick, disp = order(opts.length, seed), shown = {}, chosen = null, picked = [], btns = {};
-    disp.forEach(function (oi, di) { shown[opts[oi].L] = letters(di); });
+    disp.forEach(function (oi, di) { shown[opts[oi].L] = spec.nums ? String(di + 1) : letters(di); });
     api.label = function (L) { return shown[L] || L; };
     var wrap = el("div.opts" + (multi ? ".pickn" : "")); root.appendChild(wrap);
     function paintOne() { Object.keys(btns).forEach(function (k) { var on = multi ? picked.indexOf(k) >= 0 : k === chosen; btns[k].classList.toggle("on", on); btns[k].setAttribute("aria-pressed", on ? "true" : "false"); }); }
@@ -648,8 +650,8 @@ function learnPlay(pl) {
   function state(on) { return on ? S["play.on"] : S["play.off"]; }
   function den(bits) { var n = 0; bits.forEach(function (b, i) { n += b * PV[i]; }); return n; }
   function hex(n) { var h = n.toString(16).toUpperCase(); return h.length < 2 ? "0" + h : h; }
-  function swLabel(i, on, rowName) { return rowName ? fmt("play.adder.bit", { v: PV[i], row: rowName, state: state(on) }) : fmt("play.bits.switch", { v: PV[i], state: state(on) }); }
-  function bitRow(bits, onFlip, rowName) { var row = el("div.sws"); bits.forEach(function (b, i) { var btn = el("button.swt", { type: "button", attr: { "aria-pressed": b ? "true" : "false", "aria-label": swLabel(i, b, rowName) }, on: { click: function () { bits[i] = bits[i] ? 0 : 1; btn.setAttribute("aria-pressed", bits[i] ? "true" : "false"); btn.setAttribute("aria-label", swLabel(i, bits[i], rowName)); btn.querySelector(".bitv").textContent = String(bits[i]); onFlip(); } } }, [el("span.plv", { text: String(PV[i]) }), el("span.knob"), el("span.bitv", { text: String(b) })]); row.appendChild(btn); }); row.repaint = function () { [].slice.call(row.querySelectorAll(".swt")).forEach(function (btn, i) { btn.setAttribute("aria-pressed", bits[i] ? "true" : "false"); btn.setAttribute("aria-label", swLabel(i, bits[i], rowName)); btn.querySelector(".bitv").textContent = String(bits[i]); }); }; return row; }
+  function swLabel(i, on, rowName, H) { var v = (H || PV)[i]; return rowName ? fmt("play.adder.bit", { v: v, row: rowName, state: state(on) }) : fmt("play.bits.switch", { v: v, state: state(on) }); }
+  function bitRow(bits, onFlip, rowName, H) { H = H || PV; var row = el("div.sws"); bits.forEach(function (b, i) { var btn = el("button.swt", { type: "button", attr: { "aria-pressed": b ? "true" : "false", "aria-label": swLabel(i, b, rowName, H) }, on: { click: function () { bits[i] = bits[i] ? 0 : 1; btn.setAttribute("aria-pressed", bits[i] ? "true" : "false"); btn.setAttribute("aria-label", swLabel(i, bits[i], rowName, H)); btn.querySelector(".bitv").textContent = String(bits[i]); onFlip(); } } }, [el("span.plv", { text: String(H[i]) }), el("span.knob"), el("span.bitv", { text: String(b) })]); row.appendChild(btn); }); row.repaint = function () { [].slice.call(row.querySelectorAll(".swt")).forEach(function (btn, i) { btn.setAttribute("aria-pressed", bits[i] ? "true" : "false"); btn.setAttribute("aria-label", swLabel(i, bits[i], rowName, H)); btn.querySelector(".bitv").textContent = String(bits[i]); }); }; return row; }
   if (pl.kind === "bits") {
     var bits = [0, 0, 0, 0, 0, 0, 0, 0], show = pl.show || ["den"], read = el("div.readout", { attr: { "aria-live": "polite" } }), hit = el("p.okline.hidden"), withHex = show.indexOf("hex") >= 0;
     if (pl.target) box.appendChild(el("p.target", { text: fmt("play.bits.target", { n: pl.target }) }));
@@ -658,9 +660,9 @@ function learnPlay(pl) {
     var byteBar = el("div.bytebar", { attr: { "aria-hidden": "true" } }, [el("div.br"), el("div.lb", { text: S["play.bits.byte"] })]);
     var allBtn = el("button.btn.sec", { type: "button", on: { click: function () { var any = bits.some(function (b) { return b; }); for (var i = 0; i < 8; i++) bits[i] = any ? 0 : 1; row.repaint(); paintBits(); } } });
     function paintBits() { clear(read); var n = den(bits), on = bits.filter(function (b) { return b; }).length; if (show.indexOf("count") >= 0) read.appendChild(el("div", { text: fmt("play.bits.count", { n: on }) })); if (show.indexOf("den") >= 0) read.appendChild(el("div", { text: fmt("play.bits.den", { n: n }) })); if (withHex) read.appendChild(el("div", { text: fmt("play.bits.hex", { h: hex(n) }) }));
-      nibLb.forEach(function (lb, k) { var nb = bits.slice(k * 4, k * 4 + 4).join(""); lb.textContent = withHex ? fmt("play.bits.nibhex", { b: nb, h: parseInt(nb, 2).toString(16).toUpperCase() }) : S["play.bits.nib"]; });
+      nibLb.forEach(function (lb, k) { var q = bits.slice(k * 4, k * 4 + 4), nb = q.join(""), on4 = [8, 4, 2, 1].filter(function (v, j) { return q[j]; }), v4 = parseInt(nb, 2); lb.textContent = withHex ? fmt(on4.length === 0 ? "play.bits.nibhex0" : on4.length === 1 ? "play.bits.nibhex1" : "play.bits.nibhex", { b: nb, sum: on4.join(" + "), v: v4, h: v4.toString(16).toUpperCase() }) : S["play.bits.nib"]; });
       allBtn.textContent = on ? S["play.bits.alloff"] : S["play.bits.allon"]; var ok = !!pl.target && n === pl.target; hit.classList.toggle("hidden", !ok); if (ok) hit.textContent = fmt("play.bits.hit", { n: n }); }
-    var row = bitRow(bits, paintBits); box.appendChild(row); box.appendChild(nibs); box.appendChild(byteBar); box.appendChild(read); box.appendChild(hit);
+    var row = bitRow(bits, paintBits, null, pl.pv === "nibble" ? [8, 4, 2, 1, 8, 4, 2, 1] : PV); box.appendChild(row); box.appendChild(nibs); box.appendChild(byteBar); box.appendChild(read); box.appendChild(hit);
     box.appendChild(el("div.acts", {}, [allBtn]));
     paintBits();
   }
@@ -680,13 +682,13 @@ function learnPlay(pl) {
     function calc() { var carry = 0, res = [], carries = []; for (var i = 7; i >= 0; i--) { var sm = ab[i] + bb[i] + carry; res[i] = sm % 2; carry = sm > 1 ? 1 : 0; carries[i] = carry; }
       for (var j = 0; j < 8; j++) { var cin = j < 7 ? carries[j + 1] : 0; carryTds[j].textContent = cin ? "1" : ""; carryTds[j].classList.toggle("on", !!cin); resTds[j].textContent = String(res[j]); }
       ovfTd.textContent = carry ? "1" : ""; ovfTd.classList.toggle("on", !!carry);
-      var da = den(ab), db = den(bb); clear(aread); aread.appendChild(el("div", { text: fmt("play.adder.sum", { a: da, b: db, c: da + db }) })); aread.appendChild(el("div" + (carry ? ".warn" : ".okline"), { text: carry ? S["play.adder.over"] : S["play.adder.ok"] })); }
+      var da = den(ab), db = den(bb); clear(aread); aread.appendChild(el("div", { text: fmt("play.adder.sum", { a: da, b: db, c: da + db }) })); aread.appendChild(el("div" + (carry ? ".warn" : ".okline"), { text: carry ? S["play.adder.over"] : S["play.adder.ok"] })); if (carry) aread.appendChild(el("div.warn", { text: fmt("play.adder.keeps", { r: res.join(""), d: den(res), c: da + db }) })); }
     box.appendChild(el("div.addwrap", {}, [atab2])); box.appendChild(aread); calc();
   }
   else if (pl.kind === "chars") {
     var cin2 = el("input.charin", { type: "text", attr: { maxlength: "4", autocomplete: "off", spellcheck: "false", "aria-label": S["play.chars.label"] } }), cread = el("div.readout", { text: S["play.chars.empty"], attr: { "aria-live": "polite" } });
     cin2.addEventListener("input", function () { var chars = Array.from ? Array.from(cin2.value) : cin2.value.split(""), c = chars[0]; if (!c) { cread.textContent = S["play.chars.empty"]; return; } if (chars.length > 1) cin2.value = c;
-      var cp = c.codePointAt ? c.codePointAt(0) : c.charCodeAt(0); if (cp < 128) { var b = cp.toString(2); while (b.length < 8) b = "0" + b; cread.textContent = fmt("play.chars.out", { c: c, d: cp, b: b }); } else { var u = cp.toString(16).toUpperCase(); while (u.length < 4) u = "0" + u; cread.textContent = fmt("play.chars.non", { u: "U+" + u }); } });
+      var cp = c.codePointAt ? c.codePointAt(0) : c.charCodeAt(0); if (cp < 128) { var b = cp.toString(2); while (b.length < 8) b = "0" + b; cread.textContent = fmt("play.chars.out", { c: c, d: cp, b: b }); } else { var u = cp.toString(16).toUpperCase(); while (u.length < 4) u = "0" + u; cread.textContent = fmt("play.chars.non", { u: "U+" + u, c: c, d: cp }); } });
     box.appendChild(el("label.h", { text: S["play.chars.label"] })); box.appendChild(cin2); box.appendChild(cread);
   }
   else if (pl.kind === "logic") {
@@ -720,7 +722,7 @@ function learnPlay(pl) {
       heads.forEach(function (v, i) { if (b[i] === "1") need.push(i); var hb = el("button.ghead", { type: "button", text: String(v), attr: { "aria-pressed": "false", "aria-label": fmt("play.g.headlab", { v: v, b: b[i] }) } });
         hb.addEventListener("click", function () { user = true; if (b[i] !== "1") { hb.classList.remove("no"); void hb.offsetWidth; hb.classList.add("no"); say(st, "play.g.zero", { v: v }, "warn"); return; }
           if (got[i]) return; got[i] = 1; hb.classList.add("on"); hb.setAttribute("aria-pressed", "true"); var vals = need.filter(function (k) { return got[k]; }).map(function (k) { return heads[k]; }); sum.textContent = fmt("play.g.tapped", { s: plus(vals) }); say(st, "play.g.tapgood", { v: v }, "");
-          if (vals.length === need.length) { var m = st.querySelector(".gmsg"); if (m) m.remove(); done(need.map(function (k) { return heads[k]; })); } });
+          if (vals.length === need.length) { [].slice.call(tab.querySelectorAll("button")).forEach(function (x) { x.disabled = true; }); var m = st.querySelector(".gmsg"); if (m) m.remove(); done(need.map(function (k) { return heads[k]; })); } });
         tab.appendChild(hb); });
       heads.forEach(function (v, i) { tab.appendChild(el("div.gbit" + (b[i] === "1" ? ".one" : ""), { text: b[i] })); });
       st.appendChild(tab); st.appendChild(sum);
@@ -758,7 +760,7 @@ function learnPlay(pl) {
         keys.appendChild(kb); });
       st.appendChild(keys);
     }
-    function nibToHex(st, nb, done) { tapHeads(st, nb, P4, function (vals) { var v = parseInt(nb, 2); st.appendChild(el("p.gsum", { text: vals.length ? fmt("play.g.nibval", { s: plus(vals), v: v }) : fmt("play.g.nibzero", {}) })); pickHex(st, v, done); }); }
+    function nibToHex(st, nb, done) { tapHeads(st, nb, P4, function (vals) { var v = parseInt(nb, 2); st.appendChild(el("p.gsum", { text: vals.length ? fmt(vals.length > 1 ? "play.g.nibval" : "play.g.nibone", { s: plus(vals), v: v }) : fmt("play.g.nibzero", {}) })); pickHex(st, v, done); }); }
     /* a hex digit to four bits: switch on 8, 4, 2, 1 to make its value */
     function hexToNib(st, h, done) {
       var v = parseInt(h, 16), nbits = [0, 0, 0, 0], row = el("div.sws.four"), now = el("p.gsum");
@@ -776,8 +778,8 @@ function learnPlay(pl) {
       if (m === "b2d") { var s1 = newStep("play.g.tap", {}); tapHeads(s1, b, PV, function (vals) { finish(s1); var s2 = newStep("play.g.add", {}); typeTotal(s2, vals, n, function () { finish(s2); end("play.g.done.b2d", { b: b, n: n }); }); }); }
       else if (m === "d2b") { var t1 = newStep("play.g.takeq", { n: n }); takeAway(t1, n, function () { finish(t1); end("play.g.done.d2b", { n: n, b: b }); }); }
       else if (m === "b2h") { var l1 = newStep("play.g.tapnib", { side: S["play.g.leftside"], b: b.slice(0, 4) }); nibToHex(l1, b.slice(0, 4), function (h1) { finish(l1); var l2 = newStep("play.g.tapnib", { side: S["play.g.rightside"], b: b.slice(4) }); nibToHex(l2, b.slice(4), function (h2) { finish(l2); end("play.g.done.b2h", { b: b, h: h1 + h2 }); }); }); }
-      else if (m === "h2b") { var k1 = newStep("play.g.makenib", { h: h[0], v: parseInt(h[0], 16) }); hexToNib(k1, h[0], function (n1) { finish(k1); var k2 = newStep("play.g.makenib", { h: h[1], v: parseInt(h[1], 16) }); hexToNib(k2, h[1], function (n2) { finish(k2); end("play.g.done.h2b", { h: h, b: n1 + n2 }); }); }); }
-      else if (m === "h2d") { var j1 = newStep("play.g.makenib", { h: h[0], v: parseInt(h[0], 16) }); hexToNib(j1, h[0], function (n1) { finish(j1); var j2 = newStep("play.g.makenib", { h: h[1], v: parseInt(h[1], 16) }); hexToNib(j2, h[1], function (n2) { finish(j2); var j3 = newStep("play.g.tapbyte", { b: n1 + n2 }); tapHeads(j3, n1 + n2, PV, function (vals) { finish(j3); var j4 = newStep("play.g.add", {}); typeTotal(j4, vals, n, function () { finish(j4); var hi = parseInt(h[0], 16), lo = parseInt(h[1], 16); end("play.g.done.h2d", { h: h, n: n, d: h[0], v: hi, p: hi * 16, o: lo }); }); }); }); }); }
+      else if (m === "h2b") { var k1 = newStep(h[0] === "0" ? "play.g.makenib0" : "play.g.makenib", { h: h[0], v: parseInt(h[0], 16) }); hexToNib(k1, h[0], function (n1) { finish(k1); var k2 = newStep(h[1] === "0" ? "play.g.makenib0" : "play.g.makenib", { h: h[1], v: parseInt(h[1], 16) }); hexToNib(k2, h[1], function (n2) { finish(k2); end("play.g.done.h2b", { h: h, b: n1 + n2 }); }); }); }
+      else if (m === "h2d") { var j1 = newStep(h[0] === "0" ? "play.g.makenib0" : "play.g.makenib", { h: h[0], v: parseInt(h[0], 16) }); hexToNib(j1, h[0], function (n1) { finish(j1); var j2 = newStep(h[1] === "0" ? "play.g.makenib0" : "play.g.makenib", { h: h[1], v: parseInt(h[1], 16) }); hexToNib(j2, h[1], function (n2) { finish(j2); var j3 = newStep("play.g.tapbyte", { b: n1 + n2 }); tapHeads(j3, n1 + n2, PV, function (vals) { finish(j3); var j4 = newStep("play.g.add", {}); typeTotal(j4, vals, n, function () { finish(j4); var hi = parseInt(h[0], 16), lo = parseInt(h[1], 16); end(hi >= 11 ? "play.g.done.h2d10" : "play.g.done.h2d", { h: h, n: n, d: h[0], v: hi, t: hi * 10, s: hi * 6, p: hi * 16, r: h[1], o: lo, w: hi - 10, u: (hi - 10) * 6 }); }); }); }); }); }
       else { var e1 = newStep("play.g.takeq", { n: n }); takeAway(e1, n, function () { finish(e1); var e2 = newStep("play.g.tapnib", { side: S["play.g.leftside"], b: b.slice(0, 4) }); nibToHex(e2, b.slice(0, 4), function (h1) { finish(e2); var e3 = newStep("play.g.tapnib", { side: S["play.g.rightside"], b: b.slice(4) }); nibToHex(e3, b.slice(4), function (h2) { finish(e3); end("play.g.done.d2h", { n: n, b: b, h: h1 + h2 }); }); }); }); }
     }
     box.appendChild(ask); box.appendChild(steps); box.appendChild(fin);
@@ -813,16 +815,16 @@ function renderLearn(t, n) {
   Promise.all([refresh(t), loadLearn(t)]).then(function (rr) {
     var L = rr[1], p = prog(t); if (!p.open) return go("#th");
     var N = L.screens.length; if (n < 1 || n > N) return go("#th/" + t);
-    var scr = L.screens[n - 1], ticked = !!(p.bits >> (n - 1) & 1);
+    var scr = L.screens[n - 1], sl = slotAt(t, n), ticked = !!(p.bits >> (sl - 1) & 1);
     $app.appendChild(crumbFrom(S["nav.home"] + " › " + fmt("learn.crumb", { t: t, n: n, N: N }), ["#", "#th/" + t, "#th/" + t + "/learn/1"]));
     var sc = el("section.scr.tw-" + t); var pills = el("div.pills");
-    for (var i = 1; i <= N; i++) { var on = i === n, ok = !!(p.bits >> (i - 1) & 1); pills.appendChild(el("a.p" + (on ? ".on" : "") + (ok ? ".ok" : ""), { href: "#th/" + t + "/learn/" + i, text: String(i), attr: { "aria-label": fmt(ok ? "aria.screenTicked" : "aria.screen", { n: i }), "aria-current": on ? "page" : null } })); }
+    for (var i = 1; i <= N; i++) { var on = i === n, ok = !!(p.bits >> (slotAt(t, i) - 1) & 1); pills.appendChild(el("a.p" + (on ? ".on" : "") + (ok ? ".ok" : ""), { href: "#th/" + t + "/learn/" + i, text: String(i), attr: { "aria-label": fmt(ok ? "aria.screenTicked" : "aria.screen", { n: i }), "aria-current": on ? "page" : null } })); }
     sc.appendChild(pills); if (scr.kicker) sc.appendChild(el("p.kicker", { text: scr.kicker })); sc.appendChild(el("h2", { text: scr.title })); sc.appendChild(el("p.goal", { text: scr.goal }));
     var saidHead = false, tickDone = ticked;
     function saved(r) { if (!ST.recs[t]) ST.recs[t] = {}; ST.recs[t].L = r.L; ST.recs[t].O = r.O; var pl = pills.children[n - 1]; if (pl) pl.classList.add("ok"); }
-    function tick() { if (tickDone) return Promise.resolve(); tickDone = true; return api("apiTheory", { op: "learn", t: t, n: n }).then(saved).catch(function (e) { tickDone = false; console.error(e); toast(S["err.save"]); }); }
-    function checked(right) { var first = !tickDone; tickDone = true; return api("apiTheory", { op: "learn", t: t, n: n, tried: 1, right: right ? 1 : 0 }).then(saved).catch(function (e) { console.error(e); if (first) { tickDone = false; toast(S["err.save"]); } }); }
-    markOpened(t, n);
+    function tick() { if (tickDone) return Promise.resolve(); tickDone = true; return api("apiTheory", { op: "learn", t: t, n: sl }).then(saved).catch(function (e) { tickDone = false; console.error(e); toast(S["err.save"]); }); }
+    function checked(right) { var first = !tickDone; tickDone = true; return api("apiTheory", { op: "learn", t: t, n: sl, tried: 1, right: right ? 1 : 0 }).then(saved).catch(function (e) { console.error(e); if (first) { tickDone = false; toast(S["err.save"]); } }); }
+    markOpened(t, sl);
     scr.blocks.forEach(function (b) {
       if (b.say) { var sb = el("div.blk.say"); if (!saidHead) { sb.appendChild(el("div.head", { text: S["learn.head.means"] })); saidHead = true; } b.say.forEach(function (ln) { sb.appendChild(el("p", { html: termHtml(ln) })); }); sc.appendChild(sb); }
       else if (b.note) { var nt = b.note, nb = el("div.blk.note" + (nt.kind ? "." + nt.kind : "")); if (nt.title) nb.appendChild(el("h4", { text: nt.title })); arr(nt.lines).forEach(function (ln) { nb.appendChild(el("p", { html: termHtml(ln) })); }); sc.appendChild(nb); }
@@ -1404,17 +1406,17 @@ function renderStaff($app) {
         if (Ns) {
           dr.appendChild(el("h3.staffsec", { text: S["staff.th.learnHead"] }));
           var spent = d.time || {}, lt = el("table.sttab"), lh = el("tr"); S["staff.th.learnCols"].split(" · ").forEach(function (c) { lh.appendChild(el("th", { text: c })); }); lt.appendChild(lh);
-          for (var si = 1; si <= Ns; si++) { var m = 1 << (si - 1), c = tries[si], ltr = el("tr"), sc = L && L.screens[si - 1];
+          for (var si = 1; si <= Ns; si++) { var sk = slotAt(t, si), m = 1 << (sk - 1), c = tries[sk], ltr = el("tr"), sc = L && L.screens[si - 1];
             ltr.appendChild(el("td", { text: sc ? si + ". " + sc.title : fmt("staff.th.screenN", { n: si }) }));
             ltr.appendChild(el("td", { text: S[openB & m ? "staff.th.yes" : "staff.th.no"] })); ltr.appendChild(el("td", { text: S[doneB & m ? "staff.th.yes" : "staff.th.no"] }));
-            ltr.appendChild(el("td", { text: c ? (c[0] === 1 ? fmt("staff.th.try1", { r: c[1] }) : fmt("staff.th.tries", { n: c[0], r: c[1] })) : S[doneB & m ? "staff.th.noTries" : "staff.th.notTried"] })); ltr.appendChild(el("td", { text: spent[si] ? timeWords(spent[si]) : openB & m ? S["staff.th.timeNone"] : "—" })); lt.appendChild(ltr); }
+            ltr.appendChild(el("td", { text: c ? (c[0] === 1 ? fmt("staff.th.try1", { r: c[1] }) : fmt("staff.th.tries", { n: c[0], r: c[1] })) : S[doneB & m ? "staff.th.noTries" : "staff.th.notTried"] })); ltr.appendChild(el("td", { text: spent[sk] ? timeWords(spent[sk]) : openB & m ? S["staff.th.timeNone"] : "—" })); lt.appendChild(ltr); }
           dr.appendChild(el("div.sttabw", {}, [lt]));
           var spentAll = Object.keys(spent).reduce(function (a, k) { return a + (Number(spent[k]) || 0); }, 0);
           dr.appendChild(el("p.small.timenote", { text: (spentAll ? fmt("staff.th.timeTotal", { time: timeWords(spentAll) }) + " " : "") + S["staff.th.timeNote"] }));
           var visits = d.visits || [];
           if (visits.length) { var vd = el("details.ppmore.visits"), vt = el("table.sttab"), vh = el("tr"); vd.appendChild(el("summary", { text: visits.length === 1 ? S["staff.th.visitsOne"] : fmt("staff.th.visits", { n: visits.length }) }));
             S["staff.th.visitsCols"].split(" · ").forEach(function (c) { vh.appendChild(el("th", { text: c })); }); vt.appendChild(vh);
-            visits.forEach(function (x) { var vs = L && L.screens[x[1] - 1], vr = el("tr"); vr.appendChild(el("td", { text: seenWhen(x[0], d.now) })); vr.appendChild(el("td", { text: vs ? x[1] + ". " + vs.title : fmt("staff.th.screenN", { n: x[1] }) })); vr.appendChild(el("td", { text: timeWords(x[2]) })); vt.appendChild(vr); });
+            visits.forEach(function (x) { var vp = posOf(t, x[1]), vs = L && L.screens[vp - 1], vr = el("tr"); vr.appendChild(el("td", { text: seenWhen(x[0], d.now) })); vr.appendChild(el("td", { text: vs ? vp + ". " + vs.title : fmt("staff.th.screenN", { n: vp }) })); vr.appendChild(el("td", { text: timeWords(x[2]) })); vt.appendChild(vr); });
             vd.appendChild(el("div.sttabw", {}, [vt])); vd.appendChild(el("p.small", { text: S["staff.th.visitsNote"] })); dr.appendChild(vd); }
         }
         dr.appendChild(el("h3.staffsec", { text: S["staff.th.ppHead"] }));
@@ -1484,7 +1486,7 @@ function tmTick() {
   var now = Date.now(), dt = Math.min(now - tmLast, TM_CAP), m = /^#th\/([1-7])\/learn(?:\/(\d+))?$/.exec(location.hash || "");
   tmLast = now;
   if (!m || !LIVE || document.hidden || now - tmAct >= TM_IDLE) return;
-  tmAdd(m[1], m[2] || "1", Math.round(dt / 1000), now);
+  tmAdd(m[1], String(slotAt(Number(m[1]), Number(m[2] || 1))), Math.round(dt / 1000), now);
 }
 function tmSend() {
   if (!tmBuf.length) return;
