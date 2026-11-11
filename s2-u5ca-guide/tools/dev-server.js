@@ -140,7 +140,7 @@ vm.runInContext('(function (g) { var now = Date.now, at = null; Date.now = funct
 vm.runInContext(fs.readFileSync(CODE, 'utf8'), sandbox, { filename: 'Code.gs' });
 if (process.env.S2_U4_MIX != null) sandbox.U4_MIX = Number(process.env.S2_U4_MIX);   // 0 = pair at once (older drives); unset = the real 20 second shuffle wait
 
-const MIME = { '.js': 'text/javascript', '.wasm': 'application/wasm', '.png': 'image/png', '.css': 'text/css' };
+const MIME = { '.js': 'text/javascript', '.wasm': 'application/wasm', '.png': 'image/png', '.css': 'text/css', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.webp': 'image/webp' };
 function page(q) {
   const cls = String(q.get('class') || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 40);
   const as = String(q.get('as') || 'pupil1@c2ken.net');

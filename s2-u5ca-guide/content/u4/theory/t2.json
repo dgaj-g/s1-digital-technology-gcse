@@ -12,7 +12,7 @@
    "blocks": [
     {
      "say": [
-      "Every chip in a computer is packed with millions of tiny switches. Each switch is off or on.",
+      "Every chip in a computer is packed with billions of tiny switches. Each switch is either off or on.",
       "A switch with only two states is cheap, fast and hard to get wrong. That is why computers count in 0 and 1.",
       "Off is written as 0. On is written as 1. One switch, one 0 or 1, is a [[bit|1]].",
       "A bit is the smallest thing a computer can store. Nothing is smaller than off or on.",
@@ -22,31 +22,31 @@
     },
     {
      "picture": {
-      "title": "A wall plate with eight light switches",
+      "title": "A wall plate of light switches",
       "lines": [
-       "Picture a wall plate with eight light switches in a row. Each switch is up or down, nothing in between.",
-       "That plate is a byte. One switch on its own is a bit. Four switches together make a nibble.",
-       "A computer holds billions of these plates. Every photo, song and message is stored as switches."
+       "Look at the wall plate in the photo. It has four light switches. Each switch is on or off, never in between.",
+       "One switch is a bit. The four switches on this plate make a nibble. Put two plates side by side and the eight switches make a byte.",
+       "A computer chip holds billions of switches like these, only far smaller. Every photo, song and message is stored as switches that are on or off."
       ],
       "match": [
        [
-        "One light switch, up or down",
-        "A bit, 0 or 1"
+        "One light switch, on or off",
+        "A bit, 1 or 0"
        ],
        [
-        "Four switches on the plate",
+        "The four switches on one plate",
         "A nibble, 4 bits"
        ],
        [
-        "The whole plate of eight switches",
+        "Two plates side by side, eight switches",
         "A byte, 8 bits"
        ],
        [
-        "Switch up",
+        "Switch on",
         "1"
        ],
        [
-        "Switch down",
+        "Switch off",
         "0"
        ]
       ],
@@ -54,14 +54,21 @@
       "heads": [
        "In the picture",
        "In the computer"
-      ]
+      ],
+      "img": {
+       "src": "t2-s1-switch-plate.jpg",
+       "alt": "A white wall plate with four light switches.",
+       "cap": "Four switches on one plate. That is a nibble.",
+       "credit": "Photo: Fredquint, CC BY-SA 3.0",
+       "page": "https://commons.wikimedia.org/wiki/File:Australian_four_gang_wall_plate.jpg"
+      }
      }
     },
     {
      "play": {
       "kind": "bits",
       "title": "Flip the eight switches",
-      "lead": "Tap any switch to flip it. Count how many are on. Four switches is one nibble, eight is one byte.",
+      "lead": "Tap any switch to flip it on or off. The brackets above the switches show each nibble of four and the whole byte of eight. The one button below the switches reads All on or All off, and flips every switch.",
       "show": [
        "count"
       ]
@@ -113,56 +120,69 @@
      "say": [
       "The numbers you count with every day are [[denary|1]] numbers. Denary uses ten digits, 0 to 9.",
       "A computer counts with only two digits, 0 and 1. That is [[binary|1]].",
-      "Each bit in a byte has a heading. From the right, the headings are 1, 2, 4, 8, 16, 32, 64 and 128.",
-      "Each heading is double the one to its right. A 1 under a heading means that heading is counted.",
-      "To turn a byte into denary, add up the headings that have a 1 under them. Ignore the 0s."
+      "To read a byte, write a number above each of its eight bits. These numbers are called headings.",
+      "Start at the far right. The far right heading is 1. The heading to its left is 2. Then 4, then 8, then 16, 32 and 64. The far left heading is 128.",
+      "So each heading is double the one to its right.",
+      "A 1 under a heading means add that heading to the total. A 0 under a heading means add nothing for it.",
+      "To change binary into denary, add up the headings that have a 1 under them. The total is the denary number."
      ]
     },
     {
      "anim": {
       "scene": "bin2den",
-      "title": "Turn 10110101 into denary, step by step",
-      "lead": "Press Next to see the working the examiner wants to see. Every step adds one thing to the table.",
+      "title": "Change the binary number 10110101 into denary, step by step",
+      "lead": "Press Next to watch the binary number 10110101 being changed into denary. This is the working the examiner wants to see.",
       "steps": [
-       "Start by writing the eight headings in a row. Begin with 128 on the left and halve each time.",
-       "Copy the bits under the headings, one bit under each heading. Here the pattern is 10110101.",
-       "Mark every heading that has a 1 under it. Headings with a 0 under them score nothing.",
-       "Write those headings as an addition. 128 + 32 + 16 + 4 + 1.",
-       "Add them up. 128 + 32 + 16 + 4 + 1 = 181. So 10110101 is 181 in denary."
+       "Write the eight headings in a row. 128 goes on the far left. Halve it each time until you reach 1 on the far right.",
+       "Copy the binary number under the headings, one bit under each heading. Here the bits are 10110101.",
+       "Look at each 1. You will add the number above it. Those numbers light up: 128, 32, 16, 4 and 1. A 0 adds nothing, so skip it.",
+       "Write those numbers as one sum: 128 + 32 + 16 + 4 + 1.",
+       "Add them up. 128 + 32 + 16 + 4 + 1 = 181. So the binary number 10110101 is 181 in denary."
       ]
      }
     },
     {
      "picture": {
-      "title": "A ruler with eight marks",
+      "title": "Weights on a kitchen scale",
       "lines": [
-       "Picture a ruler where the marks are not evenly spaced. The marks read 128, 64, 32, 16, 8, 4, 2 and 1.",
-       "Under each mark is a switch. Turn a switch on and you add that mark to the total.",
-       "With all eight switches on you get 255. With all off you get 0. Every number between has its own pattern."
+       "Picture a kitchen scale and eight weights. In grams, they are 128, 64, 32, 16, 8, 4, 2 and 1. Line them up in that order, heaviest on the left, just like the headings.",
+       "Each weight is double the one to its right. A 1 means put that weight on the scale. A 0 means leave it off.",
+       "Take the animation's byte, 10110101. It puts 128, 32, 16, 4 and 1 g on the scale. The scale reads 181 g. That reading is the denary number, 181."
       ],
       "match": [
        [
-        "A mark on the ruler",
-        "A place value, also called a heading"
+        "A weight in the row",
+        "A heading"
        ],
        [
-        "A switch turned on under a mark",
-        "A 1 in that place"
+        "Putting a weight on the scale",
+        "A 1 under that heading"
        ],
        [
-        "Adding up the marks you switched on",
-        "Converting binary to denary"
+        "Leaving a weight off",
+        "A 0 under that heading"
        ],
        [
-        "All eight switches on, 255",
+        "The reading on the scale",
+        "The denary number"
+       ],
+       [
+        "All eight weights on, 255 g",
         "The biggest number one byte can hold"
        ]
       ],
-      "breaks": "A real ruler is evenly spaced. This one doubles at every mark, and that doubling is what makes binary work.",
+      "breaks": "Real sets of weights do not always double, like the old set in the photo. In binary, every heading is exactly double the one to its right.",
       "heads": [
        "In the picture",
        "In binary"
-      ]
+      ],
+      "img": {
+       "src": "t2-s2-weights.jpg",
+       "alt": "Five brass cup weights in a row, biggest on the left, smallest on the right.",
+       "cap": "A real set of weights, heaviest on the left. Now picture eight, each double the next.",
+       "credit": "Photo: R. Henrik Nilsson, CC BY 4.0",
+       "page": "https://commons.wikimedia.org/wiki/File:Set_of_five_Swedish_nested_cup_brass_weights_from_1852.jpg"
+      }
      }
     },
     {
@@ -172,7 +192,7 @@
        "b2d"
       ],
       "title": "Your turn: binary to denary",
-      "lead": "A random byte appears. Write the headings in your head, add the ones with a 1, type the total. Check it, then press Another one."
+      "lead": "A random byte appears. First tap each heading that has a 1 under it. Then add up the headings you tapped. Each step tells you what to do."
      }
     },
     {
@@ -222,18 +242,18 @@
    "blocks": [
     {
      "say": [
-      "Going the other way is a game of take away. Write the eight headings, then start at 128.",
+      "To change denary into binary, play a game of take away. Write the eight headings, 128 on the far left down to 1 on the far right. Start at 128.",
       "Ask one question at every heading. Can this heading be taken away from what I have left?",
       "If it can, write a 1 under it and take it away. If it cannot, write a 0 and move on.",
-      "Keep going until the 1 heading. What you have left should be 0 when you finish.",
+      "Keep going until you reach the far right heading, 1. The amount left should be 0 by then.",
       "Always write all eight bits, even when the first ones are 0."
      ]
     },
     {
      "anim": {
       "scene": "den2bin",
-      "title": "Turn 147 into binary, step by step",
-      "lead": "Press Next to ask the question at each heading. Watch the remainder fall to 0.",
+      "title": "Change the denary number 147 into binary, step by step",
+      "lead": "Press Next to ask the question at each heading. Watch the amount left fall to 0.",
       "steps": [
        "Write the eight headings. Start with 147 as the amount left.",
        "Can 128 be taken from 147? Yes. Write 1. 147 take away 128 leaves 19.",
@@ -248,7 +268,7 @@
      }
     },
     {
-     "watch": "A pattern with fewer than eight bits can lose a mark. The 2022 paper gave one mark for 7 bits, not two. Write all eight."
+     "watch": "Always write all eight bits, even when the first ones are 0. In 2022, an answer with only 7 bits got one mark out of two."
     },
     {
      "play": {
@@ -257,7 +277,7 @@
        "d2b"
       ],
       "title": "Your turn: denary to binary",
-      "lead": "A random number appears. Switch on the headings that fit, left to right, then check. The take away table shows after you check."
+      "lead": "A random number appears. At each heading, answer one question: can it be taken away from the amount left? Tap Yes or No and the bits fill in as you go."
      }
     },
     {
@@ -316,39 +336,42 @@
     },
     {
      "picture": {
-      "title": "A staircase of boxes",
+      "title": "A kilo of sugar",
       "lines": [
-       "Picture a staircase. On the bottom step sits a bit. One step up, four bits make a nibble, then eight make a byte.",
-       "Each step above holds 1,024 of the step below. Kilobyte, megabyte, gigabyte, terabyte.",
-       "A text message sits on the kilobyte step. A song is a few megabytes. A film is a few gigabytes. A hard disk is terabytes."
+       "Look at the bag of sugar in the photo. It says 1 kg. Kilo means a thousand, so the bag holds 1,000 grams.",
+       "Storage uses kilo too, with one twist. A kilobyte is 1,024 bytes, not 1,000, because computers count in doubles.",
+       "Every unit is 1,024 of the one below it. 1,024 bytes make a kilobyte. 1,024 kilobytes make a megabyte, and so on up to the terabyte."
       ],
       "match": [
        [
-        "The bottom step",
-        "Bit"
+        "One gram of sugar",
+        "One byte"
        ],
        [
-        "Half of the byte step",
-        "Nibble, 4 bits"
+        "The 1 kg bag, 1,000 grams",
+        "A kilobyte, 1,024 bytes"
        ],
        [
-        "The byte step",
-        "Byte, 8 bits"
+        "Kilo on the bag",
+        "Kilo in kilobyte"
        ],
        [
-        "Each step up",
+        "Each unit up",
         "1,024 times bigger"
-       ],
-       [
-        "The top step here",
-        "Terabyte"
        ]
       ],
-      "breaks": "The staircase does not stop at terabyte. Petabytes and more exist, but the GCSE paper stops here.",
+      "breaks": "Kilo on a bag of sugar means exactly 1,000. Kilo in kilobyte means 1,024. In rough working the exam accepts 1,000.",
       "heads": [
        "In the picture",
        "Unit of storage"
-      ]
+      ],
+      "img": {
+       "src": "t2-s4-sugar.jpg",
+       "alt": "A 1 kg bag of granulated sugar.",
+       "cap": "1 kg on the bag means 1,000 grams of sugar.",
+       "credit": "Photo: Ardfern, CC BY-SA 3.0",
+       "page": "https://commons.wikimedia.org/wiki/File:Sugar,_Downpatrick,_September_2010.JPG"
+      }
      }
     },
     {
@@ -489,9 +512,9 @@
      "picture": {
       "title": "A nickname for every nibble",
       "lines": [
-       "Think of each nibble as a person with a long full name, like 1011. Hex gives that person a one-letter nickname, B.",
-       "Sixteen nibbles, sixteen nicknames. 0000 is 0, 1001 is 9, 1010 is A, 1111 is F.",
-       "A web colour like #FF6600 is three bytes written as nicknames. FF is full red, 66 is some green, 00 is no blue."
+       "A name sticker gives you a short name that is quick to read. Hex does the same job for nibbles. In Play with it below, the hex digit above each nibble is its name sticker.",
+       "The nibble 1011 is long to read. Its hex nickname is B. There are sixteen different nibbles, so there are sixteen nicknames. For example, 0000 is 0, 1001 is 9, 1010 is A and 1111 is F.",
+       "A web colour like #FF6600 is three bytes written as nicknames. FF is full red, 66 is some green and 00 is no blue."
       ],
       "match": [
        [
@@ -515,14 +538,21 @@
       "heads": [
        "In the picture",
        "In hexadecimal"
-      ]
+      ],
+      "img": {
+       "src": "t2-s5-name-sticker.jpg",
+       "alt": "A pile of HELLO my name is stickers, each with a first name written on it.",
+       "cap": "A name sticker gives a short name. A hex digit is a short name for a nibble.",
+       "credit": "Photo: Travis Wise, CC BY 2.0",
+       "page": "https://commons.wikimedia.org/wiki/File:Hello_My_Name_Is_(15283079263).jpg"
+      }
      }
     },
     {
      "play": {
       "kind": "bits",
       "title": "Watch the hex readout",
-      "lead": "Flip switches and watch the hex readout. Each hex digit watches only its own four switches.",
+      "lead": "Flip the switches and watch the brackets above them. Each nibble of four switches gets its own hex digit.",
       "show": [
        "den",
        "hex"
@@ -582,7 +612,7 @@
       "Binary to hex is a split. Cut the byte into two nibbles, four bits on the left and four on the right.",
       "Give each nibble its own value using the headings 8, 4, 2, 1. Then write that value as one hex digit.",
       "Values 0 to 9 stay as digits. 10 to 15 become the letters A to F.",
-      "Hex to binary is the same trip backwards. Each hex digit becomes four bits. Put the two nibbles side by side."
+      "Hex to binary goes the other way. Each hex digit becomes four bits. Put the two nibbles side by side."
      ]
     },
     {
@@ -610,7 +640,7 @@
        "h2b"
       ],
       "title": "Your turn: hex and binary",
-      "lead": "The questions take turns, byte to hex and hex to byte. Check each one, then press Another one."
+      "lead": "The questions take turns: byte to hex, then hex to byte. Each step tells you what to tap. Press Another one for a new question."
      }
     },
     {
@@ -693,7 +723,7 @@
        "d2h"
       ],
       "title": "Your turn: hex and denary",
-      "lead": "The questions take turns, hex to denary and denary to hex. Type your answer and check it. The working shows after."
+      "lead": "The questions take turns: hex to denary, then denary to hex. Each step tells you what to do, and the working builds up as you go."
      }
     },
     {
@@ -774,33 +804,40 @@
      "picture": {
       "title": "A car's mileage counter rolling over",
       "lines": [
-       "An old car has a mileage counter with six digit wheels. It can show up to 999999.",
-       "Drive one more mile and every wheel rolls to 0. The counter says 000000. The car did not go back in time.",
-       "The million was lost because there was no seventh wheel. A byte has eight wheels, and the ninth bit is that lost million."
+       "Look at the mileage counter in the photo. It has five wheels for whole miles, so the most it can show is 99999.",
+       "Drive one more mile and every wheel rolls round to 0. The counter now says 00000. The car did not go back in time.",
+       "The true total, 100000, needs a sixth wheel. There is no sixth wheel, so the 1 at the front is lost. A byte has eight bits. When a sum needs a ninth bit, that bit is lost too. That is overflow."
       ],
       "match": [
        [
-        "Six digit wheels",
+        "Five wheels for miles",
         "Eight bits in a byte"
        ],
        [
-        "The counter rolling past 999999",
-        "The sum going past 255"
+        "Going past 99999",
+        "A sum going past 255"
        ],
        [
-        "The missing seventh wheel",
+        "The missing sixth wheel",
         "The ninth bit, which is overflow"
        ],
        [
-        "The counter showing a tiny number",
-        "A result that is incorrect"
+        "The counter showing 00000",
+        "A result that is wrong"
        ]
       ],
       "breaks": "A mileage counter rolls over quietly. The exam wants you to circle the overflow bit so the examiner sees you spotted it.",
       "heads": [
        "In the picture",
        "In the byte"
-      ]
+      ],
+      "img": {
+       "src": "t2-s8-odometer.jpg",
+       "alt": "A car's mileage counter shown three times, rolling from 99999 to 00000.",
+       "cap": "Top: 99999 miles. Bottom: one mile later, every wheel is back to 0. The white box on the right counts tenths of a mile.",
+       "credit": "Photo: Hellbus, public domain",
+       "page": "https://commons.wikimedia.org/wiki/File:Odometer_rollover.jpg"
+      }
      }
     },
     {
@@ -899,9 +936,9 @@
      "picture": {
       "title": "Two phone books",
       "lines": [
-       "ASCII is a thin phone book for one small town. Every person has a number, and there is room for 256 names.",
-       "Unicode is the phone book for the whole world. Every letter in every language has its own number, emoji too.",
-       "The world book kept every number from the town book. Look up A and you get 65 in both."
+       "A phone book gives every person a number. A character code gives every character a number.",
+       "ASCII is a thin phone book for one small town. It only has room for 128 names, or 256 in extended ASCII.",
+       "Unicode is a phone book for the whole world. Every character in every language has its own number, emoji too. The world book kept every number from the town book, so A is 65 in both."
       ],
       "match": [
        [
@@ -910,7 +947,7 @@
        ],
        [
         "The whole-world phone book",
-        "Unicode, over 65,000 characters"
+        "Unicode, every character in every language"
        ],
        [
         "A person's phone number",
@@ -918,14 +955,21 @@
        ],
        [
         "The town book sitting inside the world book",
-        "ASCII is a subset of Unicode"
+        "ASCII is the first part of Unicode"
        ]
       ],
       "breaks": "A phone book is printed once. Unicode keeps growing, with new emoji added most years.",
       "heads": [
        "In the picture",
        "Character codes"
-      ]
+      ],
+      "img": {
+       "src": "t2-s9-phone-book.jpg",
+       "alt": "An old black dial telephone beside a printed phone book.",
+       "cap": "An old phone book. Every name in it has its own number.",
+       "credit": "Photo: Ciara Ní Riain, CC BY-SA 4.0",
+       "page": "https://commons.wikimedia.org/wiki/File:Rotary_phone_1946_phone_book_Workhouse_Svendborg.jpg"
+      }
      }
     },
     {
@@ -991,11 +1035,11 @@
     },
     {
      "picture": {
-      "title": "Labelled jars on a shelf",
+      "title": "Jars on a shelf",
       "lines": [
-       "Picture a shelf of jars, each with a label saying what goes inside. One jar says whole numbers only.",
-       "Another says numbers with decimal points. Another says one letter only. Another says words.",
-       "One jar holds a single coin, heads or tails. One holds a calendar page. Put a price in the whole numbers jar and the pennies fall off."
+       "Look at the jars in the photo. Each jar holds one kind of food.",
+       "Now picture a shelf of jars for data, each with a label. One label says whole numbers only. One says numbers with a decimal point. One says one letter only. One says words.",
+       "Two more jars: one holds only true or false, and one holds only dates and times. Put a price like 1.99 in the whole numbers jar and the .99 is lost."
       ],
       "match": [
        [
@@ -1003,7 +1047,7 @@
         "Integer"
        ],
        [
-        "The decimals jar",
+        "The decimal point jar",
         "Real, also called double or float"
        ],
        [
@@ -1015,19 +1059,26 @@
         "String"
        ],
        [
-        "The heads or tails coin",
-        "Boolean, true or false"
+        "The true or false jar",
+        "Boolean"
        ],
        [
-        "The calendar page",
+        "The dates and times jar",
         "Date/time"
        ]
       ],
-      "breaks": "You could force a word into a real jar. The computer refuses to put a word into an integer and shows an error instead.",
+      "breaks": "You can squeeze almost anything into a kitchen jar. A variable is stricter: put a word into an integer and the program shows an error.",
       "heads": [
        "In the picture",
        "Data type"
-      ]
+      ],
+      "img": {
+       "src": "t2-s10-jars.jpg",
+       "alt": "Glass jars of food on a kitchen shelf.",
+       "cap": "Kitchen jars, each holding one kind of food. A data type says what one variable can hold.",
+       "credit": "Photo: Shixart1985, CC BY 2.0",
+       "page": "https://commons.wikimedia.org/wiki/File:Container_storage_at_a_kitchen_pantry_with_different_types_of_food_items_in_jars_and_bottles_at_home.jpg"
+      }
      }
     },
     {
@@ -1193,29 +1244,39 @@
     },
     {
      "picture": {
-      "title": "Two switches and a lamp",
+      "title": "Two buttons, a doorbell and a fridge light",
       "lines": [
-       "A lamp is wired to two wall switches, A and B.",
-       "Wired as AND, the lamp lights only when both switches are on. Wired as OR, either switch alone lights it.",
-       "Wired as NOT on one switch, the lamp does the opposite. Switch off means lamp on."
+       "Look at the machine control in the photo. It has a green button at each end. The machine only runs while both buttons are pressed, so both hands are kept safe. That is AND.",
+       "Picture a house with a bell button at the front door and the back door. The bell rings when either button is pressed, or both. That is OR.",
+       "A fridge light does the opposite of the door. Door shut, light off. Door open, light on. That is NOT.",
+       "In Play with it below, switches A and B are like the two buttons. The lamp is like the machine."
       ],
       "match": [
        [
-        "Both switches must be on",
+        "Both buttons pressed before the machine runs",
         "AND"
        ],
        [
-        "Either switch will do",
+        "Either doorbell button rings the bell",
         "OR"
        ],
        [
-        "The lamp does the opposite of its switch",
+        "The fridge light doing the opposite of the door",
         "NOT"
        ]
       ],
-      "breaks": [
-       "Real switches can be half pressed or broken. A Boolean value is always exactly 0 or 1."
-      ]
+      "breaks": "Real buttons can stick or break. A Boolean value is always exactly 0 or 1.",
+      "heads": [
+       "In the picture",
+       "Boolean rule"
+      ],
+      "img": {
+       "src": "t2-s11-two-hand.jpg",
+       "alt": "An orange control box on a stand, with a green button at each end.",
+       "cap": "A two-hand control. The machine only runs while both green buttons are pressed.",
+       "credit": "Photo: Sam D. Wilbur, CC BY 4.0",
+       "page": "https://commons.wikimedia.org/wiki/File:Two-hands_control_device.jpg"
+      }
      }
     },
     {

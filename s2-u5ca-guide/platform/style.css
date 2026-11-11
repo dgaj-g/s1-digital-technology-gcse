@@ -1696,3 +1696,59 @@ body.is-th main,body.is-pair main,body.is-staff main{max-width:1420px}
 @media (prefers-reduced-motion: reduce) {
   .btn[aria-busy="true"]::after, .chip[aria-busy="true"]::after { content: "\2022\2022\2022"; width: auto; height: auto; border: 0; border-radius: 0; letter-spacing: .1em; animation: busydots 1.2s ease-in-out infinite; }
 }
+
+/* ---------- Topic 2 Version 21 (11 Nov 2026): button space, Picture it photographs, nibble and byte brackets, guided practice ---------- */
+/* every row of buttons on a Learn screen sits clear of what is above it (the gap gate checks this at four sizes) */
+.blk .acts{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px}
+.blk .acts .btn{margin:0}
+.pic .picgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,280px);gap:20px;align-items:start}
+.pic .pictxt p:first-child{margin-top:0}
+.pic figure.picimg{margin:0;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:8px}
+.pic figure.picimg img{display:block;width:100%;height:auto;max-height:320px;object-fit:contain;border-radius:8px}
+.pic figcaption{margin-top:6px;font-size:15px;line-height:1.35}
+.pic figcaption .cp{display:block;font-weight:700;color:var(--ink)}
+.pic figcaption .cr{display:block;font-size:12px;color:var(--mute);margin-top:3px}
+.pic figcaption .cr a{color:var(--mute)}
+@media (max-width:720px){.pic .picgrid{grid-template-columns:1fr}.pic figure.picimg{max-width:340px;order:-1}}
+.nibs{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:560px;margin-top:6px}
+.nibs .br,.bytebar .br{height:10px;border:3px solid var(--sw-ink);border-top:0;border-radius:0 0 10px 10px}
+.nibs .lb,.bytebar .lb{text-align:center;font:800 14px var(--sans);color:var(--sw-ink);margin-top:3px;line-height:1.25}
+.bytebar{max-width:560px;margin-top:6px}
+.gsteps{display:grid;gap:16px}
+.gstep{border-left:4px solid var(--sw);padding:2px 0 4px 14px}
+.gstep.done{border-left-color:var(--line)}
+.gstep .gn{font:900 13px var(--sans);letter-spacing:.5px;text-transform:uppercase;color:var(--mute);margin:0 0 2px}
+.gstep .gq{font-weight:700;margin:0 0 10px}
+.gstep .gq+.gq{margin-top:12px}
+.gtab{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;max-width:560px}
+.gtab.c4{grid-template-columns:repeat(4,minmax(0,1fr));max-width:290px}
+.ghead,.ghd{border:2px solid var(--sw-ink);background:var(--card);color:var(--sw-ink);font:900 16px var(--mono);border-radius:10px;padding:8px 0;min-height:44px;text-align:center;box-sizing:border-box}
+.ghd{border-color:var(--line);color:var(--mute);display:grid;place-items:center}
+.ghead{cursor:pointer}
+.ghead.on{background:var(--sw-ink);color:var(--white)}
+.ghead:disabled{cursor:default}
+.ghead:focus-visible,.gkey:focus-visible{outline:3px solid var(--sw);outline-offset:2px}
+.ghead.no,.gkey.no{animation:gshake .35s}
+@keyframes gshake{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.gbit{font:900 22px var(--mono);text-align:center;padding:6px 0;border-radius:8px;background:var(--tint);color:var(--ink)}
+.gbit.one{color:var(--sw-ink);background:var(--tint)}
+.gbit.q{color:var(--mute)}
+.gbit.now{outline:3px solid var(--sw);outline-offset:-3px}
+.gsum{font:900 18px var(--mono);color:var(--sw-ink);margin:10px 0 0}
+.gtake{font-weight:900;font-size:19px;margin:10px 0 0}
+.gmsg{margin:10px 0 0;font-weight:700}
+.gmsg.warn{color:var(--mark)}
+.gadd{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font:900 19px var(--mono);color:var(--sw-ink)}
+.play .gadd .pracin{width:110px}
+.gkeys{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;max-width:560px}
+.gkey{display:grid;justify-items:center;gap:1px;border:2px solid var(--line);background:var(--card);border-radius:10px;padding:5px 0;cursor:pointer;color:var(--ink);font:inherit;min-height:48px}
+.gkey b{font:900 19px var(--mono)}
+.gkey small{font:600 12px var(--sans);color:var(--mute)}
+.gkey.on{background:var(--sw-ink);border-color:var(--sw-ink);color:var(--white)}
+.gkey.on small{color:var(--white)}
+.gkey:disabled{cursor:default}
+.sws.four{grid-template-columns:repeat(4,minmax(0,1fr));max-width:280px}
+.gfin{margin-top:14px}
+.gfin .okline{font-weight:900;font-size:18px;margin:0}
+.play .pwork{margin-top:12px}
+@media (max-width:520px){.nibs{gap:4px}.gtab,.gkeys{gap:4px}.ghead,.ghd{font-size:14px}.gbit{font-size:19px}.gkey b{font-size:17px}}
