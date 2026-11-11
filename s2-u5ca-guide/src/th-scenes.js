@@ -97,7 +97,7 @@ S.recipe=function(st){
    +card('B','Cheese sauce',['Melt butter, stir in flour','Add milk and cheese'])
    +card('C','Assemble',['Layer pasta, meat sauce, cheese sauce','Repeat until the dish is full'])
    +card('D','Bake',['180 \u00b0C for 40 minutes','Rest for 5 minutes'])
-   +'</div><div class="rcl">'+tg('Each small card: one procedure')+'</div></div>';
+   +'<div class="rcl">'+tg('Each small card: one procedure')+'</div></div></div>';
 };
 
 S.sum=function(st,i){
@@ -136,7 +136,7 @@ S.alex=function(st,i){
 
 S.alexcard=function(st){
   st.innerHTML='<div class="sc"><div class="obj"><div class="objt">'+tg('object: alex','sw')+'</div><div class="dbox">'+tg('data','lab')+vb('position',1)+'</div>'+tg('method','lab')+cd('Move()','<ol class="ins"><li>read the stored position</li><li>add 1 to it</li><li>store the new value</li></ol>')+'</div>'
-   +'<div class="vars">'+vg('In Main',code(['alex.Move();'],{nonum:true})+'<div style="margin-top:6px">The object\u2019s name, a dot, then the method\u2019s name. This is how the program calls Move on alex.</div>')+'</div></div>';
+   +'<div class="vars" data-slot="lines">'+vg('In Main',code(['alex.Move();'],{nonum:true})+'<div style="margin-top:6px">The object\u2019s name, a dot, then the method\u2019s name. This is how the program calls Move on alex.</div>')+'</div></div>';
 };
 
 S.cutter=function(st,i){

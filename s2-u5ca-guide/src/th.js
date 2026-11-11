@@ -789,6 +789,24 @@ function learnPlay(pl) {
 /* the staff view shows which screens a pupil opened, so reading without pressing anything still counts. It never interrupts the pupil. */
 function markOpened(t, n) { var rc = ST.recs[t] || (ST.recs[t] = {}), mask = 1 << (n - 1), bits = function () { return parseInt(rc.O || "0", 16) || 0; }; if (bits() & mask) return; rc.O = (bits() | mask).toString(16); api("apiTheory", { op: "learnOpen", t: t, n: n }).catch(function (e) { console.warn(e); rc.O = (bits() & ~mask).toString(16); }); }
 /* a real photograph beside the Picture it text, with its caption and the credit its licence asks for */
+// V22 (11 Nov 2026): no empty space beside the photo. Three ways to lay out words, photo and table are tried at a
+// range of photo widths, and the one where the photo and the words beside it end nearest the same height is kept.
+// 0: words and table beside the photo. 1: words beside the photo, table under. 2: words above, table beside the photo.
+// A table beside the photo keeps at least 440px so its rows do not break up. Phones stack the photo above the words.
+function picFit(pb, pg, tx, lines, more) {
+  var fig = pg.querySelector("figure.picimg"), img = fig && fig.querySelector("img"), mq = window.matchMedia ? window.matchMedia("(max-width:720px)") : null, busy = 0, seen = 0, tries = 0, tmr = 0;
+  if (!img) return;
+  function arrange(k) { if (k === 2) pb.insertBefore(lines, pg); else tx.insertBefore(lines, tx.firstChild); more.forEach(function (m) { if (k === 1) pb.appendChild(m); else tx.appendChild(m); }); }
+  function cols(w) { pg.style.gridTemplateColumns = w ? "minmax(0,1fr) " + w + "px" : ""; }
+  function fit() { busy = 0; if (!pg.isConnected) { if (seen || ++tries > 40) window.removeEventListener("resize", later); else setTimeout(soon, 100); return; } seen = 1;
+    if (!img.naturalWidth || (mq && mq.matches)) { cols(0); arrange(0); return; }
+    var hi = Math.round(pg.clientWidth * 0.5), best = null;
+    (more.length ? [0, 2, 1] : [0]).forEach(function (k) { arrange(k); var top = k === 1 || !more.length ? hi : Math.min(hi, pg.clientWidth - 460); for (var w = 190; w <= top; w += 20) { cols(w); var g = Math.abs(fig.offsetHeight - tx.offsetHeight) + (k ? 12 : 0); if (!best || g < best.g) best = { g: g, k: k, w: w }; } });
+    if (best) { arrange(best.k); cols(best.w); } }
+  function soon() { if (!busy) { busy = 1; requestAnimationFrame(fit); } }
+  function later() { clearTimeout(tmr); tmr = setTimeout(soon, 120); }
+  arrange(0); img.addEventListener("load", soon); window.addEventListener("resize", later); soon();
+}
 function picFig(im) { var f = el("figure.picimg"), img = el("img", { attr: { src: BASE + "img/" + im.src, alt: im.alt || "", loading: "lazy" } }); f.appendChild(img); var cap = el("figcaption"); if (im.cap) cap.appendChild(el("span.cp", { text: im.cap })); if (im.credit) { var cr = el("span.cr", { text: im.credit + ", " }); if (im.page) cr.appendChild(el("a", { text: S["learn.pic.via"], attr: { href: im.page, target: "_blank", rel: "noopener" } })); else cr.appendChild(document.createTextNode(S["learn.pic.via"])); cap.appendChild(cr); } f.appendChild(cap); return f; }
 function renderLearn(t, n) {
   setBody("is-th");
@@ -810,11 +828,12 @@ function renderLearn(t, n) {
       else if (b.note) { var nt = b.note, nb = el("div.blk.note" + (nt.kind ? "." + nt.kind : "")); if (nt.title) nb.appendChild(el("h4", { text: nt.title })); arr(nt.lines).forEach(function (ln) { nb.appendChild(el("p", { html: termHtml(ln) })); }); sc.appendChild(nb); }
       else if (b.bridge) { sc.appendChild(el("p.blk.bridge", { html: termHtml(b.bridge) })); }
       else if (b.anim) { sc.appendChild(learnAnim(b.anim)); }
-      else if (b.picture) { var pc = b.picture, pb = el("div.blk.pic"); pb.appendChild(el("div.head", { text: S["learn.head.picture"] })); if (pc.title) pb.appendChild(el("h4", { text: pc.title })); if (pc.fig && window.SCENES && SCENES[pc.fig]) { var pf = el("div.fig.scn", { attr: { "data-fig": pc.fig } }); SCENES[pc.fig](pf, 0, { static: true }); pb.appendChild(pf); }
-        var ptxt = pb; if (pc.img && pc.img.src) { var pg = el("div.picgrid"); ptxt = el("div.pictxt"); pg.appendChild(ptxt); pg.appendChild(picFig(pc.img)); pb.appendChild(pg); }
-        arr(pc.lines).forEach(function (ln) { ptxt.appendChild(el("p", { html: termHtml(ln) })); });
-        if (pc.match && pc.match.length) { var tb = el("table.pmatch"); var hr = el("tr"); var hds = pc.heads || [S["learn.match.left"], S["learn.match.right"]]; hr.appendChild(el("th", { text: hds[0] })); hr.appendChild(el("th.arrow", { text: "" })); hr.appendChild(el("th", { text: hds[1] })); tb.appendChild(hr); pc.match.forEach(function (pr) { var tr = el("tr"); tr.appendChild(el("td", { text: pr[0] })); tr.appendChild(el("td.arrow", { text: "→" })); tr.appendChild(el("td", { html: termHtml(pr[1]) })); tb.appendChild(tr); }); pb.appendChild(tb); }
-        if (arr(pc.breaks).length) { var bk = el("div.breaks"); bk.appendChild(el("div.h", { text: S["learn.head.breaks"] })); arr(pc.breaks).forEach(function (ln) { bk.appendChild(el("p", { html: termHtml(ln) })); }); pb.appendChild(bk); }
+      else if (b.picture) { var pc = b.picture, pb = el("div.blk.pic"), plines = null; pb.appendChild(el("div.head", { text: S["learn.head.picture"] })); if (pc.title) pb.appendChild(el("h4", { text: pc.title })); if (pc.fig && window.SCENES && SCENES[pc.fig]) { var pf = el("div.fig.scn", { attr: { "data-fig": pc.fig } }); SCENES[pc.fig](pf, 0, { static: true }); pb.appendChild(pf); var slot = pf.querySelector("[data-slot=lines]"); if (slot) { plines = el("div.piclines.inscn"); slot.appendChild(plines); } }
+        var ptxt = pb, pg = null, pmore = []; if (pc.img && pc.img.src) { pg = el("div.picgrid"); ptxt = el("div.pictxt"); plines = el("div.piclines"); ptxt.appendChild(plines); pg.appendChild(ptxt); pg.appendChild(picFig(pc.img)); pb.appendChild(pg); }
+        arr(pc.lines).forEach(function (ln) { (plines || ptxt).appendChild(el("p", { html: termHtml(ln) })); });
+        if (pc.match && pc.match.length) { var tb = el("table.pmatch"); var hr = el("tr"); var hds = pc.heads || [S["learn.match.left"], S["learn.match.right"]]; hr.appendChild(el("th", { text: hds[0] })); hr.appendChild(el("th.arrow", { text: "" })); hr.appendChild(el("th", { text: hds[1] })); tb.appendChild(hr); pc.match.forEach(function (pr) { var tr = el("tr"); tr.appendChild(el("td", { text: pr[0] })); tr.appendChild(el("td.arrow", { text: "→" })); tr.appendChild(el("td", { html: termHtml(pr[1]) })); tb.appendChild(tr); }); pb.appendChild(tb); pmore.push(tb); }
+        if (arr(pc.breaks).length) { var bk = el("div.breaks"); bk.appendChild(el("div.h", { text: S["learn.head.breaks"] })); arr(pc.breaks).forEach(function (ln) { bk.appendChild(el("p", { html: termHtml(ln) })); }); pb.appendChild(bk); pmore.push(bk); }
+        if (pg) picFit(pb, pg, ptxt, plines, pmore);
         sc.appendChild(pb); }
       else if (b.code) { var cd = b.code, cbk = el("div.blk.codeblk"); if (cd.title) cbk.appendChild(el("div.head", { text: cd.title })); var box = codeBlock(cd); cbk.appendChild(box);
         if (cd.parts && cd.parts.length) { var cp = el("div.cparts"), partEls = []; function showPart(k) { partEls.forEach(function (e, j) { e.classList.toggle("on", j === k); }); var pt = cd.parts[k]; box.rows.forEach(function (r, i) { r.classList.toggle("hl", i + 1 >= pt[0] && i + 1 <= pt[1]); }); }
