@@ -301,7 +301,8 @@ S.den2bin=function(st,i){
   if(i>=8) q+=note('The amount left is 0, so 147 is 10010011. Check: 128 + 16 + 2 + 1 = 147.',true);
   st.innerHTML='<div class="sc numsc">'+nt(PV8.map(String),[{cells:cells}])+q+'</div>';
 };
-function nib(b,h,hl){ return '<div class="nibb'+(hl?' chg':'')+'"><div class="nbits">'+b.split('').map(x=>'<span class="'+(x==='1'?'on':'')+'">'+x+'</span>').join('')+'</div><div class="nhead">8 4 2 1</div>'+(h?'<div class="nhex">'+h+'</div>':'')+'</div>'; }
+function dirTag(t){ return '<div class="dtag">'+t+'</div>'; }
+function nib(b,h,hl){ return '<div class="nibb'+(hl?' chg':'')+'"><div class="nhead"><span>8</span><span>4</span><span>2</span><span>1</span></div><div class="nbits">'+b.split('').map(x=>'<span class="'+(x==='1'?'on':'')+'">'+x+'</span>').join('')+'</div>'+(h?'<div class="nhex">'+h+'</div>':'')+'</div>'; }
 S.hexintro=function(st,i){
   const HX='0123456789ABCDEF';
   let h='';
@@ -316,44 +317,40 @@ S.hexintro=function(st,i){
   } else {
     const j=i-4;
     if(j<=2){
-      h='<div class="bytebig">10010011</div>';
+      h=dirTag('Binary to hex')+'<div class="bytebig">10010011</div>';
       h+='<div class="nibrow">'+nib('1001',j>=1?'8 + 1 = 9 → <b>9</b>':'',j===1)+nib('0011',j>=1?'2 + 1 = 3 → <b>3</b>':'',j===1)+'</div>';
       if(j===2) h+=note('10010011 is <b>93</b> in hex. Eight digits became two.',true);
     } else {
-      h='<div class="bytebig">11010110</div>';
+      h=dirTag('Binary to hex, a different byte')+'<div class="bytebig">11010110</div>';
       h+='<div class="nibrow">'+nib('1101','8 + 4 + 1 = 13 → <b>D</b>',true)+nib('0110','4 + 2 = 6 → <b>6</b>',true)+'</div>';
       h+=note('11010110 is <b>D6</b> in hex.',true);
     }
   }
   st.innerHTML='<div class="sc numsc">'+h+'</div>';
 };
-function takeLines(n){ // one line per heading, the same words as the caption
-  let left=n,out='';
-  [8,4,2,1].forEach(v=>{ if(v<=left){ out+=sumLine('Can '+v+' be taken from '+left+'? Yes, so write 1. '+left+' − '+v+' = '+(left-v)+' left.',true); left-=v; } else out+=sumLine('Can '+v+' be taken from '+left+'? No, so write 0.',true); });
-  return out;
-}
 S.hexnib=function(st,i){
   let h='';
   if(i<=3){
-    if(i===0) h='<div class="bytebig">11111011</div>';
-    else h='<div class="nibrow">'+nib('1111','8 + 4 + 2 + 1 = 15 → <b>F</b>',i===1)+nib('1011',i>=2?'8 + 2 + 1 = 11 → <b>B</b>':'',i===2)+'</div>';
+    h=dirTag('Binary to hex');
+    if(i===0) h+='<div class="bytebig">11111011</div>';
+    else h+='<div class="nibrow">'+nib('1111','8 + 4 + 2 + 1 = 15 → <b>F</b>',i===1)+nib('1011',i>=2?'8 + 2 + 1 = 11 → <b>B</b>':'',i===2)+'</div>';
     if(i>=3) h+=note('11111011 is <b>FB</b> in hexadecimal.',true);
   } else {
     const j=i-4;
-    if(j===0) h='<div class="bytebig">A9</div>';
-    else h='<div class="nibrow">'+nib(j>=1?'1010':'----',j>=1?'A is 10 → <b>1010</b>':'',j===1)+nib(j>=2?'1001':'----',j>=2?'9 → <b>1001</b>':'',j===2)+'</div>';
-    if(j===1) h+=takeLines(10);
-    if(j===2) h+=takeLines(9);
+    h=dirTag('Hex to binary, a different code')+'<div class="bytebig">A9</div>';
+    if(j>=1) h+='<div class="nibrow">'+nib('1010','A is 10 = 8 + 2 → <b>1010</b>',j===1)+nib(j>=2?'1001':'----',j>=2?'9 = 8 + 1 → <b>1001</b>':'',j===2)+'</div>';
+    if(j===1) h+=sumLine('Write 1 under 8 and 2, and 0 under 4 and 1.',true);
+    if(j===2) h+=sumLine('Write 1 under 8 and 1, and 0 under 4 and 2.',true);
     if(j>=3) h+=note('A9 is <b>10101001</b> in binary.',true);
   }
   if(i>=1) h+='<div class="hexkey">A = 10 · B = 11 · C = 12 · D = 13 · E = 14 · F = 15</div>';
   st.innerHTML='<div class="sc numsc">'+h+'</div>';
 };
 S.hexden=function(st,i){
-  let h='<div class="bytebig">E3</div>';
-  if(i>=1) h+='<div class="nibrow">'+nib('1110','E is 14 = 8 + 4 + 2',i===1)+(i>=2?nib('0011','3 = 2 + 1',i===2):'')+'</div>';
-  if(i===1) h+=takeLines(14);
-  if(i===2) h+=takeLines(3);
+  let h=dirTag(i<=2?'Hex to binary':i<=4?'Binary to denary':'Check with sixteens')+'<div class="bytebig">E3</div>';
+  if(i>=1) h+='<div class="nibrow">'+nib('1110','E is 14 = 8 + 4 + 2 → <b>1110</b>',i===1)+(i>=2?nib('0011','3 = 2 + 1 → <b>0011</b>',i===2):'')+'</div>';
+  if(i===1) h+=sumLine('Write 1 under 8, 4 and 2, and 0 under 1.',true);
+  if(i===2) h+=sumLine('Write 1 under 2 and 1, and 0 under 8 and 4.',true);
   if(i>=3){ const bits='11100011'.split(''); h+=nt(PV8.map((v,k)=>bits[k]==='1'?'<span class="hon">'+v+'</span>':String(v)),[{cells:bits.map(b=>({v:b,cls:b==='1'?'on':''}))}]); h+=sumLine('128 + 64 + 32 + 2 + 1'+(i>=4?' = <b>227</b>':''),i===3||i===4); }
   if(i>=5) {h+=sumLine('Check: E is 14 sixteens. 14 × 16 = 14 × 10 + 14 × 6.',true);h+=sumLine('14 × 10 = 140. 14 × 6 = 60 + 24 = 84.',true);h+=sumLine('140 + 84 = 224. Then 224 + 3 = <b>227</b>. It matches.',true);}
   h+='<div class="hexkey">A = 10 · B = 11 · C = 12 · D = 13 · E = 14 · F = 15</div>';

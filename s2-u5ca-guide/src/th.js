@@ -746,7 +746,7 @@ function learnPlay(pl) {
       var yes = el("button.btn.sec", { type: "button", text: S["play.g.yes"] }), no = el("button.btn.sec", { type: "button", text: S["play.g.no"] }); yn.appendChild(yes); yn.appendChild(no);
       function ask1() { cells.forEach(function (c, k) { c.classList.toggle("now", k === i); }); leftLine.textContent = fmt("play.g.left", { left: left }); qline.textContent = fmt("play.g.take", { v: PV[i], left: left }); }
       function answer(sayYes) { user = true; var v = PV[i], fits = v <= left;
-        if (sayYes !== fits) { say(st, fits ? "play.g.takebadno" : "play.g.takebadyes", { v: v, left: left }, "warn"); return; }
+        if (sayYes !== fits) { say(st, fits ? (v === left ? "play.g.takebadsame" : "play.g.takebadno") : "play.g.takebadyes", { v: v, left: left }, "warn"); return; }
         if (fits) { say(st, "play.g.takeyes", { v: v, left: left, rest: left - v }, ""); left -= v; cells[i].textContent = "1"; cells[i].classList.add("one"); } else { say(st, "play.g.takeno", { v: v, left: left }, ""); cells[i].textContent = "0"; }
         cells[i].classList.remove("q"); i++; if (i < 8) ask1(); else { cells.forEach(function (c) { c.classList.remove("now"); }); qline.remove(); yn.remove(); leftLine.textContent = fmt("play.g.takedone", { n: n, b: bin(n, 8) }); var m = st.querySelector(".gmsg"); if (m) m.remove(); done(); } }
       yes.addEventListener("click", function () { answer(true); }); no.addEventListener("click", function () { answer(false); });
