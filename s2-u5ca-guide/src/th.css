@@ -842,7 +842,9 @@ body.is-th main,body.is-pair main,body.is-staff main{max-width:1420px}
 .scn .nibb{display:flex;flex-direction:column;align-items:center;gap:4px}
 .scn .nbits span{display:inline-block;width:36px;height:40px;line-height:36px;text-align:center;margin:2px;border-radius:8px;border:2px solid var(--line);font:900 20px var(--mono);background:var(--card)}
 .scn .nbits span.on{background:var(--sw);border-color:var(--sw);color:var(--white)}
-.scn .nhead{font:700 13px var(--mono);color:var(--mute);letter-spacing:10px;padding-left:10px}
+.scn .dtag{flex-basis:100%;font:800 13px/1.2 var(--sans,inherit);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.scn .nhead{font:700 14px var(--mono);color:var(--mute);line-height:1}
+.scn .nhead span{display:inline-block;width:36px;margin:0 2px;border:2px solid transparent;border-width:0 2px;text-align:center}
 .scn .nhex{font:700 16px var(--mono);color:var(--ink);margin-top:4px}
 .scn .nt td.blank{border:none;background:transparent}
 .scn .nt tr.result td.ovf{background:var(--mark-soft);color:var(--mark);border:3px solid var(--mark);border-radius:50%}
@@ -877,7 +879,7 @@ body.is-th main,body.is-pair main,body.is-staff main{max-width:1420px}
   .scn .bytebig{font-size:28px;letter-spacing:3px}
   .scn .nibrow{gap:14px}
   .scn .nbits span{width:30px;height:34px;line-height:30px;font-size:17px;margin:1px}
-  .scn .nhead{letter-spacing:8px;padding-left:8px}
+  .scn .nhead span{width:30px;margin:0 1px}
   .scn .hexgrid{gap:5px}
   .scn .hc{padding:4px 2px}
   .scn .hc .hb{font-size:13px;letter-spacing:1px}

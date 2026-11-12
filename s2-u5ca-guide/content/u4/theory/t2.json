@@ -57,12 +57,11 @@
     {
      "say": [
       "A computer chip is packed with billions of tiny switches like these. Each switch is either off or on.",
-      "A switch only has to tell two states apart: off or on. That is hard to get wrong. Picture a dimmer switch with ten levels instead. Level 6 and level 7 look almost the same, so they are easy to mix up. That is why computers count with only two digits, 0 and 1.",
-      "Off is written as 0. On is written as 1. One switch, one 0 or 1, is a bit.",
+      "So a computer needs only two digits, one for off and one for on. Off is written as 0. On is written as 1. One switch, one 0 or 1, is a bit.",
       "Bit is short for binary digit. Binary means counting with only two digits, 0 and 1. So a binary digit is always 0 or 1.",
       "A bit is the smallest thing a computer can store. Nothing is smaller than off or on.",
       "Four bits together are a nibble. Eight bits together are a byte. So a nibble is half a byte.",
-      "A byte can hold one character. A character is one letter, digit or symbol, like k, 7 or ?. An agreed list gives each character its own byte. The letter k is given 01101011. You do not need to remember it. Every file is a long row of bytes."
+      "A byte can hold one character. A character is one letter, digit or symbol, like **k**, **7** or **?**. An agreed list gives each character its own byte. The letter k is given 01101011. You do not need to remember it. Every file is a long row of bytes."
      ]
     },
     {
@@ -137,53 +136,56 @@
       "A computer counts with only two digits, 0 and 1. That is [[binary|1]].",
       "To read a byte, write a number above each of its eight bits. These numbers are called headings.",
       "The headings, from left to right, are 128, 64, 32, 16, 8, 4, 2 and 1.",
-      "Each heading from 2 up to 128 is double the one on its right.",
+      "The headings start with 1 on the far right. Moving left, each heading doubles: 2, 4, 8 and so on up to 128.",
       "A 1 under a heading means count that heading. A 0 under a heading means do not count it.",
       "To change binary into denary, add up the headings that have a 1 under them. The total is the denary number."
      ]
     },
     {
      "picture": {
-      "title": "Weights for a kitchen scale",
+      "title": "A clock that tells the time in binary",
       "lines": [
-       "The photo shows real kitchen weights: 500, 200, 100, 50, 20, 10 and 5 g. Now picture a special set of eight weights instead. In grams, they are 128, 64, 32, 16, 8, 4, 2 and 1. Line them up in that order, heaviest on the left, just like the headings.",
-       "Each weight from 2 g up to 128 g is double the one on its right. A 1 means put that weight on a kitchen scale. A 0 means leave it off.",
-       "Take the byte from the animation, 10110101. It puts 128, 32, 16, 4 and 1 g on the scale. The scale reads 181 g. That reading is the denary number, 181.",
-       "Put all eight weights on: 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1 = 255 g. With these eight weights, 255 g is the most you can make. In the same way, 11111111 is 255, the biggest number one byte can hold. A byte has only eight headings, so nothing bigger fits."
+       "This clock is on the front of the railway station in St Gallen, Switzerland. It has no hands. It shows the time with rows of lamps.",
+       "Each lamp is either lit or unlit. A lit lamp glows bright blue. It is a 1. An unlit lamp is only a faint outline. It is a 0.",
+       "No headings are written on the clock. So give each lamp a heading, just like a byte. Start with 1 on the far right. Moving left, each heading doubles: 1, 2, 4, 8, 16, 32.",
+       "The top row of circles shows the hour. It has five lamps. From left to right, they are headed 16, 8, 4, 2 and 1. The lamps headed 8 and 1 are lit. 8 + 1 = 9, so the hour is 9.",
+       "The middle row of crosses shows the minutes. It has six lamps. From left to right, they are headed 32, 16, 8, 4, 2 and 1. The lamps headed 16, 8 and 1 are lit. 16 + 8 + 1 = 25, so the minutes are 25. The clock reads 9:25.",
+       "The bottom row of squares shows the seconds, read the same way. The lamps headed 32, 8, 4 and 2 are lit. 32 + 8 + 4 + 2 = 46 seconds.",
+       "A byte is like one row of eight lamps. Its headings are 128, 64, 32, 16, 8, 4, 2 and 1. With all eight lit, 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1 = 255. Every lamp is already lit, so no byte can be bigger. So 11111111 is 255, the biggest number one byte can hold."
       ],
       "match": [
        [
-        "A weight in the row",
-        "A heading"
+        "One lamp",
+        "One bit"
        ],
        [
-        "Putting a weight on the scale",
-        "A 1 under that heading"
+        "A lit lamp",
+        "A 1"
        ],
        [
-        "Leaving a weight off",
-        "A 0 under that heading"
+        "An unlit lamp",
+        "A 0"
        ],
        [
-        "The reading on the scale",
-        "The denary number"
+        "The heading given to each lamp",
+        "The heading above each bit"
        ],
        [
-        "All eight weights on, 255 g",
-        "11111111, which is 255: the most one byte can hold"
+        "Adding the headings of the lit lamps: 16 + 8 + 1 = 25 minutes",
+        "Adding the headings that have a 1 under them: the denary number"
        ]
       ],
-      "breaks": "The real weights in the photo are 500, 200, 100, 50, 20, 10 and 5 g. They do not always double: 500 is not double 200, and 50 is not double 20. In binary, each heading left of 1 is exactly double the one on its right.",
+      "breaks": "The clock leaves its headings out, so you have to know them. When you change a byte, always write the headings first. The hour row has five lamps, so its biggest heading is 16. The minute and second rows have six lamps, so theirs is 32. A byte always has eight bits, so its biggest heading is 128.",
       "heads": [
-       "Everyday example",
+       "On the clock",
        "In binary"
       ],
       "img": {
-       "src": "t2-s2-kitchen-weights-g.jpg",
-       "alt": "Kitchen weights stamped in grams. The 500, 200 and 100 g weights are black iron. The 50, 20, 10 and 5 g weights are brass.",
-       "cap": "Real kitchen weights, stamped in grams. The 500, 200 and 100 g weights are iron. The 50, 20, 10 and 5 g weights are brass.",
-       "credit": "Photo: Kmtextor, CC BY-SA 4.0, cropped",
-       "page": "https://commons.wikimedia.org/wiki/File:Kitchen_weights_metric_imperial.jpg"
+       "src": "t2-s2-binary-clock.jpg",
+       "alt": "The glass front of a building with three rows of lamps. Circles are on top, crosses in the middle and squares at the bottom. Some lamps glow bright blue. The rest are faint outlines.",
+       "cap": "The binary clock at St Gallen station. The bright blue lamps are lit. It reads 9:25 and 46 seconds.",
+       "credit": "Photo: BBCLCD, CC BY-SA 4.0, cropped",
+       "page": "https://commons.wikimedia.org/wiki/File:Binary_clock_Swiss_railway_station.jpg"
       }
      }
     },
@@ -265,11 +267,11 @@
       "That was the take-away game. Write the eight headings, 128 on the far left down to 1 on the far right. Your denary number is the amount left. Start at the 128 heading.",
       "Ask one question at every heading: can this heading be taken from the amount left?",
       "The answer is yes if the heading is the same as the amount left, or smaller. Write a 1 under it and take it away. Use the new amount left at the next heading. For example, 64 can be taken from 86, so write 1. Then 86 − 64 = 22 is the new amount left. The answer is no if the heading is bigger. Write a 0 and move on.",
-      "Keep going until you reach the far right heading, 1. The amount left should be 0 by then. It ends at 0 because every heading you took away adds up to your number. If it is not 0, check your take-aways."
+      "Keep going until you reach the far right heading, 1. The amount left should be 0 by then. If it is not 0, check your take-aways. Then check: add up the headings with a 1 under them. They should make your number, like 128 + 16 + 2 + 1 = 147."
      ]
     },
     {
-     "watch": "Always write all eight bits, even when the first bits are 0. A byte always has eight bits. For example, 19 is 16 + 2 + 1, so write 00010011, not 10011. In 2022, one answer left off its first 0s. It got only one mark out of two."
+     "watch": "Always write all eight bits, even when the first bits are 0. A byte always has eight bits. For example, 19 is 16 + 2 + 1, so write 00010011, not 10011. Exam questions often ask for an 8-bit binary pattern, which means all eight bits."
     },
     {
      "play": {
@@ -336,10 +338,10 @@
        "Next comes 1010. That is 8 + 2 = ten. Ten needs two digits in denary. But hex writes each nibble as one digit, so ten is written A.",
        "Keep counting. 1011 is 8 + 2 + 1 = eleven, B. 1100 is 8 + 4 = twelve, C. 1101 is 8 + 4 + 1 = thirteen, D. 1110 is 8 + 4 + 2 = fourteen, E. 1111 is 8 + 4 + 2 + 1 = fifteen, F.",
        "1111 is the biggest a nibble can be. So F is the last hex digit. That makes sixteen hex digits: ten from 0 to 9, and six from A to F. To remember the letters, learn that A = 10. Then count on: B = 11, C = 12, D = 13, E = 14 and F = 15.",
-       "Now a whole byte: 10010011. Split it in the middle into two nibbles: 1001 and 0011. Each nibble uses the headings 8, 4, 2, 1.",
+       "Now change a whole byte from binary to hex: 10010011. Split it in the middle into two nibbles: 1001 and 0011. Each nibble uses the headings 8, 4, 2, 1.",
        "1001 is 8 + 1 = 9, so its hex digit is 9. 0011 is 2 + 1 = 3, so its hex digit is 3.",
-       "Put the two digits side by side: 10010011 is 93 in hex. Read it as nine, three, not ninety-three, because each digit is one nibble. Hex 93 and denary 147 are the same byte, written two ways. Check: 10010011 is 128 + 16 + 2 + 1 = 147. Eight digits became two.",
-       "Back to the start: 11010110 splits into 1101 and 0110. 1101 is 8 + 4 + 1 = thirteen, D. 0110 is 4 + 2 = 6. So it is D6."
+       "Put the two digits side by side: 10010011 is 93 in hex. Read it as nine, three, not ninety-three, because each digit is one nibble.",
+       "Now the same binary to hex steps from the start, with a different byte: 11010110. Split it into 1101 and 0110. 1101 is 8 + 4 + 1 = thirteen, D. 0110 is 4 + 2 = 6. So 11010110 is D6 in hex."
       ]
      }
     },
@@ -359,7 +361,7 @@
       "lines": [
        "Look at the calendar page for SEPTEMBER. September is the ninth month of the year. So a date can write it as the number 9: 25 September becomes 25/9. The numbers in the grid are days, not months. Every month has its own number, and everyone uses the same ones.",
        "Hex does the same for nibbles. Each of the sixteen different nibbles has its own one-digit code. 1011 is long to read, so it is written B. 0000 is 0, 1001 is 9, 1010 is A and 1111 is F.",
-       "In the Turn nibbles into hex box, the hex digit under each nibble is its code."
+       "In the **Turn nibbles into hex** box, the hex digit under each nibble is its code."
       ],
       "match": [
        [
@@ -461,16 +463,16 @@
     {
      "anim": {
       "scene": "hexnib",
-      "title": "11111011 to hex, then A9 back to binary",
-      "lead": "Press Next to change the byte 11111011 into hex. Then watch the hex code A9 go back into binary.",
+      "title": "11111011 to hex, then A9 to binary",
+      "lead": "Press Next to change the byte 11111011 into hex. Then watch a different hex code, A9, change into binary.",
       "steps": [
-       "Here is the byte 11111011. Press Next to cut it in the middle into two nibbles.",
+       "Binary to hex first. Here is the byte 11111011. Press Next to cut it in the middle into two nibbles.",
        "It is cut into two nibbles: 1111 and 1011. The left nibble is 1111. A nibble has four bits, so it uses the four headings 8, 4, 2, 1. So 1111 is 8 + 4 + 2 + 1 = 15. Fifteen is F.",
        "The right nibble is 1011. That is 8 + 2 + 1 = 11. Eleven is B.",
        "Write the two hex digits side by side. 11111011 is FB in hexadecimal.",
-       "Now the other way. The hex code A9 has two digits, A and 9. Each digit becomes one nibble of four bits.",
-       "A is 10. Play the take-away game with the headings 8, 4, 2, 1. Can 8 be taken from 10? Yes, so write 1. 10 − 8 = 2 left. Can 4 be taken from 2? No, so write 0. Can 2 be taken from 2? Yes, so write 1. 2 − 2 = 0 left. Can 1 be taken from 0? No, so write 0. So A is 1010.",
-       "Now 9. Can 8 be taken from 9? Yes, so write 1. 9 − 8 = 1 left. Can 4 be taken from 1? No, so write 0. Can 2 be taken from 1? No, so write 0. Can 1 be taken from 1? Yes, so write 1. So 9 is 1001.",
+       "Now the other way, hex to binary, with a different code. The hex code A9 has two digits, A and 9. Each digit becomes one nibble of four bits.",
+       "A is 10. Which of the headings 8, 4, 2, 1 add up to 10? 8 + 2 = 10. Write 1 under 8 and 2, and 0 under 4 and 1. So A is 1010.",
+       "Now 9. 9 is 8 + 1. Write 1 under 8 and 1, and 0 under 4 and 2. So 9 is 1001.",
        "Put the nibbles side by side. A9 is 10101001 in binary."
       ]
      }
@@ -481,8 +483,8 @@
       "Each nibble is only four bits, so it needs only four headings: 8, 4, 2, 1. Add the headings that have a 1 under them. Then write that value as one hex digit.",
       "Values 0 to 9 stay as digits. Values 10 to 15 become letters:",
       "**A** = 10, **B** = 11, **C** = 12, **D** = 13, **E** = 14, **F** = 15.",
-      "Hex to binary goes the other way. Each hex digit becomes four bits. If the digit is a letter, change it into its number first, like A = 10. Then find the four bits with the take-away game, using the headings 8, 4, 2, 1.",
-      "The animation did this for A9. A became 1010 and 9 became 1001. Side by side, they make the byte 10101001."
+      "Hex to binary goes the other way. Each hex digit becomes four bits. If the digit is a letter, change it into its number first, like A = 10. Then find which of the headings 8, 4, 2, 1 add up to it. For A, 8 + 2 = 10. Write 1 under those headings and 0 under the rest.",
+      "The animation did this for A9. A is 10, which is 8 + 2, so A became 1010. 9 is 8 + 1, so 9 became 1001. Side by side, they make the byte 10101001."
      ]
     },
     {
@@ -499,7 +501,7 @@
     {
      "exam": {
       "term": "Converting binary and hex",
-      "say": "Split the byte into two nibbles. Convert each nibble to one hex digit. Hex to binary: convert each hex digit to 4 bits. Show the nibbles as working.",
+      "say": "Binary to hex: split the byte into two nibbles. Convert each nibble to one hex digit. Hex to binary: convert each hex digit to 4 bits. Show the nibbles as working.",
       "src": "2021 Q6(c) and 2022 Q6(b)(ii) mark schemes"
      }
     },
@@ -548,10 +550,10 @@
       "title": "Change the hex code E3 into denary, then check it",
       "lead": "Press Next to change E3 into binary, then add the headings. Then check the answer a second way.",
       "steps": [
-       "Start with the hex code E3. E is one digit and 3 is the other.",
-       "E is 14. Play the take-away game with 8, 4, 2, 1. Can 8 be taken from 14? Yes, so write 1. 14 − 8 = 6 left. Can 4 be taken from 6? Yes, so write 1. 6 − 4 = 2 left. Can 2 be taken from 2? Yes, so write 1. 2 − 2 = 0 left. Can 1 be taken from 0? No, so write 0. So E is 1110.",
-       "Now 3. Can 8 or 4 be taken from 3? No, so write 0 under each. Can 2 be taken from 3? Yes, so write 1. 3 − 2 = 1 left. Can 1 be taken from 1? Yes, so write 1. 1 − 1 = 0 left. So 3 is 0011. Together, E3 is the byte 11100011.",
-       "Join the two nibbles into one byte. Write the eight headings, 128 to 1, over the whole byte. Add the headings that have a 1 under them: 128 + 64 + 32 + 2 + 1.",
+       "First, hex to binary. Start with the hex code E3. E is one digit and 3 is the other.",
+       "E is 14. Which of the headings 8, 4, 2, 1 add up to 14? 8 + 4 + 2 = 14. Write 1 under 8, 4 and 2, and 0 under 1. So E is 1110.",
+       "Now 3. 3 is 2 + 1. Write 1 under 2 and 1, and 0 under 8 and 4. So 3 is 0011. Together, E3 is the byte 11100011.",
+       "Now binary to denary. Join the two nibbles into one byte. Write the eight headings, 128 to 1, over the whole byte. Add the headings that have a 1 under them: 128 + 64 + 32 + 2 + 1.",
        "128 + 64 + 32 + 2 + 1 = 227. So E3 is 227 in denary.",
        "Now check with sixteens. Denary has ten digits, so the 2 in 27 counts tens. Hex has sixteen digits, so its left digit counts sixteens. E is 14, so that is 14 sixteens. Split 16 into 10 and 6 to make it easy. 14 × 10 = 140. 14 × 6 = 84, because 10 × 6 = 60 and 4 × 6 = 24. 140 + 84 = 224. Then 224 + 3 = 227. It matches."
       ]
