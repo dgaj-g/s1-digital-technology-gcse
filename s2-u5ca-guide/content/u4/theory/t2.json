@@ -541,38 +541,34 @@
   },
   {
    "n": 6,
-   "title": "Hex and denary: go through binary, then check with sixteens",
+   "title": "Hex and denary: go through binary",
    "goal": "I can change a hex code into denary and a denary number into hex, with working.",
    "blocks": [
     {
      "anim": {
       "scene": "hexden",
-      "title": "Change the hex code E3 into denary, then check it",
-      "lead": "Press Next to change E3 into binary, then add the headings. Then check the answer a second way.",
+      "title": "Change the hex code E3 into denary",
+      "lead": "Press Next to change E3 into binary, then add the headings.",
       "steps": [
        "First, hex to binary. Start with the hex code E3. E is one digit and 3 is the other.",
        "E is 14. Which of the headings 8, 4, 2, 1 add up to 14? 8 + 4 + 2 = 14. Write 1 under 8, 4 and 2, and 0 under 1. So E is 1110.",
        "Now 3. 3 is 2 + 1. Write 1 under 2 and 1, and 0 under 8 and 4. So 3 is 0011. Together, E3 is the byte 11100011.",
        "Now binary to denary. Join the two nibbles into one byte. Write the eight headings, 128 to 1, over the whole byte. Add the headings that have a 1 under them: 128 + 64 + 32 + 2 + 1.",
-       "128 + 64 + 32 + 2 + 1 = 227. So E3 is 227 in denary.",
-       "Now check with sixteens. Denary has ten digits, so the 2 in 27 counts tens. Hex has sixteen digits, so its left digit counts sixteens. E is 14, so that is 14 sixteens. Split 16 into 10 and 6 to make it easy. 14 × 10 = 140. 14 × 6 = 84, because 10 × 6 = 60 and 4 × 6 = 24. 140 + 84 = 224. Then 224 + 3 = 227. It matches."
+       "128 + 64 + 32 + 2 + 1 = 227. So E3 is 227 in denary."
       ]
      }
     },
     {
      "say": [
-      "That was the safe route for hex to denary. Change each hex digit into four bits. Join the two nibbles into one byte. Write 128 to 1 over the whole byte and add the headings with a 1. Do not add the two nibbles on their own: 14 + 3 = 17 is wrong. In the byte, the left nibble sits under 128, 64, 32 and 16. So it is worth far more than 14.",
-      "There is also a quick check. Hex has sixteen digits, and F is the last one. After F, which is fifteen, hex has run out of digits. So sixteen is written as hex 10, read one, zero. It means one sixteen and no ones.",
-      "Denary does the same after 9: ten is written 10, one ten and no ones. So in a two-digit hex code, the left digit counts sixteens. The right digit counts ones. In 27, the 2 counts tens. In E3, the E means 14 sixteens and the 3 means 3 ones.",
+      "That was how to change hex to denary. Change each hex digit into four bits. Join the two nibbles into one byte. Write 128 to 1 over the whole byte and add the headings with a 1. Do not add the two nibbles on their own: 14 + 3 = 17 is wrong. In the byte, the left nibble sits under 128, 64, 32 and 16. So it is worth far more than 14.",
       "The hex letters are:",
       "**A** = 10, **B** = 11, **C** = 12, **D** = 13, **E** = 14, **F** = 15.",
-      "So E3 is 14 sixteens plus 3. To work out 14 × 16, split 16 into 10 and 6, so each part is easy. 14 × 10 = 140. 14 × 6 = 84, because 10 × 6 = 60 and 4 × 6 = 24. 140 + 84 = 224. Then 224 + 3 = 227.",
       "Denary to hex goes the other way. Change the number into eight bits with the take-away game. Then split the byte into nibbles. Take 227. Can 128 be taken from 227? Yes, so write 1. 227 − 128 = 99 left. Can 64 be taken from 99? Yes, so write 1. 99 − 64 = 35 left. Can 32 be taken from 35? Yes, so write 1. 35 − 32 = 3 left. Can 16, 8 or 4 be taken from 3? No, so write 0 under each. Can 2 be taken from 3? Yes, so write 1. 3 − 2 = 1 left. Can 1 be taken from 1? Yes, so write 1. 1 − 1 = 0 left. So 227 is 11100011.",
       "Split 11100011 into 1110 and 0011. 1110 is 8 + 4 + 2 = 14, which is E. 0011 is 2 + 1 = 3. So 227 is E3 in hex."
      ]
     },
     {
-     "watch": "Hex letters can be capital or small: 9b and 9B are the same answer. In denary working, write numbers only: write 14 × 16, never E × 16. E is a hex digit, not a denary number."
+     "watch": "Hex letters can be capital or small: 9b and 9B are the same answer."
     },
     {
      "play": {
@@ -588,7 +584,7 @@
     {
      "exam": {
       "term": "Converting hex and denary",
-      "say": "For denary to hex, show the 8 bits split into two nibbles, then each hex digit. For hex to denary, show each hex digit as 4 bits and add the headings. Or show the sixteens check: E3 is 14 × 16 + 3. Either way, the working earns a mark.",
+      "say": "For denary to hex, show the 8 bits split into two nibbles, then each hex digit. For hex to denary, show each hex digit as 4 bits and add the headings. The working earns a mark.",
       "src": "2021 Q6(d), 2023 Q7(c)(i) and 2025 Q4(a)(ii) mark schemes"
      }
     },
@@ -621,7 +617,7 @@
       "key": {
        "answer": 0
       },
-      "why": "F is 15. The left F counts sixteens: 15 × 16. Split 16 into 10 and 6: 15 × 10 = 150. 15 × 6 = 90, because 10 × 6 = 60 and 5 × 6 = 30. 150 + 90 = 240. Add the 15 on the right: 240 + 15 = 255. FF is also 11111111, the biggest number a byte can hold."
+      "why": "F is 15, which is 8 + 4 + 2 + 1. So F is 1111, and FF is the byte 11111111. Every heading has a 1 under it. 128 + 64 + 32 + 16 = 240. 8 + 4 + 2 + 1 = 15. 240 + 15 = 255. That is the biggest number a byte can hold."
      }
     }
    ]
