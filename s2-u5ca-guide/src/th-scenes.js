@@ -347,12 +347,11 @@ S.hexnib=function(st,i){
   st.innerHTML='<div class="sc numsc">'+h+'</div>';
 };
 S.hexden=function(st,i){
-  let h=dirTag(i<=2?'Hex to binary':i<=4?'Binary to denary':'Check with sixteens')+'<div class="bytebig">E3</div>';
+  let h=dirTag(i<=2?'Hex to binary':'Binary to denary')+'<div class="bytebig">E3</div>';
   if(i>=1) h+='<div class="nibrow">'+nib('1110','E is 14 = 8 + 4 + 2 → <b>1110</b>',i===1)+(i>=2?nib('0011','3 = 2 + 1 → <b>0011</b>',i===2):'')+'</div>';
   if(i===1) h+=sumLine('Write 1 under 8, 4 and 2, and 0 under 1.',true);
   if(i===2) h+=sumLine('Write 1 under 2 and 1, and 0 under 8 and 4.',true);
   if(i>=3){ const bits='11100011'.split(''); h+=nt(PV8.map((v,k)=>bits[k]==='1'?'<span class="hon">'+v+'</span>':String(v)),[{cells:bits.map(b=>({v:b,cls:b==='1'?'on':''}))}]); h+=sumLine('128 + 64 + 32 + 2 + 1'+(i>=4?' = <b>227</b>':''),i===3||i===4); }
-  if(i>=5) {h+=sumLine('Check: E is 14 sixteens. 14 × 16 = 14 × 10 + 14 × 6.',true);h+=sumLine('14 × 10 = 140. 14 × 6 = 60 + 24 = 84.',true);h+=sumLine('140 + 84 = 224. Then 224 + 3 = <b>227</b>. It matches.',true);}
   h+='<div class="hexkey">A = 10 · B = 11 · C = 12 · D = 13 · E = 14 · F = 15</div>';
   st.innerHTML='<div class="sc numsc">'+h+'</div>';
 };
