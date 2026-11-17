@@ -634,8 +634,8 @@
       "lead": "Adding binary works like adding denary. Go column by column from the right, and carry when a column gets too big. Press Next to add 01011011 and 00110111. Watch where the carries go. Then a second sum shows what happens when the answer is too big for a byte.",
       "steps": [
        "Write the two bytes one above the other, headings on top. Start at the right-hand column, the one headed 1.",
-       "Column headed 1: 1 + 1 = 2. A column can only hold 0 or 1, so 2 is written 10 in binary. Write the 0. Carry the 1 into the next column to the left, as in denary.",
-       "Column headed 2: 1 + 1 + the carried 1 = 3. 3 is written 11 in binary. Write 1 and carry 1.",
+       "Column headed 1: 1 + 1 = 2. A column holds only 0 or 1, so 2 becomes 10: one 2 and no 1s. Write the 0. Carry the 1 into the next column to the left, as in denary.",
+       "Column headed 2: 1 + 1 + the carried 1 = 3. 3 is written 11 in binary: one 2 and one 1. Write 1 and carry 1.",
        "Column headed 4: 0 + 1 + the carried 1 = 2, which is 10 in binary. Write 0 and carry 1.",
        "Column headed 8: 1 + 0 + the carried 1 = 2, which is 10 in binary. Write 0 and carry 1.",
        "Column headed 16: 1 + 1 + the carried 1 = 3, which is 11 in binary. Write 1 and carry 1.",
@@ -662,7 +662,7 @@
       "title": "A car's mileage counter rolling over",
       "lines": [
        "Look at the mileage counter in the photo. It has five wheels for whole miles. The white box on the right counts tenths, so ignore it. The most the five wheels can show is 99999.",
-       "Drive 1 more mile and every wheel rolls round to 0. The counter now says 00000.",
+       "Drive on to the next whole mile and every wheel rolls round to 0. The counter now says 00000.",
        "The true total, 100000 miles, needs a sixth wheel for whole miles. There is none, so the 1 at the front is lost.",
        "Drive 5 more miles from 99999 and the counter shows 00004. The true total is 100004. The front 1 is lost, but the rest is kept.",
        "A byte has eight bits. When a sum needs a ninth bit, that bit is lost too. The other eight bits are kept. That is overflow."
@@ -703,7 +703,7 @@
      "play": {
       "kind": "adder",
       "title": "Add two bytes live",
-      "lead": "Tap any bit in the two top rows to flip it. Watch the carry row and the Answer row. If the answer needs a ninth bit, it shows as the Overflow bit. The line under the sum then says what the byte keeps. Try to make the Overflow bit appear. Then make it go away.",
+      "lead": "Tap any bit in the two top rows to flip it. Watch the carry row and the Answer row. If the answer needs a ninth bit, it shows as the Overflow bit. The line under the sum then says what the byte keeps. The sum starts with overflow. Flip some 1s to 0s until the Overflow bit goes.",
       "a": "10010011",
       "b": "11101111"
      }
@@ -820,14 +820,32 @@
      }
     },
     {
-     "say": [
-      "A [[kilobyte|1]] is 1,024 bytes. A [[megabyte|1]] is 1,024 kilobytes. 1,024 is close to 1,000. So a megabyte is about 1,000 × 1,000 = 1,000,000 bytes, a million. So that phone photo of 3,000,000 bytes is about 3 megabytes.",
-      "A [[gigabyte|1]] is 1,024 megabytes. A [[terabyte|1]] is 1,024 gigabytes.",
-      "Why 1,024 and not 1,000? In denary, the headings are 1, 10, 100 and 1,000. These are the round numbers: each is ten times the last. In binary, the headings double each time instead. Computers count in binary, so the binary headings are their round numbers. Keep doubling past 128: 256, 512, 1,024. 1,024 is the binary heading nearest to 1,000. So 1,024 is the computer's kilo.",
-      "When you compare sizes, 1,000 is close enough to 1,024. So 2 terabytes is about 2,000 gigabytes. Use 1,024 when a question asks for the exact size.",
-      "To find the biggest amount, change every amount into the same unit first. Then compare the numbers. Which is bigger, 4,000 megabytes or 9,000 kilobytes? Change both into megabytes. 4,000 megabytes stays as 4,000 megabytes. 1,000 kilobytes is about 1 megabyte, so 9,000 kilobytes is about 9 megabytes. 4,000 is far bigger than 9. So 4,000 megabytes is bigger, even though 9,000 is the bigger number.",
-      "The same works one step up. 1,000 megabytes is about 1 gigabyte. So 5,000 megabytes is about 5 gigabytes."
-     ]
+     "anim": {
+      "scene": "kilo",
+      "title": "Why a kilobyte is 1,024 bytes",
+      "lead": "A [[kilobyte|1]] is 1,024 bytes. Press Next to see where 1,024 comes from.",
+      "steps": [
+       "Denary headings are 1, 10, 100 and 1,000. Each one is ten times the heading on its right.",
+       "Binary headings double instead. A byte has eight: 1, 2, 4, 8, 16, 32, 64 and 128.",
+       "Keep doubling past 128: 128 × 2 = 256, 256 × 2 = 512, 512 × 2 = 1,024.",
+       "In denary, 1,000 is a heading, so it makes a neat unit. Computers count in binary, and 1,000 is not a binary heading. The nearest binary heading is 1,024, so a kilobyte is 1,024 bytes.",
+       "Here is one kilobyte: one square for each of its 1,024 bytes. That is 32 rows of 32. Check: 32 × 32 = 1,024."
+      ]
+     }
+    },
+    {
+     "anim": {
+      "scene": "photo",
+      "title": "A phone photo in bigger units",
+      "lead": "Press Next. One photo's size is rewritten in bigger units, up to a [[megabyte|1]]. Then come the [[gigabyte|1]] and the [[terabyte|1]].",
+      "steps": [
+       "Start with one phone photo, about 3,000,000 bytes. Each press of Next rewrites it in a bigger unit.",
+       "A kilobyte is 1,024 bytes, close to 1,000. How many thousands are in 3,000,000? Divide: 3,000,000 ÷ 1,000 = 3,000 kilobytes.",
+       "A megabyte is 1,024 kilobytes, close to 1,000. How many thousands are in 3,000? 3,000 ÷ 1,000 = 3 megabytes.",
+       "A megabyte is about 1,000 kilobytes, each about 1,000 bytes. So it is about 1,000 × 1,000 = 1,000,000 bytes, a million. 3 megabytes is far easier to read than 3,000,000 bytes.",
+       "A gigabyte is 1,024 megabytes. A terabyte is 1,024 gigabytes. Each unit is 1,024 of the unit below it."
+      ]
+     }
     },
     {
      "play": {
@@ -863,13 +881,28 @@
        [
         "Gigabyte",
         "1,024 megabytes",
-        "More than 300 phone photos"
+        "More than 300 phone photos, as 1,024 ÷ 3 is over 300"
        ],
        [
         "Terabyte",
         "1,024 gigabytes",
-        "More than 300,000 phone photos"
+        "More than 300,000 phone photos, as 1,024 × 300 is over 300,000"
        ]
+      ]
+     }
+    },
+    {
+     "anim": {
+      "scene": "compare",
+      "title": "Which is bigger? Change to one unit first",
+      "lead": "Press Next. A bigger number does not always mean a bigger amount.",
+      "steps": [
+       "Which is bigger: 4,000 megabytes or 9,000 kilobytes?",
+       "9,000 is the bigger number. But the units are different, so the numbers cannot be compared yet.",
+       "Change both into megabytes. Going to a bigger unit, divide by 1,000. So 9,000 kilobytes is about 9,000 ÷ 1,000 = 9 megabytes. 4,000 megabytes stays as it is.",
+       "Now both are in megabytes. 4,000 is far bigger than 9, so 4,000 megabytes is bigger.",
+       "Each step up, divide by 1,000 again. So 5,000 megabytes is about 5,000 ÷ 1,000 = 5 gigabytes.",
+       "Going to a smaller unit, multiply instead. 2 terabytes is about 2 × 1,000 = 2,000 gigabytes. If a question asks for the exact size, use 1,024: 2 × 1,024 = 2,048 gigabytes."
       ]
      }
     },
@@ -954,15 +987,35 @@
    "goal": "I can say what ASCII is, how many codes it has and why Unicode came.",
    "blocks": [
     {
-     "say": [
-      "Type a capital A on a keyboard. The computer stores the number 65, as the byte 01000001. Check: 64 + 1 = 65. Letters, digits and symbols are called characters. Every character is stored as a number like this.",
-      "The number comes from an agreed list. The first big agreed list was [[ASCII|1]]. It stands for American Standard Code for Information Interchange.",
-      "The original ASCII used 7 bits for each character. Seven bits make 128 patterns, from 0000000 up to 1111111. 1111111 is 64 + 32 + 16 + 8 + 4 + 2 + 1 = 127. Counting the 0, that is 128 codes. A 7-bit code is still stored in a full byte, with a 0 in front. So A, 1000001, is stored as 01000001.",
-      "Extended ASCII used 8 bits, a full byte. Eight bits make 256 patterns, from 00000000 up to 11111111. 11111111 is 255. Counting the 0, that is 256 codes. That is still far too few. Chinese alone has thousands of characters, and there are many other languages and emoji too.",
-      "Different countries filled the extra 128 codes differently. One code showed é in one country and a different letter in another. So a file could show the wrong letters in another country.",
-      "[[Unicode|1]] fixes this with a code for every character in every language, emoji included. No two characters share a code. So a file shows the same letters in every country.",
-      "The first 128 Unicode codes are the ASCII codes, so old text still works. A is 65 in both. Seven bits fit in one byte, so an ASCII character takes 1 byte. One byte has only 256 patterns. Unicode has far more codes than that, so some need two, three or four bytes."
-     ]
+     "anim": {
+      "scene": "ascii",
+      "title": "A number for every character",
+      "lead": "Press Next. Each key press becomes a number, taken from an agreed list called [[ASCII|1]].",
+      "steps": [
+       "Type a capital A on a keyboard. A computer stores only 0s and 1s. So what does it store for A?",
+       "It stores the number 65. Letters, digits and symbols are called characters, and each one has a number like this.",
+       "65 is stored as the byte 01000001. Check: 64 + 1 = 65.",
+       "The numbers come from an agreed list. The first big agreed list was ASCII, the American Standard Code for Information Interchange. Even the digit 7 has its own code, 55.",
+       "The original ASCII used 7 bits. The biggest 7-bit code is 1111111, which is 127. Counting 0 too, that makes 128 codes.",
+       "A 7-bit code is still stored in a full byte, with a 0 in front. So A, 1000001, is stored as 01000001.",
+       "Extended ASCII used all 8 bits. 11111111 is 255, so counting 0 too, that makes 256 codes."
+      ]
+     }
+    },
+    {
+     "anim": {
+      "scene": "unicode",
+      "title": "Why Unicode was needed",
+      "lead": "Press Next. 256 codes were not enough, so a bigger list called [[Unicode|1]] was made.",
+      "steps": [
+       "Extended ASCII's 256 codes are far too few. Chinese alone has thousands of characters, and there are many other languages and emoji too.",
+       "Countries filled the extra 128 codes differently. Code 233 was é in France and й in Russia.",
+       "So a word like café could arrive as cafй. The file showed the wrong letters in another country.",
+       "Unicode gives every character in every language its own code, emoji too. No two characters share a code. So café shows as café in every country.",
+       "The first 128 Unicode codes are the ASCII codes. A is 65 in both, so old text still works.",
+       "In Unicode, only the first 128 codes, the ASCII ones, fit in 1 byte. Bigger codes need 2, 3 or 4 bytes: the bigger the code, the more bytes."
+      ]
+     }
     },
     {
      "picture": {
@@ -990,7 +1043,7 @@
         "Unicode's first 128 codes are the ASCII codes"
        ]
       ],
-      "breaks": "A new phone book comes out every year, and people's numbers can change. A Unicode code never changes: A is 65 for good. New codes are only added, such as new emoji.",
+      "breaks": "People's phone numbers can change, and a family can share one. A Unicode code never changes, and no two characters share one. New codes are only added, such as new emoji.",
       "heads": [
        "Everyday example",
        "Character codes"
@@ -998,7 +1051,7 @@
       "img": {
        "src": "t2-s9-phone-book.jpg",
        "alt": "An old black dial telephone beside a printed phone book.",
-       "cap": "A phone book from 1946, beside an old phone. Inside, it lists names with their phone numbers.",
+       "cap": "A phone book from 1946, shut, beside an old phone. Open it and you find names, each with a phone number.",
        "credit": "Photo: Ciara Ní Riain, CC BY-SA 4.0",
        "page": "https://commons.wikimedia.org/wiki/File:Rotary_phone_1946_phone_book_Workhouse_Svendborg.jpg"
       }
@@ -1008,7 +1061,7 @@
      "play": {
       "kind": "chars",
       "title": "Type a character, see its code",
-      "lead": "Type a capital A. You should see 65. Then try a small a, a digit, a symbol and an emoji. Each time, see the number the computer stores."
+      "lead": "Type a capital A: you should see 65. Try a small a, then the digit 7. Its code is 55, not 7. Then try £, which only Unicode has."
      }
     },
     {
@@ -1054,22 +1107,42 @@
    "goal": "I can name the data types and choose the right one for a variable.",
    "blocks": [
     {
-     "say": [
-      "A football app keeps the number of goals scored, say 3. It keeps it in a [[variable|1]] called goalsScored. A variable is a named box whose value can change. After another goal, goalsScored holds 4. Every variable has a [[data type|1]]. The type tells the computer what kind of value the variable holds. goalsScored only ever holds whole numbers. So its type is integer, the type for whole numbers.",
-      "An [[integer|1]] is a whole number, positive or negative, with no decimal part. A count of goals is an integer.",
-      "A [[real|1]] number can have a decimal part. A price like 1.99 is real. Some programming languages call a real a double or a float.",
-      "A [[character|1]] is one single letter, digit or symbol, like the grade B. The character '7' is only a symbol: you cannot do sums with it.",
-      "A [[string|1]] is a run of characters, like a name or the postcode BT34 2EX. A postcode has letters in it, so it is text. Text is stored as a string. Some text is all digits, like the phone number 07700 900123. You never do sums with a phone number. As a number, 07700 900123 would lose its first 0, the way 07 is just 7. So a phone number is a string too.",
-      "A [[Boolean|1]] holds only true or false. Has the pupil passed? True or false.",
-      "A [[date/time|1]] type holds a date, a time, or both. The computer can then add days or compare two times.",
-      "A name like passFail or isValid is a clue. Each name asks a yes or no question. So each holds true or false, and is a Boolean."
-     ]
+     "anim": {
+      "scene": "goals",
+      "title": "A variable and its data type",
+      "lead": "Press Next to meet a [[variable|1]] and its [[data type|1]], then the types [[integer|1]] and [[real|1]].",
+      "steps": [
+       "A football app keeps the number of goals scored, here 3. It keeps it in a named box called goalsScored.",
+       "Another goal goes in. goalsScored now holds 4. A named box whose value can change is called a variable.",
+       "Every variable has a data type. The type says what kind of value goes in, like whole numbers or text.",
+       "goalsScored only ever holds whole numbers, so its type is integer. An integer is a whole number, positive or negative, with no decimal part.",
+       "A price like 1.99 has a decimal part. Put it in an integer and the program shows an error.",
+       "A real number can have a decimal part, so 1.99 goes in a real. Some programming languages call a real a double or a float."
+      ]
+     }
+    },
+    {
+     "anim": {
+      "scene": "types",
+      "title": "Four more data types",
+      "lead": "Four more data types: [[character|1]], [[string|1]], [[Boolean|1]] and [[date/time|1]]. Press Next to meet each one.",
+      "steps": [
+       "A character is one single letter, digit or symbol, like the grade B.",
+       "Quote marks round '7' make it a character, a symbol like the letter B. It is not a number, so you cannot do sums with it.",
+       "A string is a run of characters, like the postcode BT34 2EX. Text is stored as a string.",
+       "A phone number is all digits. Stored as an integer, it loses its first 0. As a number, 07 and 7 are the same, so the 0 goes.",
+       "No sums are ever done with a phone number, so store it as a string. A string keeps every character, so the 0 stays.",
+       "A Boolean holds only true or false. Has the pupil passed? True or false.",
+       "A name like passFail or isValid is a clue. Each asks a question with only two answers, so it holds a Boolean.",
+       "A date/time holds a date, a time, or both. The computer can then add days or compare two times."
+      ]
+     }
     },
     {
      "picture": {
       "title": "Jars on a shelf",
       "lines": [
-       "Look at the jars in the photo. Two have labels: one says coconut flour and one says chia seed. Each label tells you what is in its jar.",
+       "Look at the jars in the photo. Two have labels: one says coconut flour and one says chia seed. Each label tells you what goes in its jar.",
        "Now picture a shelf of jars for data, each with a label. One label says whole numbers only. One says numbers with a decimal point. One says one character only: a single letter, digit or symbol. One says text: any run of characters.",
        "Two more jars: one holds only true or false, and one holds only dates and times. A price like 1.99 does not fit the whole numbers jar: the program shows an error."
       ],
@@ -1107,16 +1180,14 @@
       "img": {
        "src": "t2-s10-jars.jpg",
        "alt": "Glass jars of food on a kitchen shelf.",
-       "cap": "Jars on a shelf. Two are labelled coconut flour and chia seed. A data type is like the label: it says what one variable can hold.",
+       "cap": "Jars on a shelf. Two are labelled coconut flour and chia seed. A data type is like a jar label: it says what is allowed in one variable.",
        "credit": "Photo: Shixart1985, CC BY 2.0",
        "page": "https://commons.wikimedia.org/wiki/File:Container_storage_at_a_kitchen_pantry_with_different_types_of_food_items_in_jars_and_bottles_at_home.jpg"
       }
      }
     },
     {
-     "say": [
-      "The code below is C#, a programming language. Each line gives the data type, then the variable's name. Then comes =, then the value it holds. Each line ends with a semicolon, a dot above a comma."
-     ]
+     "bridge": "The code below is C#, a programming language. Each line gives the data type, then the variable's name. Then comes =, which puts the value on its right into the variable. Each line ends with a semicolon, a dot above a comma."
     },
     {
      "code": {
@@ -1165,7 +1236,7 @@
         6,
         6,
         "A date",
-        "A date held in one value. new DateTime makes the date. The three numbers 2027, 5, 14 are the year, month and day: 14 May 2027."
+        "A date held in one value. The word new makes a date from three numbers. They go year, then month, then day: 14 May 2027."
        ]
       ],
       "names": [
@@ -1236,7 +1307,7 @@
           3
          ]
         },
-        "why": "A count is an integer. valid holds true or false, so it is a Boolean. A surname is text, so it is a string. A price has pence, so it is real."
+        "why": "A count is an integer. valid holds true or false: is the data valid or not? So it is a Boolean. A surname is text, so it is a string. A price has pence, so it is real."
        },
        {
         "verbatim": "2025 Q3(b)",
@@ -1274,42 +1345,40 @@
      "picture": {
       "title": "Two buttons, a doorbell and a fridge light",
       "lines": [
-       "Look at the machine control in the photo. It has a green button at each end. Ignore the red and yellow buttons in the middle. The machine only runs while both buttons are pressed. Both hands must stay on the buttons. So neither hand can be under the machine while it runs. That is AND.",
-       "Picture a house with a bell button at the front door and the back door. The bell rings when either button is pressed, or both. That is OR.",
-       "Inside a fridge is a small switch that the door presses when it shuts. Switch pressed = 1, light off = 0. Switch not pressed = 0, light on = 1. The light is always the opposite of the switch. That is NOT.",
-       "In Play with it below, switches A and B are like the two buttons. The lamp is like the machine."
-      ],
-      "match": [
-       [
-        "Both buttons pressed before the machine runs",
-        "AND"
-       ],
-       [
-        "Either doorbell button rings the bell",
-        "OR"
-       ],
-       [
-        "The fridge light doing the opposite of its door switch",
-        "NOT"
-       ]
+       "Look at the green button at each end of this control box. Ignore the red and yellow ones.",
+       "The Watch it box below shows the machine, a doorbell and a fridge light at work."
       ],
       "breaks": "Real buttons can stick or break. A Boolean value is always exactly 0 or 1.",
-      "heads": [
-       "Everyday example",
-       "Boolean rule"
-      ],
       "img": {
        "src": "t2-s11-two-hand.jpg",
        "alt": "An orange control box on a stand, with a green button at each end.",
-       "cap": "A two-hand control. The machine only runs while both green buttons are pressed.",
+       "cap": "A two-hand control box for a machine, such as one that stamps metal. The machine only runs while both green buttons are pressed.",
        "credit": "Photo: Sam D. Wilbur, CC BY 4.0",
        "page": "https://commons.wikimedia.org/wiki/File:Two-hands_control_device.jpg"
       }
      }
     },
     {
+     "anim": {
+      "scene": "gates3",
+      "title": "AND, OR and NOT in everyday things",
+      "lead": "Press Next. Pressed or on is 1. Not pressed or off is 0.",
+      "steps": [
+       "The green buttons in the photo start a machine, such as one that stamps metal. Neither is pressed: 0 and 0. The machine stays stopped: 0.",
+       "Press just the right button: 0 and 1. The machine stays stopped: 0. The same goes for 1 and 0.",
+       "Press both buttons: 1 and 1. Now the machine runs: 1. Both hands are on the buttons, so no hand can get caught in the machine.",
+       "The machine runs only when both buttons are pressed. That rule is AND.",
+       "A house has a bell button at the front and back doors. No button pressed: no ring, 0. Press only the back one: it rings, 1.",
+       "Press the front one, or both at once: it still rings. Either button, or both, rings the bell. That is OR.",
+       "Inside a fridge, the shut door presses a small switch. Switch pressed: 1. Light off: 0.",
+       "Open the door and the switch is not pressed: 0. The light comes on: 1. The light is always the opposite of the switch. That is NOT.",
+       "In Play with it below, switches A and B are like the two buttons. The lamp is like the machine."
+      ]
+     }
+    },
+    {
      "say": [
-      "The two buttons, the doorbell and the fridge light each follow a rule. Computers make decisions with the same three rules: AND, OR and NOT. 1 means true and 0 means false.",
+      "The machine, the doorbell and the fridge light each follow a rule. Computers make decisions with the same three rules: AND, OR and NOT. A game might end when time runs out OR lives run out. 1 means true and 0 means false.",
       "A [[truth table|1]] lists every possible input and the output the rule gives. An input is a value going into the rule. The output is what comes out. Each input has two choices, 0 or 1. So two inputs give 2 × 2 = 4 rows. Row 1 is A = 0, B = 0. Row 2 is A = 0, B = 1. Row 3 is A = 1, B = 0. Row 4 is A = 1, B = 1.",
       "[[AND|1]] gives 1 only when both inputs are 1. [[OR|1]] gives 1 when either input is 1, or both.",
       "[[NOT|1]] has one input and flips it. NOT 1 is 0 and NOT 0 is 1. With one input, its truth table has only 2 rows."
@@ -1330,7 +1399,7 @@
     {
      "say": [
       "Some questions join two rules together, like NOT(P AND Q). P and Q are names for two inputs, like switches A and B.",
-      "The brackets are worked out first. So first work out P AND Q. Then apply NOT to that answer. The animation below does this for every row.",
+      "The brackets are worked out first, as in maths. So first work out P AND Q. Then apply NOT to that answer. The animation below does this for every row.",
       "Rules can also be chained, one after another. Say X is 1. Y is 1 too. Z is X AND Y, so Z is 1 AND 1, which is 1. W is NOT Z, so W is NOT 1, which is 0."
      ]
     },

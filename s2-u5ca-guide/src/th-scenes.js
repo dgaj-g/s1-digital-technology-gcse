@@ -386,4 +386,207 @@ S.truth=function(st,i){
   if(i>=5) h+=note('The answer column, NOT(P AND Q), reads 1, 1, 1, 0. Each cell or column can earn its own mark.',true);
   st.innerHTML='<div class="sc numsc">'+h+'</div>';
 };
+/* ---------- Topic 2 V26: storage units, character codes, data types, everyday logic ----------
+   Motion law: step 0 carries no motion class. Only what is new at step i gets u2in / chg / u2flip / u2drop. */
+function u2in(on,d){ return on?' u2in" style="animation-delay:'+(d||0)+'s':''; }
+function wrap(st,h,cls){ st.innerHTML='<div class="sc numsc u2sc'+(cls?' '+cls:'')+'">'+h+'</div>'; }
+function u2lab(t){ return '<div class="u2lab">'+t+'</div>'; }
+function u2tick(t,ok,on){ return '<div class="u2v '+(ok?'ok':'no')+(on?' chg':'')+'"><b>'+(ok?'✓':'✗')+'</b><span>'+t+'</span></div>'; }
+
+/* Screen 8, anim 1: why a kilobyte is 1,024 bytes */
+S.kilo=function(st,i){
+  function row(lab,vals,x,fresh,glow,rowIn){
+    const fr=fresh||[];
+    return '<span class="u2hlab'+u2in(rowIn,0)+'">'+lab+'<span class="u2hx">each ←×'+x+'</span></span><div class="u2heads'+u2in(rowIn,0)+'">'+vals.map((v,k)=>{
+      const f=fr.indexOf(v), g=(glow||[]).indexOf(v)>=0;
+      return '<span class="u2hg'+u2in(f>=0,.5*(fr.length-1-f))+'"><span class="u2h'+(g?' u2glow':'')+'">'+v+'</span>'+(k<vals.length-1?'<span class="u2x" aria-hidden="true">←×'+x+'</span>':'')+'</span>';
+    }).join('')+'</div>';
+  }
+  let h='';
+  if(i<=3){
+    h+='<div class="u2hw">'+row('Denary','1,000 100 10 1'.split(' '),'10',null,i===3?['1,000']:null,false);
+    if(i>=1){
+      const B='128 64 32 16 8 4 2 1'.split(' ');
+      const vals=i>=2?['1,024','512','256'].concat(B):B;
+      h+=row('Binary',vals,'2',i===2?['1,024','512','256']:null,i===3?['1,024']:null,i===1);
+    }
+    h+='</div>';
+    if(i===2) h+=sumLine('128 × 2 = 256, 256 × 2 = 512, 512 × 2 = <b>1,024</b>',true);
+    if(i===3) h+=sumLine('1,024 − 1,000 = 24. So 1,024 is the binary heading nearest to 1,000.',true);
+  } else {
+    h+='<div class="u2kbt">1 kilobyte = 1,024 bytes</div>';
+    h+='<div class="u2kbrow"><div class="u2kbg u2wipe"><span class="u2kb1"></span></div><div class="u2kbs">32 rows of 32 squares<br><b>32 × 32 = 1,024</b></div></div>';
+    h+='<div class="u2kbl"><span class="u2kbkey"></span> The red square is 1 byte.</div>';
+  }
+  wrap(st,h,'u2kilo');
+};
+
+/* Screen 8, anim 2: one photo's size in bigger units */
+S.photo=function(st,i){
+  const L=[['Byte','8 bits'],['Kilobyte','1,024 bytes'],['Megabyte','1,024 kilobytes'],['Gigabyte','1,024 megabytes'],['Terabyte','1,024 gigabytes']];
+  const show=[1,2,3,3,5][i], cur=[0,1,2,2,2][i];
+  let big,ghost='',unit,sum='';
+  if(i===0){ big='3,000,000'; unit='bytes'; }
+  else if(i===1){ big='3,000'; ghost=',000'; unit='kilobytes'; sum='3,000,000 ÷ 1,000 = 3,000'; }
+  else { big='3'; ghost=i===2?',000':''; unit='megabytes'; if(i===2) sum='3,000 ÷ 1,000 = 3'; }
+  let h='<div class="u2photo"><span class="u2cam" aria-hidden="true">📷</span><div><div class="u2lab">One phone photo is about</div>'+
+    '<div class="u2big'+(i===3?' u2glow':'')+'">'+big+(ghost?'<span class="u2ghost u2drop">'+ghost+'</span>':'')+'</div>'+
+    '<div class="u2unit'+(i>=1&&i<=2?' chg':'')+'">'+unit+'</div></div></div>';
+  if(sum) h+=sumLine(sum,true);
+  if(i===3) h+=sumLine('1 megabyte is about 1,000 × 1,000 = 1,000,000 bytes',true)+'<div class="u2was">3,000,000 bytes → <b>3 megabytes</b></div>';
+  const fresh=k=>(i===1&&k===1)||(i===2&&k===2)||(i===4&&k>=3);
+  h+='<div class="u2chain">'+L.slice(0,show).map((u,k)=>'<span class="u2u'+(k===cur?' on':'')+u2in(fresh(k),i===4?.5*(k-3):0)+'"><b>'+u[0]+'</b><span>'+u[1]+'</span></span>').join('<span class="u2arr" aria-hidden="true">→</span>')+'</div>';
+  wrap(st,h);
+};
+
+/* Screen 8, anim 3: change to one unit before comparing */
+S.compare=function(st,i){
+  function card(n,u,cls){ return '<div class="u2card'+(cls?' '+cls:'')+'"><div class="u2cn">'+n+'</div><div class="u2cu">'+u+'</div></div>'; }
+  let h='';
+  if(i<=3){
+    h+=u2lab('Which is bigger?');
+    const B=i>=2?card('about 9','megabytes',i===2?'u2flip':''):card('9,000','kilobytes',i===1?'bad':'');
+    h+='<div class="u2cards">'+card('4,000','megabytes',i===1?'bad':'')+'<span class="u2or">or</span>'+B+'</div>';
+    if(i===1) h+=u2tick('<s>9,000 kilobytes is bigger</s>. The units are different.',false,true);
+    if(i===2) h+=sumLine('9,000 kilobytes is about 9,000 ÷ 1,000 = 9 megabytes',true);
+    if(i===3){
+      h+='<div class="u2bars"><div class="u2bar"><span class="u2bl">4,000 megabytes</span><span class="u2bf u2grow" style="width:100%"></span></div>'+
+        '<div class="u2bar"><span class="u2bl">9 megabytes</span><span class="u2bf u2grow" style="width:.3%"></span></div></div>';
+      h+=u2tick('4,000 megabytes is bigger.',true,true);
+    }
+  } else if(i===4){
+    h+=u2lab('One step up')+'<div class="u2cards">'+card('5,000','megabytes')+'<span class="u2arr" aria-hidden="true">→</span>'+card('about 5','gigabytes','u2flip')+'</div>';
+    h+=sumLine('5,000 ÷ 1,000 = 5',true);
+  } else {
+    h+=u2lab('2 terabytes in gigabytes')+'<div class="u2cards">'+card('2','terabytes')+'</div>';
+    h+='<div class="u2two"><div class="u2opt'+u2in(true,0)+'"><span class="tg">To compare</span> 2 × 1,000 = about <b>2,000</b> gigabytes</div>'+
+      '<div class="u2opt'+u2in(true,.6)+'"><span class="tg sw">Exact size</span> 2 × 1,024 = <b>2,048</b> gigabytes</div></div>';
+  }
+  wrap(st,h);
+};
+
+/* Screen 9, anim 1: a number for every character */
+S.ascii=function(st,i){
+  let h='';
+  const key='<div class="u2kp"><span class="u2key'+(i===1?' u2press':'')+'">A</span><span class="u2arr" aria-hidden="true">→</span><div class="u2pc"><span class="u2cam" aria-hidden="true">💻</span><span class="u2store'+(i===1?' chg':'')+'">'+(i===0?'?':'65')+'</span></div></div>';
+  if(i<=2) h+=key;
+  if(i===2){
+    const bits='01000001'.split('');
+    h+=nt(PV8.map((v,k)=>bits[k]==='1'?'<span class="hon">'+v+'</span>':String(v)),[{cells:bits.map(b=>({v:b,cls:b==='1'?'on chg':''}))}]);
+    h+=sumLine('64 + 1 = 65',true);
+  }
+  if(i===3){
+    const C=[['A',65],['B',66],['C',67],['a',97],['7',55],['!',33]];
+    h+=u2lab('Part of the ASCII list')+'<div class="u2codes">'+C.map((c,k)=>'<span class="u2cc'+u2in(true,.25*k)+'"><b>'+esc(c[0])+'</b><span>'+c[1]+'</span></span>').join('')+'</div>';
+  }
+  if(i===4){
+    h+=u2lab('The original ASCII: 7 bits');
+    h+=nt([64,32,16,8,4,2,1].map(v=>'<span class="hon">'+v+'</span>'),[{cells:'1111111'.split('').map(()=>({v:'1',cls:'on chg'}))}]);
+    h+=sumLine('64 + 32 + 16 + 8 + 4 + 2 + 1 = <b>127</b>',true)+sumLine('Codes 0 to 127 make <b>128</b> codes',true);
+  }
+  if(i===5){
+    h+=u2lab('A in a full byte')+'<div class="bytebig"><span class="u2zero">0</span>1000001</div>';
+    h+=sumLine('7 bits: 1000001 → 8 bits: 01000001',true);
+  }
+  if(i===6){
+    h+=u2lab('Extended ASCII: all 8 bits');
+    h+=nt(PV8.map(v=>'<span class="hon">'+v+'</span>'),[{cells:'11111111'.split('').map(()=>({v:'1',cls:'on chg'}))}]);
+    h+=sumLine('128 + 64 + 32 + 16 + 8 + 4 + 2 + 1 = <b>255</b>',true)+sumLine('Codes 0 to 255 make <b>256</b> codes',true);
+  }
+  wrap(st,h);
+};
+
+/* Screen 9, anim 2: why Unicode was needed */
+S.unicode=function(st,i){
+  let h='';
+  if(i===0){
+    h+='<div class="u2box"><div class="u2bt">Extended ASCII: 256 codes</div><div class="u2codes">'+['A','b','7','!','é'].map(c=>'<span class="u2cc"><b>'+esc(c)+'</b></span>').join('')+'<span class="u2more">…</span></div></div>';
+    h+=u2lab('Thousands more, with no code left for them')+'<div class="u2codes u2out">'+['中','한','Ω','ж','अ','ע','😀','🎉'].map(c=>'<span class="u2cc bad"><b>'+c+'</b></span>').join('')+'<span class="u2more">…</span></div>';
+  }
+  if(i===1||i===2){
+    const fr='<div class="u2pc2"><div class="u2bt">A computer in France</div>'+(i===1?'<div class="u2map">233 → <b>é</b></div>':'<div class="u2word">café</div>')+'</div>';
+    const ru='<div class="u2pc2"><div class="u2bt">A computer in Russia</div>'+(i===1?'<div class="u2map'+u2in(true,.5)+'">233 → <b class="bad">й</b></div>':'<div class="u2word u2slide">caf<b class="bad">й</b></div>')+'</div>';
+    h+='<div class="u2cards">'+fr+'<span class="u2arr" aria-hidden="true">'+(i===2?'→':'')+'</span>'+ru+'</div>';
+    if(i===2) h+=u2tick('Same code 233, different letter.',false,true);
+  }
+  if(i===3){
+    const C=[['A',65],['é',233],['й',1081],['Ω',937],['中','20,013'],['😀','128,512']];
+    h+=u2lab('Unicode: every character has its own code')+'<div class="u2codes">'+C.map((c,k)=>'<span class="u2cc'+u2in(true,.25*k)+'"><b>'+c[0]+'</b><span>'+c[1]+'</span></span>').join('')+'</div>';
+  }
+  if(i===4){
+    h+='<div class="u2box uni"><div class="u2bt">Unicode</div><div class="u2box asc'+u2in(true,.2)+'"><div class="u2bt">ASCII: codes 0 to 127</div><div class="u2codes"><span class="u2cc"><b>A</b><span>65</span></span><span class="u2cc"><b>!</b><span>33</span></span><span class="u2more">…</span></div></div>'+
+      '<div class="u2codes"><span class="u2cc"><b>Ω</b><span>937</span></span><span class="u2cc"><b>中</b><span>20,013</span></span><span class="u2more">…</span></div></div>';
+  }
+  if(i===5){
+    const R=[['A',1],['Ω',2],['中',3],['😀',4]];
+    h+=u2lab('Bytes needed to store each one')+'<div class="u2bytes">'+R.map((r,k)=>'<div class="u2brow"><span class="u2bch">'+r[0]+'</span>'+Array.from({length:r[1]},(_,j)=>'<span class="u2byte'+u2in(true,.15*(k+j))+'"></span>').join('')+'<span class="u2bn">'+r[1]+(r[1]>1?' bytes':' byte')+'</span></div>').join('')+'</div>';
+  }
+  wrap(st,h);
+};
+
+/* Screen 10, anim 1: a variable and its data type */
+S.goals=function(st,i){
+  let h='';
+  const val=i===0?'3':'4';
+  const tag=i>=2?'<span class="tg'+(i>=3?' sw':'')+(i===2||i===3?' chg':'')+'">data type: '+(i>=3?'integer':'?')+'</span>':'';
+  h+='<div class="u2var"><span class="u2ball'+(i===1?' chg':'')+'" aria-hidden="true">⚽</span>'+vb('goalsScored',val,i===1)+tag+'</div>';
+  if(i===3) h+=u2lab('Whole numbers fit')+'<div class="u2codes">'+['4','0','−2','150'].map((v,k)=>'<span class="u2cc ok'+u2in(true,.2*k)+'"><b>'+v+'</b></span>').join('')+'</div>';
+  if(i===4) h+='<div class="u2codes"><span class="u2cc bad u2bounce"><b>1.99</b></span></div>'+u2tick('Error: 1.99 has a decimal part, so it does not fit an integer.',false,true);
+  if(i===5) h+='<div class="u2var u2in"><span class="u2ball" aria-hidden="true">🏷️</span>'+vb('price','1.99')+'<span class="tg sw">data type: real</span></div>'+u2tick('1.99 fits a real.',true,true);
+  wrap(st,h);
+};
+
+/* Screen 10, anim 2: four more data types */
+S.types=function(st,i){
+  const T=['integer','real','character','string','Boolean','date/time'];
+  const cur=[2,2,3,3,3,4,4,5][i];
+  let h='<div class="u2shelf">'+T.map((t,k)=>'<span class="u2jar'+(k===cur?' on':k<cur?' met':' later')+(k===cur&&(i===2||i===5||i===7)?' chg':'')+'">'+t+'</span>').join('')+'</div>';
+  if(i===0) h+='<div class="u2var">'+vb('grade',"'B'")+'<span class="tg sw">character</span></div>'+u2lab('One letter, digit or symbol');
+  if(i===1) h+='<div class="u2var">'+vb('digit',"'7'")+'<span class="tg sw">character</span></div>'+u2tick("'7' + 1 does not give 8. '7' is a symbol, not the number 7.",false,true);
+  if(i===2) h+='<div class="u2var">'+vb('postcode','"BT34 2EX"')+'<span class="tg sw">string</span></div>'+
+    u2lab('8 characters, counting the space')+'<div class="u2codes">'+['B','T','3','4','','2','E','X'].map((c,k)=>'<span class="u2cc'+(c?'':' sp')+u2in(true,.15*k)+'"><b>'+(c||'space')+'</b></span>').join('')+'</div>';
+  if(i===3) h+=u2lab('A phone number, stored as an integer')+'<div class="u2var"><span class="vb chg"><span class="vl">phone</span><span class="vv"><span class="u2pre"><span class="u2ghost u2drop">0</span></span>7700900123</span></span><span class="tg">integer</span></div>'+
+    u2tick('The first 0 is lost.',false,true);
+  if(i===4) h+=u2lab('The same phone number, stored as a string')+'<div class="u2var">'+vb('phone','"07700 900123"',true)+'<span class="tg sw">string</span></div>'+u2tick('The 0 stays.',true,true);
+  if(i===5) h+='<div class="u2var">'+vb('passFail','true')+'<span class="tg sw">Boolean</span></div>'+u2lab('Only two values')+'<div class="u2codes"><span class="u2cc ok'+u2in(true,0)+'"><b>true</b></span><span class="u2cc'+u2in(true,.3)+'"><b>false</b></span></div>';
+  if(i===6) h+='<div class="u2qs">'+['passFail','isValid'].map((n,k)=>'<div class="u2q'+u2in(true,.4*k)+'"><code>'+n+'</code><span class="u2qg"><span class="u2arr" aria-hidden="true">→</span><span class="u2ask">'+(k?'Is it valid?':'Pass or fail?')+'</span><span class="u2arr" aria-hidden="true">→</span><span class="tg sw">Boolean</span></span></div>').join('')+'</div>';
+  if(i===7) h+='<div class="u2dt'+u2in(true,0)+'"><span aria-hidden="true">📅</span> 14 May 2027 + 7 days = <b>21 May 2027</b></div>'+
+    '<div class="u2dt'+u2in(true,.5)+'"><span aria-hidden="true">🕘</span> 09:00 comes before <b>10:30</b></div>';
+  wrap(st,h);
+};
+
+/* Screen 11, anim: AND, OR and NOT in everyday things */
+S.gates3=function(st,i){
+  function btn(lab,on,fresh){ return '<span class="u2btn'+(on?' on':'')+(fresh?' chg':'')+'"><span class="u2bl">'+lab+'</span><span class="u2bb"></span><span class="u2bv">'+(on?1:0)+'</span></span>'; }
+  function out(ico,lab,v,act,fresh){ return '<div class="u2out'+(v?' on':'')+'"><span class="u2ico'+(act&&fresh?' '+act:'')+'" aria-hidden="true">'+ico+'</span><span class="u2ol'+(fresh?' chg':'')+'">'+lab+': <b>'+v+'</b></span></div>'; }
+  function tbl(head,rows,newFrom){ return nt(head,rows.map((r,k)=>({cls:k>=newFrom?'chg':'',cells:r.map((c,j)=>({v:c,cls:j===r.length-1?'res'+(c?' on':''):''}))}))); }
+  function rule(t,txt){ return '<div class="u2rule chg"><span class="tg sw">'+t+'</span> '+txt+'</div>'; }
+  let h='';
+  if(i<=3){
+    const L=i>=2, R=i>=1, run=L&&R?1:0;
+    h+=u2lab('The two green buttons in the photo');
+    h+='<div class="u2rig"><div class="u2btns">'+btn('Left',L,i===2)+btn('Right',R,i===1)+'</div><span class="u2arr" aria-hidden="true">→</span>'+out('⚙️',run?'Machine runs':'Machine stopped',run,'u2spin',i===2)+'</div>';
+    const rows=[[0,0,0],[0,1,0],[1,0,0],[1,1,1]].slice(0,i===0?1:i===1?3:4);
+    h+=tbl(['Left','Right','Machine'],rows,i===0?9:i===1?1:i===2?3:9);
+    if(i===3) h+=rule('AND','The machine runs only when both buttons are pressed.');
+  } else if(i<=5){
+    const F=i===5?1:0, B=1;
+    h+=u2lab('A doorbell with two buttons');
+    h+='<div class="u2rig"><div class="u2btns">'+btn('Front',F,i===5)+btn('Back',B,i===4)+'</div><span class="u2arr" aria-hidden="true">→</span>'+out('🔔','Bell rings',1,'u2ring',true)+'</div>';
+    const rows=[[0,0,0],[0,1,1],[1,0,1],[1,1,1]].slice(0,i===4?2:4);
+    h+=tbl(['Front','Back','Bell'],rows,i===4?1:2);
+    if(i===5) h+=rule('OR','The bell rings when either button is pressed, or both.');
+  } else if(i<=7){
+    const shut=i===6;
+    h+=u2lab(shut?'A fridge, door shut':'A fridge, door open');
+    h+='<div class="u2rig"><div class="u2btns">'+btn('Door switch',shut,true)+'</div><span class="u2arr" aria-hidden="true">→</span><div class="u2out"><span class="lamp'+(shut?'':' on')+(i===7?' chg':'')+'">Light</span><span class="u2ol">Light: <b>'+(shut?0:1)+'</b></span></div></div>';
+    h+=tbl(['Switch','Light'],[[1,0],[0,1]].slice(0,shut?1:2),shut?0:1);
+    if(i===7) h+=rule('NOT','The light is always the opposite of the switch.');
+  } else {
+    h+=u2lab('In Play with it below');
+    const sw=(l,like)=>'<div class="u2map2"><span class="swt big" aria-pressed="true"><span class="plv">'+l+'</span><span class="knob"></span><span class="bitv">1</span></span><span class="u2like">like the '+like+'</span></div>';
+    h+='<div class="u2rig u2in"><div class="u2pair">'+sw('Switch A','left button')+sw('Switch B','right button')+'</div><span class="u2arr" aria-hidden="true">→</span><div class="u2map2"><span class="lamp on">Lamp</span><span class="u2like">like the machine</span></div></div>';
+  }
+  wrap(st,h);
+};
 })();
