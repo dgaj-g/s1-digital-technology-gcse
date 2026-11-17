@@ -1351,9 +1351,9 @@
       "breaks": "Real buttons can stick or break. A Boolean value is always exactly 0 or 1.",
       "img": {
        "src": "t2-s11-two-hand.jpg",
-       "alt": "An orange control box on a stand, with a green button at each end.",
+       "alt": "An orange control box with a green button at each end.",
        "cap": "A two-hand control box for a machine, such as one that stamps metal. The machine only runs while both green buttons are pressed.",
-       "credit": "Photo: Sam D. Wilbur, CC BY 4.0",
+       "credit": "Photo: Sam D. Wilbur, CC BY 4.0, cropped",
        "page": "https://commons.wikimedia.org/wiki/File:Two-hands_control_device.jpg"
       }
      }
