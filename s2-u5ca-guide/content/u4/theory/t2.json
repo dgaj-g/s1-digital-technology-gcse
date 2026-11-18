@@ -711,7 +711,7 @@
     {
      "exam": {
       "term": "Overflow",
-      "say": "What it is: the number's magnitude is greater than the maximum the computer can represent. Magnitude means size. For one byte, that is any number over 255. What it does: the overflow digit is lost, so the result is incorrect.",
+      "say": "**What it is:** the number's magnitude is greater than the maximum the computer can represent. Magnitude means size. For one byte, that is any number over 255. **What it does:** the overflow digit is lost, so the result is incorrect.",
       "src": "2019 Q8(d)(ii) and (iii), 2021 Q6(e)(i) and 2022 Q6(c)(i) mark schemes"
      }
     },

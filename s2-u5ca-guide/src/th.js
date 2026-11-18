@@ -848,7 +848,7 @@ function renderLearn(t, n) {
           if (ep.sample) { var sm = el("div.sample"); ep.sample.forEach(function (r) { sm.appendChild(el("div", {}, [el("span", { html: termHtml(r[0]) }), el("span.tag", { text: r[1] })])); }); pt.appendChild(sm); }
           if (ep.points) { var pu = el("ul"); ep.points.forEach(function (x) { pu.appendChild(el("li", { html: termHtml(x) })); }); pt.appendChild(pu); }
           if (ep.src) pt.appendChild(el("div.src", { text: fmt("learn.exam.src", { src: ep.src }) })); eb.appendChild(pt); });
-        else { eb.appendChild(el("div.term", { text: ex.term })); eb.appendChild(el("p.def", { text: ex.say })); if (ex.src) eb.appendChild(el("div.src", { text: fmt("learn.exam.src", { src: ex.src }) })); }
+        else { eb.appendChild(el("div.term", { text: ex.term })); eb.appendChild(el("p.def", { html: termHtml(ex.say) })); if (ex.src) eb.appendChild(el("div.src", { text: fmt("learn.exam.src", { src: ex.src }) })); }
         sc.appendChild(eb); }
       else if (b.watch) { sc.appendChild(el("div.blk.watch", {}, [el("span.ic", { text: "!" }), el("div", {}, [el("div.lab", { text: S["learn.head.watch"] }), el("p", { html: termHtml(b.watch) })])])); }
       else if (b.side) { var sd = b.side, sb2 = el("div.blk.side"); [sd.left, sd.right].forEach(function (col) { if (!col) return; var c = el("div.col"); c.appendChild(el("h4", { text: col.title })); var ul = el("ul"); arr(col.rows).forEach(function (r) { ul.appendChild(el("li", { html: termHtml(r) })); }); c.appendChild(ul); sb2.appendChild(c); }); sc.appendChild(sb2); }
