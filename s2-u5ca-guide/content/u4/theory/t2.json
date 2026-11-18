@@ -625,7 +625,7 @@
   {
    "n": 7,
    "title": "Adding two bytes and spotting overflow",
-   "goal": "I can add two bytes with carries and say what overflow does to the answer.",
+   "goal": "I can add two bytes with carries, say what overflow is and what it does.",
    "blocks": [
     {
      "anim": {
@@ -643,8 +643,8 @@
        "Column headed 64: 1 + 0 + the carried 1 = 2, which is 10 in binary. Write 0 and carry 1.",
        "Column headed 128: 0 + 0 + the carried 1 = 1. Write 1 with no carry. The answer is 10010010, which is 128 + 16 + 2 = 146.",
        "Now a second sum: 11100011 + 01101110. 11100011 is 128 + 64 + 32 + 2 + 1 = 227. 01101110 is 64 + 32 + 8 + 4 + 2 = 110. 227 + 110 = 337. That is bigger than 255, the biggest a byte can hold. So the answer cannot fit in eight bits.",
-       "Add column by column, as before. The carries are in the carry row. The column headed 128 is 1 + 0 + the carried 1 = 2. Write 0 and carry 1. That carry has no column left. So the answer, 101010001, has nine bits. The 1 in the ninth column is overflow. In an exam, circle it like this.",
-       "The ninth bit is lost. The byte keeps only 01010001, which is 64 + 16 + 1 = 81. Headings double: 64, 128, 256. So the ninth bit was worth 256. 256 + 81 = 337, the true total. The adding was done right. But the byte has no room for the ninth bit. So the stored answer, 81, is wrong."
+       "Add column by column, as before. The carries are in the carry row. The column headed 128 is 1 + 0 + the carried 1 = 2. Write 0 and carry 1. That carry has no column left. So the answer, 101010001, has nine bits. The 1 in the ninth column is the overflow bit. In an exam, circle it like this.",
+       "The ninth bit is lost. The byte keeps only 01010001, which is 64 + 16 + 1 = 81. Headings double: 64, 128, 256. So the ninth bit was worth 256. 256 + 81 = 337, the true total. The adding was done right. But the byte has no room for the ninth bit. So the stored answer, 81, is incorrect."
       ]
      }
     },
@@ -654,7 +654,7 @@
       "0 + 0 = 0. 0 + 1 = 1. 1 + 1 = 2, which is written 10 in binary: write 0 and carry 1.",
       "1 + 1 + 1 = 3, which is written 11 in binary: write 1 and carry 1.",
       "Write the carry above the next column to the left. Then add that column, carry included.",
-      "A byte has room for only eight bits. If the last carry needs a ninth column, the ninth bit has nowhere to go. It is lost. That is called [[overflow|1]]. The adding was done right, but the stored answer is wrong."
+      "A byte can hold numbers from 0 to 255. Sometimes a total is bigger than 255, the biggest number a byte can represent. That is called [[overflow|1]]. The answer then needs a ninth bit, but a byte has only eight. The ninth bit is lost. So the stored answer is incorrect, even though the adding was done right."
      ]
     },
     {
@@ -665,7 +665,7 @@
        "Drive on to the next whole mile and every wheel rolls round to 0. The counter now says 00000.",
        "The true total, 100000 miles, needs a sixth wheel for whole miles. There is none, so the 1 at the front is lost.",
        "Drive 5 more miles from 99999 and the counter shows 00004. The true total is 100004. The front 1 is lost, but the rest is kept.",
-       "A byte has eight bits. When a sum needs a ninth bit, that bit is lost too. The other eight bits are kept. That is overflow."
+       "A byte has eight bits, so 255 is the biggest number it can hold. A total over 255 is too big for the byte. That is overflow. The ninth bit is lost, like the front 1. The other eight bits are kept."
       ],
       "match": [
        [
@@ -711,8 +711,8 @@
     {
      "exam": {
       "term": "Overflow",
-      "say": "The answer is bigger than 255, the biggest number a byte can hold. The ninth bit, the overflow bit, is lost, so the stored answer is wrong.",
-      "src": "2019 Q8(d)(ii) and (iii), 2021 Q6(e)(i) mark schemes"
+      "say": "What it is: the number's magnitude is greater than the maximum the computer can represent. Magnitude means size. For one byte, that is any number over 255. What it does: the overflow digit is lost, so the result is incorrect.",
+      "src": "2019 Q8(d)(ii) and (iii), 2021 Q6(e)(i) and 2022 Q6(c)(i) mark schemes"
      }
     },
     {
@@ -732,24 +732,24 @@
           "kept",
           "correct"
          ],
-         "text": "When 11111111 and 00000001 are added, the answer needs {1} bits. The extra bit is called {2}. It is {3}, so the stored answer is {4}."
+         "text": "When 11111111 and 00000001 are added, the total is 256. That is too big for a byte to represent, so the sum causes {1}. The answer needs {2} bits. The extra bit is {3}, so the stored answer is {4}."
         },
         "key": {
          "answer": [
-          "nine",
           "overflow",
+          "nine",
           "lost",
           "incorrect"
          ]
         },
-        "why": "11111111 + 00000001 = 100000000: nine bits. In denary that is 255 + 1 = 256. Headings double: 64, 128, 256. So the ninth bit is worth 256. A byte has no ninth heading, so that bit is overflow. It is lost, so the byte keeps 00000000, which is 0: incorrect."
+        "why": "In denary that is 255 + 1 = 256. A byte can represent at most 255, so the sum causes overflow. In binary, 11111111 + 00000001 = 100000000: nine bits. A byte has no ninth column, so the ninth bit is lost. The byte keeps 00000000, which is 0: incorrect."
        },
        {
         "stem": "Pick TRUE or FALSE for each statement about overflow.",
         "surface": {
          "kind": "tf",
          "rows": [
-          "Overflow happens when the total needs more bits than the byte has.",
+          "Overflow happens when a total is bigger than the biggest number a byte can represent.",
           "The extra bit is kept in a ninth column of the byte.",
           "The stored answer is smaller than the true total.",
           "Overflow means the two bytes were added wrongly."
@@ -767,7 +767,7 @@
           "FALSE"
          ]
         },
-        "why": "The sum was done right, but a byte has only eight columns. The ninth bit is lost, so the stored answer is wrong and too small."
+        "why": "Overflow means the total is bigger than 255, the most a byte can represent. The adding was done right. But the ninth bit is lost, so the stored answer is incorrect and too small."
        }
       ]
      }
