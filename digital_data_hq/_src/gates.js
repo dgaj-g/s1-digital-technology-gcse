@@ -80,6 +80,12 @@ function gateMarks(PP) {
     if (!m) return f.push(`${k}: the ref does not say how many marks the question is worth`);
     if (+m[1] !== gateMax(t)) f.push(`${k}: the ref says ${m[1]} mark(s) but the question awards ${gateMax(t)}`);
     if (t.alts && t.alts.some(a => a.length !== gateMax(t))) f.push(`${k}: an accepted answer set does not fill every gap`);
+    /* a feedback line that names the paper's answer letter needs the paper's A-D order on screen, and the right letter */
+    const L = /Mark scheme: ([A-E])[,.]/.exec(t.feedback || '');
+    if (t.type === 'mcq' && L) {
+      if (!t.keepOrder) f.push(`${k}: the feedback names answer ${L[1]} but the options are shuffled, so the letter means nothing on screen`);
+      if ('ABCDE'.indexOf(L[1]) !== t.answer) f.push(`${k}: the feedback names answer ${L[1]} but the right option is ${'ABCDE'[t.answer]}`);
+    }
   });
   return f;
 }
@@ -97,6 +103,8 @@ function gateControls(figDir) {
     'figure plus retyped table': gateFigs({ k: { q: '<table class="dt"></table>', fig: 'no-such-figure.png' } }, [], figDir),
     'marks shown but not awarded': gateMarks({ k: { type: 'mcq', ref: '2019 Q1 · 2 marks' } }),
     'no marks shown': gateMarks({ k: { type: 'mcq', ref: '2019 Q1' } }),
+    'answer letter with shuffled options': gateMarks({ k: { type: 'mcq', ref: '2019 Q1 · 1 mark', answer: 1, feedback: 'Mark scheme: B.' } }),
+    'answer letter is the wrong one': gateMarks({ k: { type: 'mcq', ref: '2019 Q1 · 1 mark', keepOrder: true, answer: 0, feedback: 'Mark scheme: B.' } }),
     'answer set with a gap missing': gateMarks({ k: { type: 'fill', text: '[[a]] [[b]]', alts: [['a', 'b'], ['c']], ref: '2019 Q1 · 2 marks' } })
   };
   return Object.entries(C).filter(([, v]) => !v.length).map(([k]) => k);
