@@ -1546,7 +1546,7 @@ function sim_ladder(area,finish){
   gmBanner('Build the unit ladder','Put the seven units of storage in order, smallest at the bottom. Then use your ladder to convert sizes and to decide whether files will fit. A wrong answer costs a life.','🪜 Start',ldBuild);
 }
 function ldLadder(n){
-  return `<div class="dd-ladder">${LD_UNITS.map((u,i)=>`<div class="dd-rung${i<n?' on':''}"><b>${i<n?u[0]:'?'}</b><span>${i<n?u[1]:''}</span></div>`).reverse().join('')}</div>`;
+  return `<div class="dd-ladder">${LD_UNITS.map((u,i)=>`<div class="dd-rung${i<n?' on':''}"><b>${i<n?u[0]:'?'}</b><span>${i<n?u[1]:''}</span></div>`).join('')}</div>`;
 }
 function ldBuild(){
   gmStage(0);GM.state='play';gmMsg('');LD.n=0;
