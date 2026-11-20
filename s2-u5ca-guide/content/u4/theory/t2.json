@@ -828,8 +828,7 @@
        "Denary headings are 1, 10, 100 and 1,000. Each one is ten times the heading on its right.",
        "Binary headings double instead. A byte has eight: 1, 2, 4, 8, 16, 32, 64 and 128.",
        "Keep doubling past 128: 128 × 2 = 256, 256 × 2 = 512, 512 × 2 = 1,024.",
-       "In denary, 1,000 is a heading, so it makes a neat unit. Computers count in binary, and 1,000 is not a binary heading. The nearest binary heading is 1,024, so a kilobyte is 1,024 bytes.",
-       "Here is one kilobyte: one square for each of its 1,024 bytes. That is 32 rows of 32. Check: 32 × 32 = 1,024."
+       "In denary, 1,000 is a heading, so it makes a neat unit. Computers count in binary, and 1,000 is not a binary heading. The nearest binary heading is 1,024, so a kilobyte is 1,024 bytes."
       ]
      }
     },
@@ -1339,82 +1338,37 @@
   {
    "n": 11,
    "title": "Boolean logic: AND, OR and NOT truth tables",
-   "goal": "I can work out AND, OR and NOT and fill every cell of a truth table.",
+   "goal": "I can fill in a truth table for AND, OR and NOT.",
    "blocks": [
     {
-     "picture": {
-      "title": "Two buttons, a doorbell and a fridge light",
-      "lines": [
-       "Look at the green button at each end of this control box. Ignore the red and yellow ones.",
-       "The Watch it box below shows the machine, a doorbell and a fridge light at work."
-      ],
-      "breaks": "Real buttons can stick or break. A Boolean value is always exactly 0 or 1.",
-      "img": {
-       "src": "t2-s11-two-hand.jpg",
-       "alt": "An orange control box with a green button at each end.",
-       "cap": "A two-hand control box for a machine, such as one that stamps metal. The machine only runs while both green buttons are pressed.",
-       "credit": "Photo: Sam D. Wilbur, CC BY 4.0, cropped",
-       "page": "https://commons.wikimedia.org/wiki/File:Two-hands_control_device.jpg"
-      }
-     }
+     "say": [
+      "A Boolean value is only ever 1 or 0. 1 means true and 0 means false. [[AND|1]], [[OR|1]] and [[NOT|1]] each take Boolean inputs and give one output.",
+      "A [[truth table|1]] has a row for every mix of inputs. You fill in the outputs one column at a time."
+     ]
     },
     {
      "anim": {
-      "scene": "gates3",
-      "title": "AND, OR and NOT in everyday things",
-      "lead": "Press Next. Pressed or on is 1. Not pressed or off is 0.",
+      "scene": "ttrules",
+      "title": "The AND, OR and NOT tables",
+      "lead": "Press Next to fill one column at a time.",
       "steps": [
-       "The green buttons in the photo start a machine, such as one that stamps metal. Neither is pressed: 0 and 0. The machine stays stopped: 0.",
-       "Press just the right button: 0 and 1. The machine stays stopped: 0. The same goes for 1 and 0.",
-       "Press both buttons: 1 and 1. Now the machine runs: 1. Both hands are on the buttons, so no hand can get caught in the machine.",
-       "The machine runs only when both buttons are pressed. That rule is AND.",
-       "A house has a bell button at the front and back doors. No button pressed: no ring, 0. Press only the back one: it rings, 1.",
-       "Press the front one, or both at once: it still rings. Either button, or both, rings the bell. That is OR.",
-       "Inside a fridge, the shut door presses a small switch. Switch pressed: 1. Light off: 0.",
-       "Open the door and the switch is not pressed: 0. The light comes on: 1. The light is always the opposite of the switch. That is NOT.",
-       "In Play with it below, switches A and B are like the two buttons. The lamp is like the machine."
+       "Two inputs, X and Y, give 4 rows. Write them in this order: 0 0, 0 1, 1 0, 1 1. That covers every mix of inputs.",
+       "AND: the output is 1 only if all inputs are 1. Only the last row has X and Y both at 1. So the X AND Y column reads 0, 0, 0, 1.",
+       "OR: the output is 1 if at least one input is 1. Only the first row has no 1. So the X OR Y column reads 0, 1, 1, 1.",
+       "NOT has one input, so its table has just 2 rows. The output is the opposite: NOT 0 is 1 and NOT 1 is 0."
       ]
      }
-    },
-    {
-     "say": [
-      "The machine, the doorbell and the fridge light each follow a rule. Computers make decisions with the same three rules: AND, OR and NOT. A game might end when time runs out OR lives run out. 1 means true and 0 means false.",
-      "A [[truth table|1]] lists every possible input and the output the rule gives. An input is a value going into the rule. The output is what comes out. Each input has two choices, 0 or 1. So two inputs give 2 × 2 = 4 rows. Row 1 is A = 0, B = 0. Row 2 is A = 0, B = 1. Row 3 is A = 1, B = 0. Row 4 is A = 1, B = 1.",
-      "[[AND|1]] gives 1 only when both inputs are 1. [[OR|1]] gives 1 when either input is 1, or both.",
-      "[[NOT|1]] has one input and flips it. NOT 1 is 0 and NOT 0 is 1. With one input, its truth table has only 2 rows."
-     ]
-    },
-    {
-     "play": {
-      "kind": "logic",
-      "title": "Two switches, one lamp",
-      "lead": "Pick a rule, then flip switch A and switch B. Watch the lamp and the truth table row light up. NOT has only one input, so it uses switch A only. The lamp shows the output.",
-      "gates": [
-       "AND",
-       "OR",
-       "NOT"
-      ]
-     }
-    },
-    {
-     "say": [
-      "Some questions join two rules together, like NOT(P AND Q). P and Q are names for two inputs, like switches A and B.",
-      "The brackets are worked out first, as in maths. So first work out P AND Q. Then apply NOT to that answer. The animation below does this for every row.",
-      "Rules can also be chained, one after another. Say X is 1. Y is 1 too. Z is X AND Y, so Z is 1 AND 1, which is 1. W is NOT Z, so W is NOT 1, which is 0."
-     ]
     },
     {
      "anim": {
       "scene": "truth",
-      "title": "Fill in NOT(P AND Q), row by row",
-      "lead": "Press Next to fill one row at a time. The brackets are worked out first, then NOT flips the answer.",
+      "title": "An exam truth table, column by column",
+      "lead": "Press Next. Fill the columns from left to right.",
       "steps": [
-       "An exam paper gives P, Q and two empty columns. The P AND Q column is your working. The NOT(P AND Q) column is the answer. Four rows cover every input.",
-       "Row 1: P is 0 and Q is 0. Neither is 1, so P AND Q is 0: write 0 in the working column. NOT 0 is 1, so write 1 in the answer column.",
-       "Row 2: P is 0 and Q is 1. Only Q is 1, so P AND Q is 0: write 0 in the working column. NOT 0 is 1, so write 1 in the answer column.",
-       "Row 3: P is 1 and Q is 0. Only P is 1, so P AND Q is 0: write 0 in the working column. NOT 0 is 1, so write 1 in the answer column.",
-       "Row 4: P is 1 and Q is 1. Both are 1, so P AND Q is 1: write 1 in the working column. NOT 1 is 0, so write 0 in the answer column.",
-       "Every cell is filled. The answer column, NOT(P AND Q), reads 1, 1, 1, 0. Each cell or column can earn its own mark."
+       "Exam tables give the inputs, then columns to fill. A column named R = P AND Q holds P AND Q for each row. A later column can use R.",
+       "Fill column R first. Use the AND rule on P and Q in each row. Only the last row has both at 1, so R reads 0, 0, 0, 1.",
+       "Then fill column S = NOT R. In each row, write the opposite of the R cell. So S reads 1, 1, 1, 0.",
+       "Every cell is filled. Each cell or column can earn its own mark."
       ]
      }
     },
@@ -1427,28 +1381,60 @@
     },
     {
      "try": {
-      "form": "tf",
-      "stem": "A = 1. B = 0. C is NOT B. D is A AND C. E is C OR D. Pick TRUE or FALSE for each line.",
+      "form": "truth-table",
+      "stem": "Fill in columns C and D. Fill C first, then use it for D.",
       "surface": {
-       "kind": "tf",
-       "rows": [
-        "C is 1.",
-        "D is 1.",
-        "E is 0."
+       "kind": "truth",
+       "head": [
+        "A",
+        "B",
+        "C = A OR B",
+        "D = NOT C"
+       ],
+       "inputs": [
+        [
+         "0",
+         "0"
+        ],
+        [
+         "0",
+         "1"
+        ],
+        [
+         "1",
+         "0"
+        ],
+        [
+         "1",
+         "1"
+        ]
        ],
        "vals": [
-        "TRUE",
-        "FALSE"
+        "0",
+        "1"
        ]
       },
       "key": {
        "answer": [
-        "TRUE",
-        "TRUE",
-        "FALSE"
+        [
+         "0",
+         "1"
+        ],
+        [
+         "1",
+         "0"
+        ],
+        [
+         "1",
+         "0"
+        ],
+        [
+         "1",
+         "0"
+        ]
        ]
       },
-      "why": "NOT 0 is 1, so C is 1. A AND C is 1 AND 1, so D is 1. C OR D is 1 OR 1, which is 1. So E is 1, not 0."
+      "why": "OR gives 1 when one or both inputs are 1. So C reads 0, 1, 1, 1. D is the opposite of C in each row, so D reads 1, 0, 0, 0."
      }
     }
    ]

@@ -377,13 +377,27 @@ S.addbytes=function(st,i){
   else { h=addTab('11100011','01101110',8,true); if(i===10) h+=note('The answer has nine bits. The 1 in the ninth column is <b>overflow</b>, circled in red.',true); else h+=note('The ninth bit is lost. The byte keeps only 01010001: 64 + 16 + 1 = 81. The true total is 256 + 81 = 337.',true); }
   st.innerHTML='<div class="sc numsc">'+h+'</div>';
 };
-S.truth=function(st,i){
-  const rows=[[0,0],[0,1],[1,0],[1,1]];
-  const body=rows.map((r,k)=>{ const done=i>=k+1; const pq=r[0]&&r[1]?1:0, out=pq?0:1;
-    return {cls:(i===k+1?'chg':''),cells:[{v:r[0]},{v:r[1]},{v:done?pq:'',cls:done?'mid':'wait'},{v:done?out:'',cls:done?'res'+(out?' on':''):'wait'}]}; });
-  let h=nt(['P','Q','<span class="mid">P AND Q</span>','NOT(P AND Q)'],body,'truthsc');
-  if(i>=1&&i<=4){ const r=rows[i-1],pq=r[0]&&r[1]?1:0; h+=sumLine('Working column: P AND Q is '+pq+'. Answer column: NOT '+pq+' is <b>'+(pq?0:1)+'</b>.',true); }
-  if(i>=5) h+=note('The answer column, NOT(P AND Q), reads 1, 1, 1, 0. Each cell or column can earn its own mark.',true);
+S.truth=function(st,i){ /* Screen 11, anim 2: an exam truth table, one column at a time */
+  const R=[[0,0],[0,1],[1,0],[1,1]];
+  const out=(v,col)=>i>=col?{v:v,cls:'res'+(v?' on':'')+(i===col?' chg':'')}:{v:'',cls:'wait'};
+  const body=R.map(r=>{ const a=r[0]&r[1]; return {cells:[{v:r[0]},{v:r[1]},out(a,1),out(1-a,2)]}; });
+  let h=nt(['P','Q','R&nbsp;= P&nbsp;AND&nbsp;Q','S&nbsp;= NOT&nbsp;R'],body,'truthsc');
+  if(i===1) h+=sumLine('R: AND gives 1 only when P and Q are both 1.',true);
+  if(i===2) h+=sumLine('S: the opposite of R in the same row.',true);
+  if(i>=3) h+=note('S = NOT R is the same as <b>NOT(P&nbsp;AND&nbsp;Q)</b>. Brackets first, then NOT.',true);
+  st.innerHTML='<div class="sc numsc">'+h+'</div>';
+};
+/* Screen 11, anim 1: the AND, OR and NOT tables, one column at a time */
+S.ttrules=function(st,i){
+  const R=[[0,0],[0,1],[1,0],[1,1]];
+  const out=(v,col)=>i>=col?{v:v,cls:'res'+(v?' on':'')+(i===col?' chg':'')}:{v:'',cls:'wait'};
+  const body=R.map(r=>({cells:[{v:r[0]},{v:r[1]},out(r[0]&r[1],1),out(r[0]|r[1],2)]}));
+  let h='<div class="ttwrap">'+nt(['X','Y','X&nbsp;AND&nbsp;Y','X&nbsp;OR&nbsp;Y'],body,'truthsc');
+  if(i>=3) h+=nt(['X','NOT&nbsp;X'],[0,1].map(x=>({cells:[{v:x},{v:1-x,cls:'res'+(x?'':' on')+(i===3?' chg':'')}]})),'truthsc');
+  h+='</div>';
+  if(i===1) h+=sumLine('AND: 1 only if <b>all</b> inputs are 1.',true);
+  if(i===2) h+=sumLine('OR: 1 if <b>at least one</b> input is 1.',true);
+  if(i===3) h+=sumLine('NOT: the <b>opposite</b> of the input.',true);
   st.innerHTML='<div class="sc numsc">'+h+'</div>';
 };
 /* ---------- Topic 2 V26: storage units, character codes, data types, everyday logic ----------
@@ -403,7 +417,7 @@ S.kilo=function(st,i){
     }).join('')+'</div>';
   }
   let h='';
-  if(i<=3){
+  {
     h+='<div class="u2hw">'+row('Denary','1,000 100 10 1'.split(' '),'10',null,i===3?['1,000']:null,false);
     if(i>=1){
       const B='128 64 32 16 8 4 2 1'.split(' ');
@@ -413,10 +427,6 @@ S.kilo=function(st,i){
     h+='</div>';
     if(i===2) h+=sumLine('128 × 2 = 256, 256 × 2 = 512, 512 × 2 = <b>1,024</b>',true);
     if(i===3) h+=sumLine('1,024 − 1,000 = 24. So 1,024 is the binary heading nearest to 1,000.',true);
-  } else {
-    h+='<div class="u2kbt">1 kilobyte = 1,024 bytes</div>';
-    h+='<div class="u2kbrow"><div class="u2kbg u2wipe"><span class="u2kb1"></span></div><div class="u2kbs">32 rows of 32 squares<br><b>32 × 32 = 1,024</b></div></div>';
-    h+='<div class="u2kbl"><span class="u2kbkey"></span> The red square is 1 byte.</div>';
   }
   wrap(st,h,'u2kilo');
 };
@@ -556,37 +566,4 @@ S.types=function(st,i){
 };
 
 /* Screen 11, anim: AND, OR and NOT in everyday things */
-S.gates3=function(st,i){
-  function btn(lab,on,fresh){ return '<span class="u2btn'+(on?' on':'')+(fresh?' chg':'')+'"><span class="u2bl">'+lab+'</span><span class="u2bb"></span><span class="u2bv">'+(on?1:0)+'</span></span>'; }
-  function out(ico,lab,v,act,fresh){ return '<div class="u2out'+(v?' on':'')+'"><span class="u2ico'+(act&&fresh?' '+act:'')+'" aria-hidden="true">'+ico+'</span><span class="u2ol'+(fresh?' chg':'')+'">'+lab+': <b>'+v+'</b></span></div>'; }
-  function tbl(head,rows,newFrom){ return nt(head,rows.map((r,k)=>({cls:k>=newFrom?'chg':'',cells:r.map((c,j)=>({v:c,cls:j===r.length-1?'res'+(c?' on':''):''}))}))); }
-  function rule(t,txt){ return '<div class="u2rule chg"><span class="tg sw">'+t+'</span> '+txt+'</div>'; }
-  let h='';
-  if(i<=3){
-    const L=i>=2, R=i>=1, run=L&&R?1:0;
-    h+=u2lab('The two green buttons in the photo');
-    h+='<div class="u2rig"><div class="u2btns">'+btn('Left',L,i===2)+btn('Right',R,i===1)+'</div><span class="u2arr" aria-hidden="true">→</span>'+out('⚙️',run?'Machine runs':'Machine stopped',run,'u2spin',i===2)+'</div>';
-    const rows=[[0,0,0],[0,1,0],[1,0,0],[1,1,1]].slice(0,i===0?1:i===1?3:4);
-    h+=tbl(['Left','Right','Machine'],rows,i===0?9:i===1?1:i===2?3:9);
-    if(i===3) h+=rule('AND','The machine runs only when both buttons are pressed.');
-  } else if(i<=5){
-    const F=i===5?1:0, B=1;
-    h+=u2lab('A doorbell with two buttons');
-    h+='<div class="u2rig"><div class="u2btns">'+btn('Front',F,i===5)+btn('Back',B,i===4)+'</div><span class="u2arr" aria-hidden="true">→</span>'+out('🔔','Bell rings',1,'u2ring',true)+'</div>';
-    const rows=[[0,0,0],[0,1,1],[1,0,1],[1,1,1]].slice(0,i===4?2:4);
-    h+=tbl(['Front','Back','Bell'],rows,i===4?1:2);
-    if(i===5) h+=rule('OR','The bell rings when either button is pressed, or both.');
-  } else if(i<=7){
-    const shut=i===6;
-    h+=u2lab(shut?'A fridge, door shut':'A fridge, door open');
-    h+='<div class="u2rig"><div class="u2btns">'+btn('Door switch',shut,true)+'</div><span class="u2arr" aria-hidden="true">→</span><div class="u2out"><span class="lamp'+(shut?'':' on')+(i===7?' chg':'')+'">Light</span><span class="u2ol">Light: <b>'+(shut?0:1)+'</b></span></div></div>';
-    h+=tbl(['Switch','Light'],[[1,0],[0,1]].slice(0,shut?1:2),shut?0:1);
-    if(i===7) h+=rule('NOT','The light is always the opposite of the switch.');
-  } else {
-    h+=u2lab('In Play with it below');
-    const sw=(l,like)=>'<div class="u2map2"><span class="swt big" aria-pressed="true"><span class="plv">'+l+'</span><span class="knob"></span><span class="bitv">1</span></span><span class="u2like">like the '+like+'</span></div>';
-    h+='<div class="u2rig u2in"><div class="u2pair">'+sw('Switch A','left button')+sw('Switch B','right button')+'</div><span class="u2arr" aria-hidden="true">→</span><div class="u2map2"><span class="lamp on">Lamp</span><span class="u2like">like the machine</span></div></div>';
-  }
-  wrap(st,h);
-};
 })();
