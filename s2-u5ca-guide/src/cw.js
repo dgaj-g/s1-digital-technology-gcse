@@ -187,7 +187,7 @@ function bDrawn(d, ctx) {
   } else if (d.id === 'record-line') {
     /* ch11: one line of the file, each piece numbered 0 to 10, with a ~ fence between the pieces */
     const pc = d.pieces || [];
-    st.appendChild(el(`<div class="dw-rec">${pc.map((x, i) => `${i ? `<span class="fe" style="--d:${300 + i * 260}ms">~</span>` : ''}<span class="pc" style="--d:${300 + i * 260}ms;--c:var(--${['brand', 'ok-ink', 'bad-ink', 'gold-ink', 'tok-k'][i % 5]})"><b>${d.label ? esc(d.label) + '[' + i + ']' : i}</b>${esc(x)}</span>`).join('')}</div>`));
+    st.appendChild(el(`<div class="dw-rec">${pc.map((x, i) => `${i ? `<span class="fe" style="--d:${300 + i * 260}ms">~</span>` : ''}<span class="pc" style="--d:${300 + i * 260}ms;--c:var(--${['brand', 'ok-ink', 'bad-ink', 'gold-ink', 'tok-k-lt'][i % 5]})"><b>${d.label ? esc(d.label) + '[' + i + ']' : i}</b>${esc(x)}</span>`).join('')}</div>`));
   } else if (d.id === 'three-quotes') {
     /* ch12: the filter line with its three kinds of mark, each in its own colour, and a key underneath */
     const q = (c, x) => `<span class="${c}">${esc(x)}</span>`;
