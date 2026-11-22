@@ -2029,7 +2029,7 @@ body.is-th main,body.is-pair main,body.is-staff main{max-width:1420px}
 <body>
 <script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" };
 window.A2_VENDOR = ["https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/","https://dgaj-g.github.io/ols-digital-skills/a2-ssd/platform/vendor/"];
-window.A2_DEPLOY = "a2ssd-s2-2026-11-22-062039fe";
+window.A2_DEPLOY = "a2ssd-s2-2026-11-22-d270cdd7";
 window.A2_CW = "https://dgaj-g.github.io/s1-digital-technology-gcse/s2-u5ca-guide/content/";
 /* These are public web identifiers, not secrets: the database rules are the only guard. No pupil identity is ever written here or to the database. */
 window.U4_LIVE = {"base":"https://ols-ks3-dt-live-default-rtdb.europe-west1.firebasedatabase.app"};
@@ -5083,7 +5083,7 @@ function renderPair(t) {
       if (checked) { setStep(5); return; }
       if (phase === 1) { setStep(1); sf.disable(myPicked);
         if (!myPicked) phaseBox.appendChild(el("div.acts", {}, [el("button.btn", { text: solo ? S["learn.try.check"] : S["pair.lockOwn"], on: { click: busyOn(lockOwn) } })]));
-        else { var waitingOn = others.filter(function (s) { return !picks[s]; }).map(cnOf); phaseBox.appendChild(el("p.say.waiting", { text: waitingOn.length > 1 ? fmt("pair.waitingFor2", { them: waitingOn[0], them2: waitingOn[1] }) : fmt("pair.waitingFor", { them: waitingOn[0] || "" }) })); }
+        else { var waitingOn = others.filter(function (s) { return !picks[s]; }).map(cnOf); phaseBox.appendChild(el("p.say.waiting", { text: waitingOn.length > 1 ? fmt("pair.waitingFor2", { them: waitingOn[0], them2: waitingOn[1] }) : waitingOn.length ? fmt("pair.waitingFor", { them: waitingOn[0] }) : S["pair.allAnswered"] })); }   // all in: say so while my pick saves, never a blank name
         return; }
       if (phase === 2) { setStep(2); sf.disable(false); stepEls[2].classList.add("on"); paintCompare(); var mine = sf.get(), okAll = others.every(function (s) { return picks[s] === mine; });
         var acts = el("div.acts"); var L = ansLetter(sf, spec, mine);
