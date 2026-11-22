@@ -264,6 +264,8 @@ tpl = swap('Code.gs.template', tpl, "  if (op === 'clearMine') {\n", `  if (op =
   }
   if (op === 'clearMine') {
 `);
+// class delete (22 Nov 2026): the A2 delete clears the coursework records; u4forgetClass_ (u4.gs) clears the Unit 4 ones too, or they sit in the store for ever
+tpl = swap('Code.gs.template', tpl, "      store.deleteProperty('cls:' + name);\n", "      store.deleteProperty('cls:' + name);\n      u4forgetClass_(name);\n");
 // the store's safeguard (5 Nov 2026): the Learn visit lists give way first, before any finished paper moves to the archive Sheet
 // and it moves above the class check: the page calls health with no class, so below that check it only ever answered unknown-class and never ran
 tpl = swap('Code.gs.template', tpl, "  if (op === 'health') {\n    props = allProps_();\n    var bytes = storeBytes_(props), moved = 0;\n    if (isOwner_(email) && bytes > ARCHIVE_AT) moved = archive_(props);\n    return ok_({ bytes: bytes, moved: moved });\n  }\n", "");
