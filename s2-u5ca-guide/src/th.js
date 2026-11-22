@@ -207,7 +207,7 @@ function renderTopic(t) {
     else if (ps && ps.state === "waiting") { pairText = S["pair.wait.head"]; pairBtn = S["door.pair.back"]; }
     else if (!p.pairOn) { pairText = S["door.pair.off"]; pairCls.off = true; }
     else { pairText = p.goes.length ? S["door.pair.newGo"] : S["door.pair.notStarted"]; pairBtn = S["door.pair.start"]; }
-    var lastG = p.goes.length ? p.goes[p.goes.length - 1] : null, goNote = !lastG || (ps && ps.state === "done") ? null : el("p.small.quiet", { text: lastG.cut ? fmt("door.pair.lastGoCut", { r: lastG.r, R: R }) : lastG.names && lastG.names.length ? fmt("door.pair.lastGo", { m: lastG.right, R: R, name: joinNames(lastG.names) }) : lastG.solo ? fmt("door.pair.lastGoSolo", { m: lastG.right, R: R }) : fmt("door.pair.lastGoPlain", { m: lastG.right, R: R }) });
+    var lastG = p.goes.length ? p.goes[p.goes.length - 1] : null, goNote = !lastG || (ps && ps.state === "done") || (lastG.cut && ps) ? null : el("p.small.quiet", { text: lastG.cut ? fmt("door.pair.lastGoCut", { r: lastG.r, R: R }) : lastG.names && lastG.names.length ? fmt("door.pair.lastGo", { m: lastG.right, R: R, name: joinNames(lastG.names) }) : lastG.solo ? fmt("door.pair.lastGoSolo", { m: lastG.right, R: R }) : fmt("door.pair.lastGoPlain", { m: lastG.right, R: R }) });
     var pairNote = ps && ps.state === "live" && !p.pairOn ? null : el("p.small.quiet", { text: p.pairOn || ps ? S["pair.door.act"] : S["pair.door.notNow"] });
     doors.appendChild(door("2", S["door.pair"], S["door.pair.sub"], pairText, pairCls, pairBtn, null, busyOn(function () { return api("apiPair", { op: "join", t: t }).then(function (v) { try { sessionStorage.setItem("u4_prejoin_" + t, JSON.stringify({ v: v, at: Date.now() })); } catch (e) {} go("#th/" + t + "/pair"); }); }), goNote && pairNote ? el("div", {}, [goNote, pairNote]) : goNote || pairNote));
     var ppText = p.qn ? fmt("door.pp.progMarks", { round: p.round, m: p.qm, x: p.total, n: p.qn, N: p.NP }) : fmt("door.pp.prog", { round: p.round, n: 0, N: p.NP });
@@ -352,7 +352,7 @@ function Surface(spec, o) {
     function clickL(li) { if (locked) return; if (selR != null) return joinUp(li, selR); selL = (selL === li) ? null : li; paintSel(); }
     function clickR(ri) { if (locked) return; if (selL != null) return joinUp(selL, ri); if (selR === ri) { selR = null; paintSel(); return; } var owner = Object.keys(pairs).find(function (l) { return pairs[l] === ri; }); if (owner != null) { delete pairs[owner]; draw(); change(); return; } selR = ri; paintSel(); }
     left.forEach(function (tx, li) { var d = el("button.dot", { type: "button", attr: { "aria-label": fmt("aria.left", { n: li + 1 }) } }); dotsL[li] = d; var mi = el("div.mi", { on: { click: function () { clickL(li); } } }, [el("span", { text: tx }), d]); itemsL[li] = mi; colL.appendChild(mi); });
-    dispRt.forEach(function (ri) { var d = el("button.dot", { type: "button", attr: { "aria-label": fmt("aria.right", { n: ri + 1 }) } }); dotsR[ri] = d; var mi = el("div.mi", { on: { click: function () { clickR(ri); } } }, [d, el("span", { text: right[ri] })]); itemsR[ri] = mi; colR.appendChild(mi); });
+    dispRt.forEach(function (ri, rpos) { var d = el("button.dot", { type: "button", attr: { "aria-label": fmt("aria.right", { n: rpos + 1 }) } }); dotsR[ri] = d; var mi = el("div.mi", { on: { click: function () { clickR(ri); } } }, [d, el("span", { text: right[ri] })]); itemsR[ri] = mi; colR.appendChild(mi); });
     mbox.appendChild(colL); mbox.appendChild(svg); mbox.appendChild(colR); root.appendChild(mbox); root.appendChild(el("p.hint", { text: S["part.match.hint"] }));
     var lineCls = {};
     function draw() {
@@ -1234,7 +1234,7 @@ function renderPair(t) {
         phaseBox.appendChild(acts); return; }
       if (phase === 4) { setStep(4); sf.disable(true); paintCompare(); var myLock = locks[seat];
         var pending = others.filter(function (s) { return locks[s] !== myLock; });
-        if (!pending.length) return; // agreed → check runs
+        if (!pending.length) { var cl = cmp.querySelector(".cmpline"); if (cl) cl.textContent = S["pair.checking"]; return; } // agreed → check runs; say so while it does
         var otherLocks = others.filter(function (s) { return locks[s] && locks[s] !== myLock; });
         if (otherLocks.length) { var s0 = otherLocks[0], L0 = ansLetter(sf, spec, locks[s0]); phaseBox.appendChild(el("p.say", { text: L0 ? fmt("pair.wants", { them: cnOf(s0), letter: L0 }) : fmt("pair.wantsAny", { them: cnOf(s0) }) }));
           phaseBox.appendChild(el("div.acts", {}, [el("button.btn.gold", { text: L0 ? fmt("pair.agree", { letter: L0 }) : S["pair.agreeAny"], on: { click: function (ev) { return busy(ev.currentTarget, function () { sf.set(locks[s0]); locks[seat] = locks[s0]; var w = post("lock", r + ":" + locks[s0]); settle(); return w; }); } } }), el("button.btn.sec", { text: S["pair.notYet"], on: { click: function (ev) { return busy(ev.currentTarget, function () { return say(S["pair.notYetSay"]); }); } } })].concat(myLock ? [el("button.btn.quiet", { text: S["pair.unlock"], on: { click: busyOn(unlockMine) } })] : []))); }   // both locked, different answers: either can take theirs back
@@ -1267,8 +1267,8 @@ function renderPair(t) {
         if (solo) strip.appendChild(el("div.small", { text: S["pair.soloStrip"] }));
         if (!solo) addLine(null, fmt(res.right ? "pair.chat.lockedRight" : "pair.chat.lockedWrong", { r: r }), true);
         clear(nextBox).classList.remove("hidden");
-        if (r < R) nextBox.appendChild(el("button.btn.big", { text: fmt("pair.nextRound", { round: r + 1 }), on: { click: function (ev) { return busy(ev.currentTarget, function () { P.r = r + 1; P.A = A; P.right = Object.keys(A).filter(function (k) { return A[k].ok; }).length; stopRound(); pairView(P, false); }); } } }));
-        else nextBox.appendChild(el("button.btn.big.gold", { text: S["pair.finish.go"], on: { click: function (ev) { return busy(ev.currentTarget, function () { return api("apiPair", { op: "finish", t: t, pid: pid }).then(function (f) { if (f.state === "ended") { endedGo(); return; } if (f.state === "paused") { reenter(false); return; } if (!solo) post("done", "10"); stopRound(); finishView(P, f); }).catch(function (e) { fail(e, "pair"); }); }); } } }));
+        if (r < R) nextBox.appendChild(el("button.btn.big", { text: fmt("pair.nextRound", { round: r + 1 }), on: { click: function (ev) { return busy(ev.currentTarget, function () { P.r = r + 1; P.A = A; P.right = Object.keys(A).filter(function (k) { return A[k].ok; }).length; stopRound(); pairView(P, false); window.scrollTo(0, 0); }); } } }));
+        else nextBox.appendChild(el("button.btn.big.gold", { text: S["pair.finish.go"], on: { click: function (ev) { return busy(ev.currentTarget, function () { return api("apiPair", { op: "finish", t: t, pid: pid }).then(function (f) { if (f.state === "ended") { endedGo(); return; } if (f.state === "paused") { reenter(false); return; } if (!solo) post("done", "10"); stopRound(); finishView(P, f); window.scrollTo(0, 0); }).catch(function (e) { fail(e, "pair"); }); }); } } }));
         paintPhase(); settling = false;
       }).catch(function (e) { settling = false; console.error(e); toast(S["err.server"]); later(3000, settle); });
     }
@@ -1467,7 +1467,7 @@ function renderStaff($app) {
         clear(body); var dr = el("div.drill.tw-" + t); dr.appendChild(el("h2", { text: fmt("staff.th.pairHead", { names: d.names.join(" + "), t: t }) }));
         dr.appendChild(el("p.small", { text: d.names.map(function (n, i) { return fmt("staff.th.wasCn", { name: n, cn: d.cn[i] }); }).join(" ") + " " + fmt("staff.th.pairRight", { m: d.right, R: d.R }) }));
         var tb = el("table.sttab"), thr = el("tr"); [S["staff.th.roundCol"], S["staff.th.qCol"], S["staff.th.lockedCol"], S["staff.th.rightCol"]].forEach(function (c) { thr.appendChild(el("th", { text: c })); }); tb.appendChild(thr);
-        d.A.forEach(function (a) { var tr = el("tr"); tr.appendChild(el("td", { text: String(a.r) })); tr.appendChild(el("td", { text: a.stem })); tr.appendChild(el("td" + (a.ok ? "" : ".ans"), { text: a.a + (a.ok ? " ✓" : " ✗") })); tr.appendChild(el("td.ms", { text: a.keyShown || "" })); tb.appendChild(tr); });
+        d.A.forEach(function (a) { var tr = el("tr"); tr.appendChild(el("td", { text: String(a.r) })); tr.appendChild(el("td", { text: a.stem })); tr.appendChild(el("td.ans", { text: (a.aShown || a.a) + (a.ok ? " ✓" : " ✗") })); tr.appendChild(el("td.ms", { text: a.keyShown || "" })); tb.appendChild(tr); });
         dr.appendChild(tb);
         dr.appendChild(el("h3", { text: S["staff.th.transcript"] })); dr.appendChild(el("pre.tx", { text: d.tx || S["staff.th.noChat"] }));
         dr.appendChild(el("div.acts", {}, [backBtn()])); body.appendChild(dr);
