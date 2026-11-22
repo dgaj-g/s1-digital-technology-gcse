@@ -1957,3 +1957,38 @@ body.is-th main,body.is-pair main,body.is-staff main{max-width:1420px}
   .scn .u2pc{padding:8px 12px}
   .scn .u2pc .u2cam{font-size:28px}
 }
+/* V31: on a 360px phone the binary tables (Topic 2 screens 2, 3 and 7) show all eight columns with no swipe; they hid 14-26px before */
+@media (max-width:400px){
+  .work .scr{padding-left:12px;padding-right:12px}
+  .work .scr .anim{padding-left:12px;padding-right:12px}
+  .work .scr .stage.scn{padding-left:6px;padding-right:6px}
+  .work:has(> .scr){padding-left:14px;padding-right:14px}
+  .work .scr .blk{padding-left:10px;padding-right:10px}  /* the add-two-bytes boxes get 28px each, not 24px */
+  .work .scn .nt th .ovfh{width:min-content;margin:0 auto}  /* "Over-flow bit" on three short lines: the overflow sum on screen 7 fits */
+}
+/* V31: below 720px the add tables (screen 7 "Add two bytes live" and the typed add questions) become a grid that fits the screen: each row's name sits above its eight boxes, so nothing hides off the right edge */
+@media (max-width:720px){
+  .addwrap{overflow-x:visible}
+  .addt{display:block;max-width:440px;margin:4px 0}
+  .addt thead,.addt tbody{display:block}
+  .addt tr{display:grid;grid-template-columns:minmax(36px,1.1fr) repeat(8,minmax(0,1fr));column-gap:3px;row-gap:3px;align-items:center;margin-bottom:8px}
+  .addt tr > th:first-child{grid-column:1/-1;text-align:left;padding:0;white-space:normal;font-size:12px}
+  .addt thead tr{margin-bottom:2px}
+  .addt thead tr > th:first-child,.addt thead th:not(.ovf):not(.plv){display:none}
+  .addt thead th{font-size:11px;padding:0}
+  .addt thead th.ovf{max-width:none;text-transform:none;letter-spacing:0;font-size:10px;line-height:1.05;hyphens:manual}
+  .addt td{display:block}
+  .addt td.fixed{display:block}
+  .addt td.fixed,.addt td.given,.addt td.auto,.addt td.res,.addt input,.addt .bitb{width:100%;max-width:44px;height:36px;font-size:16px;margin:0 auto}
+  .addt td.ovf > input,.addt td.ovf.res,.addt td.ovf.given{max-width:36px}
+  .addt td.vk{grid-column:1/-1;padding:0;white-space:normal}
+  .addt td.vk:empty{display:none}
+}
+/* V31: on phones a theory code box wraps its long lines instead of hiding the end of them (screen 10 hid "Aoife Quinn" and 67.5) */
+@media (max-width:600px){
+  .scr .codebox pre{white-space:pre-wrap;font-size:14px}
+  .scr .codebox .lang{position:static;display:block;text-align:right;padding:0 14px 4px;margin-top:-6px}  /* the C# label sits above line 1, not on top of it */
+  .scr .codebox .ln{width:auto;min-width:0;padding:0 12px;overflow-wrap:anywhere}
+  .scr .codebox .ln .n{width:26px;padding-right:10px}
+  .scr .codebox .ln > :not(.n){min-width:0}
+}

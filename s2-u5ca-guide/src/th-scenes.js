@@ -362,7 +362,7 @@ S.addbytes=function(st,i){
     const col=k=>8-k<=upto; // column k done?
     const ovf=showOvf&&upto>=8&&c;
     const X=showOvf?[{v:'',cls:'blank'}]:[]; // the ninth column appears only for the overflow sum
-    const head=[''].concat(showOvf?['<span class="ovfh">Overflow<br>bit</span>']:[]).concat(PV8.map(String));
+    const head=[''].concat(showOvf?['<span class="ovfh">Over&shy;flow<br>bit</span>']:[]).concat(PV8.map(String));
     const rows=[
       {cls:'carry',cells:[{v:'carry'}].concat(X,PV8.map((v,k)=>({v:(k<7&&col(k+1)&&car[k+1])?'1':'',cls:(k<7&&col(k+1)&&car[k+1])?'on':''})))},
       {cells:[{v:''}].concat(X,A.map(x=>({v:x})))},
