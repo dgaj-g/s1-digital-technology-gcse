@@ -908,8 +908,8 @@
     {
      "exam": {
       "term": "Units of storage",
-      "say": "Smallest to largest: bit, nibble, byte, kilobyte, megabyte, gigabyte, terabyte. A nibble is 4 bits. A byte is 8 bits.",
-      "src": "2025 Q4(c) and 2024 Q4(a) mark schemes"
+      "say": "Smallest to largest: bit, nibble, byte, kilobyte, megabyte, gigabyte, terabyte. A nibble is 4 bits. A byte is 8 bits. **In an exam calculation:** use 1,024, not 1,000. So 2 terabytes = 2 × 1,024 = 2,048 gigabytes. Using 1,000 only gives an estimate.",
+      "src": "2025 Q4(c), 2024 Q4(a) and 2022 Q4(d) mark schemes"
      }
     },
     {
