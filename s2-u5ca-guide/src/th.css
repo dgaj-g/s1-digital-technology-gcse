@@ -152,6 +152,9 @@ b.term{color:var(--sw-ink);font-weight:900;border-bottom:3px solid var(--sw)}
 .tft.long td.c{width:170px}
 .tfb{width:100%;min-height:36px;height:100%;padding:6px 10px;line-height:1.2;border-radius:9px;border:2px solid var(--sw-ink);background:var(--card);color:var(--sw-ink);font:900 15px var(--sans);cursor:pointer}
 .tfb.on{background:var(--sw-ink);color:var(--white)}
+.tfb.right:not(.on){border:3px solid var(--right);background:var(--right-soft);color:var(--right)}   /* the right choice she did not pick, shown after a check */
+.tfb.right:not(.on)::before{content:"\2713  "}
+.tfb.on.wrong{background:var(--mark);border-color:var(--mark);color:var(--white)}
 .tft td.vk{width:90px;text-align:center}
 .gaps .text{font-size:20px;line-height:2.1;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:14px 18px}
 .gap{display:inline-block;min-width:150px;min-height:38px;border:2px dashed var(--sw-ink);border-bottom:3px solid var(--sw-ink);background:var(--tint);padding:2px 10px;margin:2px 4px;text-align:center;font-weight:900;color:var(--sw-ink);cursor:pointer;line-height:1.5;vertical-align:middle;border-radius:8px;user-select:none;-webkit-user-select:none}
