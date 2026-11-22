@@ -294,7 +294,10 @@ function Surface(spec, o) {
     root.appendChild(txt);
     if (!typed) { var bank = el("div.bank"); bank.appendChild(el("div.h", { text: S["part.gaps.bank"] })); var bankOrder = order(spec.bank.length, seed);
       bankOrder.forEach(function (bi) { var w = spec.bank[bi]; var c = el("button.chip", { type: "button", text: w, on: { click: function () { if (justDragged || locked || c.classList.contains("used")) return; sel = (sel === c) ? null : c; chips.forEach(function (x) { x.classList.toggle("sel", x === sel); }); target(); }, pointerdown: function (ev) { if (!c.classList.contains("used")) dragWord(ev, w, null, c); } } }); chips.push(c); bank.appendChild(c); });
-      root.appendChild(bank); }
+      root.appendChild(bank);
+      /* V33: the word list pins to the bottom of the window only when the sentence is long enough to scroll; a short sentence keeps its words just under it, so the pinned list never sits on top of its own sentence */
+      var fitBank = function () { if (!bank.isConnected) { window.removeEventListener("resize", fitBank); return; } bank.classList.toggle("stick", txt.offsetHeight > window.innerHeight * 0.4); };
+      window.addEventListener("resize", fitBank); requestAnimationFrame(fitBank); }
     root.appendChild(el("p.hint", { text: typed ? S["gaps.typed"] : S["part.gaps.hint"] }));
     function target() { gapEls.forEach(function (g) { g.classList.toggle("target", !!sel); }); }
     function paint() { if (typed) { gapIns.forEach(function (inp, i) { if (inp.value.trim() !== filled[i]) inp.value = filled[i]; gapEls[i].classList.toggle("filled", !!filled[i]); }); return; }
@@ -373,7 +376,7 @@ function Surface(spec, o) {
     api.get = function () { var a = inputs.map(function (i) { return i.value.trim(); }); return a.every(function (x) { return !x; }) ? "" : a.join("\n"); };
     api.complete = function () { return inputs.some(function (i) { return i.value.trim(); }); };
     api.set = function (v) { var a = (v || "").split("\n"); inputs.forEach(function (i, k) { i.value = a[k] || ""; i.classList.toggle("typed", !!i.value.trim()); }); };
-    api.verdict = function (res) { var all = true; inputs.forEach(function (i, k) { var ok = res.cells && res.cells[k] === 1; if (!ok) all = false; vks[k].className = "vk " + (ok ? "ok" : "no"); vks[k].textContent = i.value.trim() ? (ok ? "✓" : "✗") : ""; }); return all; };
+    api.verdict = function (res) { var all = true; inputs.forEach(function (i, k) { var ok = res.cells && res.cells[k] === 1; if (!ok) all = false; vks[k].className = i.value.trim() ? "vk " + (ok ? "ok" : "no") : "vk"; vks[k].textContent = ""; }); return all; };
     api.clearMarks = function () { vks.forEach(function (v) { v.className = "vk"; v.textContent = ""; }); };
     api.disable = function (b) { lock(b); inputs.forEach(function (i) { i.disabled = !!b; }); };
   }
@@ -401,14 +404,14 @@ function Surface(spec, o) {
     nb.appendChild(el("div.h", { text: S["part.working"] }));
     if (spec.grid) { var pv = el("table.pv"), hr2 = el("tr"), br = el("tr"); [128, 64, 32, 16, 8, 4, 2, 1].forEach(function (v, i) { hr2.appendChild(el("th", { text: String(v) })); var bi = el("input", { type: "text", attr: { maxlength: "1", inputmode: "numeric", autocomplete: "off", "aria-label": fmt("aria.cell", { r: 1, c: i + 1 }) }, on: { input: function () { change(); } } }); bits.push(bi); var td = el("td"); td.appendChild(bi); br.appendChild(td); }); pv.appendChild(hr2); pv.appendChild(br); nb.appendChild(pv); }
     if (spec.working !== false) nb.appendChild(work);
-    nb.appendChild(el("p.small.quiet", { text: S["part.workingNote"] }));
+    nb.appendChild(el("p.small.quiet", { text: S[spec.workMarked ? "part.workingNote.marked" : "part.workingNote"] }));
     var ans = el("input.ans", { type: "text", attr: { maxlength: "40", autocomplete: "off", spellcheck: "false", "aria-label": S["part.answer"] }, on: { input: function () { ans.classList.toggle("typed", !!ans.value.trim()); change(); } } }), nfix = el("span.fix"), nvk = el("span.vk");
     nb.appendChild(el("div.ansrow", {}, [el("label.h", { text: S["part.answer"] }), ans, nvk, nfix])); root.appendChild(nb);
     function workText() { var g = bits.map(function (b) { return b.value.trim() || "·"; }).join(""); return (bits.length && /[^·]/.test(g) ? g + "\n" : "") + work.value.trim(); }
     api.get = function () { return { a: ans.value.trim(), working: workText() }; };
     api.complete = function () { return !!ans.value.trim(); };
     api.set = function (v) { v = v || {}; ans.value = v.a || ""; work.value = v.working || ""; bits.forEach(function (b) { b.value = ""; }); ans.classList.toggle("typed", !!ans.value.trim()); };
-    api.verdict = function (res, rv) { var ok = res.cells && res.cells[0] === 1; ans.classList.add(ok ? "right" : "wrong"); nvk.className = "vk " + (ok ? "ok" : "no"); nvk.textContent = ok ? "✓" : "✗"; nfix.textContent = (!ok && rv && rv.ansKey) ? rv.ansKey : ""; return ok; };
+    api.verdict = function (res, rv) { var ok = res.cells && res.cells[0] === 1; ans.classList.add(ok ? "right" : "wrong"); nvk.className = "vk " + (ok ? "ok" : "no"); nvk.textContent = ""; nfix.textContent = (!ok && rv && rv.ansKey) ? rv.ansKey : ""; return ok; };
     api.clearMarks = function () { ans.classList.remove("right", "wrong"); nvk.className = "vk"; nvk.textContent = ""; nfix.textContent = ""; };
     api.disable = function (b) { lock(b); ans.disabled = work.disabled = !!b; bits.forEach(function (x) { x.disabled = !!b; }); };
   }
@@ -439,7 +442,7 @@ function Surface(spec, o) {
     api.get = function () { var a = oins.map(function (i) { return i.value.trim(); }); return a.every(function (x) { return !x; }) ? "" : a.join("\n"); };
     api.complete = function () { return oins.every(function (i) { return !!i.value.trim(); }); };
     api.set = function (v) { var a = (v || "").split("\n"); oins.forEach(function (i, k) { i.value = a[k] || ""; i.classList.toggle("typed", !!i.value.trim()); }); };
-    api.verdict = function (res, rv) { var all = true; oins.forEach(function (i, k) { var ok = res.cells && res.cells[k] === 1; if (!ok) all = false; ovks[k].className = "vk " + (ok ? "ok" : "no"); ovks[k].textContent = ok ? "✓" : "✗"; i.parentNode.querySelector(".fix").textContent = (!ok && rv && rv.ansKey) ? rv.ansKey[k] : ""; }); return all; };
+    api.verdict = function (res, rv) { var all = true; oins.forEach(function (i, k) { var ok = res.cells && res.cells[k] === 1; if (!ok) all = false; ovks[k].className = "vk " + (ok ? "ok" : "no"); ovks[k].textContent = ""; i.parentNode.querySelector(".fix").textContent = (!ok && rv && rv.ansKey) ? rv.ansKey[k] : ""; }); return all; };
     api.clearMarks = function () { oins.forEach(function (i, k) { ovks[k].className = "vk"; ovks[k].textContent = ""; i.parentNode.querySelector(".fix").textContent = ""; }); };
     api.disable = function (b) { lock(b); oins.forEach(function (i) { i.disabled = !!b; }); };
   }
@@ -458,16 +461,16 @@ function Surface(spec, o) {
     api.get = function () { var any = false; tbtn.forEach(function (row, r) { row.forEach(function (b, j) { if (b && tv[r][j]) any = true; }); }); return any ? tv.map(function (row) { return row.slice(); }) : ""; };
     api.complete = function () { return tv.every(function (row) { return row.every(function (x) { return !!x; }); }); };
     api.set = function (v) { var rows = Array.isArray(v) ? v : []; tv = tin.map(function (_, r) { var a = []; for (var j = 0; j < nOut; j++) a.push(isGiven(r, j) ? String(tgv[r][j]) : String((rows[r] || [])[j] || "")); return a; }); paintT(); };
-    api.verdict = function (res) { var k = 0, all = true; tbtn.forEach(function (row) { row.forEach(function (b) { if (!b) return; var ok = res.cells && res.cells[k++] === 1; if (!ok) all = false; b.classList.add(ok ? "right" : "wrong"); }); }); return all; };
-    api.clearMarks = function () { tbtn.forEach(function (row) { row.forEach(function (b) { if (b) b.classList.remove("right", "wrong"); }); }); };
+    api.verdict = function (res, rv) { var k = 0, all = true, want = (rv && rv.ansKey) || []; tbtn.forEach(function (row, r) { row.forEach(function (b, j) { if (!b) return; var ok = res.cells && res.cells[k++] === 1; if (!ok) all = false; b.classList.add(ok ? "right" : "wrong"); var td = b.parentNode, fx = td.querySelector(".fix") || td.appendChild(el("span.fix")); fx.textContent = !ok && want[r] && want[r][j] != null ? String(want[r][j]) : ""; }); }); return all; };
+    api.clearMarks = function () { tbtn.forEach(function (row) { row.forEach(function (b) { if (!b) return; b.classList.remove("right", "wrong"); var fx = b.parentNode.querySelector(".fix"); if (fx) fx.textContent = ""; }); }); };
   }
 
   else if (kind === "add") {
     var agv = spec.given || null, hasCarry = !!(spec.carry || (agv && agv.carry)), hasOvf = !!(spec.overflow || (agv && agv.overflow)), acells = { carry: [], result: [], overflow: [] }, ains = [], avk = {};
-    var atab = el("table.addt"), athead = el("thead"), ahr = el("tr"); ahr.appendChild(el("th", { text: "" })); ahr.appendChild(el("th.ovf", { text: hasOvf ? S["add.overflow"] : "" })); [128, 64, 32, 16, 8, 4, 2, 1].forEach(function (v) { ahr.appendChild(el("th.plv", { text: String(v) })); }); ahr.appendChild(el("th", { text: "" })); athead.appendChild(ahr); atab.appendChild(athead); var atb = el("tbody"); atab.appendChild(atb);
+    var atab = el("table.addt" + (agv ? ".givenp" : "")), athead = el("thead"), ahr = el("tr"); ahr.appendChild(el("th", { text: "" })); ahr.appendChild(el("th.ovf", { text: hasOvf ? S["add.overflow"] : "" })); [128, 64, 32, 16, 8, 4, 2, 1].forEach(function (v) { ahr.appendChild(el("th.plv", { text: String(v) })); }); ahr.appendChild(el("th", { text: "" })); athead.appendChild(ahr); atab.appendChild(athead); var atb = el("tbody"); atab.appendChild(atb);
     function gchar(name, i) { if (!agv) return "_"; var str = String(agv[name] == null ? "" : agv[name]); return str.length > i ? str.charAt(i) : "_"; }
     function mkCell(name, i) { var g = gchar(name, i); if (g === ".") { acells[name][i] = { none: true }; return el("td.none"); } if (g !== "_") { acells[name][i] = { given: g }; return el("td.given", { text: g }); }
-      var inp = el("input", { type: "text", attr: { maxlength: "1", inputmode: "numeric", autocomplete: "off", "aria-label": fmt("add.aria", { row: S["add." + name], c: name === "overflow" ? 1 : i + 1 }) }, on: { input: function () { var v = inp.value.replace(/[^01]/g, "").slice(0, 1); inp.value = v; inp.classList.toggle("typed", !!v); if (v) { var nx = ains[ains.indexOf(inp) + 1]; if (nx && nx.parentNode.parentNode === inp.parentNode.parentNode) nx.focus(); } change(); },
+      var inp = el("input", { type: "text", attr: { maxlength: "1", inputmode: "numeric", autocomplete: "off", "aria-label": fmt("add.aria", { row: S["add." + name], c: name === "overflow" ? 1 : i + 1 }) }, on: { input: function () { var v = inp.value.replace(/[^01]/g, "").slice(0, 1); inp.value = v; inp.classList.toggle("typed", !!v); inp.classList.remove("empty"); if (v) { var nx = ains[ains.indexOf(inp) + 1]; if (nx && nx.parentNode.parentNode === inp.parentNode.parentNode) nx.focus(); } change(); },
         keydown: function (ev) { var k = ains.indexOf(inp); if (ev.key === "ArrowLeft" && ains[k - 1]) { ains[k - 1].focus(); ev.preventDefault(); } if (ev.key === "ArrowRight" && ains[k + 1]) { ains[k + 1].focus(); ev.preventDefault(); } if (ev.key === "Backspace" && !inp.value && ains[k - 1]) ains[k - 1].focus(); } } });
       ains.push(inp); acells[name][i] = { inp: inp }; var td = el("td"); td.appendChild(inp); return td; }
     function addRow(cls, label, lead, cells) { var tr = el("tr." + cls); tr.appendChild(el("th", { text: label })); tr.appendChild(lead); cells.forEach(function (c) { tr.appendChild(c); }); var vk = el("td.vk"); avk[cls] = vk; tr.appendChild(vk); atb.appendChild(tr); }
@@ -476,10 +479,12 @@ function Surface(spec, o) {
     addRow("opb", S["add.b"], el("td.plus", { text: "+" }), String(spec.b).split("").map(function (d) { return el("td.fixed", { text: d }); }));
     var rc = []; for (var ri = 0; ri < 8; ri++) rc.push(mkCell("result", ri));
     var ovfCell = hasOvf ? mkCell("overflow", 0) : el("td"); ovfCell.classList.add("ovf"); addRow("result", S["add.result"], ovfCell, rc);
-    root.appendChild(el("div.addwrap", {}, [atab])); root.appendChild(el("p.hint", { text: S["add.hint"] }));
+    root.appendChild(el("div.addwrap", {}, [atab])); root.appendChild(el("p.hint", { text: S[agv ? "add.hintGiven" : "add.hint"] }));
     function strOf(name, n) { var out = ""; for (var i = 0; i < n; i++) { var c = acells[name][i]; out += !c ? "_" : c.none ? "." : c.given != null ? c.given : (c.inp.value || "_"); } return out; }
     api.get = function () { var o = { result: strOf("result", 8) }; if (hasOvf) o.overflow = strOf("overflow", 1); if (hasCarry) o.carry = strOf("carry", 8); return ains.some(function (i) { return !!i.value; }) ? o : ""; };
     api.complete = function () { if (agv) return ains.every(function (i) { return !!i.value; }); return acells.result.every(function (c) { return c.given != null || !!c.inp.value; }) && (!hasOvf || !acells.overflow[0].inp || !!acells.overflow[0].inp.value); };
+    api.markEmpty = function () { var need = agv ? ains : acells.result.concat(acells.overflow).map(function (c) { return c && c.inp; }); need.forEach(function (i) { if (i && !i.value) i.classList.add("empty"); }); };
+    api.emptyMsg = S[agv ? "add.emptyGiven" : "add.empty"];
     api.set = function (v) { v = v || {}; ["carry", "result", "overflow"].forEach(function (nm) { var str = String(v[nm] == null ? "" : v[nm]); acells[nm].forEach(function (c, i) { if (c && c.inp) { var ch = str.charAt(i); c.inp.value = /^[01]$/.test(ch) ? ch : ""; c.inp.classList.toggle("typed", !!c.inp.value); } }); }); };
     api.verdict = function (res, rv) { var cells = res.cells || [], k = 0, all = true, key = (rv && rv.ansKey) || {};
       function paintVk(cls, ok, nm) { var vk = avk[cls]; if (!vk) return; clear(vk).appendChild(el("span.vk" + (ok ? ".ok" : ".no"))); if (!ok && key[nm] != null) vk.appendChild(el("span.fix", { text: String(key[nm]) })); }
@@ -489,9 +494,9 @@ function Surface(spec, o) {
       else { var rr = cells[k++] === 1; acells.result.forEach(function (c) { if (c.inp) c.inp.classList.add(rr ? "right" : "wrong"); }); if (!rr) all = false; var resNm = "result", resOk = rr;
         if (hasOvf) { var ro = cells[k++] === 1; if (acells.overflow[0].inp) acells.overflow[0].inp.classList.add(ro ? "right" : "wrong"); if (!ro) { all = false; if (resOk) { resOk = false; resNm = "overflow"; } } }
         paintVk("result", resOk, resNm);
-        if (hasCarry) { var rcOk = cells[k++] === 1; acells.carry.forEach(function (c) { if (c.inp) c.inp.classList.add(rcOk ? "right" : "wrong"); }); if (!rcOk) all = false; paintVk("carry", rcOk, "carry"); } }
+        if (hasCarry && k < cells.length) { var rcOk = cells[k++] === 1; acells.carry.forEach(function (c) { if (c.inp) c.inp.classList.add(rcOk ? "right" : "wrong"); }); if (!rcOk) all = false; paintVk("carry", rcOk, "carry"); } }
       return all; };
-    api.clearMarks = function () { ains.forEach(function (i) { i.classList.remove("right", "wrong"); }); Object.keys(avk).forEach(function (c) { clear(avk[c]); }); };
+    api.clearMarks = function () { ains.forEach(function (i) { i.classList.remove("right", "wrong", "empty"); }); Object.keys(avk).forEach(function (c) { clear(avk[c]); }); };
     api.disable = function (b) { lock(b); ains.forEach(function (i) { i.disabled = !!b; }); };
   }
 
@@ -531,6 +536,7 @@ function Surface(spec, o) {
 }
 
 /* what the right answer is, in words, for the strings that need one */
+function anyOf(spec, rv) { return !!(rv && rv.points && !spec.showOrder && rv.x && rv.points.length > rv.x); }   // more accepted answers than marks: the pupil needs only some of them
 function answerWords(spec, rv, sf) {
   if (!rv) return "";
   if (spec.kind === "one") return [].concat(rv.ansKey).map(function (L) { return sf ? sf.label(L) : L; }).join(", ");
@@ -540,14 +546,26 @@ function answerWords(spec, rv, sf) {
   if (spec.kind === "gaps") return rv.ansKey.map(function (a) { return String(a).split("|")[0]; }).join(", ");
   if (spec.kind === "match") return rv.ansKey.map(function (p) { return (spec.left[p[0]] || p[0] + 1) + ": " + spec.right[p[1]].replace(/\s+/g, " ").replace(/\.$/, ""); }).join(". ") + ".";
   if (spec.kind === "number") return rv.ansKey;
-  if (spec.kind === "add") return rv.ansKey && rv.ansKey.result != null ? String(rv.ansKey.result) : "";
+  if (spec.kind === "add") { var ak = rv.ansKey || {}, aw = [], cols = [], pv = [128, 64, 32, 16, 8, 4, 2, 1], g0 = spec.given || {};
+    if (ak.overflow != null && (spec.overflow || g0.overflow)) aw.push(fmt("add.w.ovf", { b: ak.overflow })); if (ak.result != null) aw.push(fmt("add.w.res", { b: ak.result }));
+    String(ak.carry || "").split("").forEach(function (c, i) { if (c === "1") cols.push(pv[i]); });
+    if (cols.length && (spec.carry || g0.carry)) aw.push(cols.length > 1 ? fmt("add.w.carries", { cols: cols.slice(0, -1).join(", ") + S["list.and"] + cols[cols.length - 1] }) : fmt("add.w.carry", { cols: cols[0] }));
+    return aw.join(", "); }
+  if (spec.kind === "truth") { var tk = rv.ansKey || [], nI = spec.inputs[0].length, kc = 0, rows = [];
+    spec.inputs.forEach(function (ins, r) { var outs = [], bad = false; for (var j = 0; j < spec.head.length - nI; j++) { if (spec.given && spec.given[r] && spec.given[r][j] != null) continue; if (!(rv.cells && rv.cells[kc++] === 1)) bad = true; outs.push(fmt("truth.w.out", { n: String(spec.head[nI + j]).split(" = ")[0], v: (tk[r] || [])[j] })); }
+      if (bad) rows.push(fmt("truth.w.row", { ins: ins.map(function (v, i) { return fmt("truth.w.in", { n: spec.head[i], v: v }); }).join(", "), outs: outs.join(", ") })); });
+    return rows.join(". "); }
   if (spec.kind === "output") return rv.ansKey.join(", ");
-  if (rv.points) return rv.points.join(". ");
+  if (rv.points && anyOf(spec, rv)) return rv.points.map(function (s) { return String(s || "").replace(/\.\s*$/, ""); }).filter(Boolean).join("; ") + ".";   // any N of these: semicolons, so the list reads as choices
+  if (rv.points) { var po = (spec.showOrder || rv.points.map(function (_, i) { return i; })).map(function (i) { return String(rv.points[i] || "").replace(/\.\s*$/, ""); }).filter(Boolean);   // showOrder: the order a reader works it, when the judge needs another
+    return po.length ? po.join(". ") + "." : ""; }
   return "";
 }
 function contextBlocks(ctx) {
-  var box = el("div.ctx"); if (!ctx || !ctx.length) return null;
+  var box = el("div.ctx"), ul = null; if (!ctx || !ctx.length) return null;
   ctx.forEach(function (c) {
+    if (c.kind === "text" && /^\s*\u2022/.test(c.text)) { if (!ul) { ul = el("ul.ctxlist"); box.appendChild(ul); } String(c.text).split("\n").forEach(function (s) { s = s.replace(/^\s*\u2022\s*/, "").trim(); if (s) ul.appendChild(el("li", { text: s })); }); return; }
+    ul = null;
     if (c.kind === "text") box.appendChild(el("p", { text: c.text }));
     else if (c.kind === "code") { var pre = el("pre"); (c.lines || String(c.text || "").split("\n")).forEach(function (ln, i) { var row = el("span.ln"); if (c.numbered !== false) row.appendChild(el("span.n", { text: String(i + 1) })); row.appendChild(document.createTextNode(ln)); pre.appendChild(row); pre.appendChild(document.createTextNode("\n")); }); var cb = el("div.codebox"); if (c.lang) cb.appendChild(el("div.lang", { text: c.lang })); cb.appendChild(pre); box.appendChild(cb); }
     else if (c.kind === "figure") { var f = el("div.fig", { html: c.svg || "" }); if (c.alt) f.setAttribute("aria-label", c.alt); box.appendChild(f); if (c.cap) box.appendChild(el("div.cap", { text: c.cap })); }
@@ -908,8 +926,9 @@ function renderPart(t, qid) {
     $app.appendChild(crumbFrom(S["nav.home"] + " › " + fmt("pp.crumb", { t: t }) + " › " + part.label, ["#", "#th/" + t, "#th/" + t + "/pp"]));
     var paper = el("article.paper.tw-" + t);
     paper.appendChild(el("div.phead", {}, [el("span.src", { text: fmt("part.head", { year: part.year, label: part.label, x: part.marks }) }), el("span.form", { text: formName(part.form) })]));
-    paper.appendChild(el("p.stem", {}, [document.createTextNode(part.stem + " "), el("span.mk", { text: "[" + part.marks + "]" })]));
+    /* V33: the question's lead-in comes first, then the part line, the way the paper and the staff view lay it out */
     var ctx = contextBlocks(part.context); if (ctx) paper.appendChild(ctx);
+    paper.appendChild(el("p.stem", {}, [document.createTextNode(part.stem + " "), el("span.mk", { text: "[" + part.marks + "]" })]));
     var isWU = !!part.writeUp;
     if (isWU) { paper.appendChild(el("div.wuintro", {}, [el("p", { text: S["wu.intro"] }), el("p.b", { text: S["wu.step1"] })])); }
     if (sp.how) paper.appendChild(el("p.how", { text: sp.how }));
@@ -930,9 +949,13 @@ function renderPart(t, qid) {
     // write, code and long: Check stays off under the word floor; the floor line under the box says why (A9, A18)
     function gate() { if (btnCheck && floor && !(vbox && vbox.childNodes.length)) btnCheck.disabled = !sf.complete(); }
     function bump(res) { best = res.best; attempts = res.attempts || attempts; attemptsLine.textContent = fmt("part.attempts", { n: attempts }); attemptsLine.classList.toggle("hidden", !attempts); if (ST.recs[t]) { if (!ST.recs[t].Q) ST.recs[t].Q = {}; if (!ST.recs[t].Q[p.round]) ST.recs[t].Q[p.round] = {}; ST.recs[t].Q[p.round][qid] = best; } }
-    function msBox(ms) { var b = el("div.msbox"); b.appendChild(el("div.h", { text: S["part.ms"] })); b.appendChild(el("pre", { text: ms || "" })); return b; }
+    function msBox(ms, note) { var b = el("div.msbox"), ls = String(ms || "").split("\n"), seg = [], segT = null; b.appendChild(el("div.h", { text: S["part.ms"] }));
+      function isRow(s) { return /^\s*[01](\s+([01]|\[\d+\]))+\s*$/.test(s || ""); }
+      function flush() { if (seg.length) b.appendChild(el(segT ? "pre.mstt" : "pre", { text: seg.join("\n") })); seg = []; }
+      ls.forEach(function (ln, i) { var head = !isRow(ln) && /\S\s{2,}\S/.test(ln) && isRow(ls[i + 1]), tt = isRow(ln) || head; if (tt !== segT || head) { flush(); segT = tt; } seg.push(ln); });
+      flush(); if (note) b.appendChild(el("p.msnote", { text: note })); return b; }
     function check() {
-      if (!sf.complete()) { toast(floor ? fmt("part.write.floor", { words: floor }) : S["part.incomplete"]); return; }
+      if (!sf.complete()) { if (sf.markEmpty) sf.markEmpty(); toast(floor ? fmt("part.write.floor", { words: floor }) : (sf.emptyMsg || S["part.incomplete"])); return; }
       btnCheck.disabled = true; btnCheck.dataset.keepOff = "1";
       var answer = (isWrite || isLong) ? { text: sf.get() } : sf.get();
       return api("apiTheory", { op: "mark", t: t, qid: qid, answer: answer }).then(function (res) {
@@ -941,11 +964,12 @@ function renderPart(t, qid) {
         if (isLong) return longVerdict(J);
         sf.verdict(J, J);
         vbox.appendChild(el("div.verdict" + (J.right ? ".full" : ""), {}, [el("span.score" + (J.right ? ".full" : ""), { text: fmt("part.marks", { m: J.m, x: J.x }) }), J.right ? el("span.fullnote", { text: S["part.full"] }) : null]));
-        if (!J.right) { var aw = answerWords(sp, J, sf); if (aw) vbox.appendChild(el("p.ansright", {}, [el("b", { text: fmt("part.right", { a: aw }) })])); }
+        if (!J.right && !J.noWork) { var aw = answerWords(sp, J, sf); if (aw) vbox.appendChild(el("p.ansright", {}, [el("b", { text: fmt(anyOf(sp, J) ? (S["part.right.any" + J.x] ? "part.right.any" + J.x : "part.right.anyN") : "part.right", { a: aw, n: J.x }) })])); }
+        [J.say, J.noWork ? fmt("part.noWork", { m: J.m, x: J.x }) : "", J.workMarks ? (function () { var wr = (J.cells || []).indexOf(0) >= 0 ? "Wrong" : ""; return J.workMarks === 1 ? S["part.workMark" + wr + "1"] : fmt("part.workMark" + wr + "N", { n: J.workMarks }); })() : "", J.carryEmpty ? S["add.carryEmpty"] : ""].forEach(function (s2) { if (s2) vbox.appendChild(el("p.vnote", { text: s2 })); });
         if (J.why) vbox.appendChild(el("p.why", { text: fmt("part.why", { why: J.why }) }));
         if (isWU) return step2();   // a six-mark question holds the model answer and mark scheme back until the pupil has written their own
         if (J.model) vbox.appendChild(el("div.modelbox", {}, [el("div.h", { text: S["part.model"] }), el("p", { text: J.model })]));
-        vbox.appendChild(msBox(J.ms));
+        vbox.appendChild(msBox(J.ms, J.msNote));
       }).catch(function (e) { console.error(e); btnCheck.disabled = false; delete btnCheck.dataset.keepOff; toast(S["err.server"]); });
     }
     // step 2 of a six-mark question: the pupil writes the answer; it is saved, never marked, and checked by the pupil against CCEA's model answer
@@ -1458,6 +1482,7 @@ function boot() {
   $app = document.getElementById("app"); $who = document.querySelector(".who"); $toast = document.querySelector(".toast");
   Promise.all([fetchJSON(BASE + "strings-u4.json"), fetchJSON(BASE + "theory/index.json")]).then(function (rr) {
     S = rr[0]; IDX = rr[1].topics || rr[1];
+    if (S["th.wait"]) $app.setAttribute("data-wait", S["th.wait"]);
     window.addEventListener("hashchange", route); route();
   }).catch(function (e) { fail(e, "boot"); });
 }
@@ -1470,7 +1495,7 @@ function mount(o) {
 }
 function show(host, who) {
   if (!LIVE) mount({});
-  $app = host; $who = who || null; route();
+  $app = host; $who = who || null; if (S["th.wait"]) host.setAttribute("data-wait", S["th.wait"]); route();
 }
 function timeWords(sec) { if (sec < 60) return S["staff.th.timeUnder"]; var mins = Math.round(sec / 60), h = Math.floor(mins / 60), rest = mins % 60; return !h ? fmt("staff.th.timeMin", { n: mins }) : rest ? fmt("staff.th.timeHrMin", { h: h, n: rest }) : fmt("staff.th.timeHr", { h: h }); }
 function seenWhen(m, now) { return AGO ? AGO(now, m) : "—"; }

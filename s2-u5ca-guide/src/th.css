@@ -142,7 +142,7 @@ b.term{color:var(--sw-ink);font-weight:900;border-bottom:3px solid var(--sw)}
 .opt.on .l{background:var(--sw-ink);color:var(--white)}
 .opt.right{border-color:var(--right);background:var(--right-soft)}
 .opt.on.right{outline:3px solid var(--right);outline-offset:2px}   /* V29: a right answer she picked is ringed; one she missed is not */
-.opt.wrong{border-color:var(--mark);background:var(--mark-soft)}
+.opt.wrong{border-color:var(--mark);background:var(--mark-soft);text-decoration:none}
 .tft{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;border:2px solid var(--line);margin-bottom:12px}
 .tft th{font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:var(--mute);padding:8px 12px;border-bottom:2px solid var(--line);text-align:center}
 .tft th:first-child{text-align:left}
@@ -163,9 +163,12 @@ b.term{color:var(--sw-ink);font-weight:900;border-bottom:3px solid var(--sw)}
 .gap.target{outline:3px solid var(--sw-ink);outline-offset:1px}
 .gap.filled{background:var(--typed);border-style:solid;border-bottom-color:var(--sw-ink)}
 .gap.right{background:var(--right-soft);border-bottom-color:var(--right);color:var(--right)}
-.gap.wrong{background:var(--mark-soft);border-bottom-color:var(--mark);color:var(--mark);text-decoration:line-through}
-.gap .fix{display:block;font-size:14px;color:var(--right-ink);text-decoration:none;line-height:1.1}
-.bank{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;position:sticky;bottom:0;z-index:3;padding:8px 0;background:var(--card)}
+.gap.wrong{background:var(--mark-soft);border-bottom-color:var(--mark);color:var(--mark)}
+.gap.wrong .w{text-decoration:line-through}
+.gap .fix{display:inline-block;width:100%;font-size:14px;color:var(--right-ink);text-decoration:none;line-height:1.1}
+.gap .fix:empty{display:none}
+.bank{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;position:relative;z-index:3;padding:8px 0;background:var(--card)}
+.bank.stick{position:sticky;bottom:0;box-shadow:0 -12px 14px -12px var(--drag-shadow)}  /* V33: pinned only for a long sentence (th.js fitBank) */
 .try .bank{background:var(--tint)}
 .paper .bank{background:var(--paper)}
 .bank .h{width:100%;font-weight:900;font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:var(--mute)}
@@ -227,6 +230,7 @@ body.wordrag,body.wordrag *{cursor:grabbing!important;user-select:none;-webkit-u
 .vk.no::before{content:"✗"}
 .ansright{margin-top:10px;color:var(--right);font-weight:900}
 .ansright b{background:var(--right-soft);padding:2px 8px;border-radius:6px}
+.vnote{margin-top:8px;font-weight:700}
 
 /* ---------- past paper list and part ---------- */
 .ppstage{margin-top:22px}
@@ -251,6 +255,10 @@ body.wordrag,body.wordrag *{cursor:grabbing!important;user-select:none;-webkit-u
 .paper .ctx .fig{border:2px solid var(--paper-edge);border-radius:10px;padding:12px 16px;background:var(--card);margin-bottom:10px}
 .paper .ctx .fig .cap{font-size:14px;font-weight:700;color:var(--mute);margin-bottom:6px}
 .paper .ctx pre{margin:0;font:16px/1.5 var(--mono);white-space:pre-wrap}
+.ctx th,.ctx td{padding:4px 22px 4px 0;text-align:left}
+.paper .ctx th{border-bottom:2px solid var(--paper-edge)}
+.ctx ul.ctxlist{margin:4px 0 12px;padding-left:24px}
+.ctx ul.ctxlist li{margin:2px 0}
 .paper .acts{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:18px}
 .verdict{margin-top:18px;border-top:2px dashed var(--paper-rule);padding-top:16px;animation:cardIn .35s both}
 .verdict .score{display:inline-flex;align-items:center;gap:10px;font-weight:900;font-size:22px;color:var(--mark)}
@@ -260,6 +268,8 @@ body.wordrag,body.wordrag *{cursor:grabbing!important;user-select:none;-webkit-u
 .msbox{margin-top:14px;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:12px 16px}
 .msbox .h{font-weight:900;font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:var(--mute);margin-bottom:6px}
 .msbox pre{margin:0;white-space:pre-wrap;font:16px/1.5 var(--sans)}
+.msbox pre.mstt{font:15px/1.5 var(--mono);white-space:pre;overflow-x:auto}
+.msnote{margin:8px 0 0;font-size:14px;font-weight:700;color:var(--mute)}
 .why{margin-top:10px;font-weight:700}
 .attempts{margin-top:8px;color:var(--mute);font-weight:700;font-size:15px}
 .ticks{display:grid;gap:8px;margin-top:12px}
@@ -496,7 +506,10 @@ body.is-th main,body.is-pair main,body.is-staff main{max-width:1420px}
 .gapin:focus{background:var(--tint)}
 .gap.typed.right .gapin{background:var(--right-soft);border-bottom-color:var(--right);color:var(--right)}
 .gap.typed.wrong .gapin{background:var(--mark-soft);border-bottom-color:var(--mark);color:var(--mark);text-decoration:line-through}
-.truth td.given{text-align:center;font:900 19px var(--mono);color:var(--mute);background:var(--card)}
+.gap.typed .fix{display:inline-block;width:auto;margin-left:10px}
+.truth td.given{text-align:center;font:900 19px var(--mono);color:var(--mute);background:var(--tint)}
+.truth td.out .fix{display:block;font:700 13px var(--mono);color:var(--right-ink);line-height:1.2}
+.truth td.out .fix:empty{display:none}
 .addwrap{overflow-x:auto;padding-bottom:4px}
 .addt{border-collapse:separate;border-spacing:5px 6px;margin:4px 0}
 .addt th{font:700 13px var(--sans);color:var(--mute);text-align:right;padding:0 6px;white-space:nowrap}
@@ -511,10 +524,12 @@ body.is-th main,body.is-pair main,body.is-staff main{max-width:1420px}
 .addt input.typed{border-style:solid;border-color:var(--sw-ink)}
 .addt input.right{background:var(--right-soft);border-color:var(--right)}
 .addt input.wrong{background:var(--mark-soft);border-color:var(--mark)}
+.addt.givenp input{background:var(--grey-chip)}
+.addt input.empty{border-color:var(--mark);border-style:solid}
 .addt input:focus{outline:3px solid var(--sw);outline-offset:1px}
 .addt tr.result th{color:var(--sw-ink)}
 .addt tr.result td.fixed{background:var(--right-soft)}
-.addt td.vk{text-align:left;padding-left:6px;white-space:nowrap}
+.addt td.vk{text-align:left;padding-left:6px;white-space:nowrap;border:0}
 .addt td.vk .fix{display:block;font:700 13px var(--mono);color:var(--right-ink);line-height:1.2}
 .addt.live td.auto{color:var(--mute);font-weight:700;font-size:16px}
 .addt.live td.auto.on{color:var(--sw-ink)}
@@ -1186,3 +1201,8 @@ body.is-th main,body.is-pair main,body.is-staff main{max-width:1420px}
   .scr .codebox .ln .n{width:26px;padding-right:10px}
   .scr .codebox .ln > :not(.n){min-width:0}
 }
+
+/* V33: while a theory page waits for the server the space is not blank: a quiet line fades in after 0.4 s (the words come from strings-u4.json th.wait) */
+[data-wait]:empty::before{content:attr(data-wait);display:block;padding:56px 16px;text-align:center;font:600 18px/1.4 var(--sans);color:var(--mute);opacity:0;animation:waitIn .3s ease .4s forwards, busydots 1.6s ease-in-out 1.2s infinite}
+@keyframes waitIn{to{opacity:1}}
+@media (prefers-reduced-motion: reduce){[data-wait]:empty::before{animation:waitIn .01s linear .4s forwards}}
