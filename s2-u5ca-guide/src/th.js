@@ -1224,7 +1224,7 @@ function renderPair(t) {
       if (checked) { setStep(5); return; }
       if (phase === 1) { setStep(1); sf.disable(myPicked);
         if (!myPicked) phaseBox.appendChild(el("div.acts", {}, [el("button.btn", { text: solo ? S["learn.try.check"] : S["pair.lockOwn"], on: { click: busyOn(lockOwn) } })]));
-        else { var waitingOn = others.filter(function (s) { return !picks[s]; }).map(cnOf); phaseBox.appendChild(el("p.say.waiting", { text: waitingOn.length > 1 ? fmt("pair.waitingFor2", { them: waitingOn[0], them2: waitingOn[1] }) : fmt("pair.waitingFor", { them: waitingOn[0] || "" }) })); }
+        else { var waitingOn = others.filter(function (s) { return !picks[s]; }).map(cnOf); phaseBox.appendChild(el("p.say.waiting", { text: waitingOn.length > 1 ? fmt("pair.waitingFor2", { them: waitingOn[0], them2: waitingOn[1] }) : waitingOn.length ? fmt("pair.waitingFor", { them: waitingOn[0] }) : S["pair.allAnswered"] })); }   // all in: say so while my pick saves, never a blank name
         return; }
       if (phase === 2) { setStep(2); sf.disable(false); stepEls[2].classList.add("on"); paintCompare(); var mine = sf.get(), okAll = others.every(function (s) { return picks[s] === mine; });
         var acts = el("div.acts"); var L = ansLetter(sf, spec, mine);
