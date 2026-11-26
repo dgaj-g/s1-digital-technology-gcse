@@ -1192,7 +1192,7 @@ function renderPair(t) {
     function setStep(n) { stepEls.forEach(function (s, i) { s.classList.toggle("done", i + 1 < n); s.classList.toggle("on", i + 1 === n); }); }
     var pc = pairCtx(round.context); if (pc) rd.appendChild(pc);
     rd.appendChild(el("p.stem", { text: round.stem }));
-    var picks = {}, locks = {}, lastKey = null, myPicked = false, phase = 1, checked = null, changedBy = null;
+    var picks = {}, locks = {}, lastKey = null, myPicked = false, phase = 1, checked = null, changedBy = null, choosing = false;
     var sf = Surface(spec, { seed: seed, keepOrder: !!round.keepOrder, onChange: function () { if (phase >= 2 && !checked) { post("pick", r + ":" + sf.get()); paintCompare(); } } });
     rd.appendChild(sf.el);
     var phaseBox = el("div.phase"); rd.appendChild(phaseBox);
@@ -1232,12 +1232,15 @@ function renderPair(t) {
         if (!okAll) { others.forEach(function (s) { if (picks[s] && picks[s] !== mine) acts.appendChild(el("button.btn.sec", { text: fmt("pair.useTheirs", { them: cnOf(s) }), on: { click: function (ev) { return busy(ev.currentTarget, function () { sf.set(picks[s]); return post("pick", r + ":" + picks[s]); paintPhase(); }); } } })); }); }
         if (myOwn != null && mine !== myOwn) acts.appendChild(el("button.btn.quiet", { text: S["pair.useMine"], on: { click: function (ev) { return busy(ev.currentTarget, function () { sf.set(myOwn); return post("pick", r + ":" + myOwn); paintPhase(); }); } } }));
         phaseBox.appendChild(acts); return; }
-      if (phase === 4) { setStep(4); sf.disable(true); paintCompare(); var myLock = locks[seat];
+      if (phase === 4) { var myLock = locks[seat]; if (myLock) choosing = false; setStep(4); sf.disable(!choosing); paintCompare();
         var pending = others.filter(function (s) { return locks[s] !== myLock; });
         if (!pending.length) { var cl = cmp.querySelector(".cmpline"); if (cl) cl.textContent = S["pair.checking"]; return; } // agreed → check runs; say so while it does
         var otherLocks = others.filter(function (s) { return locks[s] && locks[s] !== myLock; });
-        if (otherLocks.length) { var s0 = otherLocks[0], L0 = ansLetter(sf, spec, locks[s0]); phaseBox.appendChild(el("p.say", { text: L0 ? fmt("pair.wants", { them: cnOf(s0), letter: L0 }) : fmt("pair.wantsAny", { them: cnOf(s0) }) }));
-          phaseBox.appendChild(el("div.acts", {}, [el("button.btn.gold", { text: L0 ? fmt("pair.agree", { letter: L0 }) : S["pair.agreeAny"], on: { click: function (ev) { return busy(ev.currentTarget, function () { sf.set(locks[s0]); locks[seat] = locks[s0]; var w = post("lock", r + ":" + locks[s0]); settle(); return w; }); } } }), el("button.btn.sec", { text: S["pair.notYet"], on: { click: function (ev) { return busy(ev.currentTarget, function () { return say(S["pair.notYetSay"]); }); } } })].concat(myLock ? [el("button.btn.quiet", { text: S["pair.unlock"], on: { click: busyOn(unlockMine) } })] : []))); }   // both locked, different answers: either can take theirs back
+        if (otherLocks.length && choosing) { var mineC = sf.get(), LC = ansLetter(sf, spec, mineC);   // 26 Nov: no lock of her own yet, and she wants a different answer. Her answer is open again; locking it makes the usual stand-off
+          phaseBox.appendChild(el("p.say", { text: S["pair.otherSay"] }));
+          phaseBox.appendChild(el("div.acts", {}, [el("button.btn.gold", { text: LC ? fmt("pair.lockPair", { letter: LC }) : S["pair.lockPairAny"], on: { click: busyOn(function () { if (!sf.complete()) { toast(S["try.incomplete"]); return; } choosing = false; return lockPair(); }) } }), el("button.btn.quiet", { text: S["pair.otherBack"], on: { click: busyOn(function () { choosing = false; paintPhase(); }) } })])); }
+        else if (otherLocks.length) { var s0 = otherLocks[0], L0 = ansLetter(sf, spec, locks[s0]); phaseBox.appendChild(el("p.say", { text: L0 ? fmt("pair.wants", { them: cnOf(s0), letter: L0 }) : fmt("pair.wantsAny", { them: cnOf(s0) }) }));
+          phaseBox.appendChild(el("div.acts", {}, [el("button.btn.gold", { text: L0 ? fmt("pair.agree", { letter: L0 }) : S["pair.agreeAny"], on: { click: function (ev) { return busy(ev.currentTarget, function () { sf.set(locks[s0]); locks[seat] = locks[s0]; var w = post("lock", r + ":" + locks[s0]); settle(); return w; }); } } }), el("button.btn.sec", { text: S["pair.notYet"], on: { click: function (ev) { return busy(ev.currentTarget, function () { return say(S["pair.notYetSay"]); }); } } })].concat([myLock ? el("button.btn.quiet", { text: S["pair.unlock"], on: { click: busyOn(unlockMine) } }) : el("button.btn.quiet", { text: S["pair.other"], on: { click: busyOn(function () { choosing = true; paintPhase(); }) } })]))); }   // both locked, different answers: either can take theirs back
         else { var names = pending.map(cnOf); phaseBox.appendChild(el("p.say.waiting", { text: names.length > 1 ? fmt("pair.locked2", { them: names[0], them2: names[1] }) : fmt("pair.locked", { them: names[0] }) }));
           phaseBox.appendChild(el("div.acts", {}, [el("button.btn.quiet", { text: S["pair.unlock"], on: { click: busyOn(unlockMine) } })])); }
         return; }
@@ -1282,7 +1285,7 @@ function renderPair(t) {
       if (!m || parseInt(m[1], 10) !== r) return;
       if (ev.k === "pick") { if (s !== seat) { var was = picks[s]; picks[s] = m[2]; if (phase >= 2 && was && was !== m[2]) changedBy = s; else if (phase >= 2) changedBy = null; } else if (!picks[s]) { picks[s] = m[2]; myPicked = true; myOwn = m[2]; sf.set(m[2]); } advance(); paintCompareIfOn(); if (phase === 4) paintPhase(); return; }
       if (ev.k === "lock") {
-        if (!m[2]) { locks[s] = null; if (phase === 4 && !locks[seat] && !others.some(function (o) { return locks[o]; })) phase = 2; }          // an unlock (D-UNLOCK): back to compare unless I hold a lock
+        if (!m[2]) { locks[s] = null; if (phase === 4 && !locks[seat] && !others.some(function (o) { return locks[o]; })) { phase = 2; choosing = false; } }          // an unlock (D-UNLOCK): back to compare unless I hold a lock
         else { locks[s] = m[2]; if (s !== seat && !picks[s]) picks[s] = m[2]; if (s === seat && phase < 4) { phase = 4; sf.set(m[2]); } else if (s !== seat) { advance(); if (phase === 2) phase = 4; } }   // a partner lock pulls me to Agree; it also counts as their answer
         if (phase >= 2) { paintPhase(); settle(); } return; }
     }
